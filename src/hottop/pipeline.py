@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime
+from typing import Protocol
 
 from pydantic import BaseModel, Field
 
@@ -8,6 +10,10 @@ from .briefing import build_brief
 from .dedupe import merge_candidates
 from .models import MemeBrief, ProductProfile, TrendCandidate, TrendScore
 from .scoring import score_candidate
+
+
+class Collector(Protocol):
+    async def collect(self, limit: int = 30) -> list[TrendCandidate]: ...
 
 
 class RankedCandidate(BaseModel):
@@ -49,4 +55,28 @@ def build_batch(
         unique_count=len(unique),
         ranked=selected,
         briefs=briefs,
+    )
+
+
+async def collect_and_build_batch(
+    collectors: list[Collector],
+    product: ProductProfile,
+    comparison_target: str | None = None,
+    limit_per_source: int = 30,
+    top: int = 5,
+    now: datetime | None = None,
+) -> BatchResult:
+    if limit_per_source < 1:
+        raise ValueError("limit_per_source must be at least 1")
+
+    collected = await asyncio.gather(
+        *(collector.collect(limit=limit_per_source) for collector in collectors)
+    )
+    candidates = [candidate for source_items in collected for candidate in source_items]
+    return build_batch(
+        candidates,
+        product,
+        comparison_target=comparison_target,
+        top=top,
+        now=now,
     )
