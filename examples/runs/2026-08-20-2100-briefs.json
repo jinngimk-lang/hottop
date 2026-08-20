@@ -1,0 +1,130 @@
+{
+  "generated_at": "2026-08-20T21:00:00+08:00",
+  "product": "InkClawAgent",
+  "claim_policy": "satire_or_supported_only",
+  "briefs": [
+    {
+      "topic": "China humanoid-robot market mania / robots-in moment",
+      "freshness": "2026-08-19 to 2026-08-20",
+      "sources": [
+        {
+          "url": "https://www.reuters.com/commentary/reuters-open-interest/global-markets-view-usa-2026-08-19/",
+          "publisher": "Reuters",
+          "evidence_note": "Reuters' Aug. 19 Morning Bid highlighted surging Chinese investor excitement around AI and humanoid robotics, including Unitree's IPO debut."
+        }
+      ],
+      "conflict": "Many impressive specialist robots can each do a visible trick; the harder problem is coordinating a whole job from intent to finished output.",
+      "comparison_target": "single-purpose AI tools",
+      "product_role": "orchestrator / control-room commander",
+      "comparison_role": "a hangar full of specialists waiting for separate instructions",
+      "panels": [
+        {
+          "visual": "A fictional robotics expo packed with distinct generic humanoid robots, each proudly holding one tool: keyboard, wrench, document, magnifier.",
+          "caption": "现在的 AI 工具：每个都会一手绝活"
+        },
+        {
+          "visual": "A stressed operator runs between robots carrying separate instruction sheets while the real project remains unfinished on a giant task board.",
+          "caption": "问题是：活到底谁来串起来？"
+        },
+        {
+          "visual": "An original control-room interface labeled InkClawAgent coordinates several abstract agent silhouettes around one shared mission board.",
+          "caption": "InkClawAgent：别排队了，一起干"
+        },
+        {
+          "visual": "The project board flips to DONE while the specialist robots look toward the control room; cinematic but generic sci-fi composition.",
+          "caption": "会一招很酷，能把整件事做完更酷"
+        }
+      ],
+      "punchlines": [
+        "单项冠军很多，总指挥还得看 InkClawAgent",
+        "工具越来越多，真正缺的是把活串起来的人"
+      ],
+      "image_prompt": "Original four-panel cinematic sci-fi meme about a fictional humanoid-robot expo and a generic AI orchestration control room. Panel art may vary. Do not imitate any real robot brand or identifiable industrial design. InkClawAgent is represented only through original interface typography and abstract agent silhouettes. Strong visual escalation, Chinese meme captions, humorous workplace metaphor.",
+      "negative_prompt": "No Unitree logo or robot design, no Tesla Optimus design, no proprietary robot likeness, no copied advertising photography, no factual benchmark claim.",
+      "risk_flags": ["trademark-adjacent-topic", "avoid-identifiable-robot-design", "comparison-is-metaphorical"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "2026 AI model leaderboard / crowded model arena",
+      "freshness": "2026-08-17 to 2026-08-20",
+      "sources": [
+        {
+          "url": "https://m.ithome.com/html/990681.htm",
+          "publisher": "IT之家",
+          "evidence_note": "IT之家 summarized the week-33 Arena blind-test rankings and explicitly noted that rankings reflect user preference rather than absolute capability."
+        }
+      ],
+      "conflict": "Everyone is staring at a crowded scoreboard while the user still has a multi-step real-world job to finish.",
+      "comparison_target": "leaderboard-chasing workflow",
+      "product_role": "pit crew that turns models into an end-to-end workflow",
+      "comparison_role": "spectators arguing over score decimals",
+      "panels": [
+        {
+          "visual": "A fictional stadium scoreboard filled with generic MODEL A, MODEL B, MODEL C rankings; a crowd argues over tiny score differences.",
+          "caption": "今天又在争：谁榜一？"
+        },
+        {
+          "visual": "Behind the cheering crowd, one office worker points at a huge unfinished board: research, write, review, edit, code.",
+          "caption": "我：所以这活谁帮我做完？"
+        },
+        {
+          "visual": "An original InkClawAgent pit crew metaphor assigns several anonymous model-shaped engines to research, writing, review and coding stations.",
+          "caption": "InkClawAgent：模型是零件，工作流才是车"
+        },
+        {
+          "visual": "A finished race car marked only with abstract InkClawAgent branding crosses the finish line while the scoreboard crowd is still debating.",
+          "caption": "榜单会换，交付不能等"
+        }
+      ],
+      "punchlines": [
+        "别只问谁第一，先问谁能把活跑完",
+        "模型天天换，InkClawAgent 管的是整条赛道"
+      ],
+      "image_prompt": "Original four-panel motorsport-meets-AI-workflow meme. Use a fictional model leaderboard and an original pit-crew metaphor. Chinese captions. No real model provider logos, no copied product UIs, no claim that InkClawAgent beats ranked models on benchmarks.",
+      "negative_prompt": "No Anthropic/OpenAI/Google/Kimi/Qwen logos, no real leaderboard screenshot, no numerical superiority claim, no copied race-team branding.",
+      "risk_flags": ["comparative-context", "no-benchmark-superiority", "avoid-provider-logos"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "AI-made filmmaking / studios experimenting with AI production",
+      "freshness": "2026-08-16 to 2026-08-20",
+      "sources": [
+        {
+          "url": "https://www.theguardian.com/film/2026/aug/16/ai-film-shoot-new-studios",
+          "publisher": "The Guardian",
+          "evidence_note": "The Guardian reported from an AI film shoot where filmmakers discussed using AI to bypass parts of traditional studio production and take more creative risks."
+        }
+      ],
+      "conflict": "A production set has many specialized departments; adding AI does not remove the coordination problem.",
+      "comparison_target": "a pile of disconnected AI generators",
+      "product_role": "director / production coordinator",
+      "comparison_role": "departments each producing impressive but mismatched shots",
+      "panels": [
+        {
+          "visual": "A fictional movie studio with separate AI departments generating script pages, concept art, code and edit notes in wildly different styles.",
+          "caption": "AI 电影现场：每个部门都说自己做完了"
+        },
+        {
+          "visual": "A director looks at four incompatible outputs: cowboy script, spaceship concept, medieval set and corporate spreadsheet.",
+          "caption": "导演：那我拍的是哪一部？"
+        },
+        {
+          "visual": "An original InkClawAgent production board aligns research, writing, review, revision and coding agents around one brief.",
+          "caption": "InkClawAgent：先统一剧本，再开机"
+        },
+        {
+          "visual": "A clean fictional clapperboard closes on a coherent finished scene; crew relaxes.",
+          "caption": "AI 多不稀奇，能协同才像剧组"
+        }
+      ],
+      "punchlines": [
+        "一堆生成器不是剧组，协同起来才是",
+        "InkClawAgent 不抢镜，它负责让整部戏能拍完"
+      ],
+      "image_prompt": "Original four-panel backstage film-production comedy about disconnected AI departments versus coordinated workflow. Invent every person, costume, set and shot. Use generic studio language and original clapperboard designs. Chinese captions and cinematic lighting.",
+      "negative_prompt": "No actor likeness, no identifiable film set, no official movie frame, no studio logos, no copied poster composition.",
+      "risk_flags": ["film-industry-topic", "avoid-real-production-assets", "comparison-is-workflow-metaphor"],
+      "factual_claim_status": "satire"
+    }
+  ]
+}
