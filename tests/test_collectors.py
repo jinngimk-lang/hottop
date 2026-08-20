@@ -52,6 +52,9 @@ async def test_dailyhot_normalizes_router_data():
     assert items[0].source == "dailyhot:zhihu"
     assert items[0].source_rank == 1
     assert items[0].metrics["hot"] == 920000
+    assert items[0].source_quality == 0.62
+    assert items[0].evidence[0].source_quality == 0.62
+    assert items[0].evidence[0].published_at == items[0].published_at
 
 
 @pytest.mark.asyncio
@@ -85,6 +88,9 @@ async def test_newsnow_normalizes_source_response():
     assert items[0].id == "newsnow:aihot:n1"
     assert items[0].summary == "details"
     assert items[0].published_at is not None
+    assert items[0].source_quality == 0.68
+    assert items[0].evidence[0].source_quality == 0.68
+    assert items[0].evidence[0].published_at == items[0].published_at
 
 
 @pytest.mark.asyncio
@@ -99,9 +105,15 @@ async def test_rss_collector_normalizes_feed_items():
 
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
         items = await RSSCollector(
-            feed_url="https://feeds.test/hot.xml", source_name="rss:test", client=client
+            feed_url="https://feeds.test/hot.xml",
+            source_name="rss:test",
+            source_quality=0.9,
+            client=client,
         ).collect(limit=5)
 
     assert items[0].id == "rss:test:r1"
     assert items[0].title == "Fresh movie trend"
     assert items[0].published_at is not None
+    assert items[0].source_quality == 0.9
+    assert items[0].evidence[0].source_quality == 0.9
+    assert items[0].evidence[0].published_at == items[0].published_at
