@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 03:00 +08:00
+Last updated: 2026-08-21 04:00 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -25,35 +25,37 @@ Milestone: Foundation v0.1
 - Added provider-neutral renderer handoff contract in `src/hottop/rendering.py`: `RenderRequest` / `RenderPanel` plus `build_render_request(MemeBrief)`. The schema keeps four panels, captions, prompts, risk flags and claim status while deliberately excluding API keys and vendor/model settings.
 - Renderer handoff was developed RED→GREEN: CI run 81 failed on the missing `hottop.rendering` module as expected; implementation commit `dd9d1153` then passed CI run 83.
 - Added CLI `hottop render` to export one provider-neutral `RenderRequest` from a candidate/product pair. The CLI contract was also developed RED→GREEN: run 89 failed before the command existed, implementation commit `256af249` passed CI run 91.
-- Archived live research batches through `examples/runs/2026-08-21-0300-briefs.json`.
-- The 03:00 batch adds: Reuters Niu Lai cultural phenomenon → rough-but-finished versus polished-tool-theater metaphor; Slack Code launch → coding-agent-room versus whole-project-workflow metaphor; Reuters robot “ChatGPT moment” → specialist-capability versus orchestration metaphor.
+- Added asynchronous multi-collector fan-in via `collect_and_build_batch(...)`. RED contract commit `3feea644` failed CI run 95 as expected; implementation commit `8452c291` passed CI run 97.
+- Extended `hottop batch` so an input JSON file is optional and repeatable live `--source TYPE:KEY` options can be fanned in directly. RED CLI contract commit `42b85d7e` failed CI run 99; implementation commit `05967f11` passed CI run 101.
+- Archived live research batches through `examples/runs/2026-08-21-0400-briefs.json`.
+- The 04:00 batch adds: AP release-day `Hot Spot` signal → monolithic-AI-throne versus coordinated-workflow metaphor; Reuters World Robot Conference → many specialist exhibitors versus orchestration metaphor; Reuters Niu Lai → first-draft momentum versus perfect-roadmap-before-shipping metaphor.
 
 ## In progress
 
 - Expanding source diversity and evidence enrichment.
-- Direct multi-collector fan-in for `hottop batch`.
 - Turning source-quality defaults into explicit source presets so high-quality direct publishers can override aggregator defaults without hand-editing candidates.
 - Connecting approved `RenderRequest` JSON to future image-generation providers without coupling the core package to any single vendor.
+- Designing optional enrichment fallback ordering: Crawl4AI first, Firecrawl second, plain HTTP/RSS when sufficient.
 
 ## Next actions
 
 1. Confirm CI on the newest archive/status head; repair immediately if red.
-2. Extend `hottop batch` so it can fan-in multiple configured collectors directly instead of requiring a prebuilt candidate JSON file.
-3. Add source presets for film/entertainment, AI/tech and Chinese internet/culture, including per-source quality values.
-4. Add optional enrichment fallback ordering: Crawl4AI first for self-hosted browser/deep-page extraction, Firecrawl second when configured, plain HTTP/RSS when sufficient.
+2. Add source presets for film/entertainment, AI/tech and Chinese internet/culture, including per-source quality values and a small resolver API that collectors can consume.
+3. Add optional enrichment fallback ordering: Crawl4AI first for self-hosted browser/deep-page extraction, Firecrawl second when configured, plain HTTP/RSS when sufficient.
+4. Add a batch config file contract so repeatable collector specs can be stored as YAML rather than only CLI flags.
 5. Continue live research batches, prioritizing highly visual conflicts and culturally recognizable roles over generic news summaries.
 6. Once remaining Foundation v0.1 contracts are in place and CI is green, mark PR #1 ready, inspect final diff/reviews, and merge.
 
 ## Latest live creative signals
 
-- **Niu Lai viral animation phenomenon (Reuters 2026-08-20):** useful for rough-but-finished versus polished-production-theater framing. Never use the film's calf/mother/leopard characters, title treatment, poster, frames or identifiable low-poly character design. Claim mode: satire/workflow metaphor.
+- **Hot Spot release-day AI-ruler premise (AP release guide; release 2026-08-21):** useful for monolithic do-everything AI versus coordinated specialist workflow framing. Never reproduce actor likenesses, film sets, costumes, posters, title treatment or frames. Claim mode: satire.
+- **World Robot Conference exhibitor density (Reuters 2026-08-20):** useful for `many specialists, who orchestrates them?` framing. Never copy identifiable robot hardware, booth branding or imply InkClawAgent controls physical robots. Claim mode: workflow metaphor.
+- **Niu Lai viral animation phenomenon (Reuters 2026-08-20):** useful for rough-but-finished versus polished-production-theater or first-draft-versus-perfect-roadmap framing. Never use the film's calf/mother/leopard characters, title treatment, poster, frames or identifiable low-poly character design. Claim mode: satire/workflow metaphor.
 - **Slack Code / coding agents in project channels (The Verge + Slack docs 2026-08-20):** useful for coding-specialists-versus-whole-project-team framing. Never copy Slack UI/logos or imply InkClawAgent integrates with Slack unless separately evidenced. Claim mode: workflow satire.
 - **Robotics “ChatGPT moment” (Reuters 2026-08-20):** useful for many capable specialists needing an orchestration layer. Never copy Unitree hardware or imply InkClawAgent controls physical robots. Claim mode: workflow metaphor.
 - **AI sovereignty / competing AI camps (Reuters 2026-08-19):** useful for `tool camps argue; user wants delivery` framing. Because the source context is geopolitical, generated art must avoid flags, politicians and endorsement framing; keep the punchline about workflow fragmentation only. Claim mode: satire.
 - **The Odyssey summer visibility (AP 2026-08-16):** strong cave/giant/escape structure. Use only public-domain Homeric archetypes; never reproduce current actors, costumes, sets, posters or film frames. Claim mode: satire.
-- **Robotics investment excitement (Reuters 2026-08-19):** useful for specialist-tools-versus-orchestration. Use original generic robots; never copy identifiable hardware and never imply InkClawAgent controls physical robots. Claim mode: workflow satire.
 - **China robot traffic officers (Reuters 2026-08-20):** strong specialist-automation-versus-system-orchestration visual. Use completely original generic robots; never copy SUPCON hardware, police insignia or surveillance UI, and never imply InkClawAgent controls physical robots. Claim mode: workflow satire.
-- **Gen-Z AI matchmaking / no-swiping trend (TechCrunch 2026-08-06):** useful for `stop endlessly choosing tools; assemble the workflow` framing. Never copy Tinder/Bumble/Ditto/Hinge UI or imply InkClawAgent is a dating product.
 - **AI-agent safety/control:** useful for raw autonomy versus controlled orchestration. Use only high-level safety context; never include exploit steps, hacking commands or operational cybersecurity detail.
 - **Gemini 3.7 Flash agent-workflow race:** useful for `single fast leg vs full relay` category framing. Never claim InkClawAgent is faster or benchmark-superior; the comparison is workflow scope/orchestration only.
 
