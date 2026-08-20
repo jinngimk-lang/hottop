@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 01:00 +08:00
+Last updated: 2026-08-21 02:00 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -22,9 +22,9 @@ Milestone: Foundation v0.1
 - Implemented `TrendCandidate.source_quality`, `Evidence.source_quality`, `Evidence.published_at`, source-quality scoring and evidence-freshness scoring.
 - Collectors now propagate deterministic source-quality defaults and article timestamps into both `TrendCandidate` and `Evidence`: DailyHot defaults to 0.62, NewsNow to 0.68, RSS to configurable 0.75.
 - `hottop doctor` now reports nonfatal readiness/configuration for Agent-Reach, Crawl4AI and Firecrawl without requiring optional services or credentials in CI.
-- Confirmed CI green on implementation commit `312ed03e`: workflow run 71 succeeded after collector metadata and doctor changes.
-- Archived live research batches through `examples/runs/2026-08-21-0100-briefs.json`.
-- The 01:00 live batch adds three directions: Reuters Aug. 20 robot traffic officers → specialist-vs-orchestration metaphor; AP mid-August Odyssey visibility → public-domain cave-breakout metaphor; TechCrunch Gen-Z AI matchmaking → tool-swiping-vs-direct-team-assembly metaphor.
+- Confirmed CI green on current pre-batch head `7d95e45d`: workflow run 75 succeeded.
+- Archived live research batches through `examples/runs/2026-08-21-0200-briefs.json`.
+- The 02:00 live batch adds: Reuters AI-sovereignty/camp debate → tool-camps-vs-delivery metaphor; AP Odyssey box-office visibility → public-domain cave-breakout metaphor; Reuters robotics investment excitement → specialist-tools-vs-orchestration metaphor.
 
 ## In progress
 
@@ -34,19 +34,21 @@ Milestone: Foundation v0.1
 
 ## Next actions
 
-1. Confirm CI on the latest archive/status head if a workflow is attached; repair immediately if red.
+1. Confirm CI on the new archive/status head; repair immediately if red.
 2. Add a renderer handoff schema so approved `MemeBrief` objects can be serialized for image-generation providers without coupling core logic to one vendor.
 3. Extend `hottop batch` so it can fan-in multiple configured collectors directly instead of requiring a prebuilt candidate JSON file.
 4. Add source presets for film/entertainment, AI/tech and Chinese internet/culture, including per-source quality values.
 5. Add optional enrichment fallback ordering: Crawl4AI first for self-hosted browser/deep-page extraction, Firecrawl second when configured, plain HTTP/RSS when sufficient.
-6. Continue hourly live research batches, prioritizing highly visual conflicts and culturally recognizable roles over generic news summaries.
+6. Continue live research batches, prioritizing highly visual conflicts and culturally recognizable roles over generic news summaries.
 7. Once remaining Foundation v0.1 contracts are in place and CI is green, mark PR #1 ready, inspect final diff/reviews, and merge.
 
 ## Latest live creative signals
 
-- **China robot traffic officers (fresh 2026-08-20, Reuters):** strong specialist-automation-versus-system-orchestration visual. Use completely original generic robots; never copy SUPCON hardware, police insignia or surveillance UI, and never imply InkClawAgent controls physical robots. Claim mode: workflow satire.
-- **The Odyssey summer visibility (fresh through 2026-08-16/20, AP):** strong cave/giant/escape structure. Use only public-domain Homeric archetypes; never reproduce current actors, costumes, sets, posters or film frames. Claim mode: satire.
-- **Gen-Z AI matchmaking / no-swiping trend (2026-08-06, TechCrunch):** useful for `stop endlessly choosing tools; assemble the workflow` framing. Never copy Tinder/Bumble/Ditto/Hinge UI or imply InkClawAgent is a dating product.
+- **AI sovereignty / competing AI camps (Reuters 2026-08-19):** useful for `tool camps argue; user wants delivery` framing. Because the source context is geopolitical, generated art must avoid flags, politicians and endorsement framing; keep the punchline about workflow fragmentation only. Claim mode: satire.
+- **The Odyssey summer visibility (AP 2026-08-16):** strong cave/giant/escape structure. Use only public-domain Homeric archetypes; never reproduce current actors, costumes, sets, posters or film frames. Claim mode: satire.
+- **Robotics investment excitement (Reuters 2026-08-19):** useful for specialist-tools-versus-orchestration. Use original generic robots; never copy identifiable hardware and never imply InkClawAgent controls physical robots. Claim mode: workflow satire.
+- **China robot traffic officers (Reuters 2026-08-20):** strong specialist-automation-versus-system-orchestration visual. Use completely original generic robots; never copy SUPCON hardware, police insignia or surveillance UI, and never imply InkClawAgent controls physical robots. Claim mode: workflow satire.
+- **Gen-Z AI matchmaking / no-swiping trend (TechCrunch 2026-08-06):** useful for `stop endlessly choosing tools; assemble the workflow` framing. Never copy Tinder/Bumble/Ditto/Hinge UI or imply InkClawAgent is a dating product.
 - **AI-agent safety/control:** useful for raw autonomy versus controlled orchestration. Use only high-level safety context; never include exploit steps, hacking commands or operational cybersecurity detail.
 - **Gemini 3.7 Flash agent-workflow race:** useful for `single fast leg vs full relay` category framing. Never claim InkClawAgent is faster or benchmark-superior; the comparison is workflow scope/orchestration only.
 - **Niu Lai viral animation phenomenon:** useful for production-theater-versus-result-first execution; never copy its cow characters, title design, poster or frames. Claim mode: satire/workflow metaphor.
