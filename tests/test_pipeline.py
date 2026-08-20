@@ -1,7 +1,9 @@
 from datetime import UTC, datetime
 
+import pytest
+
 from hottop.models import ProductProfile, TrendCandidate
-from hottop.pipeline import build_batch
+from hottop.pipeline import build_batch, collect_and_build_batch
 
 
 def _candidate(candidate_id: str, title: str, source: str, rank: int) -> TrendCandidate:
@@ -52,3 +54,42 @@ def test_build_batch_top_limits_output() -> None:
     assert result.input_count == 2
     assert result.unique_count == 2
     assert len(result.briefs) == 1
+
+
+class _FakeCollector:
+    def __init__(self, items: list[TrendCandidate]) -> None:
+        self.items = items
+        self.limits: list[int] = []
+
+    async def collect(self, limit: int = 30) -> list[TrendCandidate]:
+        self.limits.append(limit)
+        return self.items[:limit]
+
+
+@pytest.mark.asyncio
+async def test_collect_and_build_batch_fans_in_multiple_collectors() -> None:
+    product = ProductProfile(name="InkClawAgent")
+    first = _FakeCollector([_candidate("a", "Shared topic", "source-a", 1)])
+    second = _FakeCollector(
+        [
+            _candidate("b", "Shared topic", "source-b", 2),
+            _candidate("c", "Unique topic", "source-b", 3),
+        ]
+    )
+
+    result = await collect_and_build_batch(
+        [first, second],
+        product,
+        comparison_target="work巴迪",
+        limit_per_source=2,
+        top=2,
+        now=datetime(2026, 8, 20, 12, 0, tzinfo=UTC),
+    )
+
+    assert first.limits == [2]
+    assert second.limits == [2]
+    assert result.input_count == 3
+    assert result.unique_count == 2
+    assert len(result.briefs) == 2
+    assert result.briefs[0].topic.metrics["cross_source_count"] == 2.0
+    assert result.briefs[0].role_map.comparison_target == "work巴迪"
