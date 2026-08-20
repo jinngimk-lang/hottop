@@ -7,6 +7,7 @@ from xml.etree import ElementTree as ET
 import httpx
 
 from ..models import Evidence, TrendCandidate
+from ..source_presets import resolve_source_quality
 from .base import SourceError
 
 RSS_SOURCE_QUALITY = 0.75
@@ -58,13 +59,14 @@ class RSSCollector:
         published_at: datetime | None,
         summary: str | None,
     ) -> TrendCandidate:
+        quality = resolve_source_quality(url, fallback=self.source_quality)
         return TrendCandidate(
             id=f"{self.source_name}:{raw_id}",
             title=title,
             url=url,
             source=self.source_name,
             source_rank=index,
-            source_quality=self.source_quality,
+            source_quality=quality,
             published_at=published_at,
             summary=summary,
             metrics={"source_rank_score": 1 / index},
@@ -73,7 +75,7 @@ class RSSCollector:
                     url=url,
                     source=self.source_name,
                     published_at=published_at,
-                    source_quality=self.source_quality,
+                    source_quality=quality,
                 )
             ],
         )
