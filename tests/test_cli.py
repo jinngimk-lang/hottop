@@ -3,6 +3,7 @@ import json
 from typer.testing import CliRunner
 
 from hottop.cli import app
+from hottop.models import TrendCandidate
 
 runner = CliRunner()
 
@@ -134,3 +135,45 @@ def test_render_command_exports_provider_neutral_handoff(tmp_path):
     assert len(payload["panels"]) == 4
     assert payload["product_name"] == "InkClawAgent"
     assert payload["provider"] is None
+
+
+def test_batch_command_can_fan_in_repeatable_source_specs(monkeypatch, tmp_path):
+    product_path = tmp_path / "product.yml"
+    product_path.write_text("name: InkClawAgent\n", encoding="utf-8")
+    calls: list[tuple[str, str, int]] = []
+
+    async def fake_discover(source: str, key: str, limit: int) -> list[TrendCandidate]:
+        calls.append((source, key, limit))
+        return [
+            TrendCandidate(
+                id=f"{source}:{key}",
+                title=f"{key} visual conflict",
+                url=f"https://example.com/{source}/{key}",
+                source=source,
+            )
+        ]
+
+    monkeypatch.setattr("hottop.cli._discover", fake_discover)
+
+    result = runner.invoke(
+        app,
+        [
+            "batch",
+            "--product",
+            str(product_path),
+            "--source",
+            "dailyhot:zhihu",
+            "--source",
+            "newsnow:tech",
+            "--limit-per-source",
+            "7",
+            "--top",
+            "2",
+        ],
+    )
+
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    assert calls == [("dailyhot", "zhihu", 7), ("newsnow", "tech", 7)]
+    assert payload["input_count"] == 2
+    assert len(payload["briefs"]) == 2
