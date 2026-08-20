@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 05:55 +08:00
+Last updated: 2026-08-21 06:55 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -23,33 +23,36 @@ Milestone: Foundation v0.1
 - `hottop doctor` reports nonfatal readiness for Agent-Reach, Crawl4AI and Firecrawl.
 - Added provider-neutral renderer handoff (`RenderRequest` / `RenderPanel`) and `hottop render` CLI.
 - Added asynchronous multi-collector fan-in via `collect_and_build_batch(...)` and repeatable live `--source TYPE:KEY` options.
-- CI run 109 on head `5cd6fb35` completed successfully before the 05:55 archive update.
-- Archived live research batches through `examples/runs/2026-08-21-0555-briefs.json`.
-- The 05:55 batch adds: Hot Spot release-day premise → crowned monolithic AI versus coordinated workflow; Brazil multi-provider AI infrastructure → tool-camp selection versus task orchestration; AI-native filmmaking → many impressive generation tools versus a coherent production pipeline.
+- Added named source presets (`film-entertainment`, `ai-tech`, `zh-internet-culture`) and a resolver that upgrades direct-publisher evidence quality while preserving collector fallback scores for unknown domains.
+- DailyHotApi, NewsNow and RSS collectors now consume the source-quality resolver from destination URLs.
+- RED source-preset contract failed in CI run 115 as intended; implementation/collector integration passed CI run 123 on commit `da3342a1`.
+- Archived live research batches through `examples/runs/2026-08-21-0655-briefs.json`.
+- The 06:55 batch adds: robot backflips-versus-useful-work → demo versus delivery; rocket-launch tourism → ignition versus mission control; `2026 is the new 2016` nostalgia → swapping twelve tabs for twelve AI tools versus changing the workflow.
 
 ## In progress
 
 - Expanding source diversity and evidence enrichment.
-- Turning source-quality defaults into explicit source presets so high-quality direct publishers can override aggregator defaults without hand-editing candidates.
 - Connecting approved `RenderRequest` JSON to future image-generation providers without coupling the core package to any single vendor.
 - Designing optional enrichment fallback ordering: Crawl4AI first, Firecrawl second, plain HTTP/RSS when sufficient.
+- Converting repeatable live collector sets into stored YAML batch configurations.
 
 ## Next actions
 
 1. Confirm CI on the newest archive/status head; repair immediately if red.
-2. Add source presets for film/entertainment, AI/tech and Chinese internet/culture, including per-source quality values and a small resolver API that collectors can consume.
-3. Add optional enrichment fallback ordering: Crawl4AI first for self-hosted browser/deep-page extraction, Firecrawl second when configured, plain HTTP/RSS when sufficient.
-4. Add a batch config file contract so repeatable collector specs can be stored as YAML rather than only CLI flags.
+2. Add optional enrichment fallback ordering: Crawl4AI first for self-hosted browser/deep-page extraction, Firecrawl second when configured, plain HTTP/RSS when sufficient.
+3. Add a batch config file contract so repeatable collector specs can be stored as YAML rather than only CLI flags.
+4. Add preset-aware collector configuration so a batch can explicitly choose or override editorial-domain presets without code changes.
 5. Continue live research batches, prioritizing highly visual conflicts and culturally recognizable roles over generic news summaries.
 6. Once remaining Foundation v0.1 contracts are in place and CI is green, mark PR #1 ready, inspect final diff/reviews, and merge.
 
 ## Latest live creative signals
 
+- **Humanoid robot commercial test (Reuters 2026-08-18/20):** strong `backflips vs useful work` metaphor. Use fictional robots only; never copy Unitree/UBTECH/etc. product designs. Claim mode: workflow metaphor.
+- **China rocket-launch tourism (Reuters 2026-08-19):** strong `ignition vs mission-control delivery` structure. Use fictional unbranded spacecraft and generic control-room imagery; no real launch hardware/site replica. Claim mode: satire.
+- **`2026 is the new 2016` nostalgia format (SocialPilot August 14-25 roundup):** useful for `twelve browser tabs became twelve AI tools` then-versus-now satire. Treat this as a lower-confidence format-monitoring signal, not a factual market claim; do not copy TikTok UI, creator imagery or copyrighted audio/lyrics.
 - **Hot Spot release day (2026-08-21):** broad sentient-AI-ruler premise is useful for monolithic万能AI versus coordinated specialist workflow. Never reproduce actor likenesses, film sets, costumes, posters, title treatment or frames. Claim mode: satire.
 - **Brazil AI supercomputer investment (Reuters 2026-08-20):** useful for `stop choosing camps; orchestrate capabilities by task` framing. Avoid flags, politicians, vendor logos and geopolitical caricature. Claim mode: workflow satire, not a statement about the reported vendors.
-- **AI-native filmmaking debate (Guardian 2026-08-16):** useful for `tools are the crew; workflow is the director` framing. Never use real actors, copied sets, studio marks or synthetic celebrity likenesses. Claim mode: workflow metaphor.
 - **Niu Lai viral animation phenomenon (FT 2026-08-20):** useful for shipped-first-draft versus planning-theater framing. Never use the film's characters, title treatment, poster, frames or identifiable character design. Claim mode: satire/workflow metaphor.
-- **Chinamaxxing / China-Cool social trend (China Daily 2026-08-19):** useful for `AI-tool-maxxing` satire: collecting fashionable single-purpose assistants versus orchestrating a coherent workflow. Avoid flags, politics, copied creator imagery and real social-platform UI. Claim mode: satire.
 - **The Odyssey summer visibility (AP 2026-08-16):** strong cave/giant/escape structure. Use only public-domain Homeric archetypes; never reproduce current actors, costumes, sets, posters or film frames. Claim mode: satire.
 - **AI-agent safety/control:** useful for raw autonomy versus controlled orchestration. Use only high-level safety context; never include exploit steps, hacking commands or operational cybersecurity detail.
 - **Gemini 3.7 Flash agent-workflow race:** useful for `single fast leg vs full relay` category framing. Never claim InkClawAgent is faster or benchmark-superior; the comparison is workflow scope/orchestration only.
