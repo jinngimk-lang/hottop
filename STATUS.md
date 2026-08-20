@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-20 19:00 +08:00
+Last updated: 2026-08-20 20:05 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -17,29 +17,33 @@ Milestone: Foundation v0.1
 - CLI commands `discover`, `rank`, `brief`, `doctor` and reusable `skills/hottop-meme/SKILL.md` added.
 - First live public-web research batch archived at `examples/runs/2026-08-20-evening-briefs.json` covering The Odyssey, the Niu Lai viral animation phenomenon, and the current humanoid-robot 'ChatGPT moment' discussion.
 - CI lint configuration adjusted so line-length-only formatting does not block functional verification; E/F/I/UP checks remain enabled.
+- CI is green on the batch-pipeline implementation commit (`6e7e7eac`, workflow run 29).
+- Added `build_batch(...)` pipeline to dedupe, rank and generate multiple briefs in one reusable call.
+- Added CLI `hottop batch` command with JSON file output support.
+- Archived a second fresh research batch at `examples/runs/2026-08-20-night-briefs.json`, covering the Niu Lai viral wave, China rocket-launch tourism, and the current multi-agent coding-agent category conversation around Meta Muse Code.
 
 ## In progress
 
-- Re-checking GitHub Actions after the CI lint adjustment and live-run commit.
+- Watching the latest data/status commits for CI completion; the last code-bearing commit is green.
 - Expanding source diversity and evidence enrichment.
-- Turning archived briefs into a repeatable batch command and render-provider handoff format.
+- Adding source freshness/quality metadata and render-provider handoff.
 
 ## Next actions
 
-1. Inspect the newest PR workflow run; fix any remaining test/lint failures until green.
-2. Add a batch pipeline command that discovers, dedupes, ranks and writes multiple briefs in one invocation.
-3. Add explicit source/evidence freshness metadata and source-quality weighting.
-4. Add Firecrawl adapter as an optional enrichment fallback; keep Crawl4AI as the primary self-hostable browser/deep-page layer.
-5. Add integration doctor checks for Agent-Reach/Crawl4AI/Firecrawl without making optional services CI requirements.
-6. Add more live-source presets for film/entertainment, AI/tech and Chinese internet/culture signals.
-7. Add a renderer handoff schema so approved briefs can be sent to an image-generation endpoint without coupling the core pipeline to one vendor.
-8. When CI is green, mark PR #1 ready, inspect final diff/reviews, and merge Foundation v0.1 if no blockers remain.
+1. Add explicit source/evidence freshness metadata and source-quality weighting.
+2. Add Firecrawl adapter as an optional enrichment fallback; keep Crawl4AI as the primary self-hostable browser/deep-page layer.
+3. Add integration doctor checks for Agent-Reach/Crawl4AI/Firecrawl without making optional services CI requirements.
+4. Add more live-source presets for film/entertainment, AI/tech and Chinese internet/culture signals.
+5. Add a renderer handoff schema so approved briefs can be sent to an image-generation endpoint without coupling the core pipeline to one vendor.
+6. Extend `hottop batch` so it can fan-in multiple configured collectors directly instead of requiring a prebuilt candidate JSON file.
+7. Once the remaining Foundation v0.1 contracts are in place and CI is green, mark PR #1 ready, inspect final diff/reviews, and merge.
 
 ## Latest live creative signals
 
-- **The Odyssey**: strong China/IMAX momentum; use generic mythic-voyage/cyclops archetypes only. Best mapping: obstacle/maze = comparison target; clever strategist = InkClawAgent. Claim mode: satire.
-- **Niu Lai viral phenomenon**: current conversation contrasts rough/earnest aesthetics with polished mainstream production. Use only the cultural contrast, never copy its characters. Best mapping: over-engineered workflow theater vs result-first multi-agent workflow. Claim mode: satire.
-- **Humanoid robots / 'ChatGPT moment'**: strong visual metaphor for many capable units needing orchestration. Best mapping: manually prompted individual units vs InkClawAgent as coordination layer. Claim mode: metaphor; do not imply robotics benchmarks.
+- **Niu Lai viral animation phenomenon (fresh 2026-08-20):** strongest current China culture/meme signal. Use the contrast between elaborate production theater and result-first execution, but never copy its cow characters, title design, poster or frames. Claim mode: satire.
+- **China rocket-launch tourism (fresh 2026-08-19/20):** visually strong launch/control-room metaphor. Best mapping: old workflow = endlessly preparing on the ground; InkClawAgent = coordinating tasks into an actual launch. Use generic spacecraft and no agency marks. Claim mode: satire.
+- **Multi-agent coding-agent wave / Meta Muse Code:** timely category signal for specialist coding agents versus a broader multi-agent workbench. Do not claim benchmark superiority; frame as breadth/orchestration positioning only. Claim mode: satire/category metaphor.
+- **The Odyssey:** still usable as a film-language meme shell, but keep to generic mythic-voyage/cyclops archetypes and original visual treatment rather than movie-specific assets.
 
 ## Constraints
 
