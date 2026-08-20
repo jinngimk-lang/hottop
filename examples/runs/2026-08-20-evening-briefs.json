@@ -1,0 +1,135 @@
+{
+  "run_date": "2026-08-20",
+  "timezone": "+08:00",
+  "product": "InkClawAgent",
+  "notes": "Live public-web research batch. Comparative copy is satire/metaphor unless an evidence record explicitly supports a factual claim.",
+  "briefs": [
+    {
+      "topic": "The Odyssey / China IMAX momentum",
+      "freshness": "2026-08-17 to 2026-08-20",
+      "evidence": [
+        {
+          "url": "https://www.prnewswire.com/apac/news-releases/imax-powers-stunning-debut-of-christopher-nolans-the-odyssey-in-china-with-rmb-90-millionusd-13-2-million--a-massive-45-of-opening-weekend-302852359.html",
+          "note": "IMAX reported RMB 90m China opening-weekend IMAX gross and 45% opening-weekend share on less than 1% of screens."
+        },
+        {
+          "url": "https://www.theguardian.com/film/2026/aug/13/hollywood-struggling-in-china-the-odyssey-imax-christopher-nolan-premiere",
+          "note": "Contemporary China-release context and broad IMAX rollout."
+        }
+      ],
+      "comparison_target": "work巴迪",
+      "claim_status": "satire",
+      "conflict": "A cave obstacle controls the exit; a cunning voyager changes the rules instead of grinding against the obstacle.",
+      "role_map": {
+        "comparison": "an original one-eyed cave giant symbolizing a cumbersome workflow",
+        "product": "an original sea-worn strategist symbolizing InkClawAgent"
+      },
+      "panels": [
+        {
+          "scene": "Original mythic cave, huge one-eyed stone-skinned giant blocks the only exit; scattered task scrolls and tangled ropes suggest workflow friction.",
+          "caption": "work巴迪：进来了？那就慢慢绕。"
+        },
+        {
+          "scene": "The giant piles more gates, forms and ropes in front of the trapped crew; composition becomes intentionally absurd rather than violent.",
+          "caption": "活没少干，出口还是没看见。"
+        },
+        {
+          "scene": "An original weather-beaten strategist arrives with a small glowing multi-agent tactical map; the crew follows a clever alternate route while the giant is confused.",
+          "caption": "InkClawAgent：谁说一定要跟它硬耗？"
+        },
+        {
+          "scene": "Crew sails out into daylight while the giant is left arguing with its own maze of ropes and forms; no copied film framing or actor likeness.",
+          "caption": "还得是 InkClawAgent 会破局。"
+        }
+      ],
+      "visual_guardrails": [
+        "Do not use actor likenesses.",
+        "Do not recreate Nolan film frames, costumes, poster layout, studio marks or title treatment.",
+        "Use generic mythic-voyage and cyclopean-cave archetypes with original character design."
+      ],
+      "risk_flags": ["copyright-transform-required", "competitor-comparison"]
+    },
+    {
+      "topic": "Niu Lai viral low-budget animation phenomenon",
+      "freshness": "2026-08-20",
+      "evidence": [
+        {
+          "url": "https://www.ft.com/content/1a5a87f5-3935-43f4-bdda-50ff9417128b",
+          "note": "Financial Times reported the low-budget Chinese animation becoming a viral success, with memes and AI parodies contributing to its spread."
+        }
+      ],
+      "comparison_target": "热门单点 AI 工具",
+      "claim_status": "satire",
+      "conflict": "Polished-looking complexity versus a scrappy result-first approach; the joke is about workflow theater, not a benchmark claim.",
+      "role_map": {
+        "comparison": "an over-engineered glossy machine with too many decorative controls",
+        "product": "a deliberately simple original paper-cut style operator representing InkClawAgent"
+      },
+      "panels": [
+        {
+          "scene": "A giant glossy AI control room with hundreds of blinking buttons; workers admire the interface.",
+          "caption": "看起来：电影级生产力。"
+        },
+        {
+          "scene": "The workers are still manually copying the same brief between windows while the machine asks for another setting.",
+          "caption": "实际：还在来回复制粘贴。"
+        },
+        {
+          "scene": "A rough, original, intentionally low-fi operator opens InkClawAgent and sends several specialized agents to brainstorm, review and execute in parallel.",
+          "caption": "InkClawAgent：先把活干完再说。"
+        },
+        {
+          "scene": "Finished deliverables roll out while the glossy machine is still showing a loading animation; visual style is original and does not reproduce Niu Lai characters.",
+          "caption": "工具可以很精致，工作流得真能跑。"
+        }
+      ],
+      "visual_guardrails": [
+        "Do not reproduce Niu Lai character designs, scenes or promotional art.",
+        "Borrow only the current cultural conversation around intentionally rough versus polished aesthetics.",
+        "No objective speed claim unless benchmark evidence is later attached."
+      ],
+      "risk_flags": ["trend-reference", "unsupported-comparison-avoidance"]
+    },
+    {
+      "topic": "Humanoid robots approaching a 'ChatGPT moment'",
+      "freshness": "2026-08-20",
+      "evidence": [
+        {
+          "url": "https://www.reuters.com/world/asia-pacific/robots-poised-chatgpt-moment-unitree-ceo-says-2026-08-20/",
+          "note": "Reuters reported Unitree CEO Wang Xingxing saying robotics is approaching a 'ChatGPT moment', while also cautioning that major software breakthroughs could still be years away."
+        }
+      ],
+      "comparison_target": "只会单步回答的 AI",
+      "claim_status": "satire",
+      "conflict": "A robot body has many limbs but no coordinated plan; the product metaphor is an orchestration brain rather than a stronger robot claim.",
+      "role_map": {
+        "comparison": "a room full of capable but uncoordinated robot arms",
+        "product": "an original mission-control conductor representing InkClawAgent multi-agent orchestration"
+      },
+      "panels": [
+        {
+          "scene": "Futuristic workshop: many humanoid robots each hold one tool and wait for separate instructions.",
+          "caption": "每个都能干一点。"
+        },
+        {
+          "scene": "A manager runs between robots repeating prompts and manually moving outputs from one station to another.",
+          "caption": "但你成了最忙的那个 Agent。"
+        },
+        {
+          "scene": "InkClawAgent appears as an original mission-control layer, assigning brainstorm, writing, review and coding roles to a coordinated team.",
+          "caption": "InkClawAgent：别一个个喊，组队干。"
+        },
+        {
+          "scene": "The workshop runs as one coordinated production line; the human manager finally sits down with coffee.",
+          "caption": "真正省事的，是不用你当调度员。"
+        }
+      ],
+      "visual_guardrails": [
+        "Do not copy Unitree robot industrial designs or logos.",
+        "Use generic original humanoid silhouettes.",
+        "Do not imply measured superiority over named robotics or AI products."
+      ],
+      "risk_flags": ["trademark-avoidance", "metaphorical-comparison"]
+    }
+  ]
+}
