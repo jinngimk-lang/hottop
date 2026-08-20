@@ -15,6 +15,7 @@ from .collectors.rss import RSSCollector
 from .doctor import local_doctor
 from .models import ProductProfile, TrendCandidate
 from .pipeline import build_batch
+from .rendering import build_render_request
 from .scoring import score_candidate
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
@@ -92,6 +93,29 @@ def brief(
     profile = _load_product(product)
     result = build_brief(candidates[index], profile, comparison_target=compare)
     typer.echo(_json_dump(result))
+
+
+@app.command()
+def render(
+    input_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    product: Path = typer.Option(..., "--product", exists=True, dir_okay=False),
+    compare: str | None = typer.Option(None, "--compare"),
+    index: int = typer.Option(0, "--index", min=0),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Build a provider-neutral image-generation handoff from one trend candidate."""
+    candidates = _load_candidates(input_path)
+    if index >= len(candidates):
+        raise typer.BadParameter(f"index {index} is outside {len(candidates)} candidates")
+    profile = _load_product(product)
+    brief_result = build_brief(candidates[index], profile, comparison_target=compare)
+    render_request = build_render_request(brief_result)
+    text = _json_dump(render_request)
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(text + "\n", encoding="utf-8")
+    else:
+        typer.echo(text)
 
 
 @app.command()
