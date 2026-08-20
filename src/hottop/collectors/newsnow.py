@@ -3,6 +3,7 @@ from __future__ import annotations
 import httpx
 
 from ..models import Evidence, TrendCandidate
+from ..source_presets import resolve_source_quality
 from .base import SourceError, parse_timestamp
 
 NEWSNOW_SOURCE_QUALITY = 0.68
@@ -45,6 +46,7 @@ class NewsNowCollector:
                 continue
             extra = item.get("extra") or {}
             published_at = parse_timestamp(item.get("pubDate") or extra.get("date"))
+            quality = resolve_source_quality(url, fallback=self.source_quality)
             results.append(
                 TrendCandidate(
                     id=f"newsnow:{self.source_id}:{item.get('id', index)}",
@@ -52,7 +54,7 @@ class NewsNowCollector:
                     url=url,
                     source=source,
                     source_rank=index,
-                    source_quality=self.source_quality,
+                    source_quality=quality,
                     published_at=published_at,
                     summary=extra.get("hover") if isinstance(extra, dict) else None,
                     metrics={"source_rank_score": 1 / index},
@@ -61,7 +63,7 @@ class NewsNowCollector:
                             url=url,
                             source=source,
                             published_at=published_at,
-                            source_quality=self.source_quality,
+                            source_quality=quality,
                         )
                     ],
                 )
