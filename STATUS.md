@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 05:00 +08:00
+Last updated: 2026-08-21 05:55 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -23,9 +23,9 @@ Milestone: Foundation v0.1
 - `hottop doctor` reports nonfatal readiness for Agent-Reach, Crawl4AI and Firecrawl.
 - Added provider-neutral renderer handoff (`RenderRequest` / `RenderPanel`) and `hottop render` CLI.
 - Added asynchronous multi-collector fan-in via `collect_and_build_batch(...)` and repeatable live `--source TYPE:KEY` options.
-- CI run 105 on head `dddd0ae5` completed successfully before the 05:00 archive update.
-- Archived live research batches through `examples/runs/2026-08-21-0500-briefs.json`.
-- The 05:00 batch adds: Niu Lai → shipped-first-draft versus planning-theater; Chinamaxxing/China-Cool → AI-tool-collecting versus coherent workflow; China technology-tour sequence → impressive specialist demos versus end-to-end orchestration.
+- CI run 109 on head `5cd6fb35` completed successfully before the 05:55 archive update.
+- Archived live research batches through `examples/runs/2026-08-21-0555-briefs.json`.
+- The 05:55 batch adds: Hot Spot release-day premise → crowned monolithic AI versus coordinated workflow; Brazil multi-provider AI infrastructure → tool-camp selection versus task orchestration; AI-native filmmaking → many impressive generation tools versus a coherent production pipeline.
 
 ## In progress
 
@@ -45,12 +45,11 @@ Milestone: Foundation v0.1
 
 ## Latest live creative signals
 
+- **Hot Spot release day (2026-08-21):** broad sentient-AI-ruler premise is useful for monolithic万能AI versus coordinated specialist workflow. Never reproduce actor likenesses, film sets, costumes, posters, title treatment or frames. Claim mode: satire.
+- **Brazil AI supercomputer investment (Reuters 2026-08-20):** useful for `stop choosing camps; orchestrate capabilities by task` framing. Avoid flags, politicians, vendor logos and geopolitical caricature. Claim mode: workflow satire, not a statement about the reported vendors.
+- **AI-native filmmaking debate (Guardian 2026-08-16):** useful for `tools are the crew; workflow is the director` framing. Never use real actors, copied sets, studio marks or synthetic celebrity likenesses. Claim mode: workflow metaphor.
 - **Niu Lai viral animation phenomenon (FT 2026-08-20):** useful for shipped-first-draft versus planning-theater framing. Never use the film's characters, title treatment, poster, frames or identifiable character design. Claim mode: satire/workflow metaphor.
 - **Chinamaxxing / China-Cool social trend (China Daily 2026-08-19):** useful for `AI-tool-maxxing` satire: collecting fashionable single-purpose assistants versus orchestrating a coherent workflow. Avoid flags, politics, copied creator imagery and real social-platform UI. Claim mode: satire.
-- **China technology tourism (2026-08-19 reporting):** robots, autonomous rides, brain-computer demos and rocket launches provide a visual sequence for specialist-demo-versus-end-to-end-journey framing. Use only original generic hardware and never imply InkClawAgent controls physical machines. Claim mode: workflow metaphor.
-- **Hot Spot release-day AI-ruler premise (AP release guide; release 2026-08-21):** useful for monolithic do-everything AI versus coordinated specialist workflow framing. Never reproduce actor likenesses, film sets, costumes, posters, title treatment or frames. Claim mode: satire.
-- **World Robot Conference exhibitor density (Reuters 2026-08-20):** useful for `many specialists, who orchestrates them?` framing. Never copy identifiable robot hardware, booth branding or imply InkClawAgent controls physical robots. Claim mode: workflow metaphor.
-- **Slack Code / coding agents in project channels (The Verge + Slack docs 2026-08-20):** useful for coding-specialists-versus-whole-project-team framing. Never copy Slack UI/logos or imply InkClawAgent integrates with Slack unless separately evidenced. Claim mode: workflow satire.
 - **The Odyssey summer visibility (AP 2026-08-16):** strong cave/giant/escape structure. Use only public-domain Homeric archetypes; never reproduce current actors, costumes, sets, posters or film frames. Claim mode: satire.
 - **AI-agent safety/control:** useful for raw autonomy versus controlled orchestration. Use only high-level safety context; never include exploit steps, hacking commands or operational cybersecurity detail.
 - **Gemini 3.7 Flash agent-workflow race:** useful for `single fast leg vs full relay` category framing. Never claim InkClawAgent is faster or benchmark-superior; the comparison is workflow scope/orchestration only.
