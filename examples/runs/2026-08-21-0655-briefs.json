@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-08-21T06:55:00+08:00",
+  "product": "InkClawAgent",
+  "claim_policy": "satire_or_workflow_metaphor_unless_supported",
+  "briefs": [
+    {
+      "topic": "Humanoid robots move from backflips to useful work",
+      "source": "https://www.reuters.com/world/asia-pacific/beyond-marathons-backflips-chinas-robots-face-commercial-test-2026-08-18/",
+      "source_note": "Reuters reported on 2026-08-18 that attention at the World Robot Conference is shifting from spectacular demonstrations toward practical productivity and commercial value. The meme borrows only this demo-versus-delivery tension.",
+      "source_quality": 0.96,
+      "conflict": "spectacular demo tricks versus useful end-to-end work",
+      "comparison_target": "只会展示单项能力的热门 AI 工具",
+      "product_role": "workflow finisher",
+      "panels": [
+        {"caption": "热门 AI：看我再来一个后空翻", "visual": "original generic exhibition robot performing a flashy harmless trick on a small stage, no identifiable real robot design"},
+        {"caption": "老板：活呢？", "visual": "same fictional expo, a desk still piled with research, copy, review and coding tasks"},
+        {"caption": "InkClawAgent：表演结束，开始串流程", "visual": "abstract orchestration board routes SEARCH, WRITE, REVIEW and CODE lanes toward one deliverable"},
+        {"caption": "会一招很酷，能交付才有用。", "visual": "completed project package rolls off the workflow while the demo stage goes quiet"}
+      ],
+      "punchlines": ["会一招很酷，能交付才有用。", "Demo 能上热搜，交付才能下班。"],
+      "negative_prompt": "Unitree likeness, UBTECH likeness, real robot product shapes, company logos, copied conference booth, exact Reuters imagery",
+      "risk_flags": ["trademark", "product_design", "unsupported_superiority"],
+      "factual_claim_status": "workflow_metaphor"
+    },
+    {
+      "topic": "Rocket launches become mass tourism spectacles in China",
+      "source": "https://www.reuters.com/science/china-rocket-launches-fuel-tourism-space-age-dreams-2026-08-19/",
+      "source_note": "Reuters reported on 2026-08-19 that rocket launches around Wenchang are increasingly public tourism spectacles. The meme uses the universal launch-versus-mission-control structure, not real launch hardware or branding.",
+      "source_quality": 0.96,
+      "conflict": "a spectacular launch moment versus the less glamorous mission-control work that gets a mission to its destination",
+      "comparison_target": "只负责点火的单点 AI",
+      "product_role": "mission-control workflow orchestrator",
+      "panels": [
+        {"caption": "所有人：3、2、1，AI 起飞！", "visual": "original fictional rocket festival at dusk, generic unbranded rocket silhouette, crowds filming from a safe distance"},
+        {"caption": "十分钟后：所以任务飞去哪了？", "visual": "rocket trail disappears while four disconnected task folders float around confused operators"},
+        {"caption": "InkClawAgent：Research → Write → Review → Code，按轨道走", "visual": "fictional mission-control room with four clean workflow orbits converging on one destination"},
+        {"caption": "点火是热点，抵达才是结果。", "visual": "abstract project capsule reaches a clearly labeled DELIVERED orbit, no real spacecraft design"}
+      ],
+      "punchlines": ["点火是热点，抵达才是结果。", "会起飞不稀奇，会把任务送到终点才行。"],
+      "negative_prompt": "real Chinese rocket models, CNSA logos, launch-site replica, national flags as focal imagery, exact Reuters photo composition",
+      "risk_flags": ["trademark", "real_world_event", "unsupported_superiority"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "2026 is the new 2016 nostalgia-wave format",
+      "source": "https://www.socialpilot.co/blog/tiktok-trends",
+      "source_note": "SocialPilot's August 14-25 trend roundup describes an ongoing '2026 is the new 2016' nostalgia format built around then-versus-now edits. This is a lower-confidence trend-monitoring source, so the brief treats it as a format signal rather than a factual market claim.",
+      "source_quality": 0.66,
+      "conflict": "nostalgic then-versus-now comparison applied to fragmented AI workflows",
+      "comparison_target": "2016 式手工拼工具流程",
+      "product_role": "2026 workflow upgrade",
+      "panels": [
+        {"caption": "2016：复制、粘贴、开 12 个标签页", "visual": "original retro desktop scene with generic browser windows and sticky notes, no copied operating-system UI"},
+        {"caption": "2026：复制、粘贴、开 12 个 AI……", "visual": "same original desk upgraded with twelve generic glowing AI cards, user expression unchanged"},
+        {"caption": "InkClawAgent：你确定这叫升级？", "visual": "one clean orchestration workspace groups research, writing, review and code into a coordinated flow"},
+        {"caption": "换工具不叫进化，换工作流才叫。", "visual": "split-screen original then-versus-now composition ending on a single completed deliverable"}
+      ],
+      "punchlines": ["换工具不叫进化，换工作流才叫。", "2026 了，别把 12 个标签页换成 12 个 AI。"],
+      "negative_prompt": "TikTok UI, TikTok logo, copyrighted music lyrics, real creator faces, copied 2016 meme imagery, recognizable OS screenshots",
+      "risk_flags": ["platform_trademark", "trend_source_low_confidence", "unsupported_superiority"],
+      "factual_claim_status": "satire"
+    }
+  ]
+}
