@@ -82,9 +82,18 @@ def test_rank_command_orders_candidates_by_score(tmp_path):
     assert payload[0]["candidate"]["id"] == "strong"
 
 
-def test_doctor_command_is_nonfatal_without_optional_integrations():
+def test_doctor_command_is_nonfatal_without_optional_integrations(monkeypatch):
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    monkeypatch.delenv("CRAWL4AI_TOKEN", raising=False)
+
     result = runner.invoke(app, ["doctor"])
+
     assert result.exit_code == 0, result.stdout
     payload = json.loads(result.stdout)
     assert payload["core"] == "ok"
-    assert "agent_reach" in payload
+    assert payload["agent_reach"]["required"] is False
+    assert payload["crawl4ai"]["required"] is False
+    assert payload["crawl4ai"]["configured"] is True
+    assert payload["firecrawl"]["required"] is False
+    assert payload["firecrawl"]["configured"] is False
+    assert payload["firecrawl"]["api_version"] == "v2"
