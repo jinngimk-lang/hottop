@@ -97,3 +97,40 @@ def test_doctor_command_is_nonfatal_without_optional_integrations(monkeypatch):
     assert payload["firecrawl"]["required"] is False
     assert payload["firecrawl"]["configured"] is False
     assert payload["firecrawl"]["api_version"] == "v2"
+
+
+def test_render_command_exports_provider_neutral_handoff(tmp_path):
+    candidate_path = tmp_path / "candidate.json"
+    candidate_path.write_text(
+        json.dumps(
+            {
+                "id": "film:render",
+                "title": "洞穴破局",
+                "url": "https://example.com/render",
+                "source": "test",
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    product_path = tmp_path / "product.yml"
+    product_path.write_text("name: InkClawAgent\n", encoding="utf-8")
+
+    result = runner.invoke(
+        app,
+        [
+            "render",
+            str(candidate_path),
+            "--product",
+            str(product_path),
+            "--compare",
+            "work巴迪",
+        ],
+    )
+
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["schema_version"] == "hottop.render.v1"
+    assert len(payload["panels"]) == 4
+    assert payload["product_name"] == "InkClawAgent"
+    assert payload["provider"] is None
