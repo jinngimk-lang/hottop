@@ -1,0 +1,66 @@
+{
+  "run_at": "2026-08-21T02:00:00+08:00",
+  "product": "InkClawAgent",
+  "briefs": [
+    {
+      "topic": "AI sovereignty / competing AI camps",
+      "source": "Reuters, 2026-08-19",
+      "source_url": "https://www.reuters.com/world/china/china-urges-respect-digital-sovereignty-ai-race-2026-08-19/",
+      "source_quality": 0.95,
+      "conflict": "A giant border checkpoint forces every AI tool into one of two queues; the product metaphor reframes the problem as finishing the user's work rather than joining a camp.",
+      "comparison_target": "fragmented tool camps",
+      "product_role": "original neutral workflow conductor",
+      "panels": [
+        {"caption": "AI圈：先选边。", "visual": "Original surreal border terminal with two enormous generic queues labeled only A and B; no national flags, company logos or real interfaces."},
+        {"caption": "用户：我只是想把活做完。", "visual": "A worker holding research, document, review and code folders while both queues argue."},
+        {"caption": "InkClawAgent：先把任务编排起来。", "visual": "An original conductor opens a third path where generic specialist agents hand work to each other."},
+        {"caption": "站哪边不重要，交付要到终点。", "visual": "Completed deliverable exits the workflow while the two queues remain debating."}
+      ],
+      "punchlines": ["站哪边不重要，交付要到终点。", "工具会分阵营，工作流得连起来。"],
+      "image_prompt": "Four-panel cinematic editorial meme, original near-future border-terminal metaphor, generic AI workers and abstract agents, InkClawAgent represented only by text caption and an original workflow conductor, strong visual comedy, Chinese subtitles, no copied UI or logos.",
+      "negative_prompt": "No national flags, politicians, real company logos, copied product UI, factual geopolitical endorsement, actor likenesses or protected characters.",
+      "risk_flags": ["political-context", "trademark", "unsupported-comparison"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "The Odyssey remains highly visible at the summer box office",
+      "source": "Associated Press, 2026-08-16",
+      "source_url": "https://apnews.com/article/e9bb0bd359a218da0d7b705c725522e5",
+      "source_quality": 0.94,
+      "conflict": "Use only the public-domain Homeric cave-and-cyclops archetype: a generic one-eyed cave obstacle represents a patchwork workflow; an original anonymous navigator represents InkClawAgent.",
+      "comparison_target": "work巴迪 / patchwork workflow",
+      "product_role": "original clever navigator / breaker",
+      "panels": [
+        {"caption": "work巴迪：这洞今天谁也别想出去。", "visual": "Generic mythic cave with an original one-eyed stone giant blocking a maze of paperwork; deliberately unlike any current film design."},
+        {"caption": "补丁越打，出口越远。", "visual": "Workers connect mismatched tiny tools and create an even larger knot."},
+        {"caption": "InkClawAgent：别补了，重排路线。", "visual": "Original anonymous navigator draws a workflow route linking research, writing, review and coding agents toward a new exit."},
+        {"caption": "还得是 InkClawAgent 会破局。", "visual": "Team exits through a newly opened passage; giant is confused but unharmed."}
+      ],
+      "punchlines": ["还得是 InkClawAgent 会破局。", "补丁是补洞，工作流才是出口。"],
+      "image_prompt": "Four-panel mythic adventure parody using only public-domain Homeric archetypes, original generic one-eyed stone cave giant, anonymous original navigator, dramatic torchlight, comedic workflow metaphor, Chinese subtitles, no resemblance to current film actors, costumes, sets or frames.",
+      "negative_prompt": "No actor likenesses, Christopher Nolan film costume/set design, official posters, exact movie frames, studio logos, gore or eye injury.",
+      "risk_flags": ["copyright-reference", "trademark", "unsupported-comparison"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Robotics and AI investment excitement",
+      "source": "Reuters Morning Bid, 2026-08-19",
+      "source_url": "https://www.reuters.com/commentary/reuters-open-interest/global-markets-view-usa-2026-08-19/",
+      "source_quality": 0.92,
+      "conflict": "Many impressive specialist robots each celebrate one isolated task while the user's end-to-end project remains unfinished; InkClawAgent is framed as the orchestration layer, not as a physical robot controller.",
+      "comparison_target": "single-purpose AI tools",
+      "product_role": "workflow control tower",
+      "panels": [
+        {"caption": "每个机器人都会一招。", "visual": "Original generic robots each proudly hold one card: SEARCH, WRITE, REVIEW, CODE."},
+        {"caption": "然后大家一起问：下一步谁来？", "visual": "Robots face one another in a comic traffic jam of unfinished folders."},
+        {"caption": "InkClawAgent：按顺序接着干。", "visual": "Abstract workflow control tower routes the four tasks into a continuous conveyor."},
+        {"caption": "单项冠军很多，总指挥才稀缺。", "visual": "One finished project leaves the conveyor while specialist robots continue working in coordinated sequence."}
+      ],
+      "punchlines": ["单项冠军很多，总指挥才稀缺。", "会一招的不少，会把整局串起来的才值钱。"],
+      "image_prompt": "Four-panel cinematic technology meme with completely original generic robots and an abstract workflow control tower, playful high-tech factory, Chinese subtitles, InkClawAgent named only in captions, emphasize orchestration rather than physical control.",
+      "negative_prompt": "No Unitree or other identifiable robot design, company logos, stock tickers, copied interfaces, claims that InkClawAgent controls robots or objective benchmark superiority.",
+      "risk_flags": ["trademark", "capability-implication", "unsupported-comparison"],
+      "factual_claim_status": "satire"
+    }
+  ]
+}
