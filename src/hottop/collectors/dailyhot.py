@@ -5,6 +5,8 @@ import httpx
 from ..models import Evidence, TrendCandidate
 from .base import SourceError, parse_timestamp
 
+DAILYHOT_SOURCE_QUALITY = 0.62
+
 
 class DailyHotApiCollector:
     def __init__(
@@ -13,11 +15,13 @@ class DailyHotApiCollector:
         client: httpx.AsyncClient | None = None,
         base_url: str = "https://api-hot.imsyy.top",
         timeout: float = 15.0,
+        source_quality: float = DAILYHOT_SOURCE_QUALITY,
     ) -> None:
         self.route = route.strip("/")
         self.client = client
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
+        self.source_quality = source_quality
 
     async def collect(self, limit: int = 30) -> list[TrendCandidate]:
         owns_client = self.client is None
@@ -45,14 +49,23 @@ class DailyHotApiCollector:
             if isinstance(hot, (int, float)):
                 metrics["hot"] = float(hot)
             published_at = parse_timestamp(item.get("timestamp"))
-            evidence = [Evidence(url=url, source=f"dailyhot:{self.route}")]
+            source = f"dailyhot:{self.route}"
+            evidence = [
+                Evidence(
+                    url=url,
+                    source=source,
+                    published_at=published_at,
+                    source_quality=self.source_quality,
+                )
+            ]
             results.append(
                 TrendCandidate(
                     id=f"dailyhot:{self.route}:{raw_id}",
                     title=title,
                     url=url,
-                    source=f"dailyhot:{self.route}",
+                    source=source,
                     source_rank=index,
+                    source_quality=self.source_quality,
                     published_at=published_at,
                     summary=item.get("desc"),
                     metrics=metrics,
