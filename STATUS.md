@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-20 23:00 +08:00
+Last updated: 2026-08-20 23:59 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -19,20 +19,22 @@ Milestone: Foundation v0.1
 - Added `build_batch(...)` pipeline to dedupe, rank and generate multiple briefs in one reusable call.
 - Added CLI `hottop batch` command with JSON file output support.
 - Added a RED-first test contract and implementation for an optional Firecrawl v2 enrichment adapter. It uses `/v2/scrape`, bearer-token auth, Markdown output and a network-free configuration doctor; Crawl4AI remains the preferred self-hostable browser/deep-page layer.
-- Archived live research batches through `examples/runs/2026-08-20-2300-briefs.json` covering film, AI/tech, Chinese internet/culture and workflow-metaphor creative directions.
-- Confirmed CI is green on current PR head before the 23:00 archive: commit `d0d42335`, workflow run 45, conclusion `success`.
-- 23:00 batch added three fresh directions: China rocket-launch tourism/spectacle (Reuters Aug. 19), The Odyssey's continuing box-office visibility (AP Aug. 16), and a generic blockbuster-attention-versus-delivery concept grounded in the same AP box-office report. All remain satire/workflow metaphor and contain explicit visual exclusions.
+- Archived live research batches through `examples/runs/2026-08-20-2359-briefs.json` covering film, AI/tech, Chinese internet/culture and workflow-metaphor creative directions.
+- Confirmed CI green on PR head `e12e4ae7` before this run: workflow run 49 succeeded.
+- Added RED-first scoring coverage for explicit source quality and evidence freshness. The test-only commit `439f0b8e` produced the expected failing CI run 51.
+- Implemented `TrendCandidate.source_quality`, `Evidence.source_quality`, `Evidence.published_at`, source-quality scoring and evidence-freshness scoring. Implementation commit `93a5c5e8` passed CI run 55.
+- Added a 23:59 live batch with three fresh creative directions: AI-agent safety/control-tower metaphor (Reuters Aug. 18), Gemini 3.7 Flash single-leg-speed-vs-full-workflow metaphor (Reuters Aug. 13), and a public-domain Odyssey cave-escape concept. The Reuters Connect/Cover Media Odyssey signal is explicitly downgraded in source quality because Reuters Connect says it was not Reuters-verified.
 
 ## In progress
 
 - Expanding source diversity and evidence enrichment.
-- Adding explicit source freshness/quality metadata and render-provider handoff.
-- Preparing direct multi-collector fan-in for `hottop batch`.
+- Propagating source-quality/freshness metadata automatically from collectors instead of relying on manually enriched live batches.
+- Adding render-provider handoff and direct multi-collector fan-in.
 
 ## Next actions
 
-1. Confirm CI on the new 23:00 archive/status head; repair immediately if red.
-2. Add explicit source/evidence freshness metadata and source-quality weighting, with deterministic tests.
+1. Confirm CI on the latest 23:59 archive/status head; repair immediately if red.
+2. Teach collectors/presets to assign deterministic default `source_quality` values and preserve article `published_at` evidence metadata automatically.
 3. Extend `hottop doctor` to report Agent-Reach/Crawl4AI/Firecrawl readiness without making optional services CI requirements.
 4. Add more live-source presets for film/entertainment, AI/tech and Chinese internet/culture signals.
 5. Add a renderer handoff schema so approved briefs can be sent to an image-generation endpoint without coupling the core pipeline to one vendor.
@@ -41,10 +43,10 @@ Milestone: Foundation v0.1
 
 ## Latest live creative signals
 
-- **China rocket-launch tourism (fresh 2026-08-19/20, Reuters):** strong visual metaphor for spectacle versus mission completion. Keep any mishap imagery harmless and non-injury-focused; use fictional rockets/facilities only. Claim mode: satire/workflow metaphor.
-- **The Odyssey box-office conversation (fresh through 2026-08-16/20, AP):** remains highly recognizable. Use only public-domain Homeric archetypes such as a generic one-eyed cave giant and anonymous strategist. Never reproduce current film actors, costumes, sets or frames. Claim mode: satire.
-- **Current blockbuster attention/leaderboard behavior (fresh 2026-08-16/20, AP):** use a fictional theater/popularity board to contrast ranking chatter with unfinished campaign work. Never reproduce copyrighted superhero designs, studio logos, official posters or real box-office graphics. Claim mode: workflow satire.
-- **Niu Lai viral animation phenomenon (fresh 2026-08-20):** use the meta-contrast between production theater and result-first execution; never copy its cow characters, title design, poster or frames. Claim mode: satire/workflow metaphor.
+- **AI-agent safety/control (fresh 2026-08-18/20, Reuters):** strong visual metaphor for raw autonomy versus controlled orchestration. Use only high-level safety context; never include exploit steps, hacking commands or operational cybersecurity detail. Claim mode: workflow satire.
+- **Gemini 3.7 Flash agent-workflow race (fresh 2026-08-13/20, Reuters):** useful for `single fast leg vs full relay` category framing. Never claim InkClawAgent is faster or benchmark-superior; the comparison is workflow scope/orchestration only.
+- **The Odyssey billion-dollar visibility (fresh through 2026-08-10/20):** still highly recognizable, but the current Reuters Connect item is Cover Media material and explicitly not Reuters-verified, so evidence quality is lower. Use only public-domain Homeric archetypes; never reproduce actors, costumes, sets or film frames.
+- **Niu Lai viral animation phenomenon:** useful for production-theater-versus-result-first execution; never copy its cow characters, title design, poster or frames. Claim mode: satire/workflow metaphor.
 - **China humanoid-robot / AI leaderboard conversations:** useful secondary signals for specialist-tools-versus-orchestration and benchmark-chatter-versus-delivery metaphors; do not reproduce proprietary designs/UI or claim benchmark superiority.
 
 ## Constraints
