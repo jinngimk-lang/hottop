@@ -1,0 +1,135 @@
+{
+  "generated_at": "2026-08-20T22:00:00+08:00",
+  "product": "InkClawAgent",
+  "claim_policy": "satire_or_supported_only",
+  "briefs": [
+    {
+      "topic": "Niu Lai low-budget animation becomes a nationwide meme phenomenon",
+      "freshness": "2026-08-20",
+      "sources": [
+        {
+          "url": "https://www.reuters.com/world/asia-pacific/how-low-budget-fever-dream-sparked-chinese-box-office-revolt-2026-08-20/",
+          "publisher": "Reuters",
+          "evidence_note": "Reuters reported on Aug. 20 that the low-budget Chinese animated film Niu Lai became a viral cultural phenomenon, spawning memes, cosplay and merchandise after an initially weak box-office start."
+        },
+        {
+          "url": "https://www.ft.com/content/1a5a87f5-3935-43f4-bdda-50ff9417128b",
+          "publisher": "Financial Times",
+          "evidence_note": "FT independently described the film's viral rise and the audience appeal of its unpolished style on Aug. 20."
+        }
+      ],
+      "conflict": "A polished-looking production machine assumes expensive presentation wins; an unexpectedly simple, rough-looking entrant wins attention because people care about the result and the joke.",
+      "comparison_target": "over-engineered AI workflow",
+      "product_role": "small practical crew that quietly gets the whole job shipped",
+      "comparison_role": "giant studio spending all day polishing process slides",
+      "panels": [
+        {
+          "visual": "An original fictional luxury animation studio with endless render farms, status meetings and giant presentation screens; no recognizable film characters.",
+          "caption": "大厂工作流：先开八个会，讨论怎么开始"
+        },
+        {
+          "visual": "A tiny anonymous indie desk with a laptop and a handwritten checklist quietly finishes a complete project while the big studio is still meeting.",
+          "caption": "旁边：已经做完了"
+        },
+        {
+          "visual": "An original InkClawAgent mission board coordinates research, writing, review, revision and coding as one compact crew.",
+          "caption": "InkClawAgent：少演流程，先把活串起来"
+        },
+        {
+          "visual": "The finished deliverable goes live and draws a crowd while the giant studio is still adjusting slide typography.",
+          "caption": "最后大家看的，还是结果"
+        }
+      ],
+      "punchlines": [
+        "流程可以很贵，交付最好别贵",
+        "InkClawAgent：不一定最会摆阵仗，但得把活做完"
+      ],
+      "image_prompt": "Original four-panel workplace/animation-industry satire inspired only by the broad 2026 cultural conversation around low-budget creative work beating polished production theater. Invent all characters, props and scenes. Panel art may vary. Chinese meme captions. InkClawAgent appears as an original orchestration board, not a copied UI.",
+      "negative_prompt": "No Niu Lai cow character, no copied title treatment, no official poster, no film frame, no actor likeness, no claim that InkClawAgent objectively outperforms a named competitor.",
+      "risk_flags": ["current-film-topic", "avoid-copying-viral-film-assets", "comparison-is-workflow-metaphor"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "The Odyssey remains a major global box-office / IMAX conversation",
+      "freshness": "2026-08-17 to 2026-08-20",
+      "sources": [
+        {
+          "url": "https://apnews.com/article/e9bb0bd359a218da0d7b705c725522e5",
+          "publisher": "Associated Press",
+          "evidence_note": "AP reported that The Odyssey remained second at the North American box office in its fifth weekend and had crossed $1.2B globally."
+        }
+      ],
+      "conflict": "A mythic traveler is trapped in a cave by a giant obstacle; the joke maps the obstacle to a frustrating legacy tool and the clever escape plan to InkClawAgent without recreating the movie's protected visual assets.",
+      "comparison_target": "work巴迪 / legacy workflow",
+      "product_role": "original mythic strategist who finds the exit",
+      "comparison_role": "generic one-eyed cave giant blocking the route",
+      "panels": [
+        {
+          "visual": "A generic ancient Mediterranean cave, an original one-eyed giant sits across the exit surrounded by tangled task scrolls and broken workflow signs.",
+          "caption": "又被 work巴迪 堵山洞里了"
+        },
+        {
+          "visual": "Several fictional sailors try separate tiny tools on the same giant while the exit remains blocked.",
+          "caption": "补丁越打越多，出口还是没开"
+        },
+        {
+          "visual": "An original anonymous strategist arrives carrying a simple mission board marked InkClawAgent, coordinating several abstract helpers at once.",
+          "caption": "InkClawAgent：别磨了，换个解法"
+        },
+        {
+          "visual": "The giant is defeated in a non-graphic slapstick way, daylight fills the cave and the crew walks out with the finished project.",
+          "caption": "还得是 InkClawAgent 会破局"
+        }
+      ],
+      "punchlines": [
+        "跟巨人耗半天，不如换个工作流",
+        "真正的奥德赛：把活从需求带回 DONE"
+      ],
+      "image_prompt": "Original four-panel mythic voyage comedy using only public-domain Homeric archetypes: an invented cyclops-like cave giant, invented sailors, ancient Mediterranean cave and an anonymous strategist. Modern product metaphor: InkClawAgent is an original mission board/orchestration concept. Do not reproduce Nolan film imagery, actor likenesses, costumes, sets or shots.",
+      "negative_prompt": "No Matt Damon likeness, no Christopher Nolan movie frame, no official costume design, no official poster composition, no Universal branding, no graphic eye injury.",
+      "risk_flags": ["film-adjacent-topic", "public-domain-archetype-only", "avoid-current-film-assets", "comparison-is-satire"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "YouTube / TikTok-style view-metric debate and platform vanity metrics",
+      "freshness": "2026-08-18 to 2026-08-20",
+      "sources": [
+        {
+          "url": "https://www.axios.com/newsletters/axios-media-trends-2e272440-9a59-11f1-a564-0f1be1d39a04",
+          "publisher": "Axios",
+          "evidence_note": "Axios Media Trends on Aug. 18 highlighted ongoing confusion around video-view measurement standards across platforms as YouTube changes public view counting to resemble short-form rivals."
+        }
+      ],
+      "conflict": "Teams obsess over a giant vanity-metric counter while the actual multi-step work behind a campaign remains unfinished.",
+      "comparison_target": "dashboard-chasing tool stack",
+      "product_role": "backstage operator that completes the workflow behind the metric",
+      "comparison_role": "crowd hypnotized by a giant view counter",
+      "panels": [
+        {
+          "visual": "A fictional social-media war room cheers as a huge generic VIEW COUNTER spins upward; no real platform logos or UI.",
+          "caption": "全办公室：播放量又涨了！"
+        },
+        {
+          "visual": "One worker points at an untouched board listing research, copy, review, edits and launch tasks.",
+          "caption": "我：所以内容谁做？"
+        },
+        {
+          "visual": "An original InkClawAgent backstage control board distributes the real campaign tasks to multiple abstract agents.",
+          "caption": "InkClawAgent：数据看完了，活也得干"
+        },
+        {
+          "visual": "A finished campaign package ships while the giant counter becomes a small secondary monitor in the corner.",
+          "caption": "指标是仪表盘，不是方向盘"
+        }
+      ],
+      "punchlines": [
+        "别让数字替你上班",
+        "InkClawAgent 管交付，仪表盘管热闹"
+      ],
+      "image_prompt": "Original four-panel newsroom/social-media operations satire about vanity metrics versus actual workflow delivery. Invent every dashboard and character. Chinese captions. InkClawAgent is portrayed as an original backstage orchestration board coordinating research, writing, review and launch work.",
+      "negative_prompt": "No YouTube or TikTok logos, no copied platform UI, no real analytics screenshot, no factual claim that InkClawAgent increases views or engagement.",
+      "risk_flags": ["platform-adjacent-topic", "avoid-platform-ui", "no-marketing-performance-claim", "comparison-is-metaphorical"],
+      "factual_claim_status": "satire"
+    }
+  ]
+}
