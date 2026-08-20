@@ -24,7 +24,7 @@ Milestone: Foundation v0.1
 - `hottop doctor` now reports nonfatal readiness/configuration for Agent-Reach, Crawl4AI and Firecrawl without requiring optional services or credentials in CI.
 - Added provider-neutral renderer handoff contract in `src/hottop/rendering.py`: `RenderRequest` / `RenderPanel` plus `build_render_request(MemeBrief)`. The schema keeps four panels, captions, prompts, risk flags and claim status while deliberately excluding API keys and vendor/model settings.
 - Renderer handoff was developed RED→GREEN: CI run 81 failed on the missing `hottop.rendering` module as expected; implementation commit `dd9d1153` then passed CI run 83.
-- Current pre-archive renderer head is green on Python CI.
+- Added CLI `hottop render` to export one provider-neutral `RenderRequest` from a candidate/product pair. The CLI contract was also developed RED→GREEN: run 89 failed before the command existed, implementation commit `256af249` passed CI run 91.
 - Archived live research batches through `examples/runs/2026-08-21-0300-briefs.json`.
 - The 03:00 batch adds: Reuters Niu Lai cultural phenomenon → rough-but-finished versus polished-tool-theater metaphor; Slack Code launch → coding-agent-room versus whole-project-workflow metaphor; Reuters robot “ChatGPT moment” → specialist-capability versus orchestration metaphor.
 
@@ -39,11 +39,10 @@ Milestone: Foundation v0.1
 
 1. Confirm CI on the newest archive/status head; repair immediately if red.
 2. Extend `hottop batch` so it can fan-in multiple configured collectors directly instead of requiring a prebuilt candidate JSON file.
-3. Add a CLI/export path for provider-neutral `RenderRequest` handoffs generated from approved briefs.
-4. Add source presets for film/entertainment, AI/tech and Chinese internet/culture, including per-source quality values.
-5. Add optional enrichment fallback ordering: Crawl4AI first for self-hosted browser/deep-page extraction, Firecrawl second when configured, plain HTTP/RSS when sufficient.
-6. Continue live research batches, prioritizing highly visual conflicts and culturally recognizable roles over generic news summaries.
-7. Once remaining Foundation v0.1 contracts are in place and CI is green, mark PR #1 ready, inspect final diff/reviews, and merge.
+3. Add source presets for film/entertainment, AI/tech and Chinese internet/culture, including per-source quality values.
+4. Add optional enrichment fallback ordering: Crawl4AI first for self-hosted browser/deep-page extraction, Firecrawl second when configured, plain HTTP/RSS when sufficient.
+5. Continue live research batches, prioritizing highly visual conflicts and culturally recognizable roles over generic news summaries.
+6. Once remaining Foundation v0.1 contracts are in place and CI is green, mark PR #1 ready, inspect final diff/reviews, and merge.
 
 ## Latest live creative signals
 
