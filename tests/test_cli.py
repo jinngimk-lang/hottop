@@ -1,0 +1,90 @@
+import json
+
+from typer.testing import CliRunner
+
+from hottop.cli import app
+
+runner = CliRunner()
+
+
+def test_brief_command_emits_structured_four_panel_json(tmp_path):
+    candidate_path = tmp_path / "candidate.json"
+    candidate_path.write_text(
+        json.dumps(
+            {
+                "id": "film:1",
+                "title": "独眼巨人守住山洞出口",
+                "url": "https://example.com/t",
+                "source": "test",
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    product_path = tmp_path / "product.yml"
+    product_path.write_text(
+        "name: InkClawAgent\nurl: https://inkclawagent.com/home\nstrengths:\n  - multi-agent collaboration\n",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "brief",
+            str(candidate_path),
+            "--product",
+            str(product_path),
+            "--compare",
+            "work巴迪",
+        ],
+    )
+
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    assert len(payload["panels"]) == 4
+    assert payload["role_map"]["promoted_product"] == "InkClawAgent"
+
+
+def test_rank_command_orders_candidates_by_score(tmp_path):
+    input_path = tmp_path / "candidates.json"
+    input_path.write_text(
+        json.dumps(
+            [
+                {
+                    "id": "weak",
+                    "title": "old",
+                    "url": "https://example.com/weak",
+                    "source": "test",
+                    "metrics": {"recognizability": 0.1},
+                },
+                {
+                    "id": "strong",
+                    "title": "visual conflict",
+                    "url": "https://example.com/strong",
+                    "source": "test",
+                    "metrics": {
+                        "recognizability": 0.9,
+                        "conflict_clarity": 0.9,
+                        "visual_potential": 0.9,
+                        "product_fit": 0.8,
+                        "cross_source_count": 4,
+                    },
+                },
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["rank", str(input_path), "--top", "1"])
+
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    assert payload[0]["candidate"]["id"] == "strong"
+
+
+def test_doctor_command_is_nonfatal_without_optional_integrations():
+    result = runner.invoke(app, ["doctor"])
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["core"] == "ok"
+    assert "agent_reach" in payload

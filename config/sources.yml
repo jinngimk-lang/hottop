@@ -1,0 +1,40 @@
+# Source presets are deliberately redundant: Hottop should survive one aggregator going down.
+dailyhot:
+  base_url: https://api-hot.imsyy.top
+  routes:
+    - weibo
+    - bilibili
+    - zhihu
+    - douyin
+    - douban-movie
+    - thepaper
+    - toutiao
+    - 36kr
+    - ifanr
+    - ithome
+
+newsnow:
+  base_url: https://newsnow.busiyi.world
+  source_ids:
+    - aihot
+    - zhihu
+    - weibo
+    - douyin
+    - douban
+    - ithome
+    - hackernews
+    - producthunt
+    - github-trending-today
+    - bilibili-hot-search
+
+rss:
+  custom: []
+
+rsshub:
+  enabled: false
+  base_url_env: RSSHUB_BASE_URL
+
+optional_enrichment:
+  agent_reach: true
+  crawl4ai: true
+  firecrawl: false

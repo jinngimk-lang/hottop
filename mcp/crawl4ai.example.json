@@ -1,0 +1,9 @@
+{
+  "name": "crawl4ai",
+  "transport": "sse",
+  "url": "http://127.0.0.1:11235/mcp/sse",
+  "authorization": {
+    "type": "bearer",
+    "token_env": "CRAWL4AI_API_TOKEN"
+  }
+}
