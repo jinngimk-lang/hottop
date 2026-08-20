@@ -14,6 +14,7 @@ from .collectors.newsnow import NewsNowCollector
 from .collectors.rss import RSSCollector
 from .doctor import local_doctor
 from .models import ProductProfile, TrendCandidate
+from .pipeline import build_batch
 from .scoring import score_candidate
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
@@ -91,6 +92,29 @@ def brief(
     profile = _load_product(product)
     result = build_brief(candidates[index], profile, comparison_target=compare)
     typer.echo(_json_dump(result))
+
+
+@app.command()
+def batch(
+    input_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    product: Path = typer.Option(..., "--product", exists=True, dir_okay=False),
+    compare: str | None = typer.Option(None, "--compare"),
+    top: int = typer.Option(5, "--top", min=1, max=50),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Dedupe, rank and build multiple four-panel briefs in one command."""
+    result = build_batch(
+        _load_candidates(input_path),
+        _load_product(product),
+        comparison_target=compare,
+        top=top,
+    )
+    text = _json_dump(result)
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(text + "\n", encoding="utf-8")
+    else:
+        typer.echo(text)
 
 
 @app.command(name="doctor")
