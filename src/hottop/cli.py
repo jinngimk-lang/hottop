@@ -48,6 +48,19 @@ async def _discover(source: str, key: str, limit: int) -> list[TrendCandidate]:
     raise typer.BadParameter("source must be one of: dailyhot, newsnow, rss")
 
 
+def _parse_source_spec(spec: str) -> tuple[str, str]:
+    source, separator, key = spec.partition(":")
+    if not separator or not source.strip() or not key.strip():
+        raise typer.BadParameter("source specs must use TYPE:KEY, for example dailyhot:zhihu")
+    return source.strip(), key.strip()
+
+
+async def _discover_many(specs: list[str], limit: int) -> list[TrendCandidate]:
+    parsed = [_parse_source_spec(spec) for spec in specs]
+    batches = await asyncio.gather(*(_discover(source, key, limit) for source, key in parsed))
+    return [candidate for batch in batches for candidate in batch]
+
+
 @app.command()
 def discover(
     source: str = typer.Option("dailyhot", "--source"),
@@ -120,15 +133,27 @@ def render(
 
 @app.command()
 def batch(
-    input_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    input_path: Path | None = typer.Argument(None, exists=True, dir_okay=False),
     product: Path = typer.Option(..., "--product", exists=True, dir_okay=False),
     compare: str | None = typer.Option(None, "--compare"),
     top: int = typer.Option(5, "--top", min=1, max=50),
+    source: list[str] | None = typer.Option(
+        None,
+        "--source",
+        help="Repeatable TYPE:KEY collector spec, e.g. dailyhot:zhihu or rss:https://example.com/feed.xml",
+    ),
+    limit_per_source: int = typer.Option(30, "--limit-per-source", min=1, max=100),
     output: Path | None = typer.Option(None, "--output"),
 ) -> None:
-    """Dedupe, rank and build multiple four-panel briefs in one command."""
+    """Dedupe, rank and build briefs from a file, live collectors, or both."""
+    candidates = _load_candidates(input_path) if input_path else []
+    if source:
+        candidates.extend(asyncio.run(_discover_many(source, limit_per_source)))
+    if not candidates:
+        raise typer.BadParameter("provide an input JSON file and/or at least one --source TYPE:KEY")
+
     result = build_batch(
-        _load_candidates(input_path),
+        candidates,
         _load_product(product),
         comparison_target=compare,
         top=top,
