@@ -1,0 +1,112 @@
+{
+  "generated_at": "2026-08-21T01:00:00+08:00",
+  "product": "InkClawAgent",
+  "notes": "Live research batch. Comparisons remain satire/category framing unless explicitly evidenced. Visuals must be original and must not copy protected characters, logos, interfaces, actor likenesses or film frames.",
+  "briefs": [
+    {
+      "topic": {
+        "id": "china-robot-traffic-officers-2026-08-20",
+        "title": "China puts robotic traffic officers on duty",
+        "url": "https://www.reuters.com/technology/china-puts-robocops-traffic-duty-minus-arrest-powers-2026-08-20/",
+        "source": "Reuters",
+        "source_quality": 0.98,
+        "published_at": "2026-08-20T00:00:00Z",
+        "summary": "Reuters reported that Hangzhou is piloting wheeled robotic traffic officers for repetitive warnings, directions and violation detection while a centralized platform monitors them.",
+        "tags": ["robots", "AI", "China", "automation", "culture"],
+        "metrics": {"recognizability": 0.9, "conflict_clarity": 0.92, "visual_potential": 0.97, "product_fit": 0.9, "evidence_quality": 0.98},
+        "evidence": [{"url": "https://www.reuters.com/technology/china-puts-robocops-traffic-duty-minus-arrest-powers-2026-08-20/", "source": "Reuters", "published_at": "2026-08-20T00:00:00Z", "observed_at": "2026-08-20T17:00:00Z", "source_quality": 0.98, "note": "Use the robot-officer concept only as a current cultural signal. Do not copy SUPCON hardware appearance or claim InkClawAgent has robotics capabilities."}]
+      },
+      "role_map": {
+        "topic_world": "fictional futuristic intersection",
+        "conflict": "many specialist robots each watch one lane while the whole intersection becomes a coordination problem",
+        "promoted_product": "InkClawAgent",
+        "product_role": "abstract dispatch tower coordinating the whole flow",
+        "comparison_target": "single-purpose agent/tool pattern",
+        "comparison_role": "one-lane specialist",
+        "archetype": "specialist automation versus orchestration",
+        "why_it_maps": "The joke is about workflow scope, not a factual comparison with a robotics company."
+      },
+      "panels": [
+        {"scene": "Several original generic traffic robots each stare intensely at one tiny lane.", "caption": "每个 Agent 都很忙", "intent": "setup"},
+        {"scene": "The intersection gridlocks because nobody is coordinating the whole flow.", "caption": "但谁管整条路？", "intent": "escalation"},
+        {"scene": "An abstract InkClawAgent dispatch board routes research, writing, review and coding lanes together.", "caption": "InkClawAgent：我管的是全局编排", "intent": "reversal"},
+        {"scene": "All lanes move smoothly while specialists continue doing their own jobs.", "caption": "单项会干，整局还得会调度", "intent": "punchline"}
+      ],
+      "punchlines": ["单项会干，整局还得会调度", "Agent 再多，也得有人指挥交通", "别只自动一条车道"],
+      "image_prompt": "Original four-panel cinematic comedy at a fictional near-future intersection. Multiple completely original generic wheeled service robots each manage one lane; comic gridlock follows; then an abstract workflow dispatch board labeled InkClawAgent coordinates four lanes labeled RESEARCH, WRITE, REVIEW, CODE; final panel traffic flows smoothly. No real robot design, no police insignia, no corporate logo or copied UI.",
+      "negative_prompt": "No SUPCON robot likeness, no real police uniform or badge, no Reuters imagery, no copied city surveillance UI, no claim that InkClawAgent controls physical robots.",
+      "risk_flags": ["current-news-context", "no-proprietary-robot-design", "workflow-metaphor-only", "no-robotics-capability-claim"],
+      "claim_status": "satire"
+    },
+    {
+      "topic": {
+        "id": "odyssey-still-second-box-office-2026-08-16",
+        "title": "The Odyssey remains highly visible in the summer box office",
+        "url": "https://apnews.com/article/e9bb0bd359a218da0d7b705c725522e5",
+        "source": "Associated Press",
+        "source_quality": 0.97,
+        "published_at": "2026-08-16T00:00:00Z",
+        "summary": "AP reported that The Odyssey remained second at the North American box office in mid-August and had passed $1.2 billion globally, keeping Homeric imagery culturally recognizable.",
+        "tags": ["film", "Odyssey", "box-office", "culture"],
+        "metrics": {"recognizability": 0.98, "conflict_clarity": 0.96, "visual_potential": 0.99, "product_fit": 0.93, "evidence_quality": 0.97},
+        "evidence": [{"url": "https://apnews.com/article/e9bb0bd359a218da0d7b705c725522e5", "source": "Associated Press", "published_at": "2026-08-16T00:00:00Z", "observed_at": "2026-08-20T17:00:00Z", "source_quality": 0.97, "note": "Use only the popularity signal and public-domain Homeric archetypes, not the current film's actors, costumes, sets or frames."}]
+      },
+      "role_map": {
+        "topic_world": "public-domain Homeric cave adventure",
+        "conflict": "a generic one-eyed cave giant blocks a team relying on scattered workarounds",
+        "promoted_product": "InkClawAgent",
+        "product_role": "anonymous original strategist who coordinates a complete escape route",
+        "comparison_target": "work巴迪 / patchwork workflow",
+        "comparison_role": "oversized cave obstacle",
+        "archetype": "stuck versus systematic escape",
+        "why_it_maps": "The concept uses mythology in the public domain while avoiding protected film expression."
+      },
+      "panels": [
+        {"scene": "A completely original one-eyed stone cave giant blocks a generic cave exit while workers hold unfinished folders.", "caption": "work巴迪：先把出口堵住", "intent": "setup"},
+        {"scene": "The team keeps adding tiny ladders, sticky notes and one-off fixes.", "caption": "补丁越多，路越乱", "intent": "escalation"},
+        {"scene": "An anonymous original seafaring strategist opens an abstract route map labeled InkClawAgent.", "caption": "InkClawAgent：别耗了，整条流程重排", "intent": "reversal"},
+        {"scene": "The team leaves through a newly organized side route while the giant remains harmlessly confused.", "caption": "还得是 InkClawAgent 会破局", "intent": "punchline"}
+      ],
+      "punchlines": ["还得是 InkClawAgent 会破局", "补丁治标，编排破局", "别跟巨人耗，换完整路线"],
+      "image_prompt": "Original four-panel epic-comedy based only on public-domain Homeric mythology: generic Mediterranean cave, original one-eyed stone giant, anonymous ancient seafaring strategist with no actor likeness, modern abstract work folders for comic contrast. Strategist uses an original glowing workflow route labeled InkClawAgent to guide the team out through a harmless alternate passage. No violence.",
+      "negative_prompt": "No current Odyssey actor likeness, no official poster, no exact movie costume, set or frame, no studio logo, no eye-stabbing, no gore.",
+      "risk_flags": ["current-film-context", "public-domain-archetype-only", "no-actor-likeness", "no-film-assets", "comparison-is-satire"],
+      "claim_status": "satire"
+    },
+    {
+      "topic": {
+        "id": "gen-z-ai-matchmaking-no-swiping-2026-08-06",
+        "title": "Gen Z dating apps experiment with AI matchmaking instead of endless swiping",
+        "url": "https://techcrunch.com/2026/08/06/gen-z-dating-apps-like-ditto-ditch-swiping-in-favor-of-ai-matchmaking/",
+        "source": "TechCrunch",
+        "source_quality": 0.86,
+        "published_at": "2026-08-06T15:53:00Z",
+        "summary": "TechCrunch described younger dating products that replace endless swiping with AI-assisted matching and more direct real-world outcomes.",
+        "tags": ["AI", "internet-culture", "Gen-Z", "apps"],
+        "metrics": {"recognizability": 0.84, "conflict_clarity": 0.94, "visual_potential": 0.93, "product_fit": 0.92, "evidence_quality": 0.86},
+        "evidence": [{"url": "https://techcrunch.com/2026/08/06/gen-z-dating-apps-like-ditto-ditch-swiping-in-favor-of-ai-matchmaking/", "source": "TechCrunch", "published_at": "2026-08-06T15:53:00Z", "observed_at": "2026-08-20T17:00:00Z", "source_quality": 0.86, "note": "Borrow only the cultural shift from endless swiping to outcome-oriented matching. Do not copy any dating app UI, logo or claim InkClawAgent is a dating product."}]
+      },
+      "role_map": {
+        "topic_world": "fictional tool-matching game show",
+        "conflict": "a worker endlessly swipes through dozens of trendy AI tools without finishing the job",
+        "promoted_product": "InkClawAgent",
+        "product_role": "workflow matchmaker that assigns the right agent to each stage",
+        "comparison_target": "tool-hopping habit",
+        "comparison_role": "endless swiping loop",
+        "archetype": "choice overload versus coordinated execution",
+        "why_it_maps": "The comparison is between workflow habits, not between InkClawAgent and a dating service."
+      },
+      "panels": [
+        {"scene": "A worker on a fictional game-show set swipes through cards reading Writer AI, Coder AI, Reviewer AI, Research AI.", "caption": "今天选哪个 AI？", "intent": "setup"},
+        {"scene": "A mountain of swiped cards grows while the actual task folder is still empty.", "caption": "工具配了一晚上，活还没开始", "intent": "escalation"},
+        {"scene": "InkClawAgent appears as an original workflow matchmaker assigning each abstract agent to the right stage.", "caption": "InkClawAgent：不用刷，我直接组队", "intent": "reversal"},
+        {"scene": "The coordinated team delivers one finished package while the swipe pile is swept away.", "caption": "别配工具了，开始交付", "intent": "punchline"}
+      ],
+      "punchlines": ["别配工具了，开始交付", "AI 不用海选，工作流直接组队", "少刷几个工具，多交一个结果"],
+      "image_prompt": "Original four-panel internet-culture comedy on a fictional matchmaking game-show set. A worker swipes generic cards labeled Writer AI, Coder AI, Reviewer AI, Research AI; pile grows with no work done; then an original InkClawAgent workflow matchmaker arranges those abstract roles into a coordinated production line; final completed package arrives. No dating app logos, no copied swipe UI, no real-person likeness.",
+      "negative_prompt": "No Tinder, Bumble, Ditto or Hinge logos, no copied app screens, no branded color schemes, no romantic or sexual content, no claim that InkClawAgent provides dating services.",
+      "risk_flags": ["internet-culture-reference", "no-dating-app-ui", "workflow-metaphor-only", "no-product-capability-confusion"],
+      "claim_status": "satire"
+    }
+  ]
+}
