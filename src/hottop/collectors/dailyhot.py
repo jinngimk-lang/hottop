@@ -3,6 +3,7 @@ from __future__ import annotations
 import httpx
 
 from ..models import Evidence, TrendCandidate
+from ..source_presets import resolve_source_quality
 from .base import SourceError, parse_timestamp
 
 DAILYHOT_SOURCE_QUALITY = 0.62
@@ -50,12 +51,13 @@ class DailyHotApiCollector:
                 metrics["hot"] = float(hot)
             published_at = parse_timestamp(item.get("timestamp"))
             source = f"dailyhot:{self.route}"
+            quality = resolve_source_quality(url, fallback=self.source_quality)
             evidence = [
                 Evidence(
                     url=url,
                     source=source,
                     published_at=published_at,
-                    source_quality=self.source_quality,
+                    source_quality=quality,
                 )
             ]
             results.append(
@@ -65,7 +67,7 @@ class DailyHotApiCollector:
                     url=url,
                     source=source,
                     source_rank=index,
-                    source_quality=self.source_quality,
+                    source_quality=quality,
                     published_at=published_at,
                     summary=item.get("desc"),
                     metrics=metrics,
