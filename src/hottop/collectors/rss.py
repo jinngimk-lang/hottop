@@ -9,6 +9,8 @@ import httpx
 from ..models import Evidence, TrendCandidate
 from .base import SourceError
 
+RSS_SOURCE_QUALITY = 0.75
+
 
 def _text(node: ET.Element | None, tag: str) -> str | None:
     if node is None:
@@ -38,11 +40,43 @@ class RSSCollector:
         source_name: str,
         client: httpx.AsyncClient | None = None,
         timeout: float = 15.0,
+        source_quality: float = RSS_SOURCE_QUALITY,
     ) -> None:
         self.feed_url = feed_url
         self.source_name = source_name
         self.client = client
         self.timeout = timeout
+        self.source_quality = source_quality
+
+    def _candidate(
+        self,
+        *,
+        raw_id: str,
+        title: str,
+        url: str,
+        index: int,
+        published_at: datetime | None,
+        summary: str | None,
+    ) -> TrendCandidate:
+        return TrendCandidate(
+            id=f"{self.source_name}:{raw_id}",
+            title=title,
+            url=url,
+            source=self.source_name,
+            source_rank=index,
+            source_quality=self.source_quality,
+            published_at=published_at,
+            summary=summary,
+            metrics={"source_rank_score": 1 / index},
+            evidence=[
+                Evidence(
+                    url=url,
+                    source=self.source_name,
+                    published_at=published_at,
+                    source_quality=self.source_quality,
+                )
+            ],
+        )
 
     async def collect(self, limit: int = 30) -> list[TrendCandidate]:
         owns_client = self.client is None
@@ -66,17 +100,15 @@ class RSSCollector:
                 if not title or not url:
                     continue
                 raw_id = _text(item, "guid") or url
+                published_at = _parse_rfc822(_text(item, "pubDate"))
                 results.append(
-                    TrendCandidate(
-                        id=f"{self.source_name}:{raw_id}",
+                    self._candidate(
+                        raw_id=raw_id,
                         title=title,
                         url=url,
-                        source=self.source_name,
-                        source_rank=index,
-                        published_at=_parse_rfc822(_text(item, "pubDate")),
+                        index=index,
+                        published_at=published_at,
                         summary=_text(item, "description"),
-                        metrics={"source_rank_score": 1 / index},
-                        evidence=[Evidence(url=url, source=self.source_name)],
                     )
                 )
             return results
@@ -99,16 +131,13 @@ class RSSCollector:
                 except ValueError:
                     pass
             results.append(
-                TrendCandidate(
-                    id=f"{self.source_name}:{raw_id}",
+                self._candidate(
+                    raw_id=raw_id,
                     title=title,
                     url=url,
-                    source=self.source_name,
-                    source_rank=index,
+                    index=index,
                     published_at=published_at,
                     summary=_text(entry, "{http://www.w3.org/2005/Atom}summary"),
-                    metrics={"source_rank_score": 1 / index},
-                    evidence=[Evidence(url=url, source=self.source_name)],
                 )
             )
         return results
