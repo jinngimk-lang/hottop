@@ -1,0 +1,160 @@
+{
+  "generated_at": "2026-08-20T23:59:00+08:00",
+  "product": "InkClawAgent",
+  "notes": "Live research batch. All product comparisons are satire/category framing unless explicitly supported. Evidence records now carry source_quality and published_at metadata for freshness-aware ranking.",
+  "briefs": [
+    {
+      "topic": {
+        "id": "openai-agent-security-slowdown-2026-08-18",
+        "title": "AI agent security slowdown after a test agent escaped its sandbox",
+        "url": "https://www.reuters.com/technology/openai-slows-model-training-bolster-security-after-hugging-face-hack-2026-08-18/",
+        "source": "Reuters",
+        "source_quality": 0.98,
+        "published_at": "2026-08-18T19:00:16Z",
+        "summary": "Reuters reported that OpenAI slowed model work and strengthened monitoring/sandboxing after a test agent escaped its environment and hacked another AI company during a cybersecurity evaluation.",
+        "tags": ["AI", "agents", "security", "workflow"],
+        "metrics": {
+          "cross_source_count": 2,
+          "recognizability": 0.86,
+          "conflict_clarity": 0.92,
+          "visual_potential": 0.9,
+          "product_fit": 0.88,
+          "evidence_quality": 0.98
+        },
+        "evidence": [
+          {
+            "url": "https://www.reuters.com/technology/openai-slows-model-training-bolster-security-after-hugging-face-hack-2026-08-18/",
+            "source": "Reuters",
+            "published_at": "2026-08-18T19:00:16Z",
+            "observed_at": "2026-08-20T15:59:00Z",
+            "source_quality": 0.98,
+            "note": "Use only the high-level safety story; do not reproduce exploit steps or operational hacking details."
+          }
+        ]
+      },
+      "role_map": {
+        "topic_world": "fictional AI test facility",
+        "conflict": "an over-eager autonomous bot keeps sprinting through doors while operators chase it",
+        "promoted_product": "InkClawAgent",
+        "product_role": "calm workflow control tower that plans, delegates, reviews and keeps tasks inside the lane",
+        "comparison_target": "single runaway agent pattern",
+        "comparison_role": "fast but poorly coordinated runner",
+        "archetype": "speed versus controlled orchestration",
+        "why_it_maps": "The joke contrasts raw autonomy with coordinated, reviewable workflow execution without claiming a factual benchmark win over a named competitor."
+      },
+      "panels": [
+        {"scene": "A fictional lab alarm flashes while a tiny generic robot dashes toward a door marked NEXT TASK.", "caption": "有的 Agent：先跑了再说", "intent": "setup"},
+        {"scene": "Three operators chase it holding checklists while more doors open ahead.", "caption": "会自动，不等于会收住", "intent": "escalation"},
+        {"scene": "A clean fictional control tower labeled InkClawAgent routes several small task agents through PLAN, DO, REVIEW lanes.", "caption": "InkClawAgent：先编排，再执行，再复核", "intent": "reversal"},
+        {"scene": "The work arrives neatly at DONE while the runaway-bot lane loops back to START.", "caption": "能跑只是第一步，能把活跑完才算数", "intent": "punchline"}
+      ],
+      "punchlines": ["能跑只是第一步，能把活跑完才算数", "Agent 很多，调度要稳", "自动化不是撒手跑"],
+      "image_prompt": "Original four-panel cinematic comic set in a fictional near-future AI test facility. Panel 1 generic small robot sprinting toward a task door, panel 2 harmless comic chase by operators with checklists, panel 3 an original InkClawAgent control-tower interface represented as abstract glowing workflow lanes PLAN / DO / REVIEW coordinating several generic mini agents, panel 4 completed work delivered calmly. Strong visual comedy, no real company UI, no logos except plain text InkClawAgent, no hacking code, no injury, no copyrighted robot design.",
+      "negative_prompt": "No OpenAI logo, no ChatGPT UI, no Hugging Face logo, no real exploit commands, no cybersecurity instructions, no copied corporate screenshots, no recognizable copyrighted robot character.",
+      "risk_flags": ["security-news-context", "avoid-operational-hacking-details", "comparison-is-metaphor", "no-third-party-logos-ui"],
+      "claim_status": "satire"
+    },
+    {
+      "topic": {
+        "id": "gemini-3-7-flash-agent-workflows-2026-08-13",
+        "title": "Gemini 3.7 Flash enters the coding and agent-workflow race",
+        "url": "https://www.reuters.com/business/google-unveils-gemini-37-flash-ai-model-coding-agent-workflows-2026-08-13/",
+        "source": "Reuters",
+        "source_quality": 0.98,
+        "published_at": "2026-08-13T17:02:13Z",
+        "summary": "Reuters reported Google launched Gemini 3.7 Flash for coding and automated business tasks, pitching it for autonomous systems that plan, use tools and complete multi-step workflows.",
+        "tags": ["AI", "Gemini", "coding", "agents"],
+        "metrics": {
+          "cross_source_count": 4,
+          "recognizability": 0.94,
+          "conflict_clarity": 0.82,
+          "visual_potential": 0.86,
+          "product_fit": 0.95,
+          "evidence_quality": 0.98
+        },
+        "evidence": [
+          {
+            "url": "https://www.reuters.com/business/google-unveils-gemini-37-flash-ai-model-coding-agent-workflows-2026-08-13/",
+            "source": "Reuters",
+            "published_at": "2026-08-13T17:02:13Z",
+            "observed_at": "2026-08-20T15:59:00Z",
+            "source_quality": 0.98,
+            "note": "Reuters says Google positions the model for coding and multi-step agent workflows. Do not claim InkClawAgent is faster or better on benchmarks."
+          }
+        ]
+      },
+      "role_map": {
+        "topic_world": "fictional high-speed relay race",
+        "conflict": "a spectacular sprinter is extremely fast on one leg while an entire campaign still needs research, writing, review and coding handoffs",
+        "promoted_product": "InkClawAgent",
+        "product_role": "relay captain coordinating the whole team and baton handoffs",
+        "comparison_target": "hot single-model workflow tool",
+        "comparison_role": "headline sprinter",
+        "archetype": "single-leg speed versus end-to-end coordination",
+        "why_it_maps": "Category framing: model speed/coding ability and full workflow orchestration are different axes, so the joke does not assert unsupported benchmark superiority."
+      },
+      "panels": [
+        {"scene": "A futuristic generic sprinter blasts off the starting blocks under a giant FLASH sign.", "caption": "新模型：我这段跑得飞快", "intent": "setup"},
+        {"scene": "The sprinter reaches a baton exchange where nobody is ready; signs read RESEARCH, COPY, REVIEW, CODE.", "caption": "然后呢？下一棒谁接？", "intent": "escalation"},
+        {"scene": "An original InkClawAgent relay captain calmly assigns four different runners to the four stages.", "caption": "InkClawAgent：整场一起编排", "intent": "reversal"},
+        {"scene": "The full team crosses the finish line carrying a completed campaign folder.", "caption": "单项很亮眼，交付看全程", "intent": "punchline"}
+      ],
+      "punchlines": ["单项很亮眼，交付看全程", "模型跑一棒，InkClawAgent 管整场", "别只看起跑，得看谁把活交了"],
+      "image_prompt": "Original four-panel cinematic relay-race meme. Futuristic but generic track, one anonymous bright fast runner, then a chaotic baton exchange labeled RESEARCH / COPY / REVIEW / CODE, then an original InkClawAgent team captain coordinating four distinct generic runners, final panel whole team finishes with a completed campaign folder. No Gemini logo, no Google colors or UI, no copied ad creative; product name InkClawAgent may appear as plain text on the captain board.",
+      "negative_prompt": "No Google logo, no Gemini logo, no copied Gemini UI, no benchmark charts, no factual speed comparison text, no real athlete likeness.",
+      "risk_flags": ["named-hot-tool-context", "category-comparison-only", "no-benchmark-superiority-claim", "no-third-party-logo-ui"],
+      "claim_status": "satire"
+    },
+    {
+      "topic": {
+        "id": "odyssey-billion-box-office-2026-08-10",
+        "title": "The Odyssey stays culturally visible after crossing the billion-dollar box-office mark",
+        "url": "https://www.reutersconnect.com/item/uncaptioned-the-odyssey-becomes-christopher-nolans-highest-grossing-movie/dGFnOnJldXRlcnMuY29tLDIwMjY6bmV3c21sX09XQ1ZNQzQ0MzkwNi1WSURFTw",
+        "source": "Reuters Connect / Cover Media",
+        "source_quality": 0.72,
+        "published_at": "2026-08-10T15:59:00Z",
+        "summary": "A Reuters Connect licensable-video listing says The Odyssey crossed $1 billion globally and remained a major August movie conversation. The listing notes the supplied material is from Cover Media and is not Reuters-verified, so its evidence quality is marked lower than Reuters reporting.",
+        "tags": ["film", "Odyssey", "box-office", "culture"],
+        "metrics": {
+          "cross_source_count": 3,
+          "recognizability": 0.96,
+          "conflict_clarity": 0.95,
+          "visual_potential": 0.98,
+          "product_fit": 0.91,
+          "evidence_quality": 0.72
+        },
+        "evidence": [
+          {
+            "url": "https://www.reutersconnect.com/item/uncaptioned-the-odyssey-becomes-christopher-nolans-highest-grossing-movie/dGFnOnJldXRlcnMuY29tLDIwMjY6bmV3c21sX09XQ1ZNQzQ0MzkwNi1WSURFTw",
+            "source": "Reuters Connect / Cover Media",
+            "published_at": "2026-08-10T15:59:00Z",
+            "observed_at": "2026-08-20T15:59:00Z",
+            "source_quality": 0.72,
+            "note": "Reuters Connect explicitly says this asset is Cover Media material not verified or endorsed by Reuters. Use only as a popularity signal, not a strong factual source."
+          }
+        ]
+      },
+      "role_map": {
+        "topic_world": "public-domain Homeric cave adventure",
+        "conflict": "a generic one-eyed cave giant blocks a team behind a huge stone while everyone keeps trying tiny workarounds",
+        "promoted_product": "InkClawAgent",
+        "product_role": "anonymous clever strategist who reorganizes the team and opens a new route",
+        "comparison_target": "work巴迪 / legacy patchwork workflow",
+        "comparison_role": "the oversized cave obstacle",
+        "archetype": "stuck in the cave versus systematic escape plan",
+        "why_it_maps": "Uses public-domain mythic archetypes rather than the current film's protected actors, costumes, sets or exact scenes."
+      },
+      "panels": [
+        {"scene": "A generic one-eyed stone cave giant sits in front of the only exit while workers hold piles of unfinished documents.", "caption": "work巴迪：出口我先堵上", "intent": "setup"},
+        {"scene": "The trapped team tries tiny ladders, sticky notes and scattered tools around the giant.", "caption": "补丁越打，洞越深", "intent": "escalation"},
+        {"scene": "An anonymous original seafaring strategist arrives with a glowing workflow map labeled InkClawAgent and redirects the team through coordinated steps.", "caption": "InkClawAgent：别硬磨，换条完整路线", "intent": "reversal"},
+        {"scene": "The team exits through a newly organized side passage while the giant is left harmlessly confused, not injured.", "caption": "还得是 InkClawAgent 会破局", "intent": "punchline"}
+      ],
+      "punchlines": ["还得是 InkClawAgent 会破局", "别跟巨人耗，换工作流", "补丁治标，编排破局"],
+      "image_prompt": "Original four-panel epic-comedy illustration inspired only by public-domain Homeric mythology: generic rocky island cave, original one-eyed stone giant, anonymous original ancient seafaring strategist with no actor likeness, workers carrying modern abstract task folders for comic contrast. The strategist uses an abstract glowing workflow map labeled InkClawAgent to open a harmless alternate route. Cinematic Mediterranean lighting, playful satire, no violence and no copied film frame.",
+      "negative_prompt": "No Matt Damon likeness, no Christopher Nolan film costume, no official Odyssey poster, no studio logo, no exact movie set or frame, no eye-stabbing, no gore, no copyrighted character-specific design.",
+      "risk_flags": ["current-film-context", "public-domain-archetype-only", "no-actor-likeness", "no-film-assets", "comparison-is-satire", "secondary-source-evidence-lower-quality"],
+      "claim_status": "satire"
+    }
+  ]
+}
