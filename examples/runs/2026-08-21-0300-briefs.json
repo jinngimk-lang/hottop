@@ -1,0 +1,67 @@
+{
+  "run_at": "2026-08-21T03:00:00+08:00",
+  "product": "InkClawAgent",
+  "briefs": [
+    {
+      "topic": "Niu Lai turns rough homemade animation into a viral cultural event",
+      "source": "Reuters, 2026-08-20",
+      "source_url": "https://www.reuters.com/world/asia-pacific/how-low-budget-fever-dream-sparked-chinese-box-office-revolt-2026-08-20/",
+      "source_quality": 0.95,
+      "conflict": "Borrow only the cultural contrast of rough-but-finished work versus polished production theater. Do not use the film's calf, mother, leopard, title design, poster, frames or any identifiable character design.",
+      "comparison_target": "over-polished single-purpose tool stack",
+      "product_role": "result-first workflow crew",
+      "panels": [
+        {"caption": "这边还在研究第 18 套 AI 工具。", "visual": "Original glossy conference room where generic tool mascots endlessly compare feature cards; no real logos or UIs."},
+        {"caption": "那边已经把第一版做出来了。", "visual": "Tiny original scrappy studio crew pushes a deliberately simple but complete project onto a screening table."},
+        {"caption": "InkClawAgent：先研究、再写、再审、再改。", "visual": "An original compact workflow crew passes research, writing, review and revision folders in sequence."},
+        {"caption": "先交付，再精修。别把精致当进度。", "visual": "Finished deliverable gets a practical upgrade while the conference room is still debating tools."}
+      ],
+      "punchlines": ["先交付，再精修。别把精致当进度。", "工具摆得再漂亮，也得有人把活串起来。"],
+      "image_prompt": "Four-panel cinematic editorial meme about rough authentic production versus polished workflow theater, completely original human/abstract characters, playful low-budget-versus-glossy contrast, InkClawAgent named only in subtitles, Chinese captions, no reference-image imitation.",
+      "negative_prompt": "No Niu Lai calf or other film characters, no copied low-poly character design, movie title treatment, poster composition, exact frames, company logos, copied product UI or objective superiority claims.",
+      "risk_flags": ["copyright-reference", "trademark", "unsupported-comparison"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Slack Code puts coding agents into collaborative project channels",
+      "source": "The Verge with Slack documentation, 2026-08-20",
+      "source_url": "https://www.theverge.com/tech/982628/slack-code-vibe-coding-channels-launch",
+      "supporting_url": "https://slack.com/help/articles/33076000248851-Work-with-AI-agents-in-Slack",
+      "source_quality": 0.9,
+      "conflict": "Coding agents are becoming visible teammates inside project channels. The meme contrasts a room full of excellent coding specialists with an end-to-end workflow that also needs research, writing, review and revision.",
+      "comparison_target": "coding-only agent room",
+      "product_role": "whole-project producer",
+      "panels": [
+        {"caption": "2026：AI coding agent 都坐进项目群了。", "visual": "Original chat-room stage with several generic coding-agent silhouettes holding CODE cards; no Slack branding or copied interface."},
+        {"caption": "用户：很好，那需求、调研、文案、审稿谁接？", "visual": "A project owner holds four unfinished folders while every coding specialist points only at the CODE folder."},
+        {"caption": "InkClawAgent：别只拉程序员，组个完整项目组。", "visual": "Original producer character brings in abstract specialist agents for RESEARCH, WRITE, REVIEW and CODE."},
+        {"caption": "会写代码是队友，能串全流程才是项目组。", "visual": "All specialists pass one deliverable across a clean end-to-end pipeline toward completion."}
+      ],
+      "punchlines": ["会写代码是队友，能串全流程才是项目组。", "别只给项目加 Agent，给项目加工作流。"],
+      "image_prompt": "Four-panel modern workplace meme, generic project chat environment without any real product UI, several original coding-agent teammates, then an original whole-project producer coordinating research/writing/review/code, Chinese subtitles, visual comedy, no brand imitation.",
+      "negative_prompt": "No Slack logo, Slack UI, Claude/Devin/GitHub Copilot logos or character designs, copied screenshots, benchmark claims, or implication that InkClawAgent integrates with Slack unless separately evidenced.",
+      "risk_flags": ["trademark", "capability-implication", "unsupported-comparison"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Humanoid robotics industry talks about an approaching 'ChatGPT moment'",
+      "source": "Reuters, 2026-08-20",
+      "source_url": "https://www.reuters.com/world/asia-pacific/robots-poised-chatgpt-moment-unitree-ceo-says-2026-08-20/",
+      "source_quality": 0.95,
+      "conflict": "The recognizable idea is a room full of capable robot bodies waiting for the software intelligence that makes them generally useful. Reframe that as many capable AI tools waiting for orchestration; never imply InkClawAgent controls physical robots.",
+      "comparison_target": "disconnected specialist tools",
+      "product_role": "workflow brain / coordinator metaphor",
+      "panels": [
+        {"caption": "一屋子高手，个个都会一招。", "visual": "Original generic humanoid silhouettes each demonstrate one abstract office task: SEARCH, WRITE, REVIEW, CODE."},
+        {"caption": "但项目一来：谁负责下一步？", "visual": "All generic specialists freeze around one unfinished project box with tangled arrows."},
+        {"caption": "InkClawAgent：能力不用重做，先把顺序接起来。", "visual": "An abstract glowing workflow map connects the specialists into a clear sequence; product appears only as text."},
+        {"caption": "真正的“ChatGPT moment”，常常是从会干到会协作。", "visual": "The same original specialists complete one project together; no robot brand resemblance."}
+      ],
+      "punchlines": ["从会干到会协作，才是下一步。", "高手够多了，缺的是把高手串起来。"],
+      "image_prompt": "Four-panel futuristic workflow satire with completely original generic humanoid silhouettes, abstract office tasks rather than physical robotics capabilities, InkClawAgent as a textual workflow-coordination metaphor only, cinematic lighting, Chinese subtitles.",
+      "negative_prompt": "No Unitree or identifiable robot designs, no company logos, no physical-control implication, no quoted executive likeness, no copied conference visuals, no objective benchmark superiority claim.",
+      "risk_flags": ["trademark", "capability-implication", "unsupported-comparison"],
+      "factual_claim_status": "satire"
+    }
+  ]
+}
