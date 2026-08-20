@@ -1,0 +1,111 @@
+{
+  "run_at": "2026-08-21T04:00:00+08:00",
+  "product": "InkClawAgent",
+  "briefs": [
+    {
+      "topic": "Release-day hook: Hot Spot imagines a near-future society ruled by a sentient AI",
+      "source": "Associated Press 2026 Summer Movie Guide; release date 2026-08-21",
+      "source_url": "https://apnews.com/article/4fb04771bfe1b29a113044382f5a3de6",
+      "source_quality": 0.9,
+      "conflict": "Borrow only the generic near-future idea of one monolithic AI sitting on the throne. Reframe the joke around centralized do-everything-tool mythology versus a coordinated multi-role workflow. Never reproduce the movie's actors, costumes, production design, poster, title treatment or scenes.",
+      "comparison_target": "one monolithic do-everything AI",
+      "product_role": "workflow coordinator that gives specialist roles a sequence",
+      "panels": [
+        {
+          "caption": "未来世界：一个 AI 坐王座，啥都说自己能干。",
+          "visual": "Original retro-futurist control hall with a completely generic glowing AI orb on an oversized throne; no actor likeness, no film set resemblance, no logos."
+        },
+        {
+          "caption": "用户：那调研、写作、审稿、改稿，谁先谁后？",
+          "visual": "Four unlabeled work stations flash conflicting NEXT buttons while one confused project owner holds an unfinished folder."
+        },
+        {
+          "caption": "InkClawAgent：别封神，先把角色和步骤排清楚。",
+          "visual": "Original coordinator lays SEARCH, WRITE, REVIEW and REVISE cards into one clean pipeline; product appears only as caption text."
+        },
+        {
+          "caption": "一个 AI 像王，能协作的流程才像团队。",
+          "visual": "The throne is left unused while the specialist stations complete one deliverable together in sequence."
+        }
+      ],
+      "punchlines": [
+        "一个 AI 像王，能协作的流程才像团队。",
+        "别给工具加王冠，给工作加流程。"
+      ],
+      "image_prompt": "Four-panel cinematic near-future workplace satire, entirely original retro-futurist control room, generic AI throne metaphor in the first half and coordinated specialist workflow in the second half, Chinese captions, InkClawAgent named only in subtitles, no reference-image imitation.",
+      "negative_prompt": "No Hot Spot actors, Noomi Rapace likeness, official poster, title typography, costumes, sets, exact film frames, studio logos, copied AI product UI, or unsupported objective performance claims.",
+      "risk_flags": ["copyright-reference", "likeness", "trademark", "unsupported-comparison"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "World Robot Conference puts hundreds of robotics exhibitors in one arena",
+      "source": "Reuters, 2026-08-20",
+      "source_url": "https://www.reuters.com/world/asia-pacific/chinese-companies-watch-world-robot-conference-2026-08-20/",
+      "source_quality": 0.95,
+      "conflict": "Reuters reports more than 300 exhibitors at the World Robot Conference. Use the visual language of many specialists demonstrating one impressive skill each, then reframe toward orchestration. Do not copy identifiable robot hardware, booth layouts, conference branding or imply InkClawAgent controls physical robots.",
+      "comparison_target": "a hall full of disconnected specialist tools",
+      "product_role": "project conductor / orchestration metaphor",
+      "panels": [
+        {
+          "caption": "展馆里 300 多个高手：每个都能秀一招。",
+          "visual": "Huge original expo hall filled with generic abstract robot silhouettes, each holding a different office-task placard such as SEARCH, WRITE, REVIEW or CODE; no real robot designs."
+        },
+        {
+          "caption": "项目经理：很好，谁负责把这些招连起来？",
+          "visual": "A project manager stands before tangled arrows connecting dozens of specialist stations, all pointing in different directions."
+        },
+        {
+          "caption": "InkClawAgent：高手不用重造，先排好接力顺序。",
+          "visual": "An original conductor figure turns the tangled arrows into a clear sequential workflow across four generic specialist stations."
+        },
+        {
+          "caption": "会一招叫能力，能接力才叫交付。",
+          "visual": "The same generic specialists pass one completed project baton across the finish line together."
+        }
+      ],
+      "punchlines": [
+        "会一招叫能力，能接力才叫交付。",
+        "高手很多，项目缺的是总指挥。"
+      ],
+      "image_prompt": "Four-panel futuristic expo satire with hundreds of completely original generic specialist machines as metaphors for software tools, then a clean office-workflow relay coordinated by InkClawAgent as text-only product branding, Chinese captions, energetic editorial illustration.",
+      "negative_prompt": "No Unitree, UBTECH, Deep Robotics, Leju, Galbot, Fourier or other identifiable hardware; no conference logos, company booths, executive likenesses, physical-control implication or benchmark superiority claim.",
+      "risk_flags": ["trademark", "hardware-likeness", "capability-implication", "unsupported-comparison"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Niu Lai's low-budget animation keeps spreading as an anti-polish cultural meme",
+      "source": "Reuters, 2026-08-20",
+      "source_url": "https://www.reuters.com/world/asia-pacific/how-low-budget-fever-dream-sparked-chinese-box-office-revolt-2026-08-20/",
+      "source_quality": 0.95,
+      "conflict": "Use a fresh angle on the same cultural signal: prototype energy beats endless preparation. Never use the movie's calf, mother, leopard, identifiable low-poly character design, title treatment, poster or scenes. The comparison stays workflow satire, not a claim that InkClawAgent guarantees popularity.",
+      "comparison_target": "perfect-roadmap-before-first-draft workflow",
+      "product_role": "first-draft-to-review-to-revision engine",
+      "panels": [
+        {
+          "caption": "A 组：第一版还没做，先把路线图磨到 4K。",
+          "visual": "Original office team polishing an absurdly glossy roadmap under museum lights while the actual project folder remains empty."
+        },
+        {
+          "caption": "B 组：先做一版，让真实反馈进来。",
+          "visual": "A tiny original workshop places a rough but complete first draft on a table and receives sticky-note feedback."
+        },
+        {
+          "caption": "InkClawAgent：写出来 → 审一遍 → 改一轮。",
+          "visual": "Three clean stations labeled DRAFT, REVIEW and REVISE pass the same document forward; no movie characters."
+        },
+        {
+          "caption": "第一版不是终点，是你终于有东西能改。",
+          "visual": "The rough draft visibly improves through two revisions while the glossy roadmap team is still adjusting presentation lights."
+        }
+      ],
+      "punchlines": [
+        "第一版不是终点，是你终于有东西能改。",
+        "先有东西能审，再谈东西够不够神。"
+      ],
+      "image_prompt": "Four-panel editorial meme about prototype momentum versus endless roadmap polishing, completely original workplace characters and props, no animals or movie-derived designs, Chinese captions, InkClawAgent as a draft-review-revise workflow metaphor.",
+      "negative_prompt": "No Niu Lai characters or film art style imitation, no calf/mother/leopard, no copied low-poly character design, movie poster or frames, no claim that InkClawAgent causes virality or box-office success, no logos or copied product interfaces.",
+      "risk_flags": ["copyright-reference", "unsupported-comparison", "outcome-implication"],
+      "factual_claim_status": "satire"
+    }
+  ]
+}
