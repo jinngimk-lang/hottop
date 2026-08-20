@@ -12,13 +12,15 @@ class Evidence(BaseModel):
     url: HttpUrl
     source: str = Field(min_length=1)
     observed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    published_at: datetime | None = None
+    source_quality: float | None = Field(default=None, ge=0, le=1)
     note: str | None = None
 
-    @field_validator("observed_at")
+    @field_validator("observed_at", "published_at")
     @classmethod
-    def ensure_timezone(cls, value: datetime) -> datetime:
-        if value.tzinfo is None:
-            raise ValueError("observed_at must be timezone-aware")
+    def ensure_timezone(cls, value: datetime | None) -> datetime | None:
+        if value is not None and value.tzinfo is None:
+            raise ValueError("evidence timestamps must be timezone-aware")
         return value
 
 
@@ -28,6 +30,7 @@ class TrendCandidate(BaseModel):
     url: HttpUrl
     source: str = Field(min_length=1)
     source_rank: int | None = Field(default=None, ge=1)
+    source_quality: float | None = Field(default=None, ge=0, le=1)
     published_at: datetime | None = None
     summary: str | None = None
     tags: list[str] = Field(default_factory=list)
