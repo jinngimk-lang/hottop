@@ -1,8 +1,10 @@
 from hottop.creative import (
     BridgeCandidate,
+    CreativeReview,
     CreativeSignals,
     build_creative_strategy,
     select_best_bridge,
+    select_best_review,
     select_expression_form,
     select_visual_medium,
 )
@@ -135,3 +137,59 @@ def test_visual_medium_router_prefers_hotspot_medium_over_product_category() -> 
 def test_visual_medium_router_uses_product_medium_when_hotspot_is_neutral() -> None:
     assert select_visual_medium(tags=["culture"], subject_category="food") == "commercial-product"
     assert select_visual_medium(tags=["technology"], subject_category="software") == "technology-realism"
+
+
+def test_creative_review_rejects_hot_character_plus_logo_even_when_recognizable() -> None:
+    review = CreativeReview(
+        name="hot character plus logo",
+        instant_comprehension=0.95,
+        natural_linkage=0.25,
+        product_centrality=0.2,
+        surprise=0.2,
+        ownability=0.15,
+        evidence_safety=0.9,
+        original_execution=0.4,
+    )
+
+    assert review.passes is False
+
+
+def test_creative_review_accepts_specific_surprising_original_bridge() -> None:
+    review = CreativeReview(
+        name="product material becomes the cultural action",
+        instant_comprehension=0.9,
+        natural_linkage=0.95,
+        product_centrality=0.95,
+        surprise=0.85,
+        ownability=0.9,
+        evidence_safety=0.9,
+        original_execution=0.9,
+    )
+
+    assert review.passes is True
+    assert review.total >= 0.85
+
+
+def test_best_review_prefers_passing_ownable_direction() -> None:
+    generic = CreativeReview(
+        name="generic comparison",
+        instant_comprehension=0.85,
+        natural_linkage=0.6,
+        product_centrality=0.5,
+        surprise=0.35,
+        ownability=0.35,
+        evidence_safety=0.9,
+        original_execution=0.7,
+    )
+    ownable = CreativeReview(
+        name="ownable metaphor",
+        instant_comprehension=0.9,
+        natural_linkage=0.9,
+        product_centrality=0.95,
+        surprise=0.85,
+        ownability=0.95,
+        evidence_safety=0.9,
+        original_execution=0.9,
+    )
+
+    assert select_best_review([generic, ownable]) is ownable
