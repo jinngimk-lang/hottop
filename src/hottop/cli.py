@@ -340,6 +340,25 @@ def orchestrate_command(
     _write_or_echo(orchestrate(OrchestrationInput.model_validate(raw)), output)
 
 
+@app.command(name="creative-batch")
+def creative_batch(
+    batch_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Batch reviewed flexible creative orchestrations into selected render-v2 outputs."""
+    raw = json.loads(batch_path.read_text(encoding="utf-8"))
+    records = raw.get("items") if isinstance(raw, dict) else raw
+    if not isinstance(records, list) or not records:
+        raise typer.BadParameter("creative batch input must contain a non-empty `items` array")
+    results = [orchestrate(OrchestrationInput.model_validate(record)) for record in records]
+    payload = {
+        "schema_version": "hottop.creative-batch.v1",
+        "input_count": len(results),
+        "results": [result.model_dump(mode="json") for result in results],
+    }
+    _write_or_echo(payload, output)
+
+
 @app.command()
 def batch(
     input_path: Path | None = typer.Argument(None, exists=True, dir_okay=False),
