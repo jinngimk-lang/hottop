@@ -19,11 +19,18 @@ from .comparison_research import (
     adapt_comparison_research_results,
 )
 from .creative_package import CreativePackageInput, build_creative_package
+from .directives import build_creative_directive
 from .doctor import local_doctor
 from .enrichment import build_default_enrichment_pipeline
 from .intake import CreativeIntent, next_question, resolve_intent
 from .integrations.playwright_cli import PlaywrightCliAdapter
-from .models import ComparisonCandidate, CreativeConcept, ProductProfile, TrendCandidate
+from .models import (
+    ComparisonCandidate,
+    CreativeConcept,
+    ProductProfile,
+    PromotionContext,
+    TrendCandidate,
+)
 from .orchestrator import OrchestrationInput, orchestrate
 from .pipeline import build_batch
 from .positioning import (
@@ -164,6 +171,22 @@ def next_question_command(
 ) -> None:
     """Return one high-impact guided question, or a ready-to-create state."""
     _write_or_echo(next_question(_load_intent(intent_path)), output)
+
+
+@app.command(name="creative-directive")
+def creative_directive_command(
+    directive_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Turn resolved intent and promotion semantics into generation-side creative guidance."""
+    raw = json.loads(directive_path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict) or "intent" not in raw or "promotion_context" not in raw:
+        raise typer.BadParameter(
+            "creative directive input must contain `intent` and `promotion_context` objects"
+        )
+    resolved_intent = CreativeIntent.model_validate(raw["intent"])
+    promotion_context = PromotionContext.model_validate(raw["promotion_context"])
+    _write_or_echo(build_creative_directive(resolved_intent, promotion_context), output)
 
 
 @app.command()
