@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 17:07 +08:00
+Last updated: 2026-08-21 18:05 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -23,6 +23,7 @@ Milestone: Foundation v0.1
 - Added `examples/runs/consumer-swipe-reveal-production.json`, a synthetic/non-factual representative production archive that exercises intent → enrichment handoff → grammar-only `VisualReference` → `CreativeDirective` → reviewed orchestration → three-frame `swipe-reveal` → `hottop.render.v2`. It preserves category default, deleted constraint, new competition axis, sensory bridge, exclusions, risks and claim posture.
 - The consumer production archive contract was introduced RED-first (`FileNotFoundError` in run 481) and implemented afterward. Follow-on RED contracts exposed the missing `creative-directive` CLI and the default-witty humor leak; current implementation head `60a48668b75391161b52d8ce121dae6fc4a3d00d` passed CI run 499 on Python 3.11 and 3.12.
 - Foundation closure review found and fixed a final evidence/safety gap in the flexible production contract: `CreativeConcept` can no longer declare `claim_status=supported` without attached `comparison_evidence`, and `hottop.render.v2` preserves that evidence provenance. RED run 507 produced the expected two failures; implementation head `899ca5b2d9c37298619616d4d4291398e11e6e85` passed CI run 511 on Python 3.11 and 3.12.
+- Foundation closure review also found an integrity gap in external creative scoring: a high-scoring `CreativeReview` could be paired with a different option because package/orchestration contracts did not bind the review identity to the concept option. `CreativePackageOption` and `OrchestrationOption` now require a nonblank label and `review.name == option.label`, preventing cross-option review reuse. The first implementation run 521 correctly exposed a test-boundary mistake; corrected head `80ff4e464c7f8eefb42cf087b29e9beec9469988` passed CI run 523.
 - Added live archive `examples/runs/2026-08-21-1257-briefs.json` with evidence-linked robotics, BirdTok and digital-popover creative directions while keeping factual/safety caveats explicit.
 - Persistent project memory protocol is active: `PROJECT.md` is durable direction, `STATUS.md` is the execution snapshot, reusable skills carry operational doctrine, and repository truth is reread under context pressure.
 
@@ -46,7 +47,7 @@ Milestone: Foundation v0.1
 
 ## In progress
 
-- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety edges after closing the render-v2 comparison-evidence gap.
+- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety edges after closing the render-v2 comparison-evidence and review-binding gaps.
 - Continue fresh trend research across entertainment, animation, technology, internet culture, social phenomena and consumer culture without collapsing discovery into AI/tech only.
 - RSSHub remains an optional pilot awaiting an explicitly configured operator-controlled instance; no credential or external-service setup is performed autonomously.
 
