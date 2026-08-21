@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 14:05 +08:00
+Last updated: 2026-08-21 14:09 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -10,6 +10,7 @@ Milestone: Foundation v0.1
 - Promotion semantics are generalized beyond InkClawAgent/AI: brand, product, service, feature, campaign, person, idea, keyword or tool.
 - `PromotionContext`, `ComparisonCandidate` and deterministic positioning/research-query planning are implemented; `hottop position` emits a structured research handoff.
 - Comparison rules are evidence-aware: named competitors cannot be assigned invented defects; generic category/legacy/manual proxies are preferred when evidence is weak.
+- `hottop position --comparisons <json>` now ingests researched `ComparisonCandidate` records, normalizes unsupported `supported` posture back to `satire`, and emits `selected_comparison` using the deterministic selector. RED head `dc02ebd8bc86db56613e8cf2e1d000a33e363a60` failed CI run 305 because the option did not exist; implementation head `29f2093d8e39df39f37ef5acd7ae00a3f9bfbb8f` passed run 309 on Python 3.11/3.12.
 - Visual-medium routing is established for film/live action, animation, real-world/social, technology, food/consumer and internet-native formats.
 - Creative doctrine is persisted in `PROJECT.md`, `skills/brand-metaphor-creative/SKILL.md`, `skills/creative-reference-research/SKILL.md`, and `skills/hottop-meme/SKILL.md`; context recovery must not collapse Hottop back into “four-panel AI memes.”
 - Structured creative contracts now exist in code: `CreativeStrategy` carries `category_default`, `deleted_constraint`, `new_competition_axis`, `bridge_type`, `bridge`, and `expression_form`; `CreativeConcept` carries flexible beats, medium, genre treatment, prompts, risks and claim status.
@@ -19,6 +20,7 @@ Milestone: Foundation v0.1
 - Provenance-first `VisualReference` and `hottop reference-plan` are implemented for grammar-only reference research using Playwright CLI planning without executing or persisting browser state.
 - RSSHub external-feed pilot is implemented as an optional adapter that reuses the existing RSS parser. `BatchSourceConfig` and CLI discovery accept `rsshub`; operator must explicitly configure `RSSHUB_BASE_URL`; `hottop doctor` reports RSSHub configuration without making it a core dependency.
 - RSSHub RED sequence verified expected failure modes (missing module / missing doctor state); exact-head CI run 301 passed on Python 3.11/3.12 after implementation.
+- PR #1 metadata has been refreshed from the obsolete “four-panel meme brief pipeline” description to the current brand-creative-engine scope while remaining draft/mergeable.
 - Added live archive `examples/runs/2026-08-21-1257-briefs.json` with three evidence-linked creative directions: robotics “ChatGPT moment” → do not wait for a universal breakthrough; BirdTok / craving for something real → signal over output volume; intrusive digital popovers → delete interface friction rather than design a prettier layer.
 - Persistent project memory protocol is active: durable direction lives in the repository; context pressure triggers repository-based recovery; accepted direction changes update charter + relevant skill/spec + status.
 
@@ -42,19 +44,19 @@ Milestone: Foundation v0.1
 
 ## In progress
 
-- Turning `hottop position` search plans into evidence-backed `ComparisonCandidate` records from public web / Agent-Reach results.
+- Turning public web / Agent-Reach research results into evidence-bearing `ComparisonCandidate` JSON automatically, now that `hottop position --comparisons` has a validated ingestion/selection contract.
 - Connecting flexible `CreativeConcept` generation into the normal batch/brief production path so `render.v2` is not only an import/export contract.
 - Continuing live trend research across entertainment, animation, technology, internet culture, social phenomena and consumer culture while Foundation v0.1 closes.
 
 ## Next actions
 
-1. Connect researched comparison evidence to deterministic target selection and briefing instead of leaving `comparison_candidates` empty in `hottop position` output.
+1. Add a research-result → `ComparisonCandidate` adapter/contract so fresh public web/Agent-Reach evidence can flow directly into `hottop position --comparisons` without manual record construction.
 2. Add an enrichment-before-creative CLI path so selected trend context can be enriched before bridge/reframe generation.
 3. Make normal batch production emit flexible creative concepts (or a parallel `creative-batch`) using bridge scoring, expression-form selection, medium routing and creative review before renderer handoff.
 4. Make batch-config `preset` affect collector/source-quality resolution.
 5. Add representative consumer-product and swipe-reveal archives that exercise `CreativeConcept` + `hottop.render.v2`, including category-default/deleted-constraint/new-axis fields and reference manifests where useful.
 6. Exercise the RSSHub pilot against an explicitly configured operator-controlled instance; keep it optional and do not vendor RSSHub.
-7. Inspect Foundation v0.1 diff/reviews, update the stale PR description that still says “four-panel meme brief pipeline,” and mark PR #1 ready once remaining production-path contracts are green.
+7. Inspect Foundation v0.1 diff/reviews and mark PR #1 ready once remaining production-path contracts are green.
 8. After Foundation v0.1, add a lightweight project-bootstrap template/command so new long-running projects can create charter/status/skill recovery files consistently instead of relying on memory.
 
 ## Constraints
