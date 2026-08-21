@@ -1,4 +1,9 @@
-from hottop.creative import CreativeSignals, select_expression_form
+from hottop.creative import (
+    BridgeCandidate,
+    CreativeSignals,
+    select_best_bridge,
+    select_expression_form,
+)
 from hottop.models import CreativeStrategy
 
 
@@ -56,3 +61,27 @@ def test_narrative_conflict_uses_four_panel_when_no_stronger_signal() -> None:
 
 def test_default_is_single_visual_metaphor() -> None:
     assert select_expression_form(CreativeSignals()) == "single-visual-metaphor"
+
+
+def test_best_bridge_prefers_product_specific_visual_link() -> None:
+    generic = BridgeCandidate(
+        bridge_type="role",
+        bridge="the product is the hero",
+        product_specificity=0.25,
+        hotspot_fit=0.8,
+        visual_clarity=0.8,
+        surprise=0.2,
+    )
+    embodied = BridgeCandidate(
+        bridge_type="shape-material",
+        bridge="the product material becomes the hotspot's signature visual action",
+        product_specificity=0.95,
+        hotspot_fit=0.9,
+        visual_clarity=0.95,
+        surprise=0.85,
+    )
+
+    selected = select_best_bridge([generic, embodied])
+
+    assert selected is embodied
+    assert selected.score > generic.score
