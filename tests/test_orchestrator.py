@@ -200,3 +200,32 @@ def test_orchestration_input_rejects_concept_for_a_different_promotion_context()
             ],
             references=[],
         )
+
+
+def test_orchestration_input_rejects_intent_for_a_different_promotion_target():
+    intent = resolve_intent("宣传另一个产品", overrides={"promotion_target": "Other Product"})
+    context = PromotionContext(
+        subject_name="Ribbon Lunch",
+        subject_type="product",
+        category="food",
+        primary_job="memorable quick lunch",
+    )
+
+    with pytest.raises(ValueError, match="intent promotion target must match orchestration promotion context"):
+        OrchestrationInput(
+            intent=intent,
+            promotion_context=context,
+            options=[
+                OrchestrationOption(
+                    label="right-concept-wrong-intent",
+                    concept=_concept(
+                        "right-concept-wrong-intent",
+                        "swipe-reveal",
+                        "the product ribbon becomes the visual action",
+                    ),
+                    review=_review("right-concept-wrong-intent"),
+                    context_review=_context(0.9),
+                )
+            ],
+            references=[],
+        )
