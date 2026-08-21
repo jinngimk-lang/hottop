@@ -13,6 +13,7 @@ from .briefing import build_brief
 from .collectors.dailyhot import DailyHotApiCollector
 from .collectors.newsnow import NewsNowCollector
 from .collectors.rss import RSSCollector
+from .collectors.rsshub import RSSHubCollector
 from .doctor import local_doctor
 from .integrations.playwright_cli import PlaywrightCliAdapter
 from .models import CreativeConcept, ProductProfile, TrendCandidate
@@ -53,7 +54,9 @@ async def _discover(source: str, key: str, limit: int) -> list[TrendCandidate]:
         return await NewsNowCollector(source_id=key).collect(limit=limit)
     if source == "rss":
         return await RSSCollector(feed_url=key, source_name="rss:custom").collect(limit=limit)
-    raise typer.BadParameter("source must be one of: dailyhot, newsnow, rss")
+    if source == "rsshub":
+        return await RSSHubCollector(route=key).collect(limit=limit)
+    raise typer.BadParameter("source must be one of: dailyhot, newsnow, rss, rsshub")
 
 
 def _parse_source_spec(spec: str) -> tuple[str, str]:
@@ -151,7 +154,9 @@ def reference_plan(
 @app.command()
 def discover(
     source: str = typer.Option("dailyhot", "--source"),
-    key: str = typer.Option("zhihu", "--key", help="DailyHot route, NewsNow source id, or RSS URL"),
+    key: str = typer.Option(
+        "zhihu", "--key", help="DailyHot route, NewsNow source id, RSS URL, or RSSHub route"
+    ),
     limit: int = typer.Option(30, "--limit", min=1, max=100),
     output: Path | None = typer.Option(None, "--output"),
 ) -> None:
@@ -243,7 +248,10 @@ def batch(
     source: list[str] | None = typer.Option(
         None,
         "--source",
-        help="Repeatable TYPE:KEY collector spec, e.g. dailyhot:zhihu or rss:https://example.com/feed.xml",
+        help=(
+            "Repeatable TYPE:KEY collector spec, e.g. dailyhot:zhihu, "
+            "rss:https://example.com/feed.xml, or rsshub:bilibili/ranking/0"
+        ),
     ),
     limit_per_source: int = typer.Option(30, "--limit-per-source", min=1, max=100),
     output: Path | None = typer.Option(None, "--output"),
