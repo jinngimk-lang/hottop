@@ -83,3 +83,27 @@ def test_paid_social_product_first_directive_requires_early_attribution():
     assert directive.product_visibility == "product-first"
     assert "opening beat" in directive.product_visibility_instruction.lower()
     assert any("attribution" in item.lower() for item in directive.platform_instructions)
+
+
+def test_default_witty_does_not_force_humor_into_minimal_premium_work():
+    intent = resolve_intent(
+        "给 Luma Glass 做 Instagram 极简高级广告",
+        overrides={"promotion_target": "Luma Glass"},
+    )
+    promotion = PromotionContext(
+        subject_name="Luma Glass",
+        subject_type="product",
+        category="consumer product",
+        primary_job="make hydration feel visually distinctive",
+        primary_differentiator="clear faceted glass geometry",
+        semantic_terms=["clear", "faceted", "glass"],
+    )
+
+    assert intent.creative_ambition.source == "defaulted"
+    assert intent.creative_ambition.value == "witty"
+
+    directive = build_creative_directive(intent, promotion)
+
+    assert directive.style == "minimal-premium"
+    assert directive.humor_expected is False
+    assert directive.joke_mechanics == []
