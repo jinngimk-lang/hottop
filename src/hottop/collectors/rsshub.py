@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 import httpx
 
 from ..models import TrendCandidate
-from .rss import RSSCollector, RSS_SOURCE_QUALITY
+from .rss import RSS_SOURCE_QUALITY, RSSCollector
 
 
 class RSSHubCollector:
