@@ -154,3 +154,13 @@ def test_orchestrator_rejects_when_all_candidates_fail_existing_hard_gate():
 
     with pytest.raises(ValueError, match="creative review gate"):
         orchestrate(payload)
+
+
+def test_orchestration_option_rejects_review_for_a_different_label():
+    with pytest.raises(ValueError, match="review name must match option label"):
+        OrchestrationOption(
+            label="bridge-reveal",
+            concept=_concept("mismatch", "swipe-reveal", "the product ribbon becomes the action"),
+            review=_review("different-concept"),
+            context_review=_context(0.95),
+        )
