@@ -161,30 +161,28 @@ def test_package_refuses_to_select_when_all_options_fail_hard_gate():
 
 
 def test_package_rejects_review_bound_to_a_different_option_label():
-    package = CreativePackageInput.model_validate(
-        {
-            "options": [
-                {
-                    "label": "bridge-led-reveal",
-                    "concept": _concept(
-                        topic_id="mismatched-review",
-                        expression_form="swipe-reveal",
-                        bridge="the product ribbon becomes the visual action",
-                    ),
-                    "review": {
-                        "name": "different-concept",
-                        "instant_comprehension": 0.95,
-                        "natural_linkage": 0.95,
-                        "product_centrality": 0.95,
-                        "surprise": 0.95,
-                        "ownability": 0.95,
-                        "evidence_safety": 0.95,
-                        "original_execution": 0.95,
-                    },
-                }
-            ]
-        }
-    )
-
     with pytest.raises(ValueError, match="review name must match option label"):
-        build_creative_package(package)
+        CreativePackageInput.model_validate(
+            {
+                "options": [
+                    {
+                        "label": "bridge-led-reveal",
+                        "concept": _concept(
+                            topic_id="mismatched-review",
+                            expression_form="swipe-reveal",
+                            bridge="the product ribbon becomes the visual action",
+                        ),
+                        "review": {
+                            "name": "different-concept",
+                            "instant_comprehension": 0.95,
+                            "natural_linkage": 0.95,
+                            "product_centrality": 0.95,
+                            "surprise": 0.95,
+                            "ownability": 0.95,
+                            "evidence_safety": 0.95,
+                            "original_execution": 0.95,
+                        },
+                    }
+                ]
+            }
+        )
