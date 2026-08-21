@@ -100,15 +100,24 @@ def _load_product(path: Path) -> ProductProfile:
     return ProductProfile.model_validate(raw)
 
 
-async def _discover(source: str, key: str, limit: int) -> list[TrendCandidate]:
+async def _discover(
+    source: str,
+    key: str,
+    limit: int,
+    preset: str | None = None,
+) -> list[TrendCandidate]:
     if source == "dailyhot":
-        return await DailyHotApiCollector(route=key).collect(limit=limit)
+        return await DailyHotApiCollector(route=key, preset=preset).collect(limit=limit)
     if source == "newsnow":
-        return await NewsNowCollector(source_id=key).collect(limit=limit)
+        return await NewsNowCollector(source_id=key, preset=preset).collect(limit=limit)
     if source == "rss":
-        return await RSSCollector(feed_url=key, source_name="rss:custom").collect(limit=limit)
+        return await RSSCollector(
+            feed_url=key,
+            source_name="rss:custom",
+            preset=preset,
+        ).collect(limit=limit)
     if source == "rsshub":
-        return await RSSHubCollector(route=key).collect(limit=limit)
+        return await RSSHubCollector(route=key, preset=preset).collect(limit=limit)
     raise typer.BadParameter("source must be one of: dailyhot, newsnow, rss, rsshub")
 
 
@@ -127,7 +136,10 @@ async def _discover_many(specs: list[str], limit: int) -> list[TrendCandidate]:
 
 async def _discover_configured(config: BatchConfig) -> list[TrendCandidate]:
     batches = await asyncio.gather(
-        *(_discover(source.type, source.key, source.limit) for source in config.sources)
+        *(
+            _discover(source.type, source.key, source.limit, preset=source.preset)
+            for source in config.sources
+        )
     )
     return [candidate for batch in batches for candidate in batch]
 
