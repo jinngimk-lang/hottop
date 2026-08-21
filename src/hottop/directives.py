@@ -41,9 +41,14 @@ def _direction_lanes(intent: CreativeIntent) -> list[str]:
 def _humor_expected(intent: CreativeIntent) -> bool:
     if intent.style.value == "funny-meme":
         return True
+    if (
+        intent.creative_ambition.value == "witty"
+        and intent.creative_ambition.source != "defaulted"
+    ):
+        return True
     return (
-        intent.creative_ambition.source != "defaulted"
-        and intent.creative_ambition.value in {"witty", "breakout"}
+        intent.campaign_goal.value == "hotspot-participation"
+        and intent.creative_ambition.value == "breakout"
     )
 
 
