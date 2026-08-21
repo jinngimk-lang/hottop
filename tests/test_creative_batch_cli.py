@@ -91,6 +91,7 @@ def _orchestration_item() -> dict[str, object]:
                     "original_execution": 0.95,
                 },
                 "context_review": {
+                    "name": "bridge-reveal",
                     "platform_fit": 0.95,
                     "style_fit": 0.95,
                     "campaign_goal_fit": 0.9,
