@@ -3,7 +3,10 @@ import json
 from typer.testing import CliRunner
 
 from hottop.cli import app
-from hottop.comparison_research import ComparisonResearchResult, adapt_comparison_research_results
+from hottop.comparison_research import (
+    ComparisonResearchResult,
+    adapt_comparison_research_results,
+)
 
 runner = CliRunner()
 
