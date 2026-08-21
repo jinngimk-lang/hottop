@@ -44,7 +44,10 @@ class OrchestrationInput(BaseModel):
     references: list[VisualReference] = Field(default_factory=list, max_length=24)
 
     @model_validator(mode="after")
-    def bind_options_to_promotion_context(self) -> OrchestrationInput:
+    def bind_intent_and_options_to_promotion_context(self) -> OrchestrationInput:
+        intent_target = self.intent.promotion_target.value
+        if intent_target is not None and intent_target.strip() != self.promotion_context.subject_name.strip():
+            raise ValueError("intent promotion target must match orchestration promotion context")
         if any(option.concept.promotion != self.promotion_context for option in self.options):
             raise ValueError("concept promotion must match orchestration promotion context")
         return self
