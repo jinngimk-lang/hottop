@@ -70,8 +70,14 @@ def _review(name: str, ownability: float = 0.9) -> CreativeReview:
     )
 
 
-def _context(score: float, *, humor_expected: bool = False) -> CreativeContextReview:
+def _context(
+    name: str,
+    score: float,
+    *,
+    humor_expected: bool = False,
+) -> CreativeContextReview:
     return CreativeContextReview(
+        name=name,
         platform_fit=score,
         style_fit=score,
         campaign_goal_fit=score,
@@ -105,7 +111,7 @@ def test_orchestrator_selects_platform_fit_passing_candidate_and_keeps_alternate
                 label="pain-contrast",
                 concept=_concept("pain", "four-panel", "generic old way conflict"),
                 review=_review("pain-contrast"),
-                context_review=_context(0.68),
+                context_review=_context("pain-contrast", 0.68),
             ),
             OrchestrationOption(
                 label="bridge-reveal",
@@ -113,13 +119,13 @@ def test_orchestrator_selects_platform_fit_passing_candidate_and_keeps_alternate
                     "bridge", "swipe-reveal", "the product ribbon becomes the visual action"
                 ),
                 review=_review("bridge-reveal"),
-                context_review=_context(0.95),
+                context_review=_context("bridge-reveal", 0.95),
             ),
             OrchestrationOption(
                 label="category-reframe",
                 concept=_concept("reframe", "split-old-vs-new", "remove full reveal convention"),
                 review=_review("category-reframe"),
-                context_review=_context(0.78),
+                context_review=_context("category-reframe", 0.78),
             ),
         ],
         references=[],
@@ -154,7 +160,7 @@ def test_orchestrator_rejects_when_all_candidates_fail_existing_hard_gate():
                 label="generic",
                 concept=_concept("bad", "single-visual-metaphor", "hot character plus logo"),
                 review=_review("generic", ownability=0.3),
-                context_review=_context(1.0),
+                context_review=_context("generic", 1.0),
             )
         ],
         references=[],
@@ -170,7 +176,7 @@ def test_orchestration_option_rejects_review_for_a_different_label():
             label="bridge-reveal",
             concept=_concept("mismatch", "swipe-reveal", "the product ribbon becomes the action"),
             review=_review("different-concept"),
-            context_review=_context(0.95),
+            context_review=_context("bridge-reveal", 0.95),
         )
 
 
@@ -195,7 +201,7 @@ def test_orchestration_input_rejects_concept_for_a_different_promotion_context()
                         "a strong bridge for a different product",
                     ),
                     review=_review("wrong-product"),
-                    context_review=_context(0.9),
+                    context_review=_context("wrong-product", 0.9),
                 )
             ],
             references=[],
@@ -227,7 +233,7 @@ def test_orchestration_input_rejects_intent_for_a_different_promotion_target():
                         "the product ribbon becomes the visual action",
                     ),
                     review=_review("right-concept-wrong-intent"),
-                    context_review=_context(0.9),
+                    context_review=_context("right-concept-wrong-intent", 0.9),
                 )
             ],
             references=[],
