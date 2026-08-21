@@ -36,6 +36,46 @@ class BridgeCandidate(BaseModel):
         )
 
 
+class CreativeReview(BaseModel):
+    """Structured version of the repository's seven-part creative review gate."""
+
+    name: str = Field(min_length=1)
+    instant_comprehension: float = Field(ge=0, le=1)
+    natural_linkage: float = Field(ge=0, le=1)
+    product_centrality: float = Field(ge=0, le=1)
+    surprise: float = Field(ge=0, le=1)
+    ownability: float = Field(ge=0, le=1)
+    evidence_safety: float = Field(ge=0, le=1)
+    original_execution: float = Field(ge=0, le=1)
+
+    @property
+    def total(self) -> float:
+        return (
+            0.15 * self.instant_comprehension
+            + 0.18 * self.natural_linkage
+            + 0.18 * self.product_centrality
+            + 0.12 * self.surprise
+            + 0.18 * self.ownability
+            + 0.10 * self.evidence_safety
+            + 0.09 * self.original_execution
+        )
+
+    @property
+    def passes(self) -> bool:
+        hard_floor = min(
+            self.natural_linkage,
+            self.product_centrality,
+            self.ownability,
+            self.original_execution,
+        )
+        return (
+            self.total >= 0.70
+            and self.instant_comprehension >= 0.60
+            and self.evidence_safety >= 0.50
+            and hard_floor >= 0.55
+        )
+
+
 def select_expression_form(signals: CreativeSignals) -> ExpressionForm:
     """Choose format by creative strength rather than a permanent four-panel default."""
 
@@ -58,6 +98,15 @@ def select_best_bridge(candidates: list[BridgeCandidate]) -> BridgeCandidate:
     if not candidates:
         raise ValueError("at least one bridge candidate is required")
     return max(candidates, key=lambda candidate: candidate.score)
+
+
+def select_best_review(candidates: list[CreativeReview]) -> CreativeReview:
+    """Prefer a direction that clears the gate; otherwise return the strongest diagnostic candidate."""
+
+    if not candidates:
+        raise ValueError("at least one creative review is required")
+    passing = [candidate for candidate in candidates if candidate.passes]
+    return max(passing or candidates, key=lambda candidate: candidate.total)
 
 
 def build_creative_strategy(
