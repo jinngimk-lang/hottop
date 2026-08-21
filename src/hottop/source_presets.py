@@ -46,11 +46,31 @@ def _hostname(value: str) -> str:
     return host.removeprefix("www.")
 
 
-def resolve_source_quality(source: str, *, fallback: float) -> float:
-    """Resolve a direct publisher quality score, preserving collector fallback when unknown."""
+def _quality_from_mapping(host: str, mapping: Mapping[str, float]) -> float | None:
+    for domain, quality in mapping.items():
+        if host == domain or host.endswith(f".{domain}"):
+            return quality
+    return None
+
+
+def resolve_source_quality(
+    source: str,
+    *,
+    fallback: float,
+    preset: str | None = None,
+) -> float:
+    """Resolve publisher quality, optionally scoped to one editorial preset.
+
+    With an explicit preset, only that preset may override the collector fallback. Without one,
+    preserve the legacy behavior of matching across all known publisher mappings.
+    """
     host = _hostname(source)
-    for preset in _SOURCE_PRESETS.values():
-        for domain, quality in preset.items():
-            if host == domain or host.endswith(f".{domain}"):
-                return quality
+    if preset is not None:
+        quality = _quality_from_mapping(host, source_preset(preset))
+        return fallback if quality is None else quality
+
+    for mapping in _SOURCE_PRESETS.values():
+        quality = _quality_from_mapping(host, mapping)
+        if quality is not None:
+            return quality
     return fallback
