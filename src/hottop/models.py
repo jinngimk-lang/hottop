@@ -24,6 +24,22 @@ ComparisonRelation = Literal[
     "legacy-workflow",
     "manual-workaround",
 ]
+BridgeType = Literal[
+    "shape-material",
+    "action-motion",
+    "role",
+    "function",
+    "emotion-ritual",
+    "language-symbol",
+]
+ExpressionForm = Literal[
+    "single-visual-metaphor",
+    "swipe-reveal",
+    "four-panel",
+    "faux-film-still",
+    "split-old-vs-new",
+    "product-as-prop",
+]
 
 
 class Evidence(BaseModel):
@@ -107,6 +123,17 @@ class ComparisonCandidate(BaseModel):
     evidence: list[Evidence] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
     claim_posture: ClaimStatus = "satire"
+
+
+class CreativeStrategy(BaseModel):
+    """Durable creative reframe independent of a specific output renderer."""
+
+    category_default: str | None = None
+    deleted_constraint: str | None = None
+    new_competition_axis: str | None = None
+    bridge_type: BridgeType | None = None
+    bridge: str | None = None
+    expression_form: ExpressionForm
 
 
 class RoleMap(BaseModel):
