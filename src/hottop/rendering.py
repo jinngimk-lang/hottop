@@ -41,7 +41,7 @@ class RenderRequest(BaseModel):
 class CreativeRenderFrame(BaseModel):
     index: int = Field(ge=1, le=8)
     scene: str
-    copy: str | None = None
+    caption: str | None = None
     intent: str
 
 
@@ -110,7 +110,7 @@ def build_creative_render_request(concept: CreativeConcept) -> CreativeRenderReq
             CreativeRenderFrame(
                 index=index,
                 scene=beat.scene,
-                copy=beat.copy,
+                caption=beat.caption,
                 intent=beat.intent,
             )
             for index, beat in enumerate(concept.beats, start=1)
