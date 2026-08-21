@@ -76,6 +76,66 @@ class CreativeReview(BaseModel):
         )
 
 
+class CreativeContextReview(BaseModel):
+    """Request-specific ranking signals that never override the base creative hard gate."""
+
+    platform_fit: float = Field(ge=0, le=1)
+    style_fit: float = Field(ge=0, le=1)
+    campaign_goal_fit: float = Field(ge=0, le=1)
+    ambition_fit: float = Field(ge=0, le=1)
+    project_shape_fit: float = Field(ge=0, le=1)
+    hotspot_native_fit: float = Field(ge=0, le=1)
+    humor_or_delight: float = Field(default=0.5, ge=0, le=1)
+    humor_expected: bool = False
+
+    @property
+    def total(self) -> float:
+        base = (
+            0.22 * self.platform_fit
+            + 0.18 * self.style_fit
+            + 0.18 * self.campaign_goal_fit
+            + 0.14 * self.ambition_fit
+            + 0.16 * self.project_shape_fit
+            + 0.12 * self.hotspot_native_fit
+        )
+        if not self.humor_expected:
+            return base
+        return 0.94 * base + 0.06 * self.humor_or_delight
+
+
+class ContextualCreativeReview(BaseModel):
+    base: CreativeReview
+    context: CreativeContextReview
+
+    @property
+    def passes(self) -> bool:
+        return self.base.passes
+
+    @property
+    def context_total(self) -> float:
+        return self.context.total
+
+    @property
+    def total(self) -> float:
+        return 0.72 * self.base.total + 0.28 * self.context_total
+
+
+def review_with_context(
+    base: CreativeReview,
+    context: CreativeContextReview,
+) -> ContextualCreativeReview:
+    return ContextualCreativeReview(base=base, context=context)
+
+
+def select_best_contextual_review(
+    candidates: list[ContextualCreativeReview],
+) -> ContextualCreativeReview:
+    if not candidates:
+        raise ValueError("at least one contextual creative review is required")
+    passing = [candidate for candidate in candidates if candidate.passes]
+    return max(passing or candidates, key=lambda candidate: candidate.total)
+
+
 def select_expression_form(signals: CreativeSignals) -> ExpressionForm:
     """Choose format by creative strength rather than a permanent four-panel default."""
 
