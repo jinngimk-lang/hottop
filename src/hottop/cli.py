@@ -20,6 +20,7 @@ from .comparison_research import (
 )
 from .creative_package import CreativePackageInput, build_creative_package
 from .doctor import local_doctor
+from .enrichment import build_default_enrichment_pipeline
 from .intake import CreativeIntent, next_question, resolve_intent
 from .integrations.playwright_cli import PlaywrightCliAdapter
 from .models import ComparisonCandidate, CreativeConcept, ProductProfile, TrendCandidate
@@ -237,6 +238,30 @@ def discover(
     """Fetch and normalize one trend source."""
     items = asyncio.run(_discover(source, key, limit))
     _write_or_echo([item.model_dump(mode="json") for item in items], output)
+
+
+@app.command(name="enrich-creative")
+def enrich_creative(
+    input_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    index: int = typer.Option(0, "--index", min=0),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Enrich one selected trend with source context before bridge/reframe generation."""
+    candidates = _load_candidates(input_path)
+    if index >= len(candidates):
+        raise typer.BadParameter(f"index {index} is outside {len(candidates)} candidates")
+    candidate = candidates[index]
+    enriched = asyncio.run(build_default_enrichment_pipeline().markdown(str(candidate.url)))
+    payload = {
+        "schema_version": "hottop.creative-enrichment.v1",
+        "candidate": candidate.model_dump(mode="json"),
+        "enrichment": {
+            "provider": enriched.provider,
+            "markdown": enriched.markdown,
+            "failures": enriched.failures,
+        },
+    }
+    _write_or_echo(payload, output)
 
 
 @app.command()
