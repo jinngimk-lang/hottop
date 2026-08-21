@@ -1,80 +1,54 @@
 # Hottop Status
 
-Last updated: 2026-08-21 11:56 +08:00
+Last updated: 2026-08-21 12:52 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
 ## Done
 
-- Repository initialized and persistent project brief added.
-- Upstream research completed for Agent-Reach and Crawl4AI.
-- Additional discovery candidates selected: DailyHotApi, NewsNow, RSSHub, with TrendRadar as a reference/optional aggregate layer.
-- Integration posture fixed: adapters + pinned upstream versions/services; do not vendor large upstream repositories.
-- Architecture spec, implementation plan, CI workflow and RED-first tests committed.
-- Core schemas, deterministic scoring, dedupe, role mapping, guardrails and four-panel briefing implemented.
-- DailyHotApi, NewsNow and RSS collectors implemented with fixture tests.
-- Agent-Reach and Crawl4AI adapters/config examples added.
-- CLI commands `discover`, `rank`, `brief`, `doctor` and reusable `skills/hottop-meme/SKILL.md` added.
-- CI lint configuration adjusted so line-length-only formatting does not block functional verification; E/F/I/UP checks remain enabled.
-- Added `build_batch(...)` pipeline and `hottop batch` JSON output.
-- Added optional Firecrawl v2 enrichment adapter; Crawl4AI remains the preferred self-hostable browser/deep-page layer.
-- Implemented candidate/evidence source-quality and evidence-freshness scoring.
-- Collectors propagate deterministic source-quality defaults and article timestamps.
-- `hottop doctor` reports nonfatal readiness for Agent-Reach, Crawl4AI and Firecrawl.
-- Added provider-neutral renderer handoff (`RenderRequest` / `RenderPanel`) and `hottop render` CLI.
-- Added asynchronous multi-collector fan-in via `collect_and_build_batch(...)` and repeatable live `--source TYPE:KEY` options.
-- Added named source presets (`film-entertainment`, `ai-tech`, `zh-internet-culture`) and direct-publisher quality resolution.
-- Added `EnrichmentPipeline` with deterministic provider ordering and failure provenance.
-- Added `PlainHttpAdapter` as the no-JavaScript, no-auth final public-web fallback for HTML, Markdown and text pages.
-- Root-caused CI run 135 failure to whitespace inserted before punctuation across inline HTML tags; parser fix commit `62e651412932417a78bdcd766f8ab5f9268dce9d` passed CI run 139.
-- Added `build_default_enrichment_pipeline()` so the normal order is Crawl4AI → Firecrawl when configured → plain HTTP; commit `d67b504c7b932ea905cd8657ebdab2abaa6f317e` passed CI run 145.
-- Added typed YAML batch configuration (`BatchConfig` / `BatchSourceConfig`) and loader; implementation commit `a5a0e8195324c47302ce437d32d79cf049eca678` passed CI run 149.
-- Added `config/batches/ai-tech-daily.yml` as a repeatable batch example; CI run 151 passed.
-- Added `hottop batch --config <yaml>` support with per-source limits plus stored `top` and comparison target; implementation commit `84fab9605511e97a9414278ada343c554f886986` passed CI run 157.
-- Added a default visual-medium router to `skills/hottop-meme/SKILL.md`: film/live-action → high photorealistic cinematic treatment; animation → animation-native rendering; internet personalities/social phenomena → real-world documentary/social-video realism; AI/technology → realistic contemporary tech imagery; native internet memes → format-matched distribution grammar.
-- Generalized the project mission beyond InkClawAgent/AI. The promoted term may now represent a brand, product, service, feature, campaign, person, idea, keyword, or tool.
-- Extended `ProductProfile` (kept for backward compatibility) with `subject_type`, `category`, `keywords`, `jobs_to_be_done`, `pain_points_solved`, `differentiators`, and `known_alternatives`.
-- Added `PromotionContext` and `ComparisonCandidate` schemas plus `src/hottop/positioning.py`.
-- Added deterministic promotion-context inference, research-query planning (`<subject> competitors`, alternatives, category/job and pain-point queries), and evidence-aware comparison-target selection.
-- Comparison selection now scores recognizability, category overlap, pain-point contrast, evidence quality and relation type; it never upgrades an unevidenced named competitor to a supported factual claim.
-- Updated briefing so the promoted subject's real pain point/differentiator drives the reversal rather than assuming an Agent workflow. Competitor scenes explicitly forbid inventing defects.
-- Updated the reusable skill with automatic competitor/substitute/incumbent/manual-workaround discovery and a rule to prefer the clearest pain-point contrast rather than the most famous rival.
-- RED contract commit `08b5cf532b368db07c6cad414457f1ccc3fb7eef` failed CI run 169 as expected; generalized implementation/skill/project commits passed through CI run 179.
-- Added `hottop position` research-handoff command. It accepts either a raw promoted term or a YAML promotion profile and emits `hottop.position.v1` JSON with resolved promotion context plus current competitor/alternative research queries. Contract test commit `a4b95184ea4b341e1302aff237e92fe1d54112dc`; implementation commit `d50563a4f1a6c7d1564eec677dd3378e48219ba6` passed CI run 187.
-- Archived live research batches through `examples/runs/2026-08-21-1156-briefs.json`.
+- Core trend pipeline is in place: DailyHotApi, NewsNow, RSS, dedupe/ranking, briefing, batch fan-in, source presets, enrichment fallback (Crawl4AI → Firecrawl → plain HTTP), doctor, renderer handoff and CLI commands.
+- Promotion semantics are generalized beyond InkClawAgent/AI: brand, product, service, feature, campaign, person, idea, keyword or tool.
+- `PromotionContext`, `ComparisonCandidate` and deterministic positioning/research-query planning are implemented; `hottop position` emits a structured research handoff.
+- Comparison rules are evidence-aware: named competitors cannot be assigned invented defects; generic category/legacy/manual proxies are preferred when evidence is weak.
+- Visual-medium routing is established for film/live action, animation, real-world/social, technology, food/consumer and internet-native formats.
+- Live trend/creative archives exist through `examples/runs/2026-08-21-1156-briefs.json`.
+- **Creative direction audit completed from the working conversation and supplied visual-ad examples.** `PROJECT.md` now persists the broader doctrine so context recovery does not collapse the project back into “four-panel AI memes.”
+- Added `skills/brand-metaphor-creative/SKILL.md`, covering category defaults, constraint deletion, bridge search, format selection, competitor truthfulness and a creative review gate.
+- Refactored `skills/hottop-meme/SKILL.md` to be hotspot/evidence/four-panel specific and to route creative strategy through `brand-metaphor-creative`.
+- Added `tests/test_creative_skill_contract.py`. RED run 195 failed on the missing doctrine/skill as intended; implementation head `97a81e161768633b2c209ab215e58627ea460247` passed CI run 201 on Python 3.11/3.12.
+
+## Current creative doctrine
+
+- **Reframe before optimize:** find the category default, then ask whether the constraint should disappear instead of making a marginally better version of it.
+- **Natural bridge before logo:** connect hotspot and product through shape/material, action, role, function, emotion/ritual or language/symbol.
+- **Product role is flexible:** the promoted subject may be hero, prop, material, gesture, route, transformation, environment or final reveal.
+- **Format follows the idea:** single visual metaphor, swipe-reveal, four-panel, faux film still/poster, split old-vs-new or product-as-prop. Four panels are no longer the default requirement.
+- **Medium follows the hotspot:** movie feels cinematic, animation feels animation-native, real/social feels documentary-native, consumer product can feel like polished commercial photography.
+- **Competitor is optional; truth is mandatory:** the strongest antagonist may be a named rival, incumbent habit, manual workaround or the old category assumption itself.
+- **Creative quality gate:** instant comprehension, natural linkage, product centrality, surprise, ownability, evidence safety and original execution.
 
 ## In progress
 
-- Turning `hottop position` research queries into structured researched-comparison records so public web / Agent-Reach results can feed `ComparisonCandidate` with evidence.
-- Applying per-source `preset` values from batch config to collector/source-quality behavior.
-- Connecting approved `RenderRequest` JSON to future image-generation providers without coupling the core package to any single vendor.
-- Continuing live research and meme-brief archives while Foundation v0.1 closes out.
-- Verifying CI on the newest 11:56 archive/status head; CI run 187 is the latest confirmed green code implementation.
+- Turning `hottop position` search plans into evidence-backed `ComparisonCandidate` records from public web / Agent-Reach results.
+- Extending structured schemas/renderer handoff for the new creative doctrine instead of leaving it only in documentation.
+- Continuing live trend research while Foundation v0.1 closes.
 
 ## Next actions
 
-1. Confirm CI on the newest archive/status head; repair immediately if red.
-2. Add a structured researched-comparison input/output path so web/Agent-Reach results can become `ComparisonCandidate` records with evidence instead of only a free-text `--compare` name.
-3. Add a `--comparisons <json>` or equivalent path to `position`/`brief` so the deterministic selector can choose a named competitor, incumbent, substitute or legacy/manual proxy from researched evidence.
-4. Make batch-config `preset` explicit in collector/source-quality resolution instead of metadata-only.
-5. Add an enrichment command/path that can enrich selected candidates through the default fallback chain before briefing.
-6. Extend renderer handoff so `visual_medium` / `genre_treatment` and promotion context are first-class serialized fields rather than prompt-only convention.
-7. Continue live research batches, prioritizing highly visual conflicts and culturally recognizable roles over generic news summaries.
-8. Inspect Foundation v0.1 diff/reviews and, once remaining contracts are green, mark PR #1 ready and merge.
-
-## Latest live creative signals
-
-- **UK cinemas restrict/consider restrictions on camera-enabled smart glasses (Reuters / Guardian, 2026-08-20/21):** strong `one magical tool everywhere vs context-appropriate orchestration` visual structure. Do not provide covert-recording instructions. Named smart-glasses brands remain source context only; use a generic glasses character in the comparison. Render as photorealistic cinema/editorial comedy. Claim mode: satire.
-- **Hangzhou robot traffic officers (Reuters, 2026-08-20/21):** excellent `many specialist lanes vs one end-to-end route` metaphor. Render as photorealistic contemporary street/editorial imagery with original unbranded robots; no police insignia or SUPCON/T2 replication. Claim mode: satire/workflow metaphor.
-- **Cloudflare Kitesurf agent-first browser (Cloudflare / TechCrunch, 2026-08-06/21):** useful `well-designed specialist layer vs whole project orchestration` structure. Kitesurf is a hotspot/context reference, not a direct InkClawAgent competitor; never convert Cloudflare's browser-efficiency claims into InkClawAgent superiority claims. Render as realistic tech imagery with fully fictional UI. Claim mode: satire/category-layer metaphor.
-- **Humanoid robots move from spectacle toward useful work (Reuters, 2026-08-18/20):** strong `single tricks vs useful coordinated outcome` structure. Use a fictional demo-first comparison proxy rather than inventing a defect about a named competitor. Render as photorealistic contemporary robotics/editorial imagery with original unbranded robots. Claim mode: satire/workflow metaphor.
-- **Niu Lai viral animation phenomenon (FT, 2026-08-20):** strong `shipped imperfect first version vs endless perfection-before-feedback` structure. Render as original deliberately rough low-poly animation; never use the film's characters, title treatment, poster, frames or identifiable character design. Claim mode: satire/workflow metaphor.
-- **The Odyssey summer visibility (AP, 2026-08-16):** strong cave/giant/escape structure. Use only public-domain Homeric archetypes. Default visual medium is photorealistic epic live-action with original casting, costumes, set design and camera composition; never reproduce current actors, costumes, sets, posters or film frames. A real named competitor should only replace the generic cyclops proxy after category/alternative research. Claim mode: satire.
+1. Confirm CI on the newest status head; repair immediately if red.
+2. Add structured creative fields: `category_default`, `deleted_constraint`, `new_competition_axis`, `bridge_type`, `bridge`, and `expression_form`.
+3. Add an expression-form selector that can choose `single-visual-metaphor`, `swipe-reveal`, `four-panel`, `faux-film-still`, `split-old-vs-new`, or `product-as-prop` instead of hard-coding four panels.
+4. Add a bridge generator/scorer for shape/material, action, role, function, emotion/ritual and language/symbol links.
+5. Connect researched comparison evidence to deterministic target selection and briefing.
+6. Make batch-config `preset` affect collector/source-quality resolution.
+7. Add enrichment-before-brief CLI path and promote `visual_medium` / `genre_treatment` into first-class renderer fields.
+8. Add representative archives for consumer products and swipe-reveal advertising, not only software/four-panel cases.
+9. Inspect Foundation v0.1 diff/reviews and mark PR #1 ready once remaining contracts are green.
 
 ## Constraints
 
-- No credentials/cookies/browser profiles in Git.
-- Authenticated social channels are optional and never required for CI.
-- Comparisons without evidence remain satire/metaphor/opinion/category tradeoff; factual superiority claims need evidence.
-- A named competitor may be used only for a supported limitation, accurate category tradeoff, specific unmet job/pain point, or clearly subjective satire. Otherwise prefer a fictional category proxy, incumbent habit, legacy workflow or manual workaround.
-- Medium and genre should remain highly recognizable, but do not reproduce actor likenesses, official posters, exact film frames, copyrighted character designs, identifiable proprietary robot designs, copied platform UIs, or competitor packaging trade dress.
+- No secrets/cookies/browser profiles in Git.
+- No unsupported factual superiority claims.
+- No invented competitor defects.
+- No direct reproduction of actor likenesses, exact film frames, official posters, protected character designs, proprietary UI or distinctive competitor trade dress.
+- Preserve broad cultural/medium recognition while building original staging and assets.
