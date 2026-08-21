@@ -50,6 +50,12 @@ VisualMedium = Literal[
     "commercial-product",
     "internet-native",
 ]
+ReferenceRightsMode = Literal[
+    "analysis-only",
+    "public-domain",
+    "rights-cleared",
+    "unknown",
+]
 
 
 class Evidence(BaseModel):
@@ -144,6 +150,33 @@ class CreativeStrategy(BaseModel):
     bridge_type: BridgeType | None = None
     bridge: str | None = None
     expression_form: ExpressionForm
+
+
+class VisualReference(BaseModel):
+    """Provenance-first abstraction of a visual reference, not a reproduction target."""
+
+    source_url: HttpUrl
+    source_title: str = Field(min_length=1)
+    source_type: str = Field(min_length=1)
+    observed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    visual_medium: VisualMedium | None = None
+    expression_form: ExpressionForm | None = None
+    bridge_type: BridgeType | None = None
+    composition_grammar: list[str] = Field(default_factory=list)
+    reveal_pattern: str | None = None
+    text_grammar: str | None = None
+    why_effective: str | None = None
+    what_not_to_copy: list[str] = Field(default_factory=list)
+    rights_mode: ReferenceRightsMode = "unknown"
+    artifact_hash: str | None = None
+    provenance_note: str = Field(min_length=1)
+
+    @field_validator("observed_at")
+    @classmethod
+    def ensure_reference_timezone(cls, value: datetime) -> datetime:
+        if value.tzinfo is None:
+            raise ValueError("visual reference timestamp must be timezone-aware")
+        return value
 
 
 class CreativeBeat(BaseModel):
