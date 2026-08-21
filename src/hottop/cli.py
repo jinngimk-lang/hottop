@@ -15,10 +15,10 @@ from .collectors.newsnow import NewsNowCollector
 from .collectors.rss import RSSCollector
 from .doctor import local_doctor
 from .integrations.playwright_cli import PlaywrightCliAdapter
-from .models import ProductProfile, TrendCandidate
+from .models import CreativeConcept, ProductProfile, TrendCandidate
 from .pipeline import build_batch
 from .positioning import build_comparison_research_queries, infer_promotion_context
-from .rendering import build_render_request
+from .rendering import build_creative_render_request, build_render_request
 from .scoring import score_candidate
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
@@ -34,6 +34,11 @@ def _load_candidates(path: Path) -> list[TrendCandidate]:
     raw = json.loads(path.read_text(encoding="utf-8"))
     records = raw if isinstance(raw, list) else [raw]
     return [TrendCandidate.model_validate(record) for record in records]
+
+
+def _load_concept(path: Path) -> CreativeConcept:
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    return CreativeConcept.model_validate(raw)
 
 
 def _load_product(path: Path) -> ProductProfile:
@@ -73,7 +78,9 @@ async def _discover_configured(config: BatchConfig) -> list[TrendCandidate]:
 
 @app.command()
 def position(
-    term: str | None = typer.Argument(None, help="Promoted brand/product/keyword when no YAML profile is supplied"),
+    term: str | None = typer.Argument(
+        None, help="Promoted brand/product/keyword when no YAML profile is supplied"
+    ),
     product: Path | None = typer.Option(None, "--product", exists=True, dir_okay=False),
     output: Path | None = typer.Option(None, "--output"),
 ) -> None:
@@ -196,13 +203,28 @@ def render(
     index: int = typer.Option(0, "--index", min=0),
     output: Path | None = typer.Option(None, "--output"),
 ) -> None:
-    """Build a provider-neutral image-generation handoff from one trend candidate."""
+    """Build the backward-compatible four-panel renderer handoff."""
     candidates = _load_candidates(input_path)
     if index >= len(candidates):
         raise typer.BadParameter(f"index {index} is outside {len(candidates)} candidates")
     profile = _load_product(product)
     brief_result = build_brief(candidates[index], profile, comparison_target=compare)
     render_request = build_render_request(brief_result)
+    text = _json_dump(render_request)
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(text + "\n", encoding="utf-8")
+    else:
+        typer.echo(text)
+
+
+@app.command(name="render-concept")
+def render_concept(
+    concept_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Validate a flexible CreativeConcept and emit provider-neutral `hottop.render.v2`."""
+    render_request = build_creative_render_request(_load_concept(concept_path))
     text = _json_dump(render_request)
     if output:
         output.parent.mkdir(parents=True, exist_ok=True)
