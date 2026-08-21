@@ -1,0 +1,156 @@
+import pytest
+
+from hottop.creative import CreativeContextReview, CreativeReview
+from hottop.intake import resolve_intent
+from hottop.models import CreativeConcept, PromotionContext
+from hottop.orchestrator import OrchestrationInput, OrchestrationOption, orchestrate
+
+
+def _concept(topic_id: str, expression_form: str, bridge: str) -> CreativeConcept:
+    return CreativeConcept.model_validate(
+        {
+            "topic": {
+                "id": topic_id,
+                "title": "Fictional culture moment",
+                "url": f"https://example.com/{topic_id}",
+                "source": "test",
+                "tags": ["culture", "food"],
+            },
+            "promotion": {
+                "subject_name": "Ribbon Lunch",
+                "subject_type": "product",
+                "category": "food",
+                "primary_job": "memorable quick lunch",
+                "primary_pain_point": "generic food ads look interchangeable",
+                "primary_differentiator": "long elastic ribbon texture",
+                "semantic_terms": ["long", "elastic", "ribbon"],
+            },
+            "strategy": {
+                "category_default": "show the bowl immediately",
+                "deleted_constraint": "full product reveal in frame one",
+                "new_competition_axis": "curiosity before reveal",
+                "bridge_type": "shape-material",
+                "bridge": bridge,
+                "expression_form": expression_form,
+            },
+            "beats": [
+                {"scene": "A ribbon crosses the frame.", "caption": None, "intent": "tease"},
+                {
+                    "scene": "Texture reveals the ribbon is food.",
+                    "caption": "Wait for it.",
+                    "intent": "material clue",
+                },
+                {
+                    "scene": "The ribbon lands in the product bowl.",
+                    "caption": "The reveal is the product.",
+                    "intent": "reveal",
+                },
+            ],
+            "visual_medium": "commercial-product",
+            "genre_treatment": "minimal premium food photography",
+            "punchlines": ["The reveal is the product."],
+            "image_prompt": "Original product-led reveal using a ribbon-like food action.",
+            "negative_prompt": "No copied layout, protected character, logo, or trade dress.",
+            "risk_flags": [],
+            "claim_status": "satire",
+        }
+    )
+
+
+def _review(name: str, ownability: float = 0.9) -> CreativeReview:
+    return CreativeReview(
+        name=name,
+        instant_comprehension=0.9,
+        natural_linkage=0.9,
+        product_centrality=0.9,
+        surprise=0.85,
+        ownability=ownability,
+        evidence_safety=0.95,
+        original_execution=0.95,
+    )
+
+
+def _context(score: float, *, humor_expected: bool = False) -> CreativeContextReview:
+    return CreativeContextReview(
+        platform_fit=score,
+        style_fit=score,
+        campaign_goal_fit=score,
+        ambition_fit=score,
+        project_shape_fit=score,
+        hotspot_native_fit=score,
+        humor_or_delight=score,
+        humor_expected=humor_expected,
+    )
+
+
+def test_orchestrator_selects_platform_fit_passing_candidate_and_keeps_alternates():
+    intent = resolve_intent(
+        "给这个食品新品做一个小红书出圈高级广告，产品最后再揭示",
+        overrides={"promotion_target": "Ribbon Lunch"},
+    )
+    context = PromotionContext(
+        subject_name="Ribbon Lunch",
+        subject_type="product",
+        category="food",
+        primary_job="memorable quick lunch",
+        primary_pain_point="generic food ads look interchangeable",
+        primary_differentiator="long elastic ribbon texture",
+        semantic_terms=["long", "elastic", "ribbon"],
+    )
+    payload = OrchestrationInput(
+        intent=intent,
+        promotion_context=context,
+        options=[
+            OrchestrationOption(
+                label="pain-contrast",
+                concept=_concept("pain", "four-panel", "generic old way conflict"),
+                review=_review("pain-contrast"),
+                context_review=_context(0.68),
+            ),
+            OrchestrationOption(
+                label="bridge-reveal",
+                concept=_concept(
+                    "bridge", "swipe-reveal", "the product ribbon becomes the visual action"
+                ),
+                review=_review("bridge-reveal"),
+                context_review=_context(0.95),
+            ),
+            OrchestrationOption(
+                label="category-reframe",
+                concept=_concept("reframe", "split-old-vs-new", "remove full reveal convention"),
+                review=_review("category-reframe"),
+                context_review=_context(0.78),
+            ),
+        ],
+        references=[],
+    )
+
+    result = orchestrate(payload)
+
+    assert result.schema_version == "hottop.orchestration.v1"
+    assert result.selected_label == "bridge-reveal"
+    assert result.selected_render.schema_version == "hottop.render.v2"
+    assert result.selected_render.expression_form == "swipe-reveal"
+    assert len(result.alternates) == 2
+    assert "platform" in result.selection_rationale.lower()
+
+
+def test_orchestrator_rejects_when_all_candidates_fail_existing_hard_gate():
+    intent = resolve_intent("宣传这个产品", overrides={"promotion_target": "Thing"})
+    context = PromotionContext(subject_name="Thing", subject_type="product", category="consumer")
+    payload = OrchestrationInput(
+        intent=intent,
+        promotion_context=context,
+        options=[
+            OrchestrationOption(
+                label="generic",
+                concept=_concept("bad", "single-visual-metaphor", "hot character plus logo"),
+                review=_review("generic", ownability=0.3),
+                context_review=_context(1.0),
+            )
+        ],
+        references=[],
+    )
+
+    with pytest.raises(ValueError, match="creative review gate"):
+        orchestrate(payload)
