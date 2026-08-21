@@ -37,7 +37,7 @@ def test_swipe_reveal_render_request_preserves_strategy_and_medium() -> None:
         beats=[
             CreativeBeat(scene="only the stretching action is visible", intent="tease"),
             CreativeBeat(scene="the material resemblance becomes clearer", intent="extend"),
-            CreativeBeat(scene="the food product is finally revealed", copy="原来是它", intent="reveal"),
+            CreativeBeat(scene="the food product is finally revealed", caption="原来是它", intent="reveal"),
         ],
         visual_medium="commercial-product",
         genre_treatment="minimal premium studio photography",
@@ -56,7 +56,7 @@ def test_swipe_reveal_render_request_preserves_strategy_and_medium() -> None:
     assert request.bridge_type == "shape-material"
     assert len(request.frames) == 3
     assert request.frames[-1].intent == "reveal"
-    assert request.frames[-1].copy == "原来是它"
+    assert request.frames[-1].caption == "原来是它"
 
 
 def test_flexible_render_contract_does_not_require_four_frames() -> None:
