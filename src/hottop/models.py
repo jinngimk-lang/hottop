@@ -127,6 +127,15 @@ class PromotionContext(BaseModel):
     primary_differentiator: str | None = None
     semantic_terms: list[str] = Field(default_factory=list)
 
+    @field_validator("subject_name", "category")
+    @classmethod
+    def normalize_identity_field(cls, value: str, info) -> str:
+        value = value.strip()
+        if not value:
+            field_name = info.field_name.replace("_", " ")
+            raise ValueError(f"promotion {field_name} must not be blank")
+        return value
+
 
 class ComparisonCandidate(BaseModel):
     name: str = Field(min_length=1)
