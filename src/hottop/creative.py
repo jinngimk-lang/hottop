@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .models import BridgeType, CreativeStrategy, ExpressionForm, VisualMedium
 
@@ -88,6 +88,16 @@ class CreativeContextReview(BaseModel):
     hotspot_native_fit: float = Field(ge=0, le=1)
     humor_or_delight: float = Field(default=0.5, ge=0, le=1)
     humor_expected: bool = False
+
+    @field_validator("name")
+    @classmethod
+    def normalize_name(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            raise ValueError("context review name must not be blank")
+        return value
 
     @property
     def total(self) -> float:
