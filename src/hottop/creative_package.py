@@ -41,10 +41,13 @@ class CreativePackageInput(BaseModel):
     references: list[VisualReference] = Field(default_factory=list, max_length=24)
 
     @model_validator(mode="after")
-    def require_unique_option_labels(self) -> CreativePackageInput:
+    def require_unique_option_labels_and_promotion(self) -> CreativePackageInput:
         labels = [option.label for option in self.options]
         if len(labels) != len(set(labels)):
             raise ValueError("option labels must be unique")
+        promotion = self.options[0].concept.promotion
+        if any(option.concept.promotion != promotion for option in self.options[1:]):
+            raise ValueError("concept promotions must match within creative package")
         return self
 
 
