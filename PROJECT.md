@@ -4,86 +4,177 @@
 
 ## Mission
 
-Build a durable hot-topic meme production system for marketing **any user-selected brand, product, service, feature, campaign, person, idea, keyword, or tool**. InkClawAgent is one current example, not a permanent assumption.
+Build a durable **hot-topic brand creative system** for marketing any user-selected brand, product, service, feature, campaign, person, idea, keyword, or tool. InkClawAgent is one example, not a permanent assumption.
 
-The system continuously turns current film, entertainment, AI, technology, internet and culture topics into **four-panel illustrated meme briefs**. Visual characters and scenes may change every time. The stable creative mechanism is the mapping:
+The system turns current film, entertainment, animation, technology, internet and culture into original promotional concepts that make a product's value visually memorable. It may produce a four-panel meme, a single visual metaphor, a swipe-reveal carousel, a faux film still/poster, a split old-vs-new comparison, or another compact social format. **Not every concept must be four-panel.**
 
-- user-supplied promoted term → resolve its subject type, category, job-to-be-done, pain point and differentiator;
-- current recognizable topic → recognizable conflict/roles;
-- promoted subject → solver / breaker / winner / desired-outcome role appropriate to its real category;
-- automatically researched direct competitor, adjacent substitute, incumbent default, legacy workflow or manual workaround → obstacle / antagonist / mismatched approach role;
-- four panels → setup, escalation, reversal, punchline;
-- final copy → memorable comparison without fabricating factual superiority claims.
+The durable goal is not “attach a logo to a hot character.” It is to find a natural bridge between the promoted subject and a recognizable cultural idea, then make the subject itself part of the action, object, transformation, role, material, environment, or reveal.
 
-Example semantic mapping (not a fixed template): a mythic cave monster can represent a competing workflow; a clever escaping hero can represent the promoted subject. For a non-software product, the same hotspot may map to a completely different pain point and victory condition.
+## Creative doctrine
 
-## Non-goals
+### 1. Semantics before jokes
 
-- No permanent InkClawAgent or AI-tool requirement.
-- No permanent calf/cow mascot requirement.
-- No requirement that all four panels share exactly the same composition or character pose.
-- No direct copying of film stills, actor likenesses, official posters, logos, packaging trade dress or other protected visual assets.
-- No unsupported factual claim that Subject A is objectively faster/better/cheaper/safer than Subject B. If there is no evidence, comparisons remain satire, metaphor, opinion, category tradeoff or workflow framing.
+Resolve the promoted subject before choosing a trend or gag:
+
+- subject type and category;
+- job-to-be-done and user outcome;
+- pain points and tradeoffs;
+- differentiators;
+- physical/sensory properties where relevant;
+- usage ritual and emotional payoff;
+- direct competitors, incumbents, substitutes, legacy workflows and manual workarounds.
+
+The promoted subject does not always need to be a hero character. It can be a decisive prop, material, gesture, route, transformation, tool, environment, or final reveal.
+
+### 2. Reframe before optimize
+
+Hottop must deliberately search beyond incremental category competition. Identify the **category default**: the assumption that most competitors are optimizing. Then apply **constraint deletion**:
+
+1. Why must this assumption exist?
+2. What happens if it disappears entirely?
+3. What user outcome remains?
+4. What new competition axis becomes important?
+
+The canonical mental model is the shift from competing on “better keyboards / better hinges” to questioning whether the interaction needs that physical constraint at all. This is a thinking pattern, not a requirement to imitate any historical product.
+
+Prefer `old premise → deleted constraint → new axis` when it produces a more truthful, surprising and ownable concept than “our feature is slightly better.”
+
+### 3. Bridge search
+
+A strong crossover needs a concrete **visual metaphor** or semantic bridge. Search across:
+
+- shape/material: length, stretch, texture, color, liquid, transparency, weight;
+- action/motion: pull, shoot, wrap, snap, transform, connect, launch, escape;
+- role: guide, key, shield, director, breaker, fuel, shortcut;
+- function: coordinate, unlock, cool, protect, energize, simplify;
+- emotion/ritual: relief, indulgence, speed, confidence, habit, celebration;
+- language/symbol: phrase, gesture, visual grammar, recognizable narrative structure.
+
+The linkage should be understandable before explanation. A food ribbon becoming the visual action in a cultural reference is stronger than simply putting the food beside a famous costume. A workflow product becoming the escape route is stronger than placing its logo on a hero.
+
+### 4. Format follows the idea
+
+Choose the smallest expression form that makes the bridge land:
+
+- `single-visual-metaphor` — one instantly legible fusion;
+- `swipe-reveal` — tease the cultural cue, extend the transformation, then reveal the product/brand;
+- `four-panel` — setup → escalation → reversal → punchline;
+- `faux-film-still` / poster — cinematic role, emotion or spectacle;
+- `split-old-vs-new` — category reframing / constraint deletion;
+- `product-as-prop` — the product itself performs the culturally recognizable action.
+
+For swipe-reveal, each frame must add information; do not reveal the full answer in the first frame.
+
+### 5. Medium follows the hotspot
+
+- Film/live action → highly photorealistic, original cinematic treatment in the relevant broad genre.
+- Animation → original animation-native medium matching the recognizable 2D/3D/low-poly grammar.
+- Internet personalities / social phenomena → real-world documentary/social-native realism with anonymous people unless user-supplied rights-cleared assets are available.
+- Technology/software → realistic contemporary tech imagery with light cinematic polish.
+- Food/consumer goods → polished commercial product photography or product-led visual metaphor when appropriate.
+- Native internet memes → format-matched distribution grammar rebuilt with original assets.
+
+Match the medium and recognition cues, not protected production assets.
+
+### 6. Comparison is optional; truth is not
+
+Research direct competitors, recognizable defaults, substitutes and old workflows. Select the clearest pain-point contrast, not automatically the most famous rival.
+
+A named competitor may appear only when the negative side is a supported factual limitation, accurate design/category tradeoff, a job it is not designed to solve, or clearly subjective satire. Never invent benchmarks, outages, prices, quality defects, safety failures or customer sentiment. When evidence is weak, use a generic category proxy or make the old assumption itself the antagonist.
+
+## Creative review gate
+
+A concept is ready only if it passes:
+
+1. **Instant comprehension** — lands in roughly 1–3 seconds.
+2. **Natural linkage** — product and hotspot connect through a real bridge.
+3. **Product centrality** — removing the promoted subject breaks the idea.
+4. **Surprise** — includes a non-obvious jump or reframe.
+5. **Ownability** — cannot be swapped to any competitor unchanged.
+6. **Evidence safety** — factual comparisons are supported; otherwise satire/metaphor.
+7. **Original execution** — culturally recognizable without reproducing protected production assets.
+
+Reject `hot character + logo`, feature lists wearing costumes, forced references that need a paragraph of explanation, and concepts that advertise any brand equally well.
 
 ## Core pipeline
 
-1. **Resolve promotion semantics** — understand the supplied term: subject type, category, job, pain point, differentiator and known alternatives.
-2. **Discover comparisons** — research direct competitors, incumbents, substitutes and legacy/manual alternatives using fresh public sources.
-3. **Discover hotspots** — collect fresh candidate topics from public web/RSS/news/video/social sources.
-4. **Enrich** — fetch source pages and supporting context.
-5. **Normalize** — turn heterogeneous source records into one `TrendCandidate` schema and comparison candidates into structured records.
-6. **Rank** — score hotspot recency/recognizability/visual potential and comparison recognizability/category overlap/pain-point contrast/evidence quality.
-7. **Map** — identify recognizable roles/conflicts and map the promoted subject + selected comparison target onto those roles.
-8. **Write** — generate a four-panel beat sheet, captions, punchlines and medium-matched image prompts.
-9. **Guardrail** — mark copyright/likeness/trademark and unsupported-comparison risks; rewrite toward original visual treatment.
-10. **Archive** — store promotion context, trend brief, sources, comparison rationale, prompts and outcome notes so successful patterns can be reused.
+1. **Resolve promotion semantics** — category, job, pain point, differentiator, physical/sensory properties, ritual and alternatives.
+2. **Discover comparisons** — competitors, incumbents, substitutes, legacy/manual options with fresh evidence.
+3. **Discover hotspots** — public web/RSS/news/video/social sources.
+4. **Enrich** — source pages, context and useful visual/cultural cues.
+5. **Normalize** — structured trend and comparison candidates.
+6. **Reframe** — identify category default, candidate deleted constraints and new competition axes.
+7. **Bridge** — generate shape/action/role/function/emotion/symbol links between subject and hotspot.
+8. **Rank** — score trend quality, comparison fit and creative bridge strength.
+9. **Select format** — single metaphor, swipe-reveal, four-panel, faux still/poster, split comparison or product-as-prop.
+10. **Write** — beats, captions, reveal order, punchlines and medium-matched prompts.
+11. **Guardrail** — claims, copyright/likeness/trademark, misleading competitor framing.
+12. **Archive** — inputs, evidence, rejected assumptions, selected bridge, format, prompts and outcome notes.
+
+## Non-goals
+
+- No permanent InkClawAgent, AI-tool, mascot or character requirement.
+- No permanent four-panel requirement.
+- No rule that the product must always be personified as the winner.
+- No direct copying of film stills, actor likenesses, official posters, protected character designs, logos, packaging trade dress, proprietary UI, or distinctive production assets.
+- No unsupported factual claim that Subject A is objectively faster/better/cheaper/safer than Subject B.
+- No assumption that creativity means staying inside the current category's accepted competition axis.
 
 ## Upstream integrations
 
 ### Agent-Reach
 
-Use as an optional multi-platform acquisition layer rather than vendoring its whole repository. Pin the tested upstream commit in configuration. It can provide web, YouTube, RSS, GitHub and—when the operator explicitly configures authenticated channels—additional social/community sources.
+Use as an optional multi-platform acquisition layer rather than vendoring its whole repository. Pin the tested upstream commit in configuration. Authenticated channels are operator opt-in.
 
 ### Crawl4AI
 
-Use as an optional deep-page/browser acquisition layer. Prefer its Docker/MCP service for dynamic pages, clean Markdown, screenshots and multi-page crawling. Keep its service isolated from the core pipeline.
+Use as the preferred optional deep-page/browser acquisition layer for dynamic pages, clean Markdown, screenshots and multi-page crawling. Keep the service isolated from the core package.
+
+### Firecrawl / plain HTTP
+
+Use Firecrawl as an optional hosted fallback and plain HTTP as the final no-JavaScript public-web fallback. Keep credentials out of source control.
 
 ## Repository operating rules
 
 - Work on feature branches and merge through PRs.
-- Keep `PROJECT.md`, `STATUS.md` and implementation docs current so work survives context loss.
-- Prefer adapters/interfaces around upstream projects; do not fork huge third-party code into this repo unless there is a concrete need.
+- Keep `PROJECT.md`, `STATUS.md`, relevant specs/plans and reusable skills current so work survives context loss.
+- On recovery, read `PROJECT.md` first, then `STATUS.md`, then the active skill(s).
+- Prefer adapters/interfaces around upstream projects; do not fork huge third-party code without a concrete need.
 - Keep credentials, cookies and API keys out of Git and CI logs.
-- Public-source collection must respect site terms, robots/rate limits where applicable, authentication boundaries and account safety.
-- Third-party authenticated channels are opt-in and should use dedicated/secondary accounts when practical.
-- Image-generation output must be original enough to avoid direct replication of protected characters, actor likenesses, exact costumes, official poster composition, recognizable frames, proprietary UI or distinctive competitor trade dress.
-- Factual comparative claims require evidence records; otherwise phrase them as satire/metaphor/creative opinion or use a category/legacy proxy instead of inventing a defect.
+- Respect site terms, access boundaries, rate limits and account safety.
+- Image output should reproduce the **broad medium/genre grammar** needed for recognition while remaining an original staging.
+- Factual comparative claims require evidence records; otherwise use satire/metaphor/category tradeoff or a generic proxy.
 
 ## Durable output contract
 
-Every generated meme concept should be serializable with:
+A mature creative concept should be serializable with:
 
-- promotion context: subject name/type/category/job/pain point/differentiator;
-- topic + timestamp;
-- source URLs/evidence notes;
-- researched comparison candidates + selected target + selection rationale;
-- recognizable conflict summary;
-- promoted-subject role;
-- comparison role;
+- promotion context: subject/type/category/job/pain point/differentiator plus physical/sensory cues where useful;
+- topic + timestamp + evidence;
+- researched comparison candidates + selected target/rationale;
+- `category_default`;
+- `deleted_constraint` or explicit `none`;
+- `new_competition_axis`;
+- bridge type + one-sentence bridge;
+- selected expression form;
+- reveal/narrative beats;
 - visual medium + genre treatment;
-- four panel descriptions;
-- four panel captions;
-- punchline options;
-- image-generation prompt;
-- negative prompt / visual exclusions;
+- captions/copy/punchlines;
+- master image-generation prompt;
+- negative prompt / exclusions;
 - risk flags;
 - factual-claim status (`satire`, `supported`, `needs_evidence`).
+
+## Reusable skills
+
+- `skills/brand-metaphor-creative/SKILL.md` — primary creative-thinking method: category reframing, constraint deletion, bridge search, expression-form selection and creative review gate.
+- `skills/hottop-meme/SKILL.md` — hotspot acquisition, evidence-aware comparison handling, visual-medium routing and four-panel execution when four-panel is the selected form.
 
 ## Current milestone
 
 **Foundation v0.1**
 
-Build the schemas, ranking/mapping engine, RSS/public-web collector interfaces, Agent-Reach and Crawl4AI adapters/configuration, CLI, reusable agent skill, tests and GitHub Actions. Close the milestone with arbitrary-promotion semantics, evidence-aware comparison discovery, medium routing and real trend archives.
+Close the foundation with arbitrary-promotion semantics, evidence-aware comparison discovery, hotspot acquisition/enrichment, creative-doctrine persistence, bridge/format contracts, medium routing, renderer handoff, tests, CI and representative live archives.
 
 ## Session recovery
 
@@ -91,6 +182,7 @@ When resuming:
 
 1. Read `PROJECT.md`.
 2. Read `STATUS.md`.
-3. Read the newest file in `docs/superpowers/specs/` and `docs/superpowers/plans/` relevant to the active milestone.
-4. Inspect open PRs / failing CI.
-5. Continue from `Next actions` in `STATUS.md` without asking for routine approval.
+3. Read `skills/brand-metaphor-creative/SKILL.md` for creative work and `skills/hottop-meme/SKILL.md` when hotspot/four-panel execution applies.
+4. Read the newest relevant spec/plan for the active milestone.
+5. Inspect open PRs / failing CI.
+6. Continue from `Next actions` in `STATUS.md` without asking for routine approval.
