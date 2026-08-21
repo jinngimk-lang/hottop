@@ -177,3 +177,55 @@ def test_batch_command_can_fan_in_repeatable_source_specs(monkeypatch, tmp_path)
     assert calls == [("dailyhot", "zhihu", 7), ("newsnow", "tech", 7)]
     assert payload["input_count"] == 2
     assert len(payload["briefs"]) == 2
+
+
+def test_batch_command_loads_stored_yaml_config(monkeypatch, tmp_path):
+    product_path = tmp_path / "product.yml"
+    product_path.write_text("name: InkClawAgent\n", encoding="utf-8")
+    config_path = tmp_path / "batch.yml"
+    config_path.write_text(
+        """
+name: stored-batch
+sources:
+  - type: dailyhot
+    key: zhihu
+    limit: 4
+  - type: newsnow
+    key: tech
+    limit: 9
+top: 1
+comparison_target: work巴迪
+""",
+        encoding="utf-8",
+    )
+    calls: list[tuple[str, str, int]] = []
+
+    async def fake_discover(source: str, key: str, limit: int) -> list[TrendCandidate]:
+        calls.append((source, key, limit))
+        return [
+            TrendCandidate(
+                id=f"{source}:{key}",
+                title=f"{key} visual conflict",
+                url=f"https://example.com/{source}/{key}",
+                source=source,
+            )
+        ]
+
+    monkeypatch.setattr("hottop.cli._discover", fake_discover)
+
+    result = runner.invoke(
+        app,
+        [
+            "batch",
+            "--product",
+            str(product_path),
+            "--config",
+            str(config_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    assert calls == [("dailyhot", "zhihu", 4), ("newsnow", "tech", 9)]
+    assert len(payload["briefs"]) == 1
+    assert payload["briefs"][0]["role_map"]["comparison_target"] == "work巴迪"
