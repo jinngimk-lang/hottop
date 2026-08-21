@@ -16,9 +16,14 @@ from .collectors.rss import RSSCollector
 from .collectors.rsshub import RSSHubCollector
 from .doctor import local_doctor
 from .integrations.playwright_cli import PlaywrightCliAdapter
-from .models import CreativeConcept, ProductProfile, TrendCandidate
+from .models import ComparisonCandidate, CreativeConcept, ProductProfile, TrendCandidate
 from .pipeline import build_batch
-from .positioning import build_comparison_research_queries, infer_promotion_context
+from .positioning import (
+    build_comparison_research_queries,
+    choose_comparison_target,
+    infer_promotion_context,
+    normalize_comparison_candidates,
+)
 from .rendering import build_creative_render_request, build_render_request
 from .scoring import score_candidate
 
@@ -35,6 +40,22 @@ def _load_candidates(path: Path) -> list[TrendCandidate]:
     raw = json.loads(path.read_text(encoding="utf-8"))
     records = raw if isinstance(raw, list) else [raw]
     return [TrendCandidate.model_validate(record) for record in records]
+
+
+def _load_comparison_candidates(path: Path) -> list[ComparisonCandidate]:
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if isinstance(raw, dict):
+        records = raw.get("comparison_candidates")
+        if records is None:
+            raise typer.BadParameter(
+                "comparison JSON objects must contain a `comparison_candidates` array"
+            )
+    else:
+        records = raw
+    if not isinstance(records, list):
+        raise typer.BadParameter("comparison input must be a JSON array")
+    candidates = [ComparisonCandidate.model_validate(record) for record in records]
+    return normalize_comparison_candidates(candidates)
 
 
 def _load_concept(path: Path) -> CreativeConcept:
@@ -85,9 +106,16 @@ def position(
         None, help="Promoted brand/product/keyword when no YAML profile is supplied"
     ),
     product: Path | None = typer.Option(None, "--product", exists=True, dir_okay=False),
+    comparisons: Path | None = typer.Option(
+        None,
+        "--comparisons",
+        exists=True,
+        dir_okay=False,
+        help="Optional JSON comparison candidates researched from current public evidence",
+    ),
     output: Path | None = typer.Option(None, "--output"),
 ) -> None:
-    """Resolve promotion semantics and emit current competitor-research queries."""
+    """Resolve promotion semantics and optionally select from researched comparison evidence."""
     if product is not None:
         profile = _load_product(product)
     elif term and term.strip():
@@ -95,12 +123,19 @@ def position(
     else:
         raise typer.BadParameter("provide a promoted term or --product YAML profile")
 
+    comparison_candidates = _load_comparison_candidates(comparisons) if comparisons else []
+    selected_comparison = choose_comparison_target(profile, comparison_candidates)
     payload = {
         "schema_version": "hottop.position.v1",
         "profile": profile.model_dump(mode="json"),
         "context": infer_promotion_context(profile).model_dump(mode="json"),
         "research_queries": build_comparison_research_queries(profile),
-        "comparison_candidates": [],
+        "comparison_candidates": [
+            candidate.model_dump(mode="json") for candidate in comparison_candidates
+        ],
+        "selected_comparison": (
+            selected_comparison.model_dump(mode="json") if selected_comparison else None
+        ),
     }
     text = _json_dump(payload)
     if output:
