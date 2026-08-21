@@ -3,7 +3,6 @@ from pathlib import Path
 
 from hottop.creative_package import CreativePackageInput, build_creative_package
 
-
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = [
     ROOT / "examples/creative-packages/consumer-swipe-reveal.json",
