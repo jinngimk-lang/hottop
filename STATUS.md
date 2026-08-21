@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 16:34 +08:00
+Last updated: 2026-08-21 17:07 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -22,6 +22,7 @@ Milestone: Foundation v0.1
 - `CreativeDirective` treats humor as an actual routing intent rather than a universal default: `funny-meme` requires humor, and explicit/inferred `witty` or `breakout` can require humor, while a defaulted `witty` value does not force jokes into an explicitly `minimal-premium` direction.
 - Added `examples/runs/consumer-swipe-reveal-production.json`, a synthetic/non-factual representative production archive that exercises intent → enrichment handoff → grammar-only `VisualReference` → `CreativeDirective` → reviewed orchestration → three-frame `swipe-reveal` → `hottop.render.v2`. It preserves category default, deleted constraint, new competition axis, sensory bridge, exclusions, risks and claim posture.
 - The consumer production archive contract was introduced RED-first (`FileNotFoundError` in run 481) and implemented afterward. Follow-on RED contracts exposed the missing `creative-directive` CLI and the default-witty humor leak; current implementation head `60a48668b75391161b52d8ce121dae6fc4a3d00d` passed CI run 499 on Python 3.11 and 3.12.
+- Foundation closure review found and fixed a final evidence/safety gap in the flexible production contract: `CreativeConcept` can no longer declare `claim_status=supported` without attached `comparison_evidence`, and `hottop.render.v2` preserves that evidence provenance. RED run 507 produced the expected two failures; implementation head `899ca5b2d9c37298619616d4d4291398e11e6e85` passed CI run 511 on Python 3.11 and 3.12.
 - Added live archive `examples/runs/2026-08-21-1257-briefs.json` with evidence-linked robotics, BirdTok and digital-popover creative directions while keeping factual/safety caveats explicit.
 - Persistent project memory protocol is active: `PROJECT.md` is durable direction, `STATUS.md` is the execution snapshot, reusable skills carry operational doctrine, and repository truth is reread under context pressure.
 
@@ -45,13 +46,13 @@ Milestone: Foundation v0.1
 
 ## In progress
 
-- Foundation v0.1 closure review: inspect the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety edges.
+- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety edges after closing the render-v2 comparison-evidence gap.
 - Continue fresh trend research across entertainment, animation, technology, internet culture, social phenomena and consumer culture without collapsing discovery into AI/tech only.
 - RSSHub remains an optional pilot awaiting an explicitly configured operator-controlled instance; no credential or external-service setup is performed autonomously.
 
 ## Next actions
 
-1. Inspect PR #1 / Foundation v0.1 diff and review feedback; fix concrete regressions or contract gaps with targeted RED → GREEN cycles.
+1. Continue PR #1 / Foundation v0.1 diff review for concrete regressions or contract gaps; use targeted RED → GREEN cycles only where the review finds a real issue.
 2. Exercise the RSSHub pilot only when an operator-controlled `RSSHUB_BASE_URL` is explicitly available; otherwise keep the adapter optional and skip live-instance claims.
 3. Refresh PR #1 completion text and mark ready only after the remaining Foundation review criteria are actually satisfied and exact-head CI stays green.
 4. Keep producing fresh cross-category trend/evidence archives when they materially improve creative coverage.
