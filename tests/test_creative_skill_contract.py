@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT = ROOT / "PROJECT.md"
 CREATIVE_SKILL = ROOT / "skills" / "brand-metaphor-creative" / "SKILL.md"
