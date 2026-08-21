@@ -150,7 +150,7 @@ class CreativeBeat(BaseModel):
     """One visual beat in a flexible single-image, carousel, split, or narrative concept."""
 
     scene: str = Field(min_length=1)
-    copy: str | None = None
+    caption: str | None = None
     intent: str = Field(min_length=1)
 
 
