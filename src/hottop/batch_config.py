@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 
 
 class BatchSourceConfig(BaseModel):
-    type: Literal["dailyhot", "newsnow", "rss"]
+    type: Literal["dailyhot", "newsnow", "rss", "rsshub"]
     key: str = Field(min_length=1)
     limit: int = Field(default=30, ge=1, le=100)
     preset: str | None = None
