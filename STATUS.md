@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 13:05 +08:00
+Last updated: 2026-08-21 14:05 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -11,15 +11,16 @@ Milestone: Foundation v0.1
 - `PromotionContext`, `ComparisonCandidate` and deterministic positioning/research-query planning are implemented; `hottop position` emits a structured research handoff.
 - Comparison rules are evidence-aware: named competitors cannot be assigned invented defects; generic category/legacy/manual proxies are preferred when evidence is weak.
 - Visual-medium routing is established for film/live action, animation, real-world/social, technology, food/consumer and internet-native formats.
-- **Creative direction audit completed from the working conversation and supplied visual-ad examples.** `PROJECT.md` persists the broader doctrine so context recovery does not collapse the project back into “four-panel AI memes.”
-- Added `skills/brand-metaphor-creative/SKILL.md`, covering category defaults, constraint deletion, bridge search, format selection, competitor truthfulness and a creative review gate.
-- Refactored `skills/hottop-meme/SKILL.md` to be hotspot/evidence/four-panel specific and to route creative strategy through `brand-metaphor-creative`.
-- Added `tests/test_creative_skill_contract.py`. RED run 195 failed on the missing doctrine/skill as intended; implementation head `97a81e161768633b2c209ab215e58627ea460247` passed CI run 201 on Python 3.11/3.12.
-- Documentation/status head `fcf96d05d839a482113eae053f7f6dbf4b72b1d6` passed CI run 203.
+- Creative doctrine is persisted in `PROJECT.md`, `skills/brand-metaphor-creative/SKILL.md`, `skills/creative-reference-research/SKILL.md`, and `skills/hottop-meme/SKILL.md`; context recovery must not collapse Hottop back into “four-panel AI memes.”
+- Structured creative contracts now exist in code: `CreativeStrategy` carries `category_default`, `deleted_constraint`, `new_competition_axis`, `bridge_type`, `bridge`, and `expression_form`; `CreativeConcept` carries flexible beats, medium, genre treatment, prompts, risks and claim status.
+- Deterministic creative helpers are implemented: bridge scoring, expression-form selection, structured seven-part creative review, best-review selection, and visual-medium routing.
+- Provider-neutral flexible rendering is implemented via `CreativeRenderRequest` / schema `hottop.render.v2`; legacy `hottop.render.v1` four-panel handoff remains backward compatible.
+- CLI command `hottop render-concept` validates a serialized `CreativeConcept` and emits `hottop.render.v2`; CI run 283 passed on Python 3.11/3.12 after the RED test exposed the missing command.
+- Provenance-first `VisualReference` and `hottop reference-plan` are implemented for grammar-only reference research using Playwright CLI planning without executing or persisting browser state.
+- RSSHub external-feed pilot is implemented as an optional adapter that reuses the existing RSS parser. `BatchSourceConfig` and CLI discovery accept `rsshub`; operator must explicitly configure `RSSHUB_BASE_URL`; `hottop doctor` reports RSSHub configuration without making it a core dependency.
+- RSSHub RED sequence verified expected failure modes (missing module / missing doctor state); exact-head CI run 301 passed on Python 3.11/3.12 after implementation.
 - Added live archive `examples/runs/2026-08-21-1257-briefs.json` with three evidence-linked creative directions: robotics “ChatGPT moment” → do not wait for a universal breakthrough; BirdTok / craving for something real → signal over output volume; intrusive digital popovers → delete interface friction rather than design a prettier layer.
-- Added a **persistent project memory protocol** to `PROJECT.md` and `skills/brand-metaphor-creative/SKILL.md`: new multi-session projects create a living project charter; context pressure triggers repository-based recovery; durable direction changes update the charter + skill/spec + status; a compact decision log preserves rationale without turning the charter into a transcript.
-- Extended the creative skill to explore pain-point contrast, bridge-led metaphor and constraint-deletion directions before locking the first obvious idea.
-- Persistence contract commit `0b5de6cb9f1612573e105570a4dfe904ba006925` failed CI run 209 as expected before the new protocol existed. Implementation head `bd2aca2d086ad4bb6d12d15b43d9c9046811ff53` passed CI run 213 on Python 3.11/3.12.
+- Persistent project memory protocol is active: durable direction lives in the repository; context pressure triggers repository-based recovery; accepted direction changes update charter + relevant skill/spec + status.
 
 ## Current creative doctrine
 
@@ -30,6 +31,7 @@ Milestone: Foundation v0.1
 - **Medium follows the hotspot:** movie feels cinematic, animation feels animation-native, real/social feels documentary-native, consumer product can feel like polished commercial photography.
 - **Competitor is optional; truth is mandatory:** the strongest antagonist may be a named rival, incumbent habit, manual workaround or the old category assumption itself.
 - **Creative quality gate:** instant comprehension, natural linkage, product centrality, surprise, ownability, evidence safety and original execution.
+- **Reference research is grammar-only:** preserve provenance, composition/reveal/medium lessons and `what_not_to_copy`; never turn third-party pixels into a generation target.
 - **Project memory is part of product quality:** durable doctrine lives in the repository; context recovery reads it before continuing; new durable learning is audited and written back instead of living only in chat.
 
 ## Latest live evidence notes
@@ -41,21 +43,19 @@ Milestone: Foundation v0.1
 ## In progress
 
 - Turning `hottop position` search plans into evidence-backed `ComparisonCandidate` records from public web / Agent-Reach results.
-- Extending structured schemas/renderer handoff for the new creative doctrine instead of leaving it only in documentation.
-- Continuing live trend research while Foundation v0.1 closes.
+- Connecting flexible `CreativeConcept` generation into the normal batch/brief production path so `render.v2` is not only an import/export contract.
+- Continuing live trend research across entertainment, animation, technology, internet culture, social phenomena and consumer culture while Foundation v0.1 closes.
 
 ## Next actions
 
-1. Confirm CI on the newest status head; repair immediately if red.
-2. Add structured creative fields: `category_default`, `deleted_constraint`, `new_competition_axis`, `bridge_type`, `bridge`, and `expression_form`.
-3. Add an expression-form selector that can choose `single-visual-metaphor`, `swipe-reveal`, `four-panel`, `faux-film-still`, `split-old-vs-new`, or `product-as-prop` instead of hard-coding four panels.
-4. Add a bridge generator/scorer for shape/material, action, role, function, emotion/ritual and language/symbol links.
-5. Connect researched comparison evidence to deterministic target selection and briefing.
-6. Make batch-config `preset` affect collector/source-quality resolution.
-7. Add enrichment-before-brief CLI path and promote `visual_medium` / `genre_treatment` into first-class renderer fields.
-8. Add representative archives for consumer products and swipe-reveal advertising, not only software/four-panel cases.
-9. After Foundation v0.1, add a lightweight project-bootstrap template/command so new long-running projects can create charter/status/skill recovery files consistently instead of relying on memory.
-10. Inspect Foundation v0.1 diff/reviews and mark PR #1 ready once remaining contracts are green.
+1. Connect researched comparison evidence to deterministic target selection and briefing instead of leaving `comparison_candidates` empty in `hottop position` output.
+2. Add an enrichment-before-creative CLI path so selected trend context can be enriched before bridge/reframe generation.
+3. Make normal batch production emit flexible creative concepts (or a parallel `creative-batch`) using bridge scoring, expression-form selection, medium routing and creative review before renderer handoff.
+4. Make batch-config `preset` affect collector/source-quality resolution.
+5. Add representative consumer-product and swipe-reveal archives that exercise `CreativeConcept` + `hottop.render.v2`, including category-default/deleted-constraint/new-axis fields and reference manifests where useful.
+6. Exercise the RSSHub pilot against an explicitly configured operator-controlled instance; keep it optional and do not vendor RSSHub.
+7. Inspect Foundation v0.1 diff/reviews, update the stale PR description that still says “four-panel meme brief pipeline,” and mark PR #1 ready once remaining production-path contracts are green.
+8. After Foundation v0.1, add a lightweight project-bootstrap template/command so new long-running projects can create charter/status/skill recovery files consistently instead of relying on memory.
 
 ## Constraints
 
