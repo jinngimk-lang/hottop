@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 16:31 +08:00
+Last updated: 2026-08-21 16:34 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -19,8 +19,9 @@ Milestone: Foundation v0.1
 - Batch-config `preset` is now functional rather than descriptive: `_discover_configured()` passes the selected preset into DailyHot, NewsNow, RSS and RSSHub collectors, and source-quality resolution uses it. The RED contract in `tests/test_batch_preset_routing.py` exposed the dropped value; subsequent exact-head CI is green.
 - Representative project-shape Creative Package fixtures exist for consumer swipe-reveal, software category reframe and social-native meme output, all validating through `hottop.render.v2`.
 - A deterministic pre-generation `CreativeDirective` contract now converts resolved intent + promotion semantics into generation guidance: three direction lanes, preferred forms, bridge biases, humor/joke mechanics, product-visibility instruction, platform instructions, precision requirements and reject patterns. It is exposed as `hottop creative-directive <input.json>`. This codifies existing doctrine rather than replacing the Creative Review or inventing quality scores.
+- `CreativeDirective` treats humor as an actual routing intent rather than a universal default: `funny-meme` requires humor, and explicit/inferred `witty` or `breakout` can require humor, while a defaulted `witty` value does not force jokes into an explicitly `minimal-premium` direction.
 - Added `examples/runs/consumer-swipe-reveal-production.json`, a synthetic/non-factual representative production archive that exercises intent → enrichment handoff → grammar-only `VisualReference` → `CreativeDirective` → reviewed orchestration → three-frame `swipe-reveal` → `hottop.render.v2`. It preserves category default, deleted constraint, new competition axis, sensory bridge, exclusions, risks and claim posture.
-- The consumer production archive contract was introduced RED-first (`FileNotFoundError` in run 481) and implemented afterward. Concurrent CLI RED work then exposed the missing `creative-directive` command; current branch head `238a935aeba7bd8fd13d9810637acfa38766f6f2` passed CI run 493 on Python 3.11 and 3.12.
+- The consumer production archive contract was introduced RED-first (`FileNotFoundError` in run 481) and implemented afterward. Follow-on RED contracts exposed the missing `creative-directive` CLI and the default-witty humor leak; current implementation head `60a48668b75391161b52d8ce121dae6fc4a3d00d` passed CI run 499 on Python 3.11 and 3.12.
 - Added live archive `examples/runs/2026-08-21-1257-briefs.json` with evidence-linked robotics, BirdTok and digital-popover creative directions while keeping factual/safety caveats explicit.
 - Persistent project memory protocol is active: `PROJECT.md` is durable direction, `STATUS.md` is the execution snapshot, reusable skills carry operational doctrine, and repository truth is reread under context pressure.
 
