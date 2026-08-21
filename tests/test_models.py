@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 
 import pytest
 
-from hottop.models import Evidence, ProductProfile, TrendCandidate
+from hottop.models import Evidence, ProductProfile, PromotionContext, TrendCandidate
 
 
 def test_trend_candidate_requires_core_identity():
@@ -32,3 +32,27 @@ def test_evidence_keeps_timestamp_timezone_aware():
 def test_empty_title_is_rejected():
     with pytest.raises(ValueError):
         TrendCandidate(id="x", title="", url="https://example.com", source="x")
+
+
+def test_promotion_context_normalizes_identity_fields():
+    context = PromotionContext(
+        subject_name="  Ribbon Lunch  ",
+        subject_type="product",
+        category="  food  ",
+    )
+
+    assert context.subject_name == "Ribbon Lunch"
+    assert context.category == "food"
+
+
+@pytest.mark.parametrize("field", ["subject_name", "category"])
+def test_promotion_context_rejects_blank_identity_fields(field: str):
+    payload = {
+        "subject_name": "Ribbon Lunch",
+        "subject_type": "product",
+        "category": "food",
+    }
+    payload[field] = "   "
+
+    with pytest.raises(ValueError, match=f"promotion {field.replace('_', ' ')} must not be blank"):
+        PromotionContext(**payload)
