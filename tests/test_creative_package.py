@@ -186,3 +186,31 @@ def test_package_rejects_review_bound_to_a_different_option_label():
                 ]
             }
         )
+
+
+def test_package_rejects_whitespace_only_option_identity():
+    with pytest.raises(ValueError, match="option label must not be blank"):
+        CreativePackageInput.model_validate(
+            {
+                "options": [
+                    {
+                        "label": "   ",
+                        "concept": _concept(
+                            topic_id="blank-identity",
+                            expression_form="swipe-reveal",
+                            bridge="the product ribbon becomes the visual action",
+                        ),
+                        "review": {
+                            "name": "   ",
+                            "instant_comprehension": 0.95,
+                            "natural_linkage": 0.95,
+                            "product_centrality": 0.95,
+                            "surprise": 0.95,
+                            "ownability": 0.95,
+                            "evidence_safety": 0.95,
+                            "original_execution": 0.95,
+                        },
+                    }
+                ]
+            }
+        )
