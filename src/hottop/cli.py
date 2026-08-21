@@ -20,8 +20,8 @@ from .comparison_research import (
 )
 from .creative_package import CreativePackageInput, build_creative_package
 from .doctor import local_doctor
-from .integrations.playwright_cli import PlaywrightCliAdapter
 from .intake import CreativeIntent, next_question, resolve_intent
+from .integrations.playwright_cli import PlaywrightCliAdapter
 from .models import ComparisonCandidate, CreativeConcept, ProductProfile, TrendCandidate
 from .orchestrator import OrchestrationInput, orchestrate
 from .pipeline import build_batch
