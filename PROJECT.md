@@ -110,21 +110,57 @@ A concept is ready only if it passes:
 
 Reject `hot character + logo`, feature lists wearing costumes, forced references that need a paragraph of explanation, and concepts that advertise any brand equally well.
 
+## Adaptive guided intake and creative orchestration
+
+Hottop should feel like a creative director, not a configuration form. The default front door is **adaptive guided intake**: resolve what the user already said, infer conservative defaults with provenance/confidence, and ask only unresolved questions that materially change the output. The default interaction budget is **0–3 questions**; most requests should need zero or one. Never repeat platform, style, product, goal or direction that the request already made clear, and never dump a full questionnaire when one compact choice is enough.
+
+The durable interaction controls are:
+
+- **campaign goal** — awareness, pain-point contrast, launch, conversion, brand memory, hotspot participation or category reframe;
+- **platform** — a creative input, not merely an export size; output should be **platform-native** before rendering;
+- **style** — changes creative grammar, such as reversal/punchline, negative space, cinematic world-building, documentary realism or product texture, not only prompt adjectives;
+- **creative ambition** — `safe`, `witty`, `breakout`, `category-breaking`; the last level explicitly raises constraint-deletion/category-reframing pressure;
+- **product visibility** — `metaphor-first`, `balanced`, `product-first`, controlling reveal timing and brand attribution;
+- **audience** — optional by default and asked only when it materially changes tone, risk or decoding.
+
+Question priority is promotion target → campaign goal → platform → style → creative ambition → product visibility. Audience is not a routine question. Explicit user choices always override inference. When the question budget is exhausted, Hottop proceeds with transparent defaults rather than blocking production.
+
+### Project-shape adaptation
+
+Do not apply one meme grammar to every category. **Project-shape** is a routing signal:
+
+- food/consumer → physical/sensory bridge, product texture, commercial-product/social-native treatment, reveal when useful;
+- software/AI/B2B → workflow pain, category-default deletion, evidence-aware comparison and technology/professional grammar;
+- entertainment/culture → source-medium cinematic/animation/native-meme grammar;
+- fashion/beauty/retail → form/material/style bridge and visual ownership;
+- services/local → ritual/outcome/emotion bridge and credible real-world scenario;
+- campaigns/ideas/keywords → semantic/symbol bridge and clear decoding.
+
+### Contextual review
+
+The seven-part Creative Review remains the hard quality gate. **Contextual review** adds platform fit, style fit, campaign-goal fit, ambition fit, project-shape fit, hotspot-native fit and humor/delight when humor is expected. Contextual scores may rank concepts that already pass the hard gate; they can never rescue a weak, generic or unsafe concept.
+
+A conversational or future Studio front end may generate multiple internal directions—at minimum pain contrast, natural bridge-led metaphor and constraint-deletion reframe when feasible—then pass them through this gate. The stable handoff is a Creative Package/Orchestration result containing intent provenance, candidate reviews, selected concept, concise rationale, alternates for revisions, references and `hottop.render.v2`.
+
+Revision controls such as `换方向`, `更有梗`, `更大胆`, `产品更明显`, `更高级` and `换平台` should mutate only the relevant intent dimension and rerun the minimum necessary stages rather than restarting product understanding from scratch.
+
 ## Core pipeline
 
-1. **Resolve promotion semantics** — category, job, pain point, differentiator, physical/sensory properties, ritual and alternatives.
-2. **Discover comparisons** — competitors, incumbents, substitutes, legacy/manual options with fresh evidence.
-3. **Discover hotspots** — public web/RSS/news/video/social sources.
-4. **Enrich** — source pages, context and useful visual/cultural cues.
-5. **Research references when useful** — capture provenance and abstract composition/reveal/medium grammar, not source pixels.
-6. **Normalize** — structured trend, comparison and optional visual-reference records.
-7. **Reframe** — identify category default, candidate deleted constraints and new competition axes.
-8. **Bridge** — generate shape/action/role/function/emotion/symbol links between subject and hotspot.
-9. **Rank** — score trend quality, comparison fit and creative bridge strength.
-10. **Select format** — single metaphor, swipe-reveal, four-panel, faux still/poster, split comparison or product-as-prop.
-11. **Write** — beats, captions, reveal order, punchlines and medium-matched prompts.
-12. **Guardrail** — claims, copyright/likeness/trademark, misleading competitor framing.
-13. **Archive** — inputs, evidence, reference manifests, rejected assumptions, selected bridge, format, prompts and outcome notes.
+1. **Resolve interaction intent** — promotion target, campaign goal, platform, style, creative ambition, product visibility and only the high-impact missing questions.
+2. **Resolve promotion semantics** — category, job, pain point, differentiator, physical/sensory properties, ritual and alternatives.
+3. **Discover comparisons** — competitors, incumbents, substitutes, legacy/manual options with fresh evidence.
+4. **Discover hotspots** — public web/RSS/news/video/social sources.
+5. **Enrich** — source pages, context and useful visual/cultural cues.
+6. **Research references when useful** — capture provenance and abstract composition/reveal/medium grammar, not source pixels.
+7. **Normalize** — structured trend, comparison and optional visual-reference records.
+8. **Reframe** — identify category default, candidate deleted constraints and new competition axes.
+9. **Bridge** — generate shape/action/role/function/emotion/symbol links between subject and hotspot.
+10. **Rank** — score trend quality, comparison fit and creative bridge strength.
+11. **Select format and project/platform treatment** — single metaphor, swipe-reveal, four-panel, faux still/poster, split comparison or product-as-prop with platform/style/project-shape routing.
+12. **Write** — beats, captions, reveal order, punchlines and medium-matched prompts.
+13. **Review and select** — hard creative gate first, contextual review second; regenerate rather than force a winner if all fail.
+14. **Guardrail** — claims, copyright/likeness/trademark, misleading competitor framing.
+15. **Archive** — intent/provenance, evidence, reference manifests, rejected assumptions, selected bridge, format, reviews, prompts and outcome notes.
 
 ## Persistent project memory protocol
 
@@ -183,6 +219,7 @@ After meaningful doctrine or architecture updates, reread the charter with fresh
 - No unsupported factual claim that Subject A is objectively faster/better/cheaper/safer than Subject B.
 - No assumption that creativity means staying inside the current category's accepted competition axis.
 - No requirement to deploy a vector database, browser agent or GPU render stack before a measured use case exists.
+- No static mandatory intake questionnaire; the interaction must stop asking once the remaining uncertainty no longer justifies interruption.
 
 ## Upstream integrations
 
@@ -224,8 +261,10 @@ Keep rendering provider-neutral. ComfyUI is a candidate optional local/offline b
 
 ## Durable output contract
 
-A mature creative concept should be serializable with:
+A mature creative concept/package should be serializable with:
 
+- creative intent: request, promotion target, campaign goal, platform, style, creative ambition, product visibility, optional audience/hotspot preference and source/confidence for inferred values;
+- questions asked/answers when guided intake was required;
 - promotion context: subject/type/category/job/pain point/differentiator plus physical/sensory cues where useful;
 - topic + timestamp + evidence;
 - researched comparison candidates + selected target/rationale;
@@ -235,17 +274,21 @@ A mature creative concept should be serializable with:
 - `new_competition_axis`;
 - bridge type + one-sentence bridge;
 - selected expression form;
+- platform/style/project-shape routing hints when useful;
 - reveal/narrative beats;
 - visual medium + genre treatment;
 - captions/copy/punchlines;
+- base creative review + contextual review + selection rationale;
+- alternates sufficient for lightweight revision controls;
 - master image-generation prompt;
 - negative prompt / exclusions;
 - risk flags;
-- factual-claim status (`satire`, `supported`, `needs_evidence`).
+- factual-claim status (`satire`, `supported`, `needs_evidence`);
+- provider-neutral `hottop.render.v2` handoff.
 
 ## Reusable skills
 
-- `skills/brand-metaphor-creative/SKILL.md` — primary creative-thinking method: category reframing, constraint deletion, bridge search, expression-form selection, creative review gate and persistent project protocol for multi-session creative work.
+- `skills/brand-metaphor-creative/SKILL.md` — primary creative-thinking method: adaptive intent handling, category reframing, constraint deletion, bridge search, expression-form selection, project/platform routing, creative review gate and persistent project protocol for multi-session creative work.
 - `skills/creative-reference-research/SKILL.md` — provenance-first visual-reference research: Playwright-assisted inspection, composition/reveal abstraction, rights modes and explicit non-copying handoff into creative strategy.
 - `skills/hottop-meme/SKILL.md` — hotspot acquisition, evidence-aware comparison handling, visual-medium routing and four-panel execution when four-panel is the selected form.
 
@@ -253,7 +296,7 @@ A mature creative concept should be serializable with:
 
 **Foundation v0.1**
 
-Close the foundation with arbitrary-promotion semantics, evidence-aware comparison discovery, hotspot acquisition/enrichment, creative-doctrine persistence, reference-research contracts, bridge/format contracts, medium routing, provider-neutral renderer handoff, tests, CI and representative live archives.
+Close the foundation with arbitrary-promotion semantics, adaptive guided intake, platform/style/project-shape routing, evidence-aware comparison discovery, hotspot acquisition/enrichment, creative-doctrine persistence, reference-research contracts, bridge/format contracts, contextual review, provider-neutral renderer handoff, tests, CI and representative live archives.
 
 ## Session recovery
 
