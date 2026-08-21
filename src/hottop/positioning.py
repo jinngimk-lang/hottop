@@ -53,6 +53,24 @@ def build_comparison_research_queries(profile: ProductProfile) -> list[str]:
     return list(dict.fromkeys(query for query in queries if query.strip()))
 
 
+def normalize_comparison_candidate(candidate: ComparisonCandidate) -> ComparisonCandidate:
+    """Prevent factual `supported` posture from surviving without supporting evidence.
+
+    Research tools may produce incomplete records. Hottop keeps the candidate useful for satire or
+    category contrast, but it will not serialize unsupported factual posture as if it were proven.
+    """
+
+    if candidate.claim_posture == "supported" and not candidate.evidence:
+        return candidate.model_copy(update={"claim_posture": "satire", "evidence_quality": 0.0})
+    return candidate
+
+
+def normalize_comparison_candidates(
+    candidates: list[ComparisonCandidate],
+) -> list[ComparisonCandidate]:
+    return [normalize_comparison_candidate(candidate) for candidate in candidates]
+
+
 def _candidate_score(profile: ProductProfile, candidate: ComparisonCandidate) -> float:
     relation_weight = {
         "direct-competitor": 1.0,
@@ -82,18 +100,16 @@ def choose_comparison_target(
     """Choose the comparison that creates the clearest, safest meme contrast.
 
     Selection rewards recognizability, same-category overlap and pain-point contrast. It does not
-    infer factual weaknesses. A candidate stays `satire` unless the research layer explicitly
-    supplies evidence and marks the comparison `supported`.
+    infer factual weaknesses. A candidate stays `supported` only when the research layer supplies
+    evidence; unsupported factual posture is normalized back to `satire`.
     """
 
-    if not candidates:
+    normalized = normalize_comparison_candidates(candidates)
+    if not normalized:
         return None
 
-    eligible = [candidate for candidate in candidates if candidate.name != profile.name]
+    eligible = [candidate for candidate in normalized if candidate.name != profile.name]
     if not eligible:
         return None
 
-    chosen = max(eligible, key=lambda candidate: _candidate_score(profile, candidate))
-    if not chosen.evidence and chosen.claim_posture == "supported":
-        chosen = chosen.model_copy(update={"claim_posture": "satire"})
-    return chosen
+    return max(eligible, key=lambda candidate: _candidate_score(profile, candidate))
