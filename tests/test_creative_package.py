@@ -1,5 +1,4 @@
 import pytest
-
 from hottop.creative_package import CreativePackageInput, build_creative_package
 
 
