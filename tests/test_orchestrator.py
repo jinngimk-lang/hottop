@@ -262,3 +262,33 @@ def test_orchestration_option_rejects_context_review_for_a_different_label():
             review=_review("bridge-reveal"),
             context_review=context_review,
         )
+
+
+def test_context_review_identity_is_canonical_in_orchestration_result():
+    intent = resolve_intent("宣传这个产品", overrides={"promotion_target": "Ribbon Lunch"})
+    context = PromotionContext(
+        subject_name="Ribbon Lunch",
+        subject_type="product",
+        category="food",
+        primary_job="memorable quick lunch",
+        primary_pain_point="generic food ads look interchangeable",
+        primary_differentiator="long elastic ribbon texture",
+        semantic_terms=["long", "elastic", "ribbon"],
+    )
+    payload = OrchestrationInput(
+        intent=intent,
+        promotion_context=context,
+        options=[
+            OrchestrationOption(
+                label="bridge-reveal",
+                concept=_concept("canonical-context", "swipe-reveal", "the product ribbon becomes the action"),
+                review=_review("bridge-reveal"),
+                context_review=_context("  bridge-reveal  ", 0.95),
+            )
+        ],
+        references=[],
+    )
+
+    result = orchestrate(payload)
+
+    assert result.selected_review.context.name == result.selected_label == "bridge-reveal"
