@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 08:05 +08:00
+Last updated: 2026-08-21 08:12 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -23,29 +23,30 @@ Milestone: Foundation v0.1
 - `hottop doctor` reports nonfatal readiness for Agent-Reach, Crawl4AI and Firecrawl.
 - Added provider-neutral renderer handoff (`RenderRequest` / `RenderPanel`) and `hottop render` CLI.
 - Added asynchronous multi-collector fan-in via `collect_and_build_batch(...)` and repeatable live `--source TYPE:KEY` options.
-- Added named source presets (`film-entertainment`, `ai-tech`, `zh-internet-culture`) and a resolver that upgrades direct-publisher evidence quality while preserving collector fallback scores for unknown domains.
-- DailyHotApi, NewsNow and RSS collectors consume the source-quality resolver from destination URLs.
-- Added `EnrichmentPipeline` with deterministic provider ordering and failure provenance so callers can prefer Crawl4AI, then Firecrawl, then a low-complexity fallback.
+- Added named source presets (`film-entertainment`, `ai-tech`, `zh-internet-culture`) and direct-publisher quality resolution.
+- Added `EnrichmentPipeline` with deterministic provider ordering and failure provenance.
 - Added `PlainHttpAdapter` as the no-JavaScript, no-auth final public-web fallback for HTML, Markdown and text pages.
-- Root-caused CI run 135 failure to whitespace inserted before punctuation across inline HTML tags; fixed the parser in commit `62e651412932417a78bdcd766f8ab5f9268dce9d`.
+- Root-caused CI run 135 failure to whitespace inserted before punctuation across inline HTML tags; parser fix commit `62e651412932417a78bdcd766f8ab5f9268dce9d` passed CI run 139.
+- Added `build_default_enrichment_pipeline()` so the normal order is Crawl4AI → Firecrawl when configured → plain HTTP; commit `d67b504c7b932ea905cd8657ebdab2abaa6f317e` passed CI run 145.
+- Added typed YAML batch configuration (`BatchConfig` / `BatchSourceConfig`) and loader; implementation commit `a5a0e8195324c47302ce437d32d79cf049eca678` passed CI run 149.
+- Added `config/batches/ai-tech-daily.yml` as a repeatable batch example.
 - Archived live research batches through `examples/runs/2026-08-21-0800-briefs.json`.
 - The 08:00 batch adds: `Hot Spot` release-day monolithic-AI ruler → orchestration satire; robotics `ChatGPT moment` anticipation → do-today's-work-now workflow metaphor; generic dinosaur box-office showdown → flashy tool rivalry versus quiet delivery.
 
 ## In progress
 
-- Verifying CI after the plain-HTTP punctuation fix and latest archive/status commits.
-- Wiring a default enrichment factory/config so Crawl4AI → Firecrawl → plain HTTP ordering can be selected without hand-building provider lists.
-- Converting repeatable live collector sets into stored YAML batch configurations.
+- CI run 151 is validating the newest sample-batch-config head.
+- Wiring `BatchConfig` into `hottop batch --config` so stored YAML can drive live fan-in without repeating CLI flags.
+- Applying per-source `preset` values from batch config to collector/source-quality behavior.
 - Connecting approved `RenderRequest` JSON to future image-generation providers without coupling the core package to any single vendor.
 
 ## Next actions
 
-1. Confirm CI on commit `62e651412932417a78bdcd766f8ab5f9268dce9d` or the newest head; repair immediately if red.
-2. Add a default enrichment configuration/factory: Crawl4AI first, Firecrawl second only when configured, plain HTTP last.
-3. Add a batch config file contract so repeatable collector specs can be stored as YAML rather than only CLI flags.
-4. Add preset-aware collector configuration so a batch can explicitly choose or override editorial-domain presets without code changes.
-5. Continue live research batches, prioritizing highly visual conflicts and culturally recognizable roles over generic news summaries.
-6. Once remaining Foundation v0.1 contracts are in place and CI is green, mark PR #1 ready, inspect final diff/reviews, and merge.
+1. Confirm CI run 151/newest head; repair immediately if red.
+2. Add `hottop batch --config <yaml>` using per-source limits, stored `top`, comparison target, and source list.
+3. Make batch-config `preset` explicit in collector/source-quality resolution instead of metadata-only.
+4. Continue live research batches, prioritizing highly visual conflicts and culturally recognizable roles over generic news summaries.
+5. Inspect Foundation v0.1 diff/reviews and, once remaining contracts are green, mark PR #1 ready and merge.
 
 ## Latest live creative signals
 
