@@ -21,7 +21,9 @@ from .comparison_research import (
 from .creative_package import CreativePackageInput, build_creative_package
 from .doctor import local_doctor
 from .integrations.playwright_cli import PlaywrightCliAdapter
+from .intake import CreativeIntent, next_question, resolve_intent
 from .models import ComparisonCandidate, CreativeConcept, ProductProfile, TrendCandidate
+from .orchestrator import OrchestrationInput, orchestrate
 from .pipeline import build_batch
 from .positioning import (
     build_comparison_research_queries,
@@ -39,6 +41,15 @@ def _json_dump(value: Any) -> str:
     if hasattr(value, "model_dump"):
         value = value.model_dump(mode="json")
     return json.dumps(value, ensure_ascii=False, indent=2)
+
+
+def _write_or_echo(value: Any, output: Path | None) -> None:
+    text = _json_dump(value)
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(text + "\n", encoding="utf-8")
+    else:
+        typer.echo(text)
 
 
 def _load_candidates(path: Path) -> list[TrendCandidate]:
@@ -76,6 +87,11 @@ def _load_comparison_candidates(path: Path) -> list[ComparisonCandidate]:
 def _load_concept(path: Path) -> CreativeConcept:
     raw = json.loads(path.read_text(encoding="utf-8"))
     return CreativeConcept.model_validate(raw)
+
+
+def _load_intent(path: Path) -> CreativeIntent:
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    return CreativeIntent.model_validate(raw)
 
 
 def _load_product(path: Path) -> ProductProfile:
@@ -116,6 +132,24 @@ async def _discover_configured(config: BatchConfig) -> list[TrendCandidate]:
 
 
 @app.command()
+def intent(
+    request: str = typer.Argument(..., help="Natural-language creative request"),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Resolve a natural-language request into transparent creative intent."""
+    _write_or_echo(resolve_intent(request), output)
+
+
+@app.command(name="next-question")
+def next_question_command(
+    intent_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Return one high-impact guided question, or a ready-to-create state."""
+    _write_or_echo(next_question(_load_intent(intent_path)), output)
+
+
+@app.command()
 def position(
     term: str | None = typer.Argument(
         None, help="Promoted brand/product/keyword when no YAML profile is supplied"
@@ -152,12 +186,7 @@ def position(
             selected_comparison.model_dump(mode="json") if selected_comparison else None
         ),
     }
-    text = _json_dump(payload)
-    if output:
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(text + "\n", encoding="utf-8")
-    else:
-        typer.echo(text)
+    _write_or_echo(payload, output)
 
 
 @app.command(name="reference-plan")
@@ -193,12 +222,7 @@ def reference_plan(
             "provenance_note": "",
         },
     }
-    text = _json_dump(payload)
-    if output:
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(text + "\n", encoding="utf-8")
-    else:
-        typer.echo(text)
+    _write_or_echo(payload, output)
 
 
 @app.command()
@@ -212,12 +236,7 @@ def discover(
 ) -> None:
     """Fetch and normalize one trend source."""
     items = asyncio.run(_discover(source, key, limit))
-    text = _json_dump([item.model_dump(mode="json") for item in items])
-    if output:
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(text + "\n", encoding="utf-8")
-    else:
-        typer.echo(text)
+    _write_or_echo([item.model_dump(mode="json") for item in items], output)
 
 
 @app.command()
@@ -264,13 +283,7 @@ def render(
         raise typer.BadParameter(f"index {index} is outside {len(candidates)} candidates")
     profile = _load_product(product)
     brief_result = build_brief(candidates[index], profile, comparison_target=compare)
-    render_request = build_render_request(brief_result)
-    text = _json_dump(render_request)
-    if output:
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(text + "\n", encoding="utf-8")
-    else:
-        typer.echo(text)
+    _write_or_echo(build_render_request(brief_result), output)
 
 
 @app.command(name="render-concept")
@@ -279,13 +292,7 @@ def render_concept(
     output: Path | None = typer.Option(None, "--output"),
 ) -> None:
     """Validate a flexible CreativeConcept and emit provider-neutral `hottop.render.v2`."""
-    render_request = build_creative_render_request(_load_concept(concept_path))
-    text = _json_dump(render_request)
-    if output:
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(text + "\n", encoding="utf-8")
-    else:
-        typer.echo(text)
+    _write_or_echo(build_creative_render_request(_load_concept(concept_path)), output)
 
 
 @app.command(name="package-concepts")
@@ -295,13 +302,17 @@ def package_concepts(
 ) -> None:
     """Validate reviewed creative alternatives, select the strongest, and emit render v2."""
     raw = json.loads(package_path.read_text(encoding="utf-8"))
-    result = build_creative_package(CreativePackageInput.model_validate(raw))
-    text = _json_dump(result)
-    if output:
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(text + "\n", encoding="utf-8")
-    else:
-        typer.echo(text)
+    _write_or_echo(build_creative_package(CreativePackageInput.model_validate(raw)), output)
+
+
+@app.command(name="orchestrate")
+def orchestrate_command(
+    orchestration_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Rank reviewed creative directions for the resolved request and emit render v2."""
+    raw = json.loads(orchestration_path.read_text(encoding="utf-8"))
+    _write_or_echo(orchestrate(OrchestrationInput.model_validate(raw)), output)
 
 
 @app.command()
@@ -346,12 +357,7 @@ def batch(
         comparison_target=effective_compare,
         top=effective_top,
     )
-    text = _json_dump(result)
-    if output:
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(text + "\n", encoding="utf-8")
-    else:
-        typer.echo(text)
+    _write_or_echo(result, output)
 
 
 @app.command(name="doctor")
