@@ -40,6 +40,16 @@ ExpressionForm = Literal[
     "split-old-vs-new",
     "product-as-prop",
 ]
+VisualMedium = Literal[
+    "live-action-cinematic",
+    "animation-2d",
+    "animation-3d",
+    "animation-low-poly",
+    "documentary-social",
+    "technology-realism",
+    "commercial-product",
+    "internet-native",
+]
 
 
 class Evidence(BaseModel):
@@ -134,6 +144,31 @@ class CreativeStrategy(BaseModel):
     bridge_type: BridgeType | None = None
     bridge: str | None = None
     expression_form: ExpressionForm
+
+
+class CreativeBeat(BaseModel):
+    """One visual beat in a flexible single-image, carousel, split, or narrative concept."""
+
+    scene: str = Field(min_length=1)
+    copy: str | None = None
+    intent: str = Field(min_length=1)
+
+
+class CreativeConcept(BaseModel):
+    """Renderer-neutral creative contract that is not tied to a four-panel layout."""
+
+    topic: TrendCandidate
+    promotion: PromotionContext
+    strategy: CreativeStrategy
+    comparison_target: str | None = None
+    beats: list[CreativeBeat] = Field(min_length=1, max_length=8)
+    visual_medium: VisualMedium
+    genre_treatment: str = Field(min_length=1)
+    punchlines: list[str] = Field(min_length=1, max_length=3)
+    image_prompt: str = Field(min_length=1)
+    negative_prompt: str = Field(min_length=1)
+    risk_flags: list[str] = Field(default_factory=list)
+    claim_status: ClaimStatus = "satire"
 
 
 class RoleMap(BaseModel):
