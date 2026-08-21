@@ -17,12 +17,14 @@ class NewsNowCollector:
         base_url: str = "https://newsnow.busiyi.world",
         timeout: float = 15.0,
         source_quality: float = NEWSNOW_SOURCE_QUALITY,
+        preset: str | None = None,
     ) -> None:
         self.source_id = source_id
         self.client = client
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.source_quality = source_quality
+        self.preset = preset
 
     async def collect(self, limit: int = 30) -> list[TrendCandidate]:
         owns_client = self.client is None
@@ -46,7 +48,11 @@ class NewsNowCollector:
                 continue
             extra = item.get("extra") or {}
             published_at = parse_timestamp(item.get("pubDate") or extra.get("date"))
-            quality = resolve_source_quality(url, fallback=self.source_quality)
+            quality = resolve_source_quality(
+                url,
+                fallback=self.source_quality,
+                preset=self.preset,
+            )
             results.append(
                 TrendCandidate(
                     id=f"newsnow:{self.source_id}:{item.get('id', index)}",
