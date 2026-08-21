@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Generic, Literal, TypeVar
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 IntentSource = Literal["explicit", "inferred", "defaulted"]
 CampaignGoal = Literal[
@@ -72,6 +72,16 @@ class CreativeIntent(BaseModel):
     audience: IntentValue[str | None]
     hotspot_preference: IntentValue[HotspotPreference]
     constraints: list[str] = Field(default_factory=list)
+
+    @field_validator("promotion_target")
+    @classmethod
+    def normalize_promotion_target(cls, target: IntentValue[str | None]) -> IntentValue[str | None]:
+        if target.value is None:
+            return target
+        normalized = target.value.strip()
+        if normalized == target.value:
+            return target
+        return target.model_copy(update={"value": normalized})
 
 
 class GuidedQuestion(BaseModel):
