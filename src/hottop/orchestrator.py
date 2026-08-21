@@ -31,9 +31,12 @@ class OrchestrationOption(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def bind_review_to_option(self) -> OrchestrationOption:
+    def bind_reviews_to_option(self) -> OrchestrationOption:
         if self.review.name != self.label:
             raise ValueError("review name must match option label")
+        context_name = (self.context_review.name or "").strip()
+        if context_name != self.label:
+            raise ValueError("context review name must match option label")
         return self
 
 
