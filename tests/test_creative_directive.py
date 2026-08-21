@@ -1,5 +1,4 @@
 from hottop.directives import build_creative_directive
-
 from hottop.intake import resolve_intent
 from hottop.models import PromotionContext
 
