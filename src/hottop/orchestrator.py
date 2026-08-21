@@ -4,12 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-from .creative import (
-    ContextualCreativeReview,
-    CreativeContextReview,
-    CreativeReview,
-    review_with_context,
-)
+from .creative import ContextualCreativeReview, CreativeContextReview, CreativeReview, review_with_context
 from .intake import CreativeIntent
 from .models import CreativeConcept, PromotionContext, VisualReference
 from .profiles import derive_routing_hints
@@ -50,6 +45,9 @@ class OrchestrationInput(BaseModel):
             raise ValueError("intent promotion target must match orchestration promotion context")
         if any(option.concept.promotion != self.promotion_context for option in self.options):
             raise ValueError("concept promotion must match orchestration promotion context")
+        labels = [option.label for option in self.options]
+        if len(labels) != len(set(labels)):
+            raise ValueError("option labels must be unique")
         return self
 
 
@@ -75,60 +73,21 @@ class OrchestrationResult(BaseModel):
 
 
 def orchestrate(payload: OrchestrationInput) -> OrchestrationResult:
-    reviewed = [
-        review_with_context(option.review, option.context_review)
-        for option in payload.options
-    ]
-    eligible = [
-        (index, option, reviewed[index])
-        for index, option in enumerate(payload.options)
-        if reviewed[index].passes
-    ]
+    reviewed = [review_with_context(option.review, option.context_review) for option in payload.options]
+    eligible = [(index, option, reviewed[index]) for index, option in enumerate(payload.options) if reviewed[index].passes]
     if not eligible:
         raise ValueError("no orchestration option passed the creative review gate")
 
-    selected_index, selected, selected_review = max(
-        eligible,
-        key=lambda item: item[2].total,
-    )
+    selected_index, selected, selected_review = max(eligible, key=lambda item: item[2].total)
     hints = derive_routing_hints(payload.intent, payload.promotion_context)
-    alternates = [
-        AlternateSummary(
-            label=option.label,
-            expression_form=option.concept.strategy.expression_form,
-            bridge=option.concept.strategy.bridge,
-            score=reviewed[index].total,
-        )
-        for index, option in enumerate(payload.options)
-        if index != selected_index and reviewed[index].passes
-    ]
+    alternates = [AlternateSummary(label=option.label, expression_form=option.concept.strategy.expression_form, bridge=option.concept.strategy.bridge, score=reviewed[index].total) for index, option in enumerate(payload.options) if index != selected_index and reviewed[index].passes]
     alternates.sort(key=lambda item: item.score, reverse=True)
-    rationale = (
-        f"Selected {selected.label} for platform {hints.platform.platform}, "
-        f"style {hints.style.style}, project shape {hints.project_shape.shape}; "
-        "the concept cleared the base creative gate and ranked highest on contextual fit."
-    )
-    return OrchestrationResult(
-        intent=payload.intent,
-        promotion_context=payload.promotion_context,
-        selected_index=selected_index,
-        selected_label=selected.label,
-        selected_concept=selected.concept,
-        selected_review=selected_review,
-        selected_render=build_creative_render_request(selected.concept),
-        selection_rationale=rationale,
-        alternates=alternates,
-        references=payload.references,
-    )
+    rationale = f"Selected {selected.label} for platform {hints.platform.platform}, style {hints.style.style}, project shape {hints.project_shape.shape}; the concept cleared the base creative gate and ranked highest on contextual fit."
+    return OrchestrationResult(intent=payload.intent, promotion_context=payload.promotion_context, selected_index=selected_index, selected_label=selected.label, selected_concept=selected.concept, selected_review=selected_review, selected_render=build_creative_render_request(selected.concept), selection_rationale=rationale, alternates=alternates, references=payload.references)
 
 
 def revision_overrides(intent: CreativeIntent, action: str) -> dict[str, str]:
-    """Translate compact conversational revision controls into intent mutations.
-
-    The caller applies these as explicit overrides through `resolve_intent`, so only the
-    dimension the user asked to change is rerouted.
-    """
-
+    """Translate compact conversational revision controls into intent mutations."""
     normalized = action.strip().lower()
     if normalized in {"更大胆", "破框", "bolder", "more bold"}:
         return {"creative_ambition": "category-breaking"}
