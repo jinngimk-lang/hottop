@@ -106,18 +106,19 @@ async def _discover(
     limit: int,
     preset: str | None = None,
 ) -> list[TrendCandidate]:
+    preset_kwargs = {"preset": preset} if preset is not None else {}
     if source == "dailyhot":
-        return await DailyHotApiCollector(route=key, preset=preset).collect(limit=limit)
+        return await DailyHotApiCollector(route=key, **preset_kwargs).collect(limit=limit)
     if source == "newsnow":
-        return await NewsNowCollector(source_id=key, preset=preset).collect(limit=limit)
+        return await NewsNowCollector(source_id=key, **preset_kwargs).collect(limit=limit)
     if source == "rss":
         return await RSSCollector(
             feed_url=key,
             source_name="rss:custom",
-            preset=preset,
+            **preset_kwargs,
         ).collect(limit=limit)
     if source == "rsshub":
-        return await RSSHubCollector(route=key, preset=preset).collect(limit=limit)
+        return await RSSHubCollector(route=key, **preset_kwargs).collect(limit=limit)
     raise typer.BadParameter("source must be one of: dailyhot, newsnow, rss, rsshub")
 
 
@@ -135,12 +136,15 @@ async def _discover_many(specs: list[str], limit: int) -> list[TrendCandidate]:
 
 
 async def _discover_configured(config: BatchConfig) -> list[TrendCandidate]:
-    batches = await asyncio.gather(
-        *(
+    tasks = [
+        (
             _discover(source.type, source.key, source.limit, preset=source.preset)
-            for source in config.sources
+            if source.preset is not None
+            else _discover(source.type, source.key, source.limit)
         )
-    )
+        for source in config.sources
+    ]
+    batches = await asyncio.gather(*tasks)
     return [candidate for batch in batches for candidate in batch]
 
 
