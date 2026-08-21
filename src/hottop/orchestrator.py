@@ -43,6 +43,12 @@ class OrchestrationInput(BaseModel):
     options: list[OrchestrationOption] = Field(min_length=1, max_length=12)
     references: list[VisualReference] = Field(default_factory=list, max_length=24)
 
+    @model_validator(mode="after")
+    def bind_options_to_promotion_context(self) -> OrchestrationInput:
+        if any(option.concept.promotion != self.promotion_context for option in self.options):
+            raise ValueError("concept promotion must match orchestration promotion context")
+        return self
+
 
 class AlternateSummary(BaseModel):
     label: str
