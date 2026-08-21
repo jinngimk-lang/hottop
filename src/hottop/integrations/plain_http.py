@@ -51,7 +51,13 @@ class _ReadableHTMLParser(HTMLParser):
         text = " ".join(data.split())
         if not text:
             return
-        if self.parts and not self.parts[-1].endswith((" ", "\n")):
+        punctuation = ".,;:!?)]}%"
+        needs_space = (
+            self.parts
+            and not self.parts[-1].endswith((" ", "\n", "(", "[", "{"))
+            and not text.startswith(tuple(punctuation))
+        )
+        if needs_space:
             self.parts.append(" ")
         self.parts.append(text)
 
