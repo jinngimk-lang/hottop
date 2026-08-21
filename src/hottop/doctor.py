@@ -14,6 +14,8 @@ def local_doctor() -> dict[str, Any]:
     crawl4ai_token = os.getenv("CRAWL4AI_TOKEN")
     firecrawl_key = os.getenv("FIRECRAWL_API_KEY")
     firecrawl_url = os.getenv("FIRECRAWL_URL", "https://api.firecrawl.dev").rstrip("/")
+    rsshub_raw = (os.getenv("RSSHUB_BASE_URL") or "").strip()
+    rsshub_url = rsshub_raw.rstrip("/") if rsshub_raw else None
 
     return {
         "core": "ok",
@@ -46,5 +48,13 @@ def local_doctor() -> dict[str, Any]:
             "base_url": firecrawl_url,
             "api_version": "v2",
             "note": "optional hosted fallback; missing API key never fails core doctor",
+        },
+        "rsshub": {
+            "required": False,
+            "configured": bool(rsshub_url),
+            "base_url": rsshub_url,
+            "note": (
+                "optional external feed router; Hottop reuses RSS parsing and does not vendor RSSHub"
+            ),
         },
     }
