@@ -53,6 +53,17 @@ def test_supported_creative_claim_requires_comparison_evidence() -> None:
         CreativeConcept(**payload)
 
 
+def test_named_comparison_cannot_remain_needs_evidence_in_production() -> None:
+    payload = _concept_payload()
+    payload["claim_status"] = "needs_evidence"
+
+    with pytest.raises(
+        ValidationError,
+        match="named creative comparisons must be supported by evidence or explicit satire",
+    ):
+        CreativeConcept(**payload)
+
+
 def test_render_v2_preserves_comparison_evidence_provenance() -> None:
     payload = _concept_payload()
     payload["claim_status"] = "supported"
