@@ -5,7 +5,6 @@ from typer.testing import CliRunner
 from hottop.cli import app
 from hottop.enrichment import EnrichmentResult
 
-
 runner = CliRunner()
 
 
