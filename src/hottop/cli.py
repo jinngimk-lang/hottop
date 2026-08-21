@@ -16,6 +16,7 @@ from .collectors.rss import RSSCollector
 from .doctor import local_doctor
 from .models import ProductProfile, TrendCandidate
 from .pipeline import build_batch
+from .positioning import build_comparison_research_queries, infer_promotion_context
 from .rendering import build_render_request
 from .scoring import score_candidate
 
@@ -67,6 +68,35 @@ async def _discover_configured(config: BatchConfig) -> list[TrendCandidate]:
         *(_discover(source.type, source.key, source.limit) for source in config.sources)
     )
     return [candidate for batch in batches for candidate in batch]
+
+
+@app.command()
+def position(
+    term: str | None = typer.Argument(None, help="Promoted brand/product/keyword when no YAML profile is supplied"),
+    product: Path | None = typer.Option(None, "--product", exists=True, dir_okay=False),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Resolve promotion semantics and emit current competitor-research queries."""
+    if product is not None:
+        profile = _load_product(product)
+    elif term and term.strip():
+        profile = ProductProfile(name=term.strip(), subject_type="keyword")
+    else:
+        raise typer.BadParameter("provide a promoted term or --product YAML profile")
+
+    payload = {
+        "schema_version": "hottop.position.v1",
+        "profile": profile.model_dump(mode="json"),
+        "context": infer_promotion_context(profile).model_dump(mode="json"),
+        "research_queries": build_comparison_research_queries(profile),
+        "comparison_candidates": [],
+    }
+    text = _json_dump(payload)
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(text + "\n", encoding="utf-8")
+    else:
+        typer.echo(text)
 
 
 @app.command()
