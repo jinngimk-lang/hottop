@@ -4,10 +4,12 @@ import os
 from typing import Any
 
 from .integrations.agent_reach import AgentReachAdapter
+from .integrations.playwright_cli import PlaywrightCliAdapter
 
 
 def local_doctor() -> dict[str, Any]:
     agent_reach = AgentReachAdapter()
+    playwright_cli = PlaywrightCliAdapter()
     crawl4ai_url = os.getenv("CRAWL4AI_URL", "http://127.0.0.1:11235").rstrip("/")
     crawl4ai_token = os.getenv("CRAWL4AI_TOKEN")
     firecrawl_key = os.getenv("FIRECRAWL_API_KEY")
@@ -20,6 +22,15 @@ def local_doctor() -> dict[str, Any]:
             "available": agent_reach.available(),
             "doctor_command": agent_reach.doctor_command(),
             "safe_install_check": agent_reach.install_check_command(),
+        },
+        "playwright_cli": {
+            "required": False,
+            "available": playwright_cli.available(),
+            "session": playwright_cli.session,
+            "note": (
+                "optional visual reference capture; uses an ephemeral session by default and does not "
+                "enable persistent browser profiles or authentication"
+            ),
         },
         "crawl4ai": {
             "required": False,
