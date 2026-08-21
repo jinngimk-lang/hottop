@@ -1,10 +1,10 @@
 import asyncio
 
 import pytest
+from hottop.collectors.rsshub import RSSHubCollector
 
 from hottop.batch_config import BatchSourceConfig
 from hottop.cli import _discover
-from hottop.collectors.rsshub import RSSHubCollector
 from hottop.models import TrendCandidate
 
 
