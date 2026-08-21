@@ -14,6 +14,19 @@ def test_project_persists_broader_creative_direction() -> None:
     assert "not every concept must be four-panel" in text.lower()
 
 
+def test_project_persists_continuity_protocol() -> None:
+    text = PROJECT.read_text(encoding="utf-8").lower()
+    required = [
+        "living project charter",
+        "context recovery",
+        "material direction change",
+        "decision log",
+        "update the charter",
+    ]
+    for phrase in required:
+        assert phrase in text
+
+
 def test_brand_metaphor_skill_captures_creative_method() -> None:
     text = CREATIVE_SKILL.read_text(encoding="utf-8")
     required = [
@@ -27,6 +40,19 @@ def test_brand_metaphor_skill_captures_creative_method() -> None:
     ]
     for phrase in required:
         assert phrase in text.lower()
+
+
+def test_brand_metaphor_skill_captures_project_memory_loop() -> None:
+    text = CREATIVE_SKILL.read_text(encoding="utf-8").lower()
+    required = [
+        "persistent project protocol",
+        "context pressure",
+        "recovery order",
+        "update the charter",
+        "decision log",
+    ]
+    for phrase in required:
+        assert phrase in text
 
 
 def test_hottop_meme_skill_routes_to_brand_metaphor_skill() -> None:
