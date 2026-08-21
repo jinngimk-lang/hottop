@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 13:00 +08:00
+Last updated: 2026-08-21 13:05 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -17,6 +17,9 @@ Milestone: Foundation v0.1
 - Added `tests/test_creative_skill_contract.py`. RED run 195 failed on the missing doctrine/skill as intended; implementation head `97a81e161768633b2c209ab215e58627ea460247` passed CI run 201 on Python 3.11/3.12.
 - Documentation/status head `fcf96d05d839a482113eae053f7f6dbf4b72b1d6` passed CI run 203.
 - Added live archive `examples/runs/2026-08-21-1257-briefs.json` with three evidence-linked creative directions: robotics “ChatGPT moment” → do not wait for a universal breakthrough; BirdTok / craving for something real → signal over output volume; intrusive digital popovers → delete interface friction rather than design a prettier layer.
+- Added a **persistent project memory protocol** to `PROJECT.md` and `skills/brand-metaphor-creative/SKILL.md`: new multi-session projects create a living project charter; context pressure triggers repository-based recovery; durable direction changes update the charter + skill/spec + status; a compact decision log preserves rationale without turning the charter into a transcript.
+- Extended the creative skill to explore pain-point contrast, bridge-led metaphor and constraint-deletion directions before locking the first obvious idea.
+- Persistence contract commit `0b5de6cb9f1612573e105570a4dfe904ba006925` failed CI run 209 as expected before the new protocol existed. Implementation head `bd2aca2d086ad4bb6d12d15b43d9c9046811ff53` passed CI run 213 on Python 3.11/3.12.
 
 ## Current creative doctrine
 
@@ -27,6 +30,7 @@ Milestone: Foundation v0.1
 - **Medium follows the hotspot:** movie feels cinematic, animation feels animation-native, real/social feels documentary-native, consumer product can feel like polished commercial photography.
 - **Competitor is optional; truth is mandatory:** the strongest antagonist may be a named rival, incumbent habit, manual workaround or the old category assumption itself.
 - **Creative quality gate:** instant comprehension, natural linkage, product centrality, surprise, ownability, evidence safety and original execution.
+- **Project memory is part of product quality:** durable doctrine lives in the repository; context recovery reads it before continuing; new durable learning is audited and written back instead of living only in chat.
 
 ## Latest live evidence notes
 
@@ -42,7 +46,7 @@ Milestone: Foundation v0.1
 
 ## Next actions
 
-1. Confirm CI on the newest archive/status head; repair immediately if red.
+1. Confirm CI on the newest status head; repair immediately if red.
 2. Add structured creative fields: `category_default`, `deleted_constraint`, `new_competition_axis`, `bridge_type`, `bridge`, and `expression_form`.
 3. Add an expression-form selector that can choose `single-visual-metaphor`, `swipe-reveal`, `four-panel`, `faux-film-still`, `split-old-vs-new`, or `product-as-prop` instead of hard-coding four panels.
 4. Add a bridge generator/scorer for shape/material, action, role, function, emotion/ritual and language/symbol links.
@@ -50,7 +54,8 @@ Milestone: Foundation v0.1
 6. Make batch-config `preset` affect collector/source-quality resolution.
 7. Add enrichment-before-brief CLI path and promote `visual_medium` / `genre_treatment` into first-class renderer fields.
 8. Add representative archives for consumer products and swipe-reveal advertising, not only software/four-panel cases.
-9. Inspect Foundation v0.1 diff/reviews and mark PR #1 ready once remaining contracts are green.
+9. After Foundation v0.1, add a lightweight project-bootstrap template/command so new long-running projects can create charter/status/skill recovery files consistently instead of relying on memory.
+10. Inspect Foundation v0.1 diff/reviews and mark PR #1 ready once remaining contracts are green.
 
 ## Constraints
 
