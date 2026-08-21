@@ -6,6 +6,24 @@ from typing import Literal
 from pydantic import BaseModel, Field, HttpUrl, field_validator
 
 ClaimStatus = Literal["satire", "supported", "needs_evidence"]
+PromotionSubjectType = Literal[
+    "brand",
+    "product",
+    "service",
+    "feature",
+    "campaign",
+    "person",
+    "idea",
+    "keyword",
+    "tool",
+]
+ComparisonRelation = Literal[
+    "direct-competitor",
+    "adjacent-substitute",
+    "incumbent-default",
+    "legacy-workflow",
+    "manual-workaround",
+]
 
 
 class Evidence(BaseModel):
@@ -52,11 +70,43 @@ class TrendScore(BaseModel):
 
 
 class ProductProfile(BaseModel):
+    """Backward-compatible promotion profile for any subject, not only AI products."""
+
     name: str = Field(min_length=1)
     url: HttpUrl | None = None
+    subject_type: PromotionSubjectType = "product"
+    category: str | None = None
+    keywords: list[str] = Field(default_factory=list)
+    jobs_to_be_done: list[str] = Field(default_factory=list)
+    pain_points_solved: list[str] = Field(default_factory=list)
+    differentiators: list[str] = Field(default_factory=list)
+    known_alternatives: list[str] = Field(default_factory=list)
     strengths: list[str] = Field(default_factory=list)
     preferred_roles: list[str] = Field(default_factory=lambda: ["solver", "breaker", "winner"])
     default_claim_status: ClaimStatus = "satire"
+
+
+class PromotionContext(BaseModel):
+    subject_name: str
+    subject_type: PromotionSubjectType
+    category: str
+    primary_job: str | None = None
+    primary_pain_point: str | None = None
+    primary_differentiator: str | None = None
+    semantic_terms: list[str] = Field(default_factory=list)
+
+
+class ComparisonCandidate(BaseModel):
+    name: str = Field(min_length=1)
+    category: str | None = None
+    relation: ComparisonRelation
+    recognizability: float = Field(default=0.5, ge=0, le=1)
+    category_overlap: float = Field(default=0.5, ge=0, le=1)
+    pain_point_contrast: float = Field(default=0.5, ge=0, le=1)
+    evidence_quality: float = Field(default=0, ge=0, le=1)
+    evidence: list[Evidence] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+    claim_posture: ClaimStatus = "satire"
 
 
 class RoleMap(BaseModel):
