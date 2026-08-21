@@ -1,0 +1,68 @@
+{
+  "options": [
+    {
+      "label": "ribbon-reveal",
+      "concept": {
+        "topic": {
+          "id": "example:consumer:ribbon-reveal",
+          "title": "Original ribbon-action social visual",
+          "url": "https://example.com/original-ribbon-reference",
+          "source": "example",
+          "tags": ["consumer", "food", "social"]
+        },
+        "promotion": {
+          "subject_name": "Ribbon Lunch",
+          "subject_type": "product",
+          "category": "food beverage",
+          "primary_job": "make a quick lunch memorable",
+          "primary_pain_point": "generic food launch ads look interchangeable",
+          "primary_differentiator": "long elastic ribbon texture",
+          "semantic_terms": ["long", "elastic", "glossy", "ribbon"]
+        },
+        "strategy": {
+          "category_default": "show the finished bowl immediately",
+          "deleted_constraint": "the full product must be revealed in frame one",
+          "new_competition_axis": "curiosity and visual participation",
+          "bridge_type": "shape-material",
+          "bridge": "the food ribbon itself becomes the mysterious action across the carousel",
+          "expression_form": "swipe-reveal"
+        },
+        "beats": [
+          {
+            "scene": "A clean red field with one original anonymous hand gesture and a glossy ribbon-like strand entering frame.",
+            "caption": null,
+            "intent": "tease without revealing the product category"
+          },
+          {
+            "scene": "The strand stretches farther and its food texture becomes legible while the bowl remains outside frame.",
+            "caption": "再拉一点。",
+            "intent": "add a material clue"
+          },
+          {
+            "scene": "The strand lands naturally into a fictional unbranded bowl and the food product is finally clear.",
+            "caption": "原来，主角一直就是它。",
+            "intent": "resolve the visual association through the product"
+          }
+        ],
+        "visual_medium": "commercial-product",
+        "genre_treatment": "minimal premium food photography with playful social-carousel pacing",
+        "punchlines": ["原来，主角一直就是它。"],
+        "image_prompt": "Original premium commercial food carousel: a glossy elastic ribbon-like food strand performs the visual action across a minimal background, progressively revealing edible texture before landing in a fictional bowl; original anonymous hand gesture, high product texture, strong negative space, no recognizable protected character or copied ad composition.",
+        "negative_prompt": "No copied campaign layout, no superhero costume or protected character design, no real brand logo, no trade dress, no source pixels.",
+        "risk_flags": [],
+        "claim_status": "satire"
+      },
+      "review": {
+        "name": "ribbon-reveal",
+        "instant_comprehension": 0.9,
+        "natural_linkage": 0.96,
+        "product_centrality": 0.98,
+        "surprise": 0.9,
+        "ownability": 0.95,
+        "evidence_safety": 0.98,
+        "original_execution": 0.96
+      }
+    }
+  ],
+  "references": []
+}
