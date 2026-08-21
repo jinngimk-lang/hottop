@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 06:55 +08:00
+Last updated: 2026-08-21 08:05 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -24,22 +24,24 @@ Milestone: Foundation v0.1
 - Added provider-neutral renderer handoff (`RenderRequest` / `RenderPanel`) and `hottop render` CLI.
 - Added asynchronous multi-collector fan-in via `collect_and_build_batch(...)` and repeatable live `--source TYPE:KEY` options.
 - Added named source presets (`film-entertainment`, `ai-tech`, `zh-internet-culture`) and a resolver that upgrades direct-publisher evidence quality while preserving collector fallback scores for unknown domains.
-- DailyHotApi, NewsNow and RSS collectors now consume the source-quality resolver from destination URLs.
-- RED source-preset contract failed in CI run 115 as intended; implementation/collector integration passed CI run 123 on commit `da3342a1`.
-- Archived live research batches through `examples/runs/2026-08-21-0655-briefs.json`.
-- The 06:55 batch adds: robot backflips-versus-useful-work → demo versus delivery; rocket-launch tourism → ignition versus mission control; `2026 is the new 2016` nostalgia → swapping twelve tabs for twelve AI tools versus changing the workflow.
+- DailyHotApi, NewsNow and RSS collectors consume the source-quality resolver from destination URLs.
+- Added `EnrichmentPipeline` with deterministic provider ordering and failure provenance so callers can prefer Crawl4AI, then Firecrawl, then a low-complexity fallback.
+- Added `PlainHttpAdapter` as the no-JavaScript, no-auth final public-web fallback for HTML, Markdown and text pages.
+- Root-caused CI run 135 failure to whitespace inserted before punctuation across inline HTML tags; fixed the parser in commit `62e651412932417a78bdcd766f8ab5f9268dce9d`.
+- Archived live research batches through `examples/runs/2026-08-21-0800-briefs.json`.
+- The 08:00 batch adds: `Hot Spot` release-day monolithic-AI ruler → orchestration satire; robotics `ChatGPT moment` anticipation → do-today's-work-now workflow metaphor; generic dinosaur box-office showdown → flashy tool rivalry versus quiet delivery.
 
 ## In progress
 
-- Expanding source diversity and evidence enrichment.
-- Connecting approved `RenderRequest` JSON to future image-generation providers without coupling the core package to any single vendor.
-- Designing optional enrichment fallback ordering: Crawl4AI first, Firecrawl second, plain HTTP/RSS when sufficient.
+- Verifying CI after the plain-HTTP punctuation fix and latest archive/status commits.
+- Wiring a default enrichment factory/config so Crawl4AI → Firecrawl → plain HTTP ordering can be selected without hand-building provider lists.
 - Converting repeatable live collector sets into stored YAML batch configurations.
+- Connecting approved `RenderRequest` JSON to future image-generation providers without coupling the core package to any single vendor.
 
 ## Next actions
 
-1. Confirm CI on the newest archive/status head; repair immediately if red.
-2. Add optional enrichment fallback ordering: Crawl4AI first for self-hosted browser/deep-page extraction, Firecrawl second when configured, plain HTTP/RSS when sufficient.
+1. Confirm CI on commit `62e651412932417a78bdcd766f8ab5f9268dce9d` or the newest head; repair immediately if red.
+2. Add a default enrichment configuration/factory: Crawl4AI first, Firecrawl second only when configured, plain HTTP last.
 3. Add a batch config file contract so repeatable collector specs can be stored as YAML rather than only CLI flags.
 4. Add preset-aware collector configuration so a batch can explicitly choose or override editorial-domain presets without code changes.
 5. Continue live research batches, prioritizing highly visual conflicts and culturally recognizable roles over generic news summaries.
@@ -47,13 +49,13 @@ Milestone: Foundation v0.1
 
 ## Latest live creative signals
 
-- **Humanoid robot commercial test (Reuters 2026-08-18/20):** strong `backflips vs useful work` metaphor. Use fictional robots only; never copy Unitree/UBTECH/etc. product designs. Claim mode: workflow metaphor.
-- **China rocket-launch tourism (Reuters 2026-08-19):** strong `ignition vs mission-control delivery` structure. Use fictional unbranded spacecraft and generic control-room imagery; no real launch hardware/site replica. Claim mode: satire.
-- **`2026 is the new 2016` nostalgia format (SocialPilot August 14-25 roundup):** useful for `twelve browser tabs became twelve AI tools` then-versus-now satire. Treat this as a lower-confidence format-monitoring signal, not a factual market claim; do not copy TikTok UI, creator imagery or copyrighted audio/lyrics.
-- **Hot Spot release day (2026-08-21):** broad sentient-AI-ruler premise is useful for monolithic万能AI versus coordinated specialist workflow. Never reproduce actor likenesses, film sets, costumes, posters, title treatment or frames. Claim mode: satire.
-- **Brazil AI supercomputer investment (Reuters 2026-08-20):** useful for `stop choosing camps; orchestrate capabilities by task` framing. Avoid flags, politicians, vendor logos and geopolitical caricature. Claim mode: workflow satire, not a statement about the reported vendors.
-- **Niu Lai viral animation phenomenon (FT 2026-08-20):** useful for shipped-first-draft versus planning-theater framing. Never use the film's characters, title treatment, poster, frames or identifiable character design. Claim mode: satire/workflow metaphor.
-- **The Odyssey summer visibility (AP 2026-08-16):** strong cave/giant/escape structure. Use only public-domain Homeric archetypes; never reproduce current actors, costumes, sets, posters or film frames. Claim mode: satire.
+- **Hot Spot release day (AP, 2026-08-21):** broad sentient-AI-ruler premise is useful for monolithic万能AI versus coordinated specialist workflow. Never reproduce actor likenesses, film sets, costumes, posters, title treatment or frames. Claim mode: satire.
+- **Robotics `ChatGPT moment` discussion (Reuters, 2026-08-20):** useful for `waiting for the next breakthrough vs finishing today's work with orchestration`. Use fictional robots only; never copy Unitree or other product designs. Claim mode: workflow metaphor.
+- **Dinosaur box-office showdown (AP, 2026-08-17):** two dinosaur-themed releases competing for attention provides a generic `two flashy tools fighting while the project waits` structure. Use only original generic dinosaur designs; never reproduce franchise creatures, actors, posters or film frames. Claim mode: satire.
+- **Humanoid robot commercial test (Reuters, 2026-08-18/20):** strong `backflips vs useful work` metaphor. Use fictional robots only; never copy Unitree/UBTECH/etc. product designs. Claim mode: workflow metaphor.
+- **China rocket-launch tourism (Reuters, 2026-08-19):** strong `ignition vs mission-control delivery` structure. Use fictional unbranded spacecraft and generic control-room imagery; no real launch hardware/site replica. Claim mode: satire.
+- **Niu Lai viral animation phenomenon (FT, 2026-08-20):** useful for shipped-first-draft versus planning-theater framing. Never use the film's characters, title treatment, poster, frames or identifiable character design. Claim mode: satire/workflow metaphor.
+- **The Odyssey summer visibility:** strong cave/giant/escape structure. Use only public-domain Homeric archetypes; never reproduce current actors, costumes, sets, posters or film frames. Claim mode: satire.
 - **AI-agent safety/control:** useful for raw autonomy versus controlled orchestration. Use only high-level safety context; never include exploit steps, hacking commands or operational cybersecurity detail.
 - **Gemini 3.7 Flash agent-workflow race:** useful for `single fast leg vs full relay` category framing. Never claim InkClawAgent is faster or benchmark-superior; the comparison is workflow scope/orchestration only.
 
