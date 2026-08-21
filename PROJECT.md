@@ -111,6 +111,54 @@ Reject `hot character + logo`, feature lists wearing costumes, forced references
 11. **Guardrail** — claims, copyright/likeness/trademark, misleading competitor framing.
 12. **Archive** — inputs, evidence, rejected assumptions, selected bridge, format, prompts and outcome notes.
 
+## Persistent project memory protocol
+
+Long-running work must not depend on chat memory alone. Every new multi-session project should create a **living project charter** before substantial implementation or repeated production. In Hottop, `PROJECT.md` is that durable charter and `STATUS.md` is the short-lived execution snapshot.
+
+### What belongs in the living project charter
+
+Keep only durable information that future sessions must recover accurately:
+
+- mission, audience, success criteria and non-goals;
+- canonical creative doctrine and product/brand semantics;
+- architecture, major integrations and operating boundaries;
+- accepted constraints and evidence/claim rules;
+- stable workflow and output contracts;
+- active reusable skills and recovery order;
+- major strategic decisions and a compact **decision log** when rationale would otherwise be lost.
+
+Keep transient CI run IDs, hourly research notes and short-lived tasks in `STATUS.md` or archives instead of bloating the charter.
+
+### Context recovery
+
+Treat repository documents as the source of truth when there is **context pressure**: a long conversation, a new session, uncertainty about prior decisions, a handoff between agents, or a return after time away. Recovery order is:
+
+1. `PROJECT.md` — durable direction and canonical decisions;
+2. `STATUS.md` — current branch, CI, in-progress work and next actions;
+3. active reusable skill(s);
+4. newest relevant spec/plan/decision record;
+5. PR/CI state and current evidence as needed.
+
+Do not ask the user to repeat stable project direction that the repository can recover.
+
+### Living updates
+
+A **material direction change** must be persisted before future work relies on it. Examples include a new creative principle, newly preferred expression form, category-reframing rule, integration strategy, safety boundary, architecture change, recurring user instruction, or a repeated pattern proven useful across runs.
+
+When one appears:
+
+1. challenge it against the current doctrine and evidence;
+2. decide whether it is durable or merely experiment-specific;
+3. if durable, **update the charter** and the relevant skill/spec in the same workstream;
+4. record why it changed, what assumption it replaces, and any migration/compatibility effect in the decision log when useful;
+5. update `STATUS.md` so the next recovery reads the new direction immediately.
+
+Do not silently accumulate contradictory instructions. Supersede stale rules explicitly and keep one canonical current interpretation.
+
+### Stability review
+
+After meaningful doctrine or architecture updates, reread the charter with fresh eyes and check for contradictions, stale assumptions, duplicated rules, missing recovery steps and overly narrow examples. The goal is a project that becomes **more precise and more interesting as it learns**, not a longer document that preserves every historical thought.
+
 ## Non-goals
 
 - No permanent InkClawAgent, AI-tool, mascot or character requirement.
@@ -138,7 +186,7 @@ Use Firecrawl as an optional hosted fallback and plain HTTP as the final no-Java
 
 - Work on feature branches and merge through PRs.
 - Keep `PROJECT.md`, `STATUS.md`, relevant specs/plans and reusable skills current so work survives context loss.
-- On recovery, read `PROJECT.md` first, then `STATUS.md`, then the active skill(s).
+- On recovery, follow the persistent project memory protocol rather than relying on fuzzy conversation memory.
 - Prefer adapters/interfaces around upstream projects; do not fork huge third-party code without a concrete need.
 - Keep credentials, cookies and API keys out of Git and CI logs.
 - Respect site terms, access boundaries, rate limits and account safety.
@@ -167,7 +215,7 @@ A mature creative concept should be serializable with:
 
 ## Reusable skills
 
-- `skills/brand-metaphor-creative/SKILL.md` — primary creative-thinking method: category reframing, constraint deletion, bridge search, expression-form selection and creative review gate.
+- `skills/brand-metaphor-creative/SKILL.md` — primary creative-thinking method: category reframing, constraint deletion, bridge search, expression-form selection, creative review gate and persistent project protocol for multi-session creative work.
 - `skills/hottop-meme/SKILL.md` — hotspot acquisition, evidence-aware comparison handling, visual-medium routing and four-panel execution when four-panel is the selected form.
 
 ## Current milestone
@@ -183,6 +231,6 @@ When resuming:
 1. Read `PROJECT.md`.
 2. Read `STATUS.md`.
 3. Read `skills/brand-metaphor-creative/SKILL.md` for creative work and `skills/hottop-meme/SKILL.md` when hotspot/four-panel execution applies.
-4. Read the newest relevant spec/plan for the active milestone.
+4. Read the newest relevant spec/plan or decision record for the active milestone.
 5. Inspect open PRs / failing CI.
 6. Continue from `Next actions` in `STATUS.md` without asking for routine approval.
