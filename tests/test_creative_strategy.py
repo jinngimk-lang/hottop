@@ -1,5 +1,4 @@
 from hottop.creative import CreativeSignals, select_expression_form
-
 from hottop.models import CreativeStrategy
 
 
