@@ -9,7 +9,7 @@ from .models import CreativeConcept, VisualReference
 from .rendering import CreativeRenderRequest, build_creative_render_request
 
 
-class ReviewedCreativeOption(BaseModel):
+class CreativePackageOption(BaseModel):
     """One front-end creative proposal paired with an explicit quality review."""
 
     concept: CreativeConcept
@@ -17,10 +17,13 @@ class ReviewedCreativeOption(BaseModel):
     label: str | None = None
 
 
+ReviewedCreativeOption = CreativePackageOption
+
+
 class CreativePackageInput(BaseModel):
     """Conversation/front-end handoff containing alternatives and abstract reference research."""
 
-    options: list[ReviewedCreativeOption] = Field(min_length=1, max_length=12)
+    options: list[CreativePackageOption] = Field(min_length=1, max_length=12)
     references: list[VisualReference] = Field(default_factory=list, max_length=24)
 
 
