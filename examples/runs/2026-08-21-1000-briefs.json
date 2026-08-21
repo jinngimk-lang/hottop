@@ -1,0 +1,94 @@
+{
+  "generated_at": "2026-08-21T10:00:00+08:00",
+  "product": "InkClawAgent",
+  "claim_policy": "satire_or_evidence_only",
+  "briefs": [
+    {
+      "topic": "China puts robocops on traffic duty",
+      "freshness": "2026-08-20/21",
+      "sources": [
+        {
+          "publisher": "Reuters",
+          "date": "2026-08-20",
+          "url": "https://www.reuters.com/technology/china-puts-robocops-traffic-duty-minus-arrest-powers-2026-08-20/",
+          "evidence_note": "Hangzhou is piloting robotic traffic officers for repetitive traffic duties, warnings and guidance under centralized monitoring."
+        }
+      ],
+      "visual_medium": "photorealistic real-world technology editorial",
+      "genre_treatment": "contemporary city street + cinematic control-room realism",
+      "conflict": "many specialist agents can each handle a narrow lane, but a larger project still needs orchestration",
+      "product_role": "central workflow coordinator",
+      "comparison_target": "fictional single-purpose AI tools",
+      "comparison_role": "separate robotic officers each guarding one lane",
+      "panels": [
+        {"scene": "Photorealistic modern city intersection with four original unbranded robotic officers, each focused on one lane labeled SEARCH, WRITE, REVIEW, CODE.", "caption": "每条车道都有高手。"},
+        {"scene": "A project vehicle reaches the middle of the intersection and stops because the four specialists are giving disconnected instructions.", "caption": "但项目到底听谁的？"},
+        {"scene": "Inside an original cinematic control room, InkClawAgent calmly sequences all four lanes into one green route.", "caption": "InkClawAgent：别各管一段，串起来。"},
+        {"scene": "The project vehicle exits the intersection carrying a DELIVERED marker while the individual specialists continue doing their narrow jobs.", "caption": "单项会干，整局还得会调度。"}
+      ],
+      "punchlines": ["单项会干，整局还得会调度。", "工具各有本事，交付得有人控全局。"],
+      "image_prompt": "Four-panel photorealistic contemporary technology satire. Realistic Chinese-style but fictional urban intersection, original unbranded service robots, natural daylight and practical street materials, then a premium cinematic control-room shot for InkClawAgent. No copied real robot product design or police insignia. Make it feel like real editorial photography and a near-future technology commercial, not illustration.",
+      "negative_prompt": "No SUPCON robot replica, no police department logos, no real person likeness, no proprietary product UI, no fake performance dashboard, no claim that InkClawAgent controls physical robots.",
+      "risk_flags": ["real-world public-safety context", "proprietary robot design avoidance", "workflow metaphor only"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Niu Lai viral animation remains a cultural talking point",
+      "freshness": "2026-08-20/21",
+      "sources": [
+        {
+          "publisher": "Financial Times",
+          "date": "2026-08-20",
+          "url": "https://www.ft.com/content/1a5a87f5-3935-43f4-bdda-50ff9417128b",
+          "evidence_note": "The low-budget Chinese animated film went viral as audiences embraced its intentionally or unintentionally rough production qualities and remixability."
+        }
+      ],
+      "visual_medium": "deliberately rough original low-budget 3D animation",
+      "genre_treatment": "awkward low-poly comedy with handmade charm",
+      "conflict": "a rough first version can create feedback while a polished planning process may never ship",
+      "product_role": "workflow that gets a first draft out and iterates",
+      "comparison_target": "fictional perfectionist AI workflow",
+      "comparison_role": "team endlessly polishing a beautiful roadmap",
+      "panels": [
+        {"scene": "Original low-poly 3D office workers proudly unveil a slightly awkward first draft on a cheap projector.", "caption": "第一版：有点糙。"},
+        {"scene": "Across the room, a glossy team is still rendering an elaborate roadmap labeled V27 FINAL FINAL.", "caption": "另一边：还在准备完美开工。"},
+        {"scene": "InkClawAgent turns the rough draft into a DRAFT → REVIEW → REVISE conveyor while feedback cards arrive.", "caption": "InkClawAgent：先有东西，再把它变好。"},
+        {"scene": "The original rough project is now visibly improved and shipped while the perfectionist roadmap is still loading.", "caption": "先交付，才有资格迭代。"}
+      ],
+      "punchlines": ["先交付，才有资格迭代。", "不是糙得赢，是先跑起来才有反馈。"],
+      "image_prompt": "Four-panel deliberately rough but charming original low-poly 3D animated comedy. Crude geometric characters, simple materials, awkward lighting and expressive staging appropriate to a viral low-budget animation meme, but no copied character, animal, title design or identifiable scene from any existing film. InkClawAgent appears as a simple original workflow operator.",
+      "negative_prompt": "No Niu Lai characters, no cow character design, no copied film frame, no title logo, no exact viral scene, no statement that poor quality is inherently better.",
+      "risk_flags": ["copyrighted animation adjacency", "style should preserve medium without copying character design", "workflow metaphor only"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Robotics industry waits for a ChatGPT moment",
+      "freshness": "2026-08-20/21",
+      "sources": [
+        {
+          "publisher": "Reuters",
+          "date": "2026-08-20",
+          "url": "https://www.reuters.com/world/asia-pacific/robots-poised-chatgpt-moment-unitree-ceo-says-2026-08-20/",
+          "evidence_note": "Industry leaders are discussing a future general-purpose breakthrough while acknowledging broadly useful capability may still take years."
+        }
+      ],
+      "visual_medium": "photorealistic cinematic technology documentary",
+      "genre_treatment": "robotics expo realism transitioning to practical workplace realism",
+      "conflict": "waiting for the next breakthrough versus finishing today's work with tools already available",
+      "product_role": "orchestrator for today's research/write/review/code workflow",
+      "comparison_target": "fictional breakthrough-chasing AI crowd",
+      "comparison_role": "audience staring at an empty NEXT BIG THING stage",
+      "panels": [
+        {"scene": "Photorealistic robotics expo hall where a crowd watches a giant empty stage sign reading NEXT BIG THING.", "caption": "下一个 ChatGPT moment 什么时候来？"},
+        {"scene": "Behind the crowd, today's project board remains untouched: RESEARCH / WRITE / REVIEW / CODE.", "caption": "今天的活：没人动。"},
+        {"scene": "InkClawAgent walks past the stage and assigns today's tasks to several original anonymous specialist agents in a real project room.", "caption": "InkClawAgent：未来先等等，今天先交付。"},
+        {"scene": "A completed deliverable leaves the project room while the expo crowd is still staring at the stage countdown.", "caption": "突破会来，截止日期先来了。"}
+      ],
+      "punchlines": ["突破会来，截止日期先来了。", "别等奇点，先把今天的活串起来。"],
+      "image_prompt": "Four-panel photorealistic cinematic technology documentary satire, realistic robotics expo and contemporary project room, original unbranded humanoid forms, premium practical lighting, shallow depth of field and believable materials. InkClawAgent is an original human-like workflow coordinator, not a real celebrity or robot product. No copied conference photography.",
+      "negative_prompt": "No Unitree robot replicas, no real CEO likeness, no event logo, no copied Reuters photograph, no physical-robot-control claim, no benchmark superiority claim.",
+      "risk_flags": ["real company/news adjacency", "robot design/trademark avoidance", "workflow metaphor only"],
+      "factual_claim_status": "satire"
+    }
+  ]
+}
