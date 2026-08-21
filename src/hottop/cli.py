@@ -14,6 +14,10 @@ from .collectors.dailyhot import DailyHotApiCollector
 from .collectors.newsnow import NewsNowCollector
 from .collectors.rss import RSSCollector
 from .collectors.rsshub import RSSHubCollector
+from .comparison_research import (
+    ComparisonResearchResult,
+    adapt_comparison_research_results,
+)
 from .creative_package import CreativePackageInput, build_creative_package
 from .doctor import local_doctor
 from .integrations.playwright_cli import PlaywrightCliAdapter
@@ -46,16 +50,26 @@ def _load_candidates(path: Path) -> list[TrendCandidate]:
 def _load_comparison_candidates(path: Path) -> list[ComparisonCandidate]:
     raw = json.loads(path.read_text(encoding="utf-8"))
     if isinstance(raw, dict):
-        records = raw.get("comparison_candidates")
-        if records is None:
+        if "comparison_candidates" in raw:
+            records = raw["comparison_candidates"]
+            candidate_kind = "comparison"
+        elif "research_results" in raw:
+            records = raw["research_results"]
+            candidate_kind = "research"
+        else:
             raise typer.BadParameter(
-                "comparison JSON objects must contain a `comparison_candidates` array"
+                "comparison JSON objects must contain `comparison_candidates` or `research_results`"
             )
     else:
         records = raw
+        candidate_kind = "comparison"
     if not isinstance(records, list):
-        raise typer.BadParameter("comparison input must be a JSON array")
-    candidates = [ComparisonCandidate.model_validate(record) for record in records]
+        raise typer.BadParameter("comparison input must contain a JSON array")
+    if candidate_kind == "research":
+        research_results = [ComparisonResearchResult.model_validate(record) for record in records]
+        candidates = adapt_comparison_research_results(research_results)
+    else:
+        candidates = [ComparisonCandidate.model_validate(record) for record in records]
     return normalize_comparison_candidates(candidates)
 
 
@@ -112,7 +126,7 @@ def position(
         "--comparisons",
         exists=True,
         dir_okay=False,
-        help="Optional JSON comparison candidates researched from current public evidence",
+        help="Optional researched comparison candidates or public research-result JSON",
     ),
     output: Path | None = typer.Option(None, "--output"),
 ) -> None:
