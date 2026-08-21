@@ -20,6 +20,7 @@ class RSSHubCollector:
         client: httpx.AsyncClient | None = None,
         timeout: float = 15.0,
         source_quality: float = RSS_SOURCE_QUALITY,
+        preset: str | None = None,
     ) -> None:
         normalized_route = route.strip().lstrip("/")
         if not normalized_route:
@@ -42,6 +43,7 @@ class RSSHubCollector:
             client=client,
             timeout=timeout,
             source_quality=source_quality,
+            preset=preset,
         )
 
     async def collect(self, limit: int = 30) -> list[TrendCandidate]:
