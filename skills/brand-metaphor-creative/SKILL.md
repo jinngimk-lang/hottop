@@ -78,6 +78,32 @@ Film/live-action hotspots should feel like original live-action cinema; animatio
 
 Match **medium and recognition cues**, not protected assets. Do not reproduce actor likenesses, exact frames, official posters, protected character designs, proprietary UI, logos, or distinctive trade dress unless the user supplied assets they are entitled to use.
 
+## 8. Adaptive interaction routing
+
+Treat intake as a creative-director conversation, not a static questionnaire. Resolve what the user already said, attach provenance/confidence to inferred values, and **ask only high-impact questions** that materially change the creative output. The default interaction budget is 0–3 questions; stop asking once the remaining uncertainty no longer justifies interruption.
+
+The stable interaction dimensions are:
+
+- **campaign goal** — awareness, pain-point contrast, launch, conversion, brand memory, hotspot participation or category reframe;
+- **platform** — a creative input that changes structure, hook, pacing and copy grammar, not just export dimensions;
+- **style** — changes the creative grammar itself, such as reversal/punchline, premium negative space, cinematic world-building, animation-native transformation or documentary realism;
+- **creative ambition** — `safe`, `witty`, `breakout`, `category-breaking`; higher ambition increases surprise and category-reframing pressure without weakening evidence or originality rules;
+- **product visibility** — `metaphor-first`, `balanced`, `product-first`, controlling when the product becomes explicit and how strong attribution should be;
+- **audience** — optional by default; ask only when it materially changes tone, decoding, risk or channel conventions.
+
+Question priority is promotion target → campaign goal → platform → style → creative ambition → product visibility. Explicit user choices override inference. If the question budget is exhausted, proceed with conservative defaults instead of blocking production.
+
+Route treatment by **project shape**, not one universal meme template:
+
+- food/consumer → physical/sensory bridge, product texture and polished commercial/social-native treatment;
+- software/AI/B2B → workflow pain, evidence-aware comparison and category-default deletion;
+- entertainment/culture → source-medium cinematic, animation or native-meme grammar;
+- fashion/beauty/retail → form/material/style bridge and visual ownership;
+- services/local → ritual/outcome/emotion bridge and credible real-world scenarios;
+- campaigns/ideas/keywords → semantic/symbol bridge and fast decoding.
+
+The seven-part Creative Review remains the hard gate. Platform/style/goal/ambition/project-shape/hotspot-native fit may rank concepts that already pass; they must never rescue a weak, generic or unsafe concept. Revision controls such as `换方向`, `更有梗`, `更大胆`, `产品更明显`, `更高级` or `换平台` should mutate the smallest relevant intent dimension and reuse stable product understanding where possible.
+
 ## Creative review gate
 
 Before approving a concept, score it on:
@@ -134,6 +160,6 @@ The target is not merely persistence. Each recovery should make the project **mo
 
 ## Output contract
 
-Return or archive: promotion context; category default; deleted constraint; new competition axis; hotspot; bridge type + bridge sentence; comparison target + evidence mode; selected format; reveal/narrative beats; visual medium; copy/punchline; image prompt; exclusions; risk flags; claim status.
+Return or archive: promotion context; interaction intent/provenance; category default; deleted constraint; new competition axis; hotspot; bridge type + bridge sentence; comparison target + evidence mode; selected format; platform/style/project-shape treatment; reveal/narrative beats; visual medium; copy/punchline; image prompt; exclusions; risk flags; claim status.
 
 When working inside `hottop`, read `PROJECT.md` and `STATUS.md` first. Use `hottop-meme` for hotspot acquisition, evidence handling, and four-panel-specific execution when that format is selected.
