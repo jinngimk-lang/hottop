@@ -206,6 +206,7 @@ def test_orchestrate_command_emits_selected_render(tmp_path):
                             "original_execution": 0.95,
                         },
                         "context_review": {
+                            "name": "bridge-reveal",
                             "platform_fit": 0.95,
                             "style_fit": 0.95,
                             "campaign_goal_fit": 0.9,
