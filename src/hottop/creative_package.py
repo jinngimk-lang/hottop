@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from .creative import CreativeReview
 from .models import CreativeConcept, VisualReference
@@ -15,6 +15,14 @@ class CreativePackageOption(BaseModel):
     concept: CreativeConcept
     review: CreativeReview
     label: str = Field(min_length=1)
+
+    @field_validator("label")
+    @classmethod
+    def normalize_label(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("option label must not be blank")
+        return value
 
     @model_validator(mode="after")
     def bind_review_to_option(self) -> CreativePackageOption:
