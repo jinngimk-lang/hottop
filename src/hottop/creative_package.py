@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from .creative import CreativeReview
 from .models import CreativeConcept, VisualReference
@@ -14,7 +14,13 @@ class CreativePackageOption(BaseModel):
 
     concept: CreativeConcept
     review: CreativeReview
-    label: str | None = None
+    label: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def bind_review_to_option(self) -> CreativePackageOption:
+        if self.review.name != self.label:
+            raise ValueError("review name must match option label")
+        return self
 
 
 ReviewedCreativeOption = CreativePackageOption
