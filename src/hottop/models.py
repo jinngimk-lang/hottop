@@ -205,9 +205,13 @@ class CreativeConcept(BaseModel):
     claim_status: ClaimStatus = "satire"
 
     @model_validator(mode="after")
-    def require_evidence_for_supported_claims(self) -> CreativeConcept:
+    def enforce_comparison_claim_safety(self) -> CreativeConcept:
         if self.claim_status == "supported" and not self.comparison_evidence:
             raise ValueError("supported creative claims require comparison evidence")
+        if self.comparison_target and self.claim_status == "needs_evidence":
+            raise ValueError(
+                "named creative comparisons must be supported by evidence or explicit satire"
+            )
         return self
 
 
