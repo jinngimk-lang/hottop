@@ -8,6 +8,7 @@ from hottop.models import (
     BridgeType,
     ClaimStatus,
     CreativeConcept,
+    Evidence,
     ExpressionForm,
     MemeBrief,
     VisualMedium,
@@ -51,6 +52,7 @@ class CreativeRenderRequest(BaseModel):
     topic_title: str
     subject_name: str
     comparison_target: str | None = None
+    comparison_evidence: list[Evidence] = Field(default_factory=list)
     expression_form: ExpressionForm
     visual_medium: VisualMedium
     genre_treatment: str
@@ -98,6 +100,7 @@ def build_creative_render_request(concept: CreativeConcept) -> CreativeRenderReq
         topic_title=concept.topic.title,
         subject_name=concept.promotion.subject_name,
         comparison_target=concept.comparison_target,
+        comparison_evidence=concept.comparison_evidence,
         expression_form=strategy.expression_form,
         visual_medium=concept.visual_medium,
         genre_treatment=concept.genre_treatment,
