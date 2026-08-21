@@ -8,6 +8,7 @@ from typing import Any
 import typer
 import yaml
 
+from .batch_config import BatchConfig, load_batch_config
 from .briefing import build_brief
 from .collectors.dailyhot import DailyHotApiCollector
 from .collectors.newsnow import NewsNowCollector
@@ -58,6 +59,13 @@ def _parse_source_spec(spec: str) -> tuple[str, str]:
 async def _discover_many(specs: list[str], limit: int) -> list[TrendCandidate]:
     parsed = [_parse_source_spec(spec) for spec in specs]
     batches = await asyncio.gather(*(_discover(source, key, limit) for source, key in parsed))
+    return [candidate for batch in batches for candidate in batch]
+
+
+async def _discover_configured(config: BatchConfig) -> list[TrendCandidate]:
+    batches = await asyncio.gather(
+        *(_discover(source.type, source.key, source.limit) for source in config.sources)
+    )
     return [candidate for batch in batches for candidate in batch]
 
 
@@ -135,8 +143,9 @@ def render(
 def batch(
     input_path: Path | None = typer.Argument(None, exists=True, dir_okay=False),
     product: Path = typer.Option(..., "--product", exists=True, dir_okay=False),
+    config: Path | None = typer.Option(None, "--config", exists=True, dir_okay=False),
     compare: str | None = typer.Option(None, "--compare"),
-    top: int = typer.Option(5, "--top", min=1, max=50),
+    top: int | None = typer.Option(None, "--top", min=1, max=50),
     source: list[str] | None = typer.Option(
         None,
         "--source",
@@ -145,18 +154,29 @@ def batch(
     limit_per_source: int = typer.Option(30, "--limit-per-source", min=1, max=100),
     output: Path | None = typer.Option(None, "--output"),
 ) -> None:
-    """Dedupe, rank and build briefs from a file, live collectors, or both."""
+    """Dedupe, rank and build briefs from files, stored config, live collectors, or a mix."""
     candidates = _load_candidates(input_path) if input_path else []
+    batch_config = load_batch_config(config) if config else None
+    if batch_config:
+        candidates.extend(asyncio.run(_discover_configured(batch_config)))
     if source:
         candidates.extend(asyncio.run(_discover_many(source, limit_per_source)))
     if not candidates:
-        raise typer.BadParameter("provide an input JSON file and/or at least one --source TYPE:KEY")
+        raise typer.BadParameter(
+            "provide an input JSON file, --config YAML, and/or at least one --source TYPE:KEY"
+        )
 
+    effective_top = top if top is not None else (batch_config.top if batch_config else 5)
+    effective_compare = (
+        compare
+        if compare is not None
+        else (batch_config.comparison_target if batch_config else None)
+    )
     result = build_batch(
         candidates,
         _load_product(product),
-        comparison_target=compare,
-        top=top,
+        comparison_target=effective_compare,
+        top=effective_top,
     )
     text = _json_dump(result)
     if output:
