@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 18:58 +08:00
+Last updated: 2026-08-21 20:01 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -25,6 +25,7 @@ Milestone: Foundation v0.1
 - Foundation closure review found and fixed a final evidence/safety gap in the flexible production contract: `CreativeConcept` can no longer declare `claim_status=supported` without attached `comparison_evidence`, and `hottop.render.v2` preserves that evidence provenance. RED run 507 produced the expected two failures; implementation head `899ca5b2d9c37298619616d4d4291398e11e6e85` passed CI run 511 on Python 3.11 and 3.12.
 - Foundation closure review also found an integrity gap in external creative scoring: a high-scoring `CreativeReview` could be paired with a different option because package/orchestration contracts did not bind the review identity to the concept option. `CreativePackageOption` and `OrchestrationOption` now require a nonblank label and `review.name == option.label`, preventing cross-option review reuse. The first implementation run 521 correctly exposed a test-boundary mistake; corrected head `80ff4e464c7f8eefb42cf087b29e9beec9469988` passed CI run 523.
 - A follow-on closure check found that the preceding “nonblank label” contract still accepted whitespace-only identities because Pydantic `min_length=1` counts spaces. RED run 527 reproduced the bypass with `label="   "` and matching review name. Package and orchestration option labels now strip whitespace and reject empty results before review binding; implementation head `151d004dd810c24374a88f8d8d43e47a5866eeb3` passed CI run 531 on Python 3.11 and 3.12.
+- Closure review found another evidence/safety bypass in the flexible production boundary: a concept could name a competitor while remaining `claim_status=needs_evidence`, then still be packaged/orchestrated/rendered if an external review scored it highly. `CreativeConcept` now rejects unresolved named comparisons unless the claim is evidence-backed (`supported` with attached evidence) or explicitly `satire`. RED run 535 reproduced the bypass; implementation head `4ec220aeb15c1e5dba1e9d28c111d660ffebe017` passed CI run 537 on Python 3.11 and 3.12.
 - Added live archive `examples/runs/2026-08-21-1257-briefs.json` with evidence-linked robotics, BirdTok and digital-popover creative directions while keeping factual/safety caveats explicit.
 - Persistent project memory protocol is active: `PROJECT.md` is durable direction, `STATUS.md` is the execution snapshot, reusable skills carry operational doctrine, and repository truth is reread under context pressure.
 
@@ -48,7 +49,7 @@ Milestone: Foundation v0.1
 
 ## In progress
 
-- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety edges after closing the render-v2 comparison-evidence, review-binding and whitespace-identity gaps.
+- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety edges after closing the render-v2 comparison-evidence, review-binding, whitespace-identity and unresolved named-comparison gaps.
 - Continue fresh trend research across entertainment, animation, technology, internet culture, social phenomena and consumer culture without collapsing discovery into AI/tech only.
 - RSSHub remains an optional pilot awaiting an explicitly configured operator-controlled instance; no credential or external-service setup is performed autonomously.
 
