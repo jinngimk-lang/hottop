@@ -1,5 +1,9 @@
 from hottop.creative import CreativeReview
-from hottop.creative_package import CreativePackageInput, CreativePackageOption, build_creative_package
+from hottop.creative_package import (
+    CreativePackageInput,
+    CreativePackageOption,
+    build_creative_package,
+)
 from hottop.models import CreativeConcept
 
 
@@ -8,8 +12,14 @@ def test_creative_package_preserves_option_label_for_conversational_revisions():
         {
             "topic": {"id": "x", "title": "x", "url": "https://example.com/x", "source": "test"},
             "promotion": {"subject_name": "Thing", "subject_type": "product", "category": "consumer"},
-            "strategy": {"bridge_type": "function", "bridge": "thing becomes action", "expression_form": "single-visual-metaphor"},
-            "beats": [{"scene": "Thing performs the action.", "caption": "Done.", "intent": "reveal"}],
+            "strategy": {
+                "bridge_type": "function",
+                "bridge": "thing becomes action",
+                "expression_form": "single-visual-metaphor",
+            },
+            "beats": [
+                {"scene": "Thing performs the action.", "caption": "Done.", "intent": "reveal"}
+            ],
             "visual_medium": "commercial-product",
             "genre_treatment": "original product advertising",
             "punchlines": ["Done."],
