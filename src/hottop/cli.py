@@ -14,6 +14,7 @@ from .collectors.dailyhot import DailyHotApiCollector
 from .collectors.newsnow import NewsNowCollector
 from .collectors.rss import RSSCollector
 from .collectors.rsshub import RSSHubCollector
+from .creative_package import CreativePackageInput, build_creative_package
 from .doctor import local_doctor
 from .integrations.playwright_cli import PlaywrightCliAdapter
 from .models import ComparisonCandidate, CreativeConcept, ProductProfile, TrendCandidate
@@ -266,6 +267,22 @@ def render_concept(
     """Validate a flexible CreativeConcept and emit provider-neutral `hottop.render.v2`."""
     render_request = build_creative_render_request(_load_concept(concept_path))
     text = _json_dump(render_request)
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(text + "\n", encoding="utf-8")
+    else:
+        typer.echo(text)
+
+
+@app.command(name="package-concepts")
+def package_concepts(
+    package_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Validate reviewed creative alternatives, select the strongest, and emit render v2."""
+    raw = json.loads(package_path.read_text(encoding="utf-8"))
+    result = build_creative_package(CreativePackageInput.model_validate(raw))
+    text = _json_dump(result)
     if output:
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(text + "\n", encoding="utf-8")
