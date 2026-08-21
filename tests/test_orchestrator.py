@@ -136,8 +136,16 @@ def test_orchestrator_selects_platform_fit_passing_candidate_and_keeps_alternate
 
 
 def test_orchestrator_rejects_when_all_candidates_fail_existing_hard_gate():
-    intent = resolve_intent("宣传这个产品", overrides={"promotion_target": "Thing"})
-    context = PromotionContext(subject_name="Thing", subject_type="product", category="consumer")
+    intent = resolve_intent("宣传这个产品", overrides={"promotion_target": "Ribbon Lunch"})
+    context = PromotionContext(
+        subject_name="Ribbon Lunch",
+        subject_type="product",
+        category="food",
+        primary_job="memorable quick lunch",
+        primary_pain_point="generic food ads look interchangeable",
+        primary_differentiator="long elastic ribbon texture",
+        semantic_terms=["long", "elastic", "ribbon"],
+    )
     payload = OrchestrationInput(
         intent=intent,
         promotion_context=context,
@@ -163,4 +171,32 @@ def test_orchestration_option_rejects_review_for_a_different_label():
             concept=_concept("mismatch", "swipe-reveal", "the product ribbon becomes the action"),
             review=_review("different-concept"),
             context_review=_context(0.95),
+        )
+
+
+def test_orchestration_input_rejects_concept_for_a_different_promotion_context():
+    intent = resolve_intent("宣传另一个产品", overrides={"promotion_target": "Other Product"})
+    context = PromotionContext(
+        subject_name="Other Product",
+        subject_type="product",
+        category="consumer",
+    )
+
+    with pytest.raises(ValueError, match="concept promotion must match orchestration promotion context"):
+        OrchestrationInput(
+            intent=intent,
+            promotion_context=context,
+            options=[
+                OrchestrationOption(
+                    label="wrong-product",
+                    concept=_concept(
+                        "wrong-product",
+                        "single-visual-metaphor",
+                        "a strong bridge for a different product",
+                    ),
+                    review=_review("wrong-product"),
+                    context_review=_context(0.9),
+                )
+            ],
+            references=[],
         )
