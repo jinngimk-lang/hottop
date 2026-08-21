@@ -82,6 +82,20 @@ Research direct competitors, recognizable defaults, substitutes and old workflow
 
 A named competitor may appear only when the negative side is a supported factual limitation, accurate design/category tradeoff, a job it is not designed to solve, or clearly subjective satire. Never invent benchmarks, outages, prices, quality defects, safety failures or customer sentiment. When evidence is weak, use a generic category proxy or make the old assumption itself the antagonist.
 
+### 7. References teach grammar, not pixels
+
+Hottop may research public advertising, cultural and visual examples when composition, reveal pacing, social distribution grammar, product photography or source-medium cues would improve the concept. The durable output of this research is an **abstract reference manifest**, not a copied image.
+
+- use public HTTP(S) and provenance-rich sources;
+- prefer Playwright CLI for token-efficient, coding-loop visual inspection and screenshot capture; use ephemeral sessions by default;
+- use Playwright MCP only when persistent state or rich exploratory DOM reasoning materially helps;
+- treat ordinary third-party screenshots as `analysis-only` unless public-domain or rights-cleared;
+- retain source URL/time/rights mode plus abstract composition/reveal/bridge notes;
+- do not commit protected screenshots merely to build a moodboard;
+- do not use a reference as a pixel-level target or reproduction recipe.
+
+Semantic visual-memory infrastructure such as OpenCLIP + Qdrant should be added only after the reference corpus is large enough that retrieval quality justifies the dependency. Start with transparent local manifests and measure the need first.
+
 ## Creative review gate
 
 A concept is ready only if it passes:
@@ -102,14 +116,15 @@ Reject `hot character + logo`, feature lists wearing costumes, forced references
 2. **Discover comparisons** — competitors, incumbents, substitutes, legacy/manual options with fresh evidence.
 3. **Discover hotspots** — public web/RSS/news/video/social sources.
 4. **Enrich** — source pages, context and useful visual/cultural cues.
-5. **Normalize** — structured trend and comparison candidates.
-6. **Reframe** — identify category default, candidate deleted constraints and new competition axes.
-7. **Bridge** — generate shape/action/role/function/emotion/symbol links between subject and hotspot.
-8. **Rank** — score trend quality, comparison fit and creative bridge strength.
-9. **Select format** — single metaphor, swipe-reveal, four-panel, faux still/poster, split comparison or product-as-prop.
-10. **Write** — beats, captions, reveal order, punchlines and medium-matched prompts.
-11. **Guardrail** — claims, copyright/likeness/trademark, misleading competitor framing.
-12. **Archive** — inputs, evidence, rejected assumptions, selected bridge, format, prompts and outcome notes.
+5. **Research references when useful** — capture provenance and abstract composition/reveal/medium grammar, not source pixels.
+6. **Normalize** — structured trend, comparison and optional visual-reference records.
+7. **Reframe** — identify category default, candidate deleted constraints and new competition axes.
+8. **Bridge** — generate shape/action/role/function/emotion/symbol links between subject and hotspot.
+9. **Rank** — score trend quality, comparison fit and creative bridge strength.
+10. **Select format** — single metaphor, swipe-reveal, four-panel, faux still/poster, split comparison or product-as-prop.
+11. **Write** — beats, captions, reveal order, punchlines and medium-matched prompts.
+12. **Guardrail** — claims, copyright/likeness/trademark, misleading competitor framing.
+13. **Archive** — inputs, evidence, reference manifests, rejected assumptions, selected bridge, format, prompts and outcome notes.
 
 ## Persistent project memory protocol
 
@@ -164,9 +179,10 @@ After meaningful doctrine or architecture updates, reread the charter with fresh
 - No permanent InkClawAgent, AI-tool, mascot or character requirement.
 - No permanent four-panel requirement.
 - No rule that the product must always be personified as the winner.
-- No direct copying of film stills, actor likenesses, official posters, protected character designs, logos, packaging trade dress, proprietary UI, or distinctive production assets.
+- No direct copying of film stills, actor likenesses, official posters, protected character designs, logos, packaging trade dress, proprietary UI, distinctive production assets or finished advertising compositions.
 - No unsupported factual claim that Subject A is objectively faster/better/cheaper/safer than Subject B.
 - No assumption that creativity means staying inside the current category's accepted competition axis.
+- No requirement to deploy a vector database, browser agent or GPU render stack before a measured use case exists.
 
 ## Upstream integrations
 
@@ -182,6 +198,18 @@ Use as the preferred optional deep-page/browser acquisition layer for dynamic pa
 
 Use Firecrawl as an optional hosted fallback and plain HTTP as the final no-JavaScript public-web fallback. Keep credentials out of source control.
 
+### Playwright CLI / Playwright MCP
+
+Use Playwright CLI as the preferred optional visual-reference browser adapter for coding loops because it provides concise, scriptable visual inspection without making browser state a core dependency. Hottop defaults to an ephemeral named session and public HTTP(S) pages. Playwright MCP remains an optional escalation for stateful exploratory browser work, not the default path.
+
+### Future semantic visual memory
+
+When a sufficiently large rights-aware reference corpus exists, evaluate pinned OpenCLIP inference for image/text embeddings and Qdrant/Qdrant MCP for semantic retrieval. Begin with local/read-only operation where practical, keep provenance and rights metadata beside embeddings, and require a retrieval-quality experiment before promoting this stack into the core workflow.
+
+### Future render backends
+
+Keep rendering provider-neutral. ComfyUI is a candidate optional local/offline backend because reusable workflows can be exposed through APIs, but it must remain isolated behind an adapter, pinned to a tested stable release/workflow, and preserve per-model/license provenance. Do not silently enable paid API nodes or make GPU availability a core requirement.
+
 ## Repository operating rules
 
 - Work on feature branches and merge through PRs.
@@ -192,6 +220,7 @@ Use Firecrawl as an optional hosted fallback and plain HTTP as the final no-Java
 - Respect site terms, access boundaries, rate limits and account safety.
 - Image output should reproduce the **broad medium/genre grammar** needed for recognition while remaining an original staging.
 - Factual comparative claims require evidence records; otherwise use satire/metaphor/category tradeoff or a generic proxy.
+- Visual-reference assets are evidence for analysis, not automatic source material for generation.
 
 ## Durable output contract
 
@@ -200,6 +229,7 @@ A mature creative concept should be serializable with:
 - promotion context: subject/type/category/job/pain point/differentiator plus physical/sensory cues where useful;
 - topic + timestamp + evidence;
 - researched comparison candidates + selected target/rationale;
+- optional visual-reference manifest(s) + provenance/rights mode;
 - `category_default`;
 - `deleted_constraint` or explicit `none`;
 - `new_competition_axis`;
@@ -216,13 +246,14 @@ A mature creative concept should be serializable with:
 ## Reusable skills
 
 - `skills/brand-metaphor-creative/SKILL.md` — primary creative-thinking method: category reframing, constraint deletion, bridge search, expression-form selection, creative review gate and persistent project protocol for multi-session creative work.
+- `skills/creative-reference-research/SKILL.md` — provenance-first visual-reference research: Playwright-assisted inspection, composition/reveal abstraction, rights modes and explicit non-copying handoff into creative strategy.
 - `skills/hottop-meme/SKILL.md` — hotspot acquisition, evidence-aware comparison handling, visual-medium routing and four-panel execution when four-panel is the selected form.
 
 ## Current milestone
 
 **Foundation v0.1**
 
-Close the foundation with arbitrary-promotion semantics, evidence-aware comparison discovery, hotspot acquisition/enrichment, creative-doctrine persistence, bridge/format contracts, medium routing, renderer handoff, tests, CI and representative live archives.
+Close the foundation with arbitrary-promotion semantics, evidence-aware comparison discovery, hotspot acquisition/enrichment, creative-doctrine persistence, reference-research contracts, bridge/format contracts, medium routing, provider-neutral renderer handoff, tests, CI and representative live archives.
 
 ## Session recovery
 
@@ -230,7 +261,7 @@ When resuming:
 
 1. Read `PROJECT.md`.
 2. Read `STATUS.md`.
-3. Read `skills/brand-metaphor-creative/SKILL.md` for creative work and `skills/hottop-meme/SKILL.md` when hotspot/four-panel execution applies.
+3. Read `skills/brand-metaphor-creative/SKILL.md`; read `skills/creative-reference-research/SKILL.md` when visual-reference research is relevant; read `skills/hottop-meme/SKILL.md` when hotspot/four-panel execution applies.
 4. Read the newest relevant spec/plan or decision record for the active milestone.
 5. Inspect open PRs / failing CI.
 6. Continue from `Next actions` in `STATUS.md` without asking for routine approval.
