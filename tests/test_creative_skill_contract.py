@@ -4,6 +4,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PROJECT = ROOT / "PROJECT.md"
 CREATIVE_SKILL = ROOT / "skills" / "brand-metaphor-creative" / "SKILL.md"
 HOTTOP_SKILL = ROOT / "skills" / "hottop-meme" / "SKILL.md"
+REFERENCE_SKILL = ROOT / "skills" / "creative-reference-research" / "SKILL.md"
 
 
 def test_project_persists_broader_creative_direction() -> None:
@@ -58,3 +59,23 @@ def test_brand_metaphor_skill_captures_project_memory_loop() -> None:
 def test_hottop_meme_skill_routes_to_brand_metaphor_skill() -> None:
     text = HOTTOP_SKILL.read_text(encoding="utf-8")
     assert "brand-metaphor-creative" in text
+
+
+def test_visual_reference_skill_is_provenance_first_and_non_copying() -> None:
+    text = REFERENCE_SKILL.read_text(encoding="utf-8").lower()
+    required = [
+        "visual reference",
+        "playwright",
+        "provenance",
+        "analysis-only",
+        "do not copy",
+        "composition grammar",
+        "reference manifest",
+    ]
+    for phrase in required:
+        assert phrase in text
+
+
+def test_project_lists_visual_reference_research_as_reusable_skill() -> None:
+    text = PROJECT.read_text(encoding="utf-8")
+    assert "skills/creative-reference-research/SKILL.md" in text
