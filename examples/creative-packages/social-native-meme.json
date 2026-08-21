@@ -1,0 +1,73 @@
+{
+  "options": [
+    {
+      "label": "signal-bird",
+      "concept": {
+        "topic": {
+          "id": "example:social:signal",
+          "title": "Original noisy-signal social metaphor",
+          "url": "https://example.com/noisy-signal",
+          "source": "example",
+          "tags": ["social", "internet-native", "culture"]
+        },
+        "promotion": {
+          "subject_name": "Signal Tool",
+          "subject_type": "tool",
+          "category": "software",
+          "primary_job": "turn useful signals into finished work",
+          "primary_pain_point": "more notifications create more noise",
+          "primary_differentiator": "selects useful context and completes a workflow",
+          "semantic_terms": ["signal", "filter", "finish", "noise"]
+        },
+        "strategy": {
+          "category_default": "more notifications and more generated output mean more value",
+          "deleted_constraint": "the user needs another source of noise",
+          "new_competition_axis": "useful signal converted into an outcome",
+          "bridge_type": "emotion-ritual",
+          "bridge": "a noisy flock represents endless notifications while one clear original bird call becomes the useful signal that triggers completed work",
+          "expression_form": "four-panel"
+        },
+        "beats": [
+          {
+            "scene": "A fictional social-native frame shows many original stylized notification birds all chirping at once around an overwhelmed desk.",
+            "caption": "再多一个提醒，会更有用吗？",
+            "intent": "setup through recognizable noise"
+          },
+          {
+            "scene": "The flock gets denser while unfinished generic work cards pile up.",
+            "caption": "信息更多，事情没少。",
+            "intent": "escalate the category default"
+          },
+          {
+            "scene": "One distinct small bird lands beside the single genuinely useful note; Signal Tool connects that note to a finished document.",
+            "caption": "有用的，是这一声。",
+            "intent": "reversal through signal selection"
+          },
+          {
+            "scene": "The noisy flock recedes into the background while the completed work is foregrounded.",
+            "caption": "不是再多一个声音，是把对的声音变成结果。",
+            "intent": "product-specific punchline"
+          }
+        ],
+        "visual_medium": "documentary-social",
+        "genre_treatment": "original social-native documentary realism with light surreal bird metaphor and anonymous people",
+        "punchlines": ["不是再多一个声音，是把对的声音变成结果。"],
+        "image_prompt": "Original four-beat social-native scene with anonymous people and stylized fictional birds representing notification noise; one useful bird call is connected to completed work by the promoted tool; documentary-real social framing, no copied social UI or creator likeness.",
+        "negative_prompt": "No TikTok or platform UI, no real creator faces, no copied meme template, no unsupported claims about user behavior.",
+        "risk_flags": ["Treat the social-noise observation as metaphor, not a universal behavioral claim."],
+        "claim_status": "satire"
+      },
+      "review": {
+        "name": "signal-bird",
+        "instant_comprehension": 0.9,
+        "natural_linkage": 0.9,
+        "product_centrality": 0.88,
+        "surprise": 0.86,
+        "ownability": 0.9,
+        "evidence_safety": 0.96,
+        "original_execution": 0.95
+      }
+    }
+  ],
+  "references": []
+}
