@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 11:00 +08:00
+Last updated: 2026-08-21 11:56 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -31,7 +31,7 @@ Milestone: Foundation v0.1
 - Added typed YAML batch configuration (`BatchConfig` / `BatchSourceConfig`) and loader; implementation commit `a5a0e8195324c47302ce437d32d79cf049eca678` passed CI run 149.
 - Added `config/batches/ai-tech-daily.yml` as a repeatable batch example; CI run 151 passed.
 - Added `hottop batch --config <yaml>` support with per-source limits plus stored `top` and comparison target; implementation commit `84fab9605511e97a9414278ada343c554f886986` passed CI run 157.
-- Added a default **visual medium router** to `skills/hottop-meme/SKILL.md`: film/live-action → high photorealistic cinematic treatment; animation → animation-native rendering; internet personalities/social phenomena → real-world documentary/social-video realism; AI/technology → realistic contemporary tech imagery; native internet memes → format-matched distribution grammar.
+- Added a default visual-medium router to `skills/hottop-meme/SKILL.md`: film/live-action → high photorealistic cinematic treatment; animation → animation-native rendering; internet personalities/social phenomena → real-world documentary/social-video realism; AI/technology → realistic contemporary tech imagery; native internet memes → format-matched distribution grammar.
 - Generalized the project mission beyond InkClawAgent/AI. The promoted term may now represent a brand, product, service, feature, campaign, person, idea, keyword, or tool.
 - Extended `ProductProfile` (kept for backward compatibility) with `subject_type`, `category`, `keywords`, `jobs_to_be_done`, `pain_points_solved`, `differentiators`, and `known_alternatives`.
 - Added `PromotionContext` and `ComparisonCandidate` schemas plus `src/hottop/positioning.py`.
@@ -40,21 +40,22 @@ Milestone: Foundation v0.1
 - Updated briefing so the promoted subject's real pain point/differentiator drives the reversal rather than assuming an Agent workflow. Competitor scenes explicitly forbid inventing defects.
 - Updated the reusable skill with automatic competitor/substitute/incumbent/manual-workaround discovery and a rule to prefer the clearest pain-point contrast rather than the most famous rival.
 - RED contract commit `08b5cf532b368db07c6cad414457f1ccc3fb7eef` failed CI run 169 as expected; generalized implementation/skill/project commits passed through CI run 179.
-- Archived live research batches through `examples/runs/2026-08-21-1100-briefs.json`.
+- Added `hottop position` research-handoff command. It accepts either a raw promoted term or a YAML promotion profile and emits `hottop.position.v1` JSON with resolved promotion context plus current competitor/alternative research queries. Contract test commit `a4b95184ea4b341e1302aff237e92fe1d54112dc`; implementation commit `d50563a4f1a6c7d1564eec677dd3378e48219ba6` passed CI run 187.
+- Archived live research batches through `examples/runs/2026-08-21-1156-briefs.json`.
 
 ## In progress
 
+- Turning `hottop position` research queries into structured researched-comparison records so public web / Agent-Reach results can feed `ComparisonCandidate` with evidence.
 - Applying per-source `preset` values from batch config to collector/source-quality behavior.
 - Connecting approved `RenderRequest` JSON to future image-generation providers without coupling the core package to any single vendor.
-- Turning comparison research queries into an explicit CLI/agent handoff so a supplied marketing term can trigger competitor research before meme construction.
 - Continuing live research and meme-brief archives while Foundation v0.1 closes out.
-- Verifying CI on the newest 11:00 archive/status head; the latest confirmed green implementation is CI run 179.
+- Verifying CI on the newest 11:56 archive/status head; CI run 187 is the latest confirmed green code implementation.
 
 ## Next actions
 
-1. Confirm CI on the newest status/head; repair immediately if red.
-2. Add a `position` / comparison-research handoff command that emits resolved promotion context plus current competitor-search queries from a YAML profile or supplied term.
-3. Add a structured researched-comparison input/output path so web/Agent-Reach results can become `ComparisonCandidate` records with evidence instead of only a free-text `--compare` name.
+1. Confirm CI on the newest archive/status head; repair immediately if red.
+2. Add a structured researched-comparison input/output path so web/Agent-Reach results can become `ComparisonCandidate` records with evidence instead of only a free-text `--compare` name.
+3. Add a `--comparisons <json>` or equivalent path to `position`/`brief` so the deterministic selector can choose a named competitor, incumbent, substitute or legacy/manual proxy from researched evidence.
 4. Make batch-config `preset` explicit in collector/source-quality resolution instead of metadata-only.
 5. Add an enrichment command/path that can enrich selected candidates through the default fallback chain before briefing.
 6. Extend renderer handoff so `visual_medium` / `genre_treatment` and promotion context are first-class serialized fields rather than prompt-only convention.
@@ -63,13 +64,12 @@ Milestone: Foundation v0.1
 
 ## Latest live creative signals
 
-- **Humanoid robots move from spectacle toward useful work (Reuters, 2026-08-18/20):** strong `single tricks vs useful coordinated outcome` structure. The 11:00 archive uses a fictional demo-first comparison proxy rather than inventing a defect about a named competitor. Render as photorealistic contemporary robotics/editorial imagery with original unbranded robots. Claim mode: satire/workflow metaphor.
+- **UK cinemas restrict/consider restrictions on camera-enabled smart glasses (Reuters / Guardian, 2026-08-20/21):** strong `one magical tool everywhere vs context-appropriate orchestration` visual structure. Do not provide covert-recording instructions. Named smart-glasses brands remain source context only; use a generic glasses character in the comparison. Render as photorealistic cinema/editorial comedy. Claim mode: satire.
+- **Hangzhou robot traffic officers (Reuters, 2026-08-20/21):** excellent `many specialist lanes vs one end-to-end route` metaphor. Render as photorealistic contemporary street/editorial imagery with original unbranded robots; no police insignia or SUPCON/T2 replication. Claim mode: satire/workflow metaphor.
+- **Cloudflare Kitesurf agent-first browser (Cloudflare / TechCrunch, 2026-08-06/21):** useful `well-designed specialist layer vs whole project orchestration` structure. Kitesurf is a hotspot/context reference, not a direct InkClawAgent competitor; never convert Cloudflare's browser-efficiency claims into InkClawAgent superiority claims. Render as realistic tech imagery with fully fictional UI. Claim mode: satire/category-layer metaphor.
+- **Humanoid robots move from spectacle toward useful work (Reuters, 2026-08-18/20):** strong `single tricks vs useful coordinated outcome` structure. Use a fictional demo-first comparison proxy rather than inventing a defect about a named competitor. Render as photorealistic contemporary robotics/editorial imagery with original unbranded robots. Claim mode: satire/workflow metaphor.
 - **Niu Lai viral animation phenomenon (FT, 2026-08-20):** strong `shipped imperfect first version vs endless perfection-before-feedback` structure. Render as original deliberately rough low-poly animation; never use the film's characters, title treatment, poster, frames or identifiable character design. Claim mode: satire/workflow metaphor.
 - **The Odyssey summer visibility (AP, 2026-08-16):** strong cave/giant/escape structure. Use only public-domain Homeric archetypes. Default visual medium is photorealistic epic live-action with original casting, costumes, set design and camera composition; never reproduce current actors, costumes, sets, posters or film frames. A real named competitor should only replace the generic cyclops proxy after category/alternative research. Claim mode: satire.
-- **Robocops on traffic duty (Reuters, 2026-08-20):** excellent real-world `many specialist lanes vs one orchestrated route` metaphor. Render as photorealistic contemporary street/editorial imagery; use original unbranded robots and no real police insignia. Claim mode: satire/workflow metaphor.
-- **Robotics `ChatGPT moment` discussion (Reuters, 2026-08-20):** useful for `waiting for the next breakthrough vs finishing today's work with orchestration`. Render as realistic robotics-expo/project-room imagery with fictional robots only. Claim mode: workflow metaphor.
-- **Hot Spot release day (AP, 2026-08-21):** broad sentient-AI-ruler premise is useful for monolithic万能AI versus coordinated specialist workflow. Film-adjacent concepts default to photorealistic cinematic live-action language, but never reproduce actor likenesses, film sets, costumes, posters, title treatment or frames. Claim mode: satire.
-- **China rocket-launch tourism (Reuters, 2026-08-19):** strong `ignition vs mission-control delivery` structure. Use fictional unbranded spacecraft and generic control-room imagery; no real launch hardware/site replica. Claim mode: satire.
 
 ## Constraints
 
