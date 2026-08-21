@@ -39,10 +39,12 @@ def _direction_lanes(intent: CreativeIntent) -> list[str]:
 
 
 def _humor_expected(intent: CreativeIntent) -> bool:
-    return intent.style.value == "funny-meme" or intent.creative_ambition.value in {
-        "witty",
-        "breakout",
-    }
+    if intent.style.value == "funny-meme":
+        return True
+    return (
+        intent.creative_ambition.source != "defaulted"
+        and intent.creative_ambition.value in {"witty", "breakout"}
+    )
 
 
 def _joke_mechanics(intent: CreativeIntent, promotion: PromotionContext) -> list[str]:
