@@ -60,3 +60,11 @@ def test_package_rejects_whitespace_only_option_identity():
 def test_package_rejects_duplicate_option_identities():
     with pytest.raises(ValueError, match="option labels must be unique"):
         CreativePackageInput.model_validate({"options": [_option("same", "first"), _option("same", "second")]})
+
+
+def test_package_rejects_options_for_different_promoted_subjects():
+    first = _option("first", "first-product")
+    second = _option("second", "second-product")
+    second["concept"]["promotion"]["subject_name"] = "Different Lunch"
+    with pytest.raises(ValueError, match="concept promotions must match within creative package"):
+        CreativePackageInput.model_validate({"options": [first, second]})
