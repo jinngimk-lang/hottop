@@ -1,0 +1,12 @@
+name: ai-tech-daily
+sources:
+  - type: dailyhot
+    key: zhihu
+    limit: 25
+    preset: zh-internet-culture
+  - type: newsnow
+    key: tech
+    limit: 30
+    preset: ai-tech
+top: 6
+comparison_target: work巴迪
