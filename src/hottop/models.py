@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
 
 ClaimStatus = Literal["satire", "supported", "needs_evidence"]
 PromotionSubjectType = Literal[
@@ -194,6 +194,7 @@ class CreativeConcept(BaseModel):
     promotion: PromotionContext
     strategy: CreativeStrategy
     comparison_target: str | None = None
+    comparison_evidence: list[Evidence] = Field(default_factory=list)
     beats: list[CreativeBeat] = Field(min_length=1, max_length=8)
     visual_medium: VisualMedium
     genre_treatment: str = Field(min_length=1)
@@ -202,6 +203,12 @@ class CreativeConcept(BaseModel):
     negative_prompt: str = Field(min_length=1)
     risk_flags: list[str] = Field(default_factory=list)
     claim_status: ClaimStatus = "satire"
+
+    @model_validator(mode="after")
+    def require_evidence_for_supported_claims(self) -> CreativeConcept:
+        if self.claim_status == "supported" and not self.comparison_evidence:
+            raise ValueError("supported creative claims require comparison evidence")
+        return self
 
 
 class RoleMap(BaseModel):
