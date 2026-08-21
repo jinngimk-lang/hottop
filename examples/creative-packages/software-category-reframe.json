@@ -1,0 +1,63 @@
+{
+  "options": [
+    {
+      "label": "delete-interface-friction",
+      "concept": {
+        "topic": {
+          "id": "example:software:friction",
+          "title": "Generic interface-friction culture observation",
+          "url": "https://example.com/interface-friction",
+          "source": "example",
+          "tags": ["technology", "software", "culture"]
+        },
+        "promotion": {
+          "subject_name": "Flow Tool",
+          "subject_type": "tool",
+          "category": "AI software SaaS",
+          "primary_job": "turn intent into a finished work product",
+          "primary_pain_point": "too much coordination and interface friction",
+          "primary_differentiator": "coordinates multiple work steps in one flow",
+          "semantic_terms": ["coordinate", "route", "finish", "flow"]
+        },
+        "strategy": {
+          "category_default": "add more controls and intermediate screens",
+          "deleted_constraint": "every step needs another visible interface layer",
+          "new_competition_axis": "distance from intent to completed outcome",
+          "bridge_type": "function",
+          "bridge": "the product is represented as the clear route through work rather than another panel blocking the route",
+          "expression_form": "split-old-vs-new"
+        },
+        "beats": [
+          {
+            "scene": "OLD: a clean fictional road is blocked by generic cards labeled Setup, Review, Copy, Export and Handoff.",
+            "caption": "旧问题：不是卡片不够漂亮。",
+            "intent": "make the category default visible"
+          },
+          {
+            "scene": "NEW: the cards disappear and one clear route connects intent to finished document, with Flow Tool marked only on the route endpoint.",
+            "caption": "先问：这些层为什么一定要存在？",
+            "intent": "delete the constraint and reveal the new axis"
+          }
+        ],
+        "visual_medium": "technology-realism",
+        "genre_treatment": "clean contemporary software metaphor with realistic workplace materials and restrained cinematic polish",
+        "punchlines": ["别做更漂亮的中间层，先缩短意图到结果的距离。"],
+        "image_prompt": "Original split old-vs-new technology visual: left side a path blocked by generic abstract workflow cards, right side the same path simplified into one direct route from intent to completed document; no proprietary UI, no real competitor branding, realistic contemporary materials, restrained premium tech advertising.",
+        "negative_prompt": "No real software UI, no competitor logos, no unsupported benchmark claims, no bypassing authentication or permissions.",
+        "risk_flags": ["Keep the interface metaphor generic; do not imply bypass of required security controls."],
+        "claim_status": "satire"
+      },
+      "review": {
+        "name": "delete-interface-friction",
+        "instant_comprehension": 0.91,
+        "natural_linkage": 0.91,
+        "product_centrality": 0.9,
+        "surprise": 0.89,
+        "ownability": 0.9,
+        "evidence_safety": 0.96,
+        "original_execution": 0.95
+      }
+    }
+  ],
+  "references": []
+}
