@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 08:12 +08:00
+Last updated: 2026-08-21 08:20 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -29,22 +29,22 @@ Milestone: Foundation v0.1
 - Root-caused CI run 135 failure to whitespace inserted before punctuation across inline HTML tags; parser fix commit `62e651412932417a78bdcd766f8ab5f9268dce9d` passed CI run 139.
 - Added `build_default_enrichment_pipeline()` so the normal order is Crawl4AI → Firecrawl when configured → plain HTTP; commit `d67b504c7b932ea905cd8657ebdab2abaa6f317e` passed CI run 145.
 - Added typed YAML batch configuration (`BatchConfig` / `BatchSourceConfig`) and loader; implementation commit `a5a0e8195324c47302ce437d32d79cf049eca678` passed CI run 149.
-- Added `config/batches/ai-tech-daily.yml` as a repeatable batch example.
+- Added `config/batches/ai-tech-daily.yml` as a repeatable batch example; CI run 151 passed.
+- Added `hottop batch --config <yaml>` support with per-source limits plus stored `top` and comparison target; implementation commit `84fab9605511e97a9414278ada343c554f886986` passed CI run 157.
 - Archived live research batches through `examples/runs/2026-08-21-0800-briefs.json`.
 - The 08:00 batch adds: `Hot Spot` release-day monolithic-AI ruler → orchestration satire; robotics `ChatGPT moment` anticipation → do-today's-work-now workflow metaphor; generic dinosaur box-office showdown → flashy tool rivalry versus quiet delivery.
 
 ## In progress
 
-- CI run 151 is validating the newest sample-batch-config head.
-- Wiring `BatchConfig` into `hottop batch --config` so stored YAML can drive live fan-in without repeating CLI flags.
 - Applying per-source `preset` values from batch config to collector/source-quality behavior.
 - Connecting approved `RenderRequest` JSON to future image-generation providers without coupling the core package to any single vendor.
+- Continuing live research and meme-brief archives while Foundation v0.1 closes out.
 
 ## Next actions
 
-1. Confirm CI run 151/newest head; repair immediately if red.
-2. Add `hottop batch --config <yaml>` using per-source limits, stored `top`, comparison target, and source list.
-3. Make batch-config `preset` explicit in collector/source-quality resolution instead of metadata-only.
+1. Confirm CI on the newest status/head; repair immediately if red.
+2. Make batch-config `preset` explicit in collector/source-quality resolution instead of metadata-only.
+3. Add an enrichment command/path that can enrich selected candidates through the default fallback chain before briefing.
 4. Continue live research batches, prioritizing highly visual conflicts and culturally recognizable roles over generic news summaries.
 5. Inspect Foundation v0.1 diff/reviews and, once remaining contracts are green, mark PR #1 ready and merge.
 
