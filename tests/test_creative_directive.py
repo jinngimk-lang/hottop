@@ -107,3 +107,26 @@ def test_default_witty_does_not_force_humor_into_minimal_premium_work():
     assert directive.style == "minimal-premium"
     assert directive.humor_expected is False
     assert directive.joke_mechanics == []
+
+
+def test_breakout_ambition_does_not_turn_premium_creative_into_comedy():
+    intent = resolve_intent(
+        "给 Luma Glass 做 Instagram 出圈的极简高级广告",
+        overrides={"promotion_target": "Luma Glass"},
+    )
+    promotion = PromotionContext(
+        subject_name="Luma Glass",
+        subject_type="product",
+        category="consumer product",
+        primary_job="make hydration feel visually distinctive",
+        primary_differentiator="clear faceted glass geometry",
+        semantic_terms=["clear", "faceted", "glass"],
+    )
+
+    assert intent.creative_ambition.value == "breakout"
+    assert intent.style.value == "minimal-premium"
+
+    directive = build_creative_directive(intent, promotion)
+
+    assert directive.humor_expected is False
+    assert directive.joke_mechanics == []
