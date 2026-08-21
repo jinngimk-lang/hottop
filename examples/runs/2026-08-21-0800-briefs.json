@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-08-21T08:00:00+08:00",
+  "product": "InkClawAgent",
+  "claim_policy": "satire_or_workflow_metaphor_unless_supported",
+  "briefs": [
+    {
+      "topic": "Hot Spot opens with a near-future sentient-AI ruler premise",
+      "source": "https://apnews.com/article/4fb04771bfe1b29a113044382f5a3de6",
+      "source_note": "AP's 2026 summer movie guide lists Hot Spot for an August 21 theatrical release and describes a near-future society ruled by sentient AI. The meme uses only the broad monolithic-AI-versus-human-agency premise, with wholly original characters and environments.",
+      "source_quality": 0.95,
+      "conflict": "one omnipotent-looking AI bottleneck versus a coordinated team of specialist capabilities",
+      "comparison_target": "什么都想一个人包办的万能 AI",
+      "product_role": "workflow orchestrator",
+      "panels": [
+        {"caption": "万能 AI：Research、Write、Review、Code，全都排我这条队", "visual": "original retro-futurist control chamber with one anonymous glowing machine-throne and four long task queues, no film likenesses"},
+        {"caption": "用户：你统治世界之前，能先把这版改完吗？", "visual": "original anonymous investigator-type office worker holding a messy project folder, comic deadpan tone"},
+        {"caption": "InkClawAgent：别堵一个入口，拆给不同 Agent 协作", "visual": "original orchestration console splits the four queues into specialist lanes and reconnects them into one review loop"},
+        {"caption": "别给工具加王冠，给工作加流程。", "visual": "the giant throne powers down while a clean completed deliverable leaves the coordinated workflow"}
+      ],
+      "punchlines": ["别给工具加王冠，给工作加流程。", "万能不一定高效，会协作才更像工作。"],
+      "negative_prompt": "Noomi Rapace likeness, Hot Spot actors, film costumes, film sets, official poster, title treatment, exact frames, Focus Features logo",
+      "risk_flags": ["copyright", "actor_likeness", "trademark", "unsupported_superiority"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Robotics industry talks about an approaching 'ChatGPT moment'",
+      "source": "https://www.reuters.com/world/asia-pacific/robots-poised-chatgpt-moment-unitree-ceo-says-2026-08-20/",
+      "source_note": "Reuters reported on August 20 that robotics executives see a possible future tipping point where robots understand and execute unfamiliar tasks more broadly, while also stressing that useful general capability may still be years away. The meme uses the gap between a dramatic future moment and today's need to finish work.",
+      "source_quality": 0.96,
+      "conflict": "waiting for a dramatic future breakthrough versus orchestrating useful work with today's available capabilities",
+      "comparison_target": "一直等下一个 AI 奇迹时刻的工具党",
+      "product_role": "practical workflow coordinator",
+      "panels": [
+        {"caption": "全场：机器人马上迎来 ChatGPT moment！", "visual": "original futuristic robotics expo audience staring at a giant countdown screen, fictional robots only"},
+        {"caption": "打工人：那我今天这份方案谁来做？", "visual": "quiet desk outside the expo with research, draft, review and code tasks still waiting"},
+        {"caption": "InkClawAgent：未来等未来，今天先把 Agent 串起来", "visual": "abstract workflow board connects specialist agents into research, writing, review and coding loop"},
+        {"caption": "热点等爆点，工作别等。", "visual": "completed project lands on desk while the distant expo countdown is still running"}
+      ],
+      "punchlines": ["热点等爆点，工作别等。", "等奇点，不如先把今天的活闭环。"],
+      "negative_prompt": "Unitree robot design, real company booths, company logos, exact conference imagery, national-security imagery, real executives",
+      "risk_flags": ["trademark", "real_person", "product_design", "unsupported_superiority"],
+      "factual_claim_status": "workflow_metaphor"
+    },
+    {
+      "topic": "Two dinosaur movies battle for box-office attention while Spider-Man and The Odyssey dominate",
+      "source": "https://apnews.com/article/e9bb0bd359a218da0d7b705c725522e5",
+      "source_note": "AP reported on August 17 that two different dinosaur-themed releases were competing closely for third place while Spider-Man: Brand New Day and The Odyssey held the top two box-office positions. The meme borrows only the generic dinosaur-showdown structure; no film characters, actors or creature designs are reproduced.",
+      "source_quality": 0.95,
+      "conflict": "two flashy tools fighting over attention while the user's actual project remains unfinished",
+      "comparison_target": "两个热门单点 AI 工具",
+      "product_role": "quiet end-to-end finisher",
+      "panels": [
+        {"caption": "AI 工具 A：我参数更多！", "visual": "original comedic generic dinosaur on the left side of an arena wearing a blank AI badge, no franchise creature design"},
+        {"caption": "AI 工具 B：我榜单更高！", "visual": "different original generic dinosaur roaring from the opposite side, while office workers watch the spectacle"},
+        {"caption": "InkClawAgent：你们先吵，我把 Research → Review 跑完", "visual": "outside the arena, a calm original workflow operator moves a project through research, writing, review and code stations"},
+        {"caption": "热闹归热闹，交付归交付。", "visual": "finished deliverable stamped DONE in foreground; dinosaur argument continues harmlessly in distant background"}
+      ],
+      "punchlines": ["热闹归热闹，交付归交付。", "榜单会换，Deadline 不会。"],
+      "negative_prompt": "Jurassic franchise designs, PAW Patrol characters, Spider-Man imagery, Odyssey actors, movie posters, studio logos, exact AP photos",
+      "risk_flags": ["copyright", "trademark", "unsupported_superiority"],
+      "factual_claim_status": "satire"
+    }
+  ]
+}
