@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-21 12:52 +08:00
+Last updated: 2026-08-21 13:00 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -11,11 +11,12 @@ Milestone: Foundation v0.1
 - `PromotionContext`, `ComparisonCandidate` and deterministic positioning/research-query planning are implemented; `hottop position` emits a structured research handoff.
 - Comparison rules are evidence-aware: named competitors cannot be assigned invented defects; generic category/legacy/manual proxies are preferred when evidence is weak.
 - Visual-medium routing is established for film/live action, animation, real-world/social, technology, food/consumer and internet-native formats.
-- Live trend/creative archives exist through `examples/runs/2026-08-21-1156-briefs.json`.
-- **Creative direction audit completed from the working conversation and supplied visual-ad examples.** `PROJECT.md` now persists the broader doctrine so context recovery does not collapse the project back into “four-panel AI memes.”
+- **Creative direction audit completed from the working conversation and supplied visual-ad examples.** `PROJECT.md` persists the broader doctrine so context recovery does not collapse the project back into “four-panel AI memes.”
 - Added `skills/brand-metaphor-creative/SKILL.md`, covering category defaults, constraint deletion, bridge search, format selection, competitor truthfulness and a creative review gate.
 - Refactored `skills/hottop-meme/SKILL.md` to be hotspot/evidence/four-panel specific and to route creative strategy through `brand-metaphor-creative`.
 - Added `tests/test_creative_skill_contract.py`. RED run 195 failed on the missing doctrine/skill as intended; implementation head `97a81e161768633b2c209ab215e58627ea460247` passed CI run 201 on Python 3.11/3.12.
+- Documentation/status head `fcf96d05d839a482113eae053f7f6dbf4b72b1d6` passed CI run 203.
+- Added live archive `examples/runs/2026-08-21-1257-briefs.json` with three evidence-linked creative directions: robotics “ChatGPT moment” → do not wait for a universal breakthrough; BirdTok / craving for something real → signal over output volume; intrusive digital popovers → delete interface friction rather than design a prettier layer.
 
 ## Current creative doctrine
 
@@ -27,6 +28,12 @@ Milestone: Foundation v0.1
 - **Competitor is optional; truth is mandatory:** the strongest antagonist may be a named rival, incumbent habit, manual workaround or the old category assumption itself.
 - **Creative quality gate:** instant comprehension, natural linkage, product centrality, surprise, ownability, evidence safety and original execution.
 
+## Latest live evidence notes
+
+- Reuters, 2026-08-20: robotics leaders are discussing a future “ChatGPT moment,” while broad practical capability is not yet here. Creative use: contrast waiting for a universal breakthrough with coordinating useful capabilities available today. Risk: never imply InkClawAgent controls robots or outperforms a named robotics company.
+- The Guardian, 2026-08-15: younger audiences are showing renewed interest in birding/BirdTok amid a noisy online environment. Creative use: “one useful signal vs another noisy content source.” Risk: cultural observation only; do not turn it into a universal behavioral claim or copy TikTok UI/creators.
+- The Guardian, 2026-08-18: humorous new vocabulary describes common digital irritants such as modal/popover layers obscuring desired content. Creative use: constraint deletion — do not build a prettier popover, question the need for the interface layer. Risk: use generic UI and do not imply bypass of required authentication/permissions.
+
 ## In progress
 
 - Turning `hottop position` search plans into evidence-backed `ComparisonCandidate` records from public web / Agent-Reach results.
@@ -35,7 +42,7 @@ Milestone: Foundation v0.1
 
 ## Next actions
 
-1. Confirm CI on the newest status head; repair immediately if red.
+1. Confirm CI on the newest archive/status head; repair immediately if red.
 2. Add structured creative fields: `category_default`, `deleted_constraint`, `new_competition_axis`, `bridge_type`, `bridge`, and `expression_form`.
 3. Add an expression-form selector that can choose `single-visual-metaphor`, `swipe-reveal`, `four-panel`, `faux-film-still`, `split-old-vs-new`, or `product-as-prop` instead of hard-coding four panels.
 4. Add a bridge generator/scorer for shape/material, action, role, function, emotion/ritual and language/symbol links.
