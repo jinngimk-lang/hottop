@@ -61,12 +61,14 @@ def test_package_selects_highest_scoring_passing_option_and_preserves_reference(
         {
             "options": [
                 {
+                    "label": "pain-point-contrast",
                     "concept": _concept(
                         topic_id="weak",
                         expression_form="four-panel",
                         bridge="the product is a generic hero beside the hotspot",
                     ),
                     "review": {
+                        "name": "pain-point-contrast",
                         "instant_comprehension": 0.8,
                         "natural_linkage": 0.7,
                         "product_centrality": 0.4,
@@ -77,12 +79,14 @@ def test_package_selects_highest_scoring_passing_option_and_preserves_reference(
                     },
                 },
                 {
+                    "label": "bridge-led-reveal",
                     "concept": _concept(
                         topic_id="strong",
                         expression_form="swipe-reveal",
                         bridge="the product ribbon becomes the visual action before the food reveal",
                     ),
                     "review": {
+                        "name": "bridge-led-reveal",
                         "instant_comprehension": 0.92,
                         "natural_linkage": 0.95,
                         "product_centrality": 0.97,
@@ -96,7 +100,8 @@ def test_package_selects_highest_scoring_passing_option_and_preserves_reference(
             "references": [
                 {
                     "source_url": "https://example.com/reference",
-                    "source_kind": "campaign-page",
+                    "source_title": "Fictional campaign reference",
+                    "source_type": "campaign-page",
                     "rights_mode": "analysis-only",
                     "expression_form": "swipe-reveal",
                     "visual_medium": "commercial-product",
@@ -130,12 +135,14 @@ def test_package_refuses_to_select_when_all_options_fail_hard_gate():
         {
             "options": [
                 {
+                    "label": "forced-hot-character",
                     "concept": _concept(
                         topic_id="forced",
                         expression_form="single-visual-metaphor",
                         bridge="hot character plus logo",
                     ),
                     "review": {
+                        "name": "forced-hot-character",
                         "instant_comprehension": 0.8,
                         "natural_linkage": 0.3,
                         "product_centrality": 0.3,
