@@ -14,6 +14,7 @@ from .collectors.dailyhot import DailyHotApiCollector
 from .collectors.newsnow import NewsNowCollector
 from .collectors.rss import RSSCollector
 from .doctor import local_doctor
+from .integrations.playwright_cli import PlaywrightCliAdapter
 from .models import ProductProfile, TrendCandidate
 from .pipeline import build_batch
 from .positioning import build_comparison_research_queries, infer_promotion_context
@@ -90,6 +91,47 @@ def position(
         "context": infer_promotion_context(profile).model_dump(mode="json"),
         "research_queries": build_comparison_research_queries(profile),
         "comparison_candidates": [],
+    }
+    text = _json_dump(payload)
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(text + "\n", encoding="utf-8")
+    else:
+        typer.echo(text)
+
+
+@app.command(name="reference-plan")
+def reference_plan(
+    url: str = typer.Argument(..., help="Public HTTP(S) page to inspect as a visual reference"),
+    question: str = typer.Option(..., "--question", help="Specific visual/creative uncertainty to study"),
+    mobile: bool = typer.Option(False, "--mobile", help="Plan capture using a mobile viewport"),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Emit a safe visual-reference acquisition plan without executing a browser."""
+    adapter = PlaywrightCliAdapter()
+    open_command = adapter.open_command(url, mobile=mobile)
+    payload = {
+        "schema_version": "hottop.reference-plan.v1",
+        "url": url,
+        "question": question.strip(),
+        "rights_mode": "analysis-only",
+        "execute": False,
+        "persistent_profile": False,
+        "session": adapter.session,
+        "commands": [
+            open_command,
+            adapter.screenshot_command("artifacts/reference.png", hires=True),
+            adapter.close_command(),
+        ],
+        "research_output": {
+            "composition_grammar": [],
+            "reveal_pattern": None,
+            "text_grammar": None,
+            "bridge_type": None,
+            "why_effective": None,
+            "what_not_to_copy": [],
+            "provenance_note": "",
+        },
     }
     text = _json_dump(payload)
     if output:
