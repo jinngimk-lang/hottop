@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from .creative import (
     ContextualCreativeReview,
@@ -21,6 +21,12 @@ class OrchestrationOption(BaseModel):
     concept: CreativeConcept
     review: CreativeReview
     context_review: CreativeContextReview
+
+    @model_validator(mode="after")
+    def bind_review_to_option(self) -> OrchestrationOption:
+        if self.review.name != self.label:
+            raise ValueError("review name must match option label")
+        return self
 
 
 class OrchestrationInput(BaseModel):
