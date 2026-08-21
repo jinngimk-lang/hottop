@@ -17,12 +17,14 @@ class DailyHotApiCollector:
         base_url: str = "https://api-hot.imsyy.top",
         timeout: float = 15.0,
         source_quality: float = DAILYHOT_SOURCE_QUALITY,
+        preset: str | None = None,
     ) -> None:
         self.route = route.strip("/")
         self.client = client
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.source_quality = source_quality
+        self.preset = preset
 
     async def collect(self, limit: int = 30) -> list[TrendCandidate]:
         owns_client = self.client is None
@@ -51,7 +53,11 @@ class DailyHotApiCollector:
                 metrics["hot"] = float(hot)
             published_at = parse_timestamp(item.get("timestamp"))
             source = f"dailyhot:{self.route}"
-            quality = resolve_source_quality(url, fallback=self.source_quality)
+            quality = resolve_source_quality(
+                url,
+                fallback=self.source_quality,
+                preset=self.preset,
+            )
             evidence = [
                 Evidence(
                     url=url,
