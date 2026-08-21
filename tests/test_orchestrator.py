@@ -232,3 +232,27 @@ def test_orchestration_input_rejects_intent_for_a_different_promotion_target():
             ],
             references=[],
         )
+
+
+def test_orchestration_option_rejects_context_review_for_a_different_label():
+    context_review = CreativeContextReview.model_validate(
+        {
+            "name": "different-concept",
+            "platform_fit": 0.95,
+            "style_fit": 0.95,
+            "campaign_goal_fit": 0.95,
+            "ambition_fit": 0.95,
+            "project_shape_fit": 0.95,
+            "hotspot_native_fit": 0.95,
+            "humor_or_delight": 0.95,
+            "humor_expected": False,
+        }
+    )
+
+    with pytest.raises(ValueError, match="context review name must match option label"):
+        OrchestrationOption(
+            label="bridge-reveal",
+            concept=_concept("context-mismatch", "swipe-reveal", "the product ribbon becomes the action"),
+            review=_review("bridge-reveal"),
+            context_review=context_review,
+        )
