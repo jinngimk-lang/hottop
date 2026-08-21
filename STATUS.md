@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-22 02:05 +08:00
+Last updated: 2026-08-22 02:12 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -29,6 +29,7 @@ Milestone: Foundation v0.1
 - Closure review found a cross-promotion integrity gap in orchestration: top-level `promotion_context` and candidate `CreativeConcept.promotion` could disagree, allowing a reviewed concept for a different product to be selected while the result advertised another canonical context. RED run 541 reproduced the issue as the only failure (1 failed, 167 passed). `OrchestrationInput` now requires every option concept's promotion context to exactly match the orchestration-level promotion context; implementation head `86e1e326345caebbc6079fda0e6ab3c3adc652e3` passed CI run 543 on Python 3.11 and 3.12.
 - A follow-on orchestration integrity review found that `CreativeIntent.promotion_target` could still point at a different promoted subject than the canonical `promotion_context`, allowing one result to preserve user intent for Product A while selecting/rendering Product B. After correcting the RED fixture to isolate that edge, CI run 549 failed exactly because the mismatched intent target was not rejected (1 failed, 168 passed). `OrchestrationInput` now binds a resolved intent promotion target to `promotion_context.subject_name`; implementation head `52d22deb2cd1fd9725dfeb2be41eafc1d0b6ed59` passed CI run 551 on Python 3.11 and 3.12.
 - Closure review then found that option labels were bound to review names but not required to be unique within a package/orchestration payload, leaving selection and alternate identities ambiguous. `CreativePackageInput` and `OrchestrationInput` now reject duplicate normalized labels. The initial implementation head `9f4077de95df32ec35ba9e0ed5bc005b96849d78` reached CI run 559 but Ruff stopped on an import-formatting error before pytest; formatting-only follow-up `1e67bbb841747aae17d71a6d25451dbcbca17ef7` passed run 561 on Python 3.11 and 3.12.
+- A further package-level integrity review found that `CreativePackageInput` could still combine concepts for different promoted subjects and select whichever carried the highest external review score. RED head `bc7175472d3378629b9cf3ece6d9d99e8f83a95f` produced exactly one failing contract in run 565 (1 failed, 170 passed). `CreativePackageInput` now requires every option to carry the same full `PromotionContext`; implementation head `fd38dff7e61dbe95e709757c8983c8124a770ba8` passed run 567 on Python 3.11 and 3.12.
 - Added live archive `examples/runs/2026-08-21-1257-briefs.json` with evidence-linked robotics, BirdTok and digital-popover creative directions while keeping factual/safety caveats explicit.
 - Persistent project memory protocol is active: `PROJECT.md` is durable direction, `STATUS.md` is the execution snapshot, reusable skills carry operational doctrine, and repository truth is reread under context pressure.
 
@@ -52,7 +53,7 @@ Milestone: Foundation v0.1
 
 ## In progress
 
-- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, whitespace-identity, unresolved named-comparison, cross-promotion concept/context, intent/promotion-context and duplicate-option-identity gaps.
+- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, whitespace-identity, unresolved named-comparison, cross-promotion concept/context, intent/promotion-context, duplicate-option-identity and cross-promotion package gaps.
 - Continue fresh trend research across entertainment, animation, technology, internet culture, social phenomena and consumer culture without collapsing discovery into AI/tech only.
 - RSSHub remains an optional pilot awaiting an explicitly configured operator-controlled instance; no credential or external-service setup is performed autonomously.
 
