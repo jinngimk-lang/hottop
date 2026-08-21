@@ -79,6 +79,7 @@ class CreativeReview(BaseModel):
 class CreativeContextReview(BaseModel):
     """Request-specific ranking signals that never override the base creative hard gate."""
 
+    name: str | None = None
     platform_fit: float = Field(ge=0, le=1)
     style_fit: float = Field(ge=0, le=1)
     campaign_goal_fit: float = Field(ge=0, le=1)
