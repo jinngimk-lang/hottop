@@ -1,4 +1,5 @@
 import pytest
+
 from hottop.integrations.playwright_cli import PlaywrightCliAdapter
 
 
