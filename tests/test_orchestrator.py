@@ -209,6 +209,9 @@ def test_orchestration_input_rejects_intent_for_a_different_promotion_target():
         subject_type="product",
         category="food",
         primary_job="memorable quick lunch",
+        primary_pain_point="generic food ads look interchangeable",
+        primary_differentiator="long elastic ribbon texture",
+        semantic_terms=["long", "elastic", "ribbon"],
     )
 
     with pytest.raises(ValueError, match="intent promotion target must match orchestration promotion context"):
