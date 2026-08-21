@@ -7,19 +7,19 @@ description: Use when creating promotional creative that connects a brand, produ
 
 ## Overview
 
-Create advertising people understand before they finish reading it. The promoted subject should become part of the cultural idea—an action, object, transformation, role, material, or outcome—not a logo pasted onto a trend.
+Create advertising people understand before they finish reading it. The promoted subject should become part of the cultural idea—an action, object, transformation, role, material, route, environment, or reveal—not a logo pasted onto a trend.
 
-The core principle is **reframe before optimize**: do not automatically make a better version of the category's current solution. First ask whether the category default itself should disappear.
+Core principle: **reframe before optimize**. Do not automatically make a better version of the category's current answer. First ask whether the category default itself should disappear.
 
 ## 1. Resolve the subject before the joke
 
 Identify the promoted subject's category, job-to-be-done, pain point, differentiator, physical/sensory properties, usage ritual, emotional payoff, and recognizable alternatives. Research current facts when the subject or market is unfamiliar or time-sensitive.
 
-A product does not always need to be the hero character. It can be the decisive prop, material, gesture, route, transformation, environment, or final reveal.
+A product does not have to be the hero character. It can be the decisive prop, material, gesture, route, transformation, environment, or final reveal.
 
 ## 2. Find the category default
 
-Name the assumption competitors are mostly optimizing: the **category default**. Examples include more buttons, a better keyboard, a faster queue, more tools, more steps, more features, or a familiar packaging/interaction convention.
+Name the assumption competitors are mostly optimizing: the **category default**. Examples: more buttons, a better keyboard, a faster queue, more tools, more steps, more features, a familiar packaging convention, or a standard interaction ritual.
 
 Then run **constraint deletion**:
 
@@ -28,7 +28,7 @@ Then run **constraint deletion**:
 - What user outcome remains after deleting it?
 - What new competition axis becomes important instead?
 
-Prefer `old premise → deleted constraint → new axis` when it creates a more surprising and truthful idea than ordinary feature comparison.
+Prefer `old premise → deleted constraint → new axis` when it creates a more truthful, surprising and ownable idea than ordinary feature comparison.
 
 ## 3. Bridge search
 
@@ -43,7 +43,17 @@ Find the strongest natural bridge between the subject and the hotspot. Search ac
 
 The bridge must make the product feel inevitable in the idea. If the link only works after a paragraph of explanation, reject it.
 
-## 4. Format selection
+## 4. Explore beyond the first obvious idea
+
+Before locking a concept, internally explore at least three distinct directions when the brief allows it:
+
+1. **pain-point contrast** — old way or competitor friction vs. desired outcome;
+2. **bridge-led metaphor** — product property/action naturally becomes part of the hotspot;
+3. **constraint-deletion reframe** — challenge the premise the category is currently optimizing.
+
+Do not force all three into the final answer. Use them to avoid settling for the first merely acceptable joke. Prefer the idea with the strongest natural linkage, product specificity and surprise.
+
+## 5. Format selection
 
 Do not force every concept into four panels. Choose the smallest format that makes the metaphor land:
 
@@ -56,13 +66,13 @@ Do not force every concept into four panels. Choose the smallest format that mak
 
 For swipe-reveal, each frame must add information. Do not show the full answer in frame one.
 
-## 5. Competitor logic
+## 6. Competitor logic
 
 Research direct competitors, incumbents, adjacent substitutes, legacy workflows, and manual workarounds. A **named competitor** is useful only when the contrast is accurate and supported, or unmistakably subjective satire. Never invent defects, benchmarks, outages, prices, safety failures, or customer sentiment.
 
-Sometimes the strongest antagonist is not another brand but the old category assumption itself. Prefer that when it makes the idea cleaner and less misleading.
+Sometimes the strongest antagonist is not another brand but the old category assumption itself. Prefer that when it makes the idea cleaner, more surprising and less misleading.
 
-## 6. Match the source medium
+## 7. Match the source medium
 
 Film/live-action hotspots should feel like original live-action cinema; animation hotspots should use an original animation-native treatment; real people/social phenomena should feel documentary/social-native; food/consumer products can use polished commercial product photography; internet-native jokes should match their distribution grammar.
 
@@ -80,7 +90,47 @@ Before approving a concept, score it on:
 6. **Evidence safety** — factual comparisons are supported; otherwise satire/metaphor.
 7. **Original execution** — recognizable cultural grammar without copying protected production assets.
 
-Reject concepts that are merely `hot character + logo`, feature lists wearing costumes, or jokes that could advertise any competitor unchanged.
+Reject concepts that are merely `hot character + logo`, feature lists wearing costumes, references needing a paragraph of explanation, or jokes that could advertise any competitor unchanged.
+
+## Persistent project protocol
+
+When this work becomes a new multi-session project, do not rely on conversation memory alone. Create a **living project charter** in the repository before substantial implementation or repeated production. For Hottop this is `PROJECT.md`; use `STATUS.md` for current execution state.
+
+### Bootstrap a new project
+
+The charter should capture durable direction rather than a transcript:
+
+- mission, audience, success criteria and non-goals;
+- canonical creative/product doctrine;
+- architecture and major integrations;
+- operating constraints and evidence/safety rules;
+- stable workflow and output contracts;
+- reusable skills and **recovery order**;
+- major decisions plus a compact **decision log** when rationale matters.
+
+Keep temporary CI IDs, hourly research and short-lived tasks in status/archives so the charter stays readable.
+
+### Context recovery
+
+When there is **context pressure**—a long conversation, new session, agent handoff, uncertainty about prior choices, or return after time away—reread repository truth before continuing. Recovery order:
+
+1. project charter (`PROJECT.md` or equivalent);
+2. current status (`STATUS.md`);
+3. active skill(s);
+4. newest relevant spec/plan/decision record;
+5. live PR/CI/evidence state.
+
+Do not ask the user to repeat stable direction that the repository already records.
+
+### Evolve the project deliberately
+
+If a durable new direction appears—a new creative structure, better medium rule, category-reframing principle, integration strategy, safety boundary, recurring instruction, or repeatedly successful pattern—review it against the existing doctrine before adopting it.
+
+If it survives review, **update the charter** and the relevant skill/spec in the same workstream. Record what changed, what old assumption it supersedes, and why in the decision log when the rationale would otherwise be lost. Then update status so the next recovery sees the new direction immediately.
+
+Do not silently stack contradictory rules. Keep one canonical current interpretation. After meaningful changes, reread the charter for contradictions, stale assumptions, duplication, missing recovery steps and examples that have become too narrow.
+
+The target is not merely persistence. Each recovery should make the project **more precise, more stable and more creatively capable** because durable learning has been distilled into the repository.
 
 ## Output contract
 
