@@ -1,7 +1,11 @@
 import pytest
 
 from hottop.collectors.base import SourceError
-from hottop.enrichment import EnrichmentPipeline, EnrichmentResult
+from hottop.enrichment import (
+    EnrichmentPipeline,
+    EnrichmentResult,
+    build_default_enrichment_pipeline,
+)
 
 
 class StubAdapter:
@@ -72,3 +76,26 @@ async def test_enrichment_raises_with_all_provider_failures():
 
     with pytest.raises(SourceError, match="crawl4ai: offline; plain-http: 403"):
         await pipeline.markdown("https://example.com/story")
+
+
+def test_default_enrichment_pipeline_skips_unconfigured_firecrawl(monkeypatch):
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    monkeypatch.setenv("CRAWL4AI_URL", "http://crawl4ai:11235")
+
+    pipeline = build_default_enrichment_pipeline()
+
+    assert [name for name, _ in pipeline.providers] == ["crawl4ai", "plain-http"]
+
+
+def test_default_enrichment_pipeline_includes_configured_firecrawl(monkeypatch):
+    monkeypatch.setenv("CRAWL4AI_URL", "http://crawl4ai:11235")
+    monkeypatch.setenv("FIRECRAWL_API_KEY", "test-key")
+    monkeypatch.setenv("FIRECRAWL_URL", "https://firecrawl.example")
+
+    pipeline = build_default_enrichment_pipeline()
+
+    assert [name for name, _ in pipeline.providers] == [
+        "crawl4ai",
+        "firecrawl",
+        "plain-http",
+    ]
