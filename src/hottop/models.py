@@ -103,6 +103,14 @@ class TrendCandidate(BaseModel):
             raise ValueError("title must not be blank")
         return value
 
+    @field_validator("source")
+    @classmethod
+    def normalize_source_identity(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("trend source must not be blank")
+        return value
+
 
 class TrendScore(BaseModel):
     total: float = Field(ge=0, le=100)
