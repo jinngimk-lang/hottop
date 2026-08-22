@@ -149,6 +149,14 @@ class ComparisonCandidate(BaseModel):
     notes: list[str] = Field(default_factory=list)
     claim_posture: ClaimStatus = "satire"
 
+    @field_validator("name")
+    @classmethod
+    def normalize_name_identity(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("comparison candidate name must not be blank")
+        return value
+
 
 class CreativeStrategy(BaseModel):
     """Durable creative reframe independent of a specific output renderer."""
@@ -212,6 +220,16 @@ class CreativeConcept(BaseModel):
     negative_prompt: str = Field(min_length=1)
     risk_flags: list[str] = Field(default_factory=list)
     claim_status: ClaimStatus = "satire"
+
+    @field_validator("comparison_target")
+    @classmethod
+    def normalize_comparison_target(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            raise ValueError("comparison target must not be blank")
+        return value
 
     @model_validator(mode="after")
     def enforce_comparison_claim_safety(self) -> CreativeConcept:
