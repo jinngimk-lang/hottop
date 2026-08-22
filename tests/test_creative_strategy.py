@@ -170,6 +170,38 @@ def test_creative_review_accepts_specific_surprising_original_bridge() -> None:
     assert review.total >= 0.85
 
 
+def test_creative_review_name_is_canonical() -> None:
+    review = CreativeReview(
+        name="  product material becomes the cultural action  ",
+        instant_comprehension=0.9,
+        natural_linkage=0.95,
+        product_centrality=0.95,
+        surprise=0.85,
+        ownability=0.9,
+        evidence_safety=0.9,
+        original_execution=0.9,
+    )
+
+    assert review.name == "product material becomes the cultural action"
+
+
+def test_creative_review_rejects_blank_name() -> None:
+    try:
+        CreativeReview(
+            name="   ",
+            instant_comprehension=0.9,
+            natural_linkage=0.95,
+            product_centrality=0.95,
+            surprise=0.85,
+            ownability=0.9,
+            evidence_safety=0.9,
+            original_execution=0.9,
+        )
+    except ValueError:
+        return
+    raise AssertionError("whitespace-only creative review names must be rejected")
+
+
 def test_best_review_prefers_passing_ownable_direction() -> None:
     generic = CreativeReview(
         name="generic comparison",
