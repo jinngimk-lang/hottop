@@ -1,3 +1,6 @@
+import pytest
+from pydantic import ValidationError
+
 from hottop.models import (
     CreativeBeat,
     CreativeConcept,
@@ -6,6 +9,60 @@ from hottop.models import (
     TrendCandidate,
 )
 from hottop.rendering import build_creative_render_request
+
+
+def _concept(**overrides: object) -> CreativeConcept:
+    data = {
+        "topic": TrendCandidate(
+            id="culture:render-text",
+            title="A visual action becomes a social meme",
+            url="https://example.com/culture",
+            source="culture",
+        ),
+        "promotion": PromotionContext(
+            subject_name="Ribbon Noodle",
+            subject_type="product",
+            category="food",
+        ),
+        "strategy": CreativeStrategy(
+            bridge_type="shape-material",
+            bridge="the food ribbon becomes the recognizable visual action",
+            expression_form="single-visual-metaphor",
+        ),
+        "beats": [CreativeBeat(scene="one decisive product image", intent="reveal")],
+        "visual_medium": "commercial-product",
+        "genre_treatment": "minimal premium studio photography",
+        "punchlines": ["先让人想看，再让人想吃。"],
+        "image_prompt": "Create an original premium food advertisement.",
+        "negative_prompt": "No protected character replica or copied ad layout.",
+    }
+    data.update(overrides)
+    return CreativeConcept.model_validate(data)
+
+
+def test_creative_concept_canonicalizes_required_render_text() -> None:
+    concept = _concept(
+        genre_treatment="  minimal premium studio photography  ",
+        punchlines=["  先让人想看，再让人想吃。  "],
+        image_prompt="  Create an original premium food advertisement.  ",
+        negative_prompt="  No protected character replica or copied ad layout.  ",
+    )
+
+    assert concept.genre_treatment == "minimal premium studio photography"
+    assert concept.punchlines == ["先让人想看，再让人想吃。"]
+    assert concept.image_prompt == "Create an original premium food advertisement."
+    assert concept.negative_prompt == "No protected character replica or copied ad layout."
+
+
+@pytest.mark.parametrize("field", ["genre_treatment", "image_prompt", "negative_prompt"])
+def test_creative_concept_rejects_blank_required_render_text(field: str) -> None:
+    with pytest.raises(ValidationError):
+        _concept(**{field: "   "})
+
+
+def test_creative_concept_rejects_blank_punchline() -> None:
+    with pytest.raises(ValidationError):
+        _concept(punchlines=["   "])
 
 
 def test_swipe_reveal_render_request_preserves_strategy_and_medium() -> None:
