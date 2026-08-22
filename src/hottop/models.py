@@ -95,6 +95,14 @@ class TrendCandidate(BaseModel):
     metrics: dict[str, float] = Field(default_factory=dict)
     evidence: list[Evidence] = Field(default_factory=list)
 
+    @field_validator("id")
+    @classmethod
+    def normalize_id_identity(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("trend id must not be blank")
+        return value
+
     @field_validator("title")
     @classmethod
     def strip_title(cls, value: str) -> str:
