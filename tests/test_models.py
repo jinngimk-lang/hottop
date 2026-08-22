@@ -23,6 +23,27 @@ def test_trend_candidate_requires_core_identity():
     assert candidate.evidence == []
 
 
+def test_trend_candidate_normalizes_id_identity():
+    candidate = TrendCandidate(
+        id="  dailyhot:1  ",
+        title="A current topic",
+        url="https://example.com/topic",
+        source="dailyhot",
+    )
+
+    assert candidate.id == "dailyhot:1"
+
+
+def test_trend_candidate_rejects_blank_id_identity():
+    with pytest.raises(ValueError, match="trend id must not be blank"):
+        TrendCandidate(
+            id="   ",
+            title="A current topic",
+            url="https://example.com/topic",
+            source="dailyhot",
+        )
+
+
 def test_trend_candidate_normalizes_source_identity():
     candidate = TrendCandidate(
         id="dailyhot:1",
