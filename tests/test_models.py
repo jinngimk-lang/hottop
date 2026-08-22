@@ -4,6 +4,7 @@ import pytest
 
 from hottop.models import (
     ComparisonCandidate,
+    CreativeBeat,
     Evidence,
     ProductProfile,
     PromotionContext,
@@ -129,3 +130,25 @@ def test_comparison_candidate_normalizes_name_identity():
 def test_comparison_candidate_rejects_blank_name_identity():
     with pytest.raises(ValueError, match="comparison candidate name must not be blank"):
         ComparisonCandidate(name="   ", relation="direct-competitor")
+
+
+def test_creative_beat_normalizes_render_text():
+    beat = CreativeBeat(
+        scene="  Ribbon stretches across the table  ",
+        intent="  delay the product reveal  ",
+    )
+
+    assert beat.scene == "Ribbon stretches across the table"
+    assert beat.intent == "delay the product reveal"
+
+
+@pytest.mark.parametrize("field", ["scene", "intent"])
+def test_creative_beat_rejects_blank_render_text(field: str):
+    payload = {
+        "scene": "Ribbon stretches across the table",
+        "intent": "delay the product reveal",
+    }
+    payload[field] = "   "
+
+    with pytest.raises(ValueError, match=f"creative beat {field} must not be blank"):
+        CreativeBeat(**payload)
