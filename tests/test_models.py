@@ -118,6 +118,37 @@ def test_promotion_context_rejects_blank_identity_fields(field: str):
         PromotionContext(**payload)
 
 
+def test_promotion_context_normalizes_resolved_semantics():
+    context = PromotionContext(
+        subject_name="Ribbon Lunch",
+        subject_type="product",
+        category="food",
+        primary_job="  make lunch feel more playful  ",
+        primary_pain_point="  repetitive lunch routines  ",
+        primary_differentiator="  long ribbon-like shape  ",
+    )
+
+    assert context.primary_job == "make lunch feel more playful"
+    assert context.primary_pain_point == "repetitive lunch routines"
+    assert context.primary_differentiator == "long ribbon-like shape"
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["primary_job", "primary_pain_point", "primary_differentiator"],
+)
+def test_promotion_context_rejects_blank_resolved_semantics(field: str):
+    payload = {
+        "subject_name": "Ribbon Lunch",
+        "subject_type": "product",
+        "category": "food",
+        field: "   ",
+    }
+
+    with pytest.raises(ValueError, match=f"promotion {field.replace('_', ' ')} must not be blank"):
+        PromotionContext(**payload)
+
+
 def test_comparison_candidate_normalizes_name_identity():
     candidate = ComparisonCandidate(
         name="  Named Competitor  ",
