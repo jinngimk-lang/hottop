@@ -141,6 +141,14 @@ class ProductProfile(BaseModel):
     preferred_roles: list[str] = Field(default_factory=lambda: ["solver", "breaker", "winner"])
     default_claim_status: ClaimStatus = "satire"
 
+    @field_validator("name")
+    @classmethod
+    def normalize_name_identity(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("product profile name must not be blank")
+        return value
+
 
 class PromotionContext(BaseModel):
     subject_name: str
