@@ -81,6 +81,23 @@ def test_creative_comparison_target_rejects_blank_identity() -> None:
         CreativeConcept(**payload)
 
 
+def test_evidence_source_is_canonical() -> None:
+    evidence = Evidence(
+        url="https://example.com/evidence",
+        source="  Primary source  ",
+    )
+
+    assert evidence.source == "Primary source"
+
+
+def test_evidence_source_rejects_blank_identity() -> None:
+    with pytest.raises(ValidationError, match="evidence source must not be blank"):
+        Evidence(
+            url="https://example.com/evidence",
+            source="   ",
+        )
+
+
 def test_render_v2_preserves_comparison_evidence_provenance() -> None:
     payload = _concept_payload()
     payload["claim_status"] = "supported"
