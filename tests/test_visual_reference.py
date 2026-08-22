@@ -58,3 +58,32 @@ def test_reference_rights_modes_are_explicit() -> None:
             provenance_note="Recorded for provenance.",
         )
         assert reference.rights_mode == rights_mode
+
+
+def test_visual_reference_provenance_identity_is_canonical() -> None:
+    reference = VisualReference(
+        source_url="https://example.com/a",
+        source_title="  Example campaign  ",
+        source_type="  public-web  ",
+        rights_mode="analysis-only",
+        provenance_note="  Direct public observation.  ",
+    )
+
+    assert reference.source_title == "Example campaign"
+    assert reference.source_type == "public-web"
+    assert reference.provenance_note == "Direct public observation."
+
+
+@pytest.mark.parametrize("field", ["source_title", "source_type", "provenance_note"])
+def test_visual_reference_rejects_blank_provenance_identity(field: str) -> None:
+    payload = {
+        "source_url": "https://example.com/a",
+        "source_title": "Example",
+        "source_type": "public-web",
+        "rights_mode": "analysis-only",
+        "provenance_note": "Direct public observation.",
+    }
+    payload[field] = "   "
+
+    with pytest.raises(ValueError, match="must not be blank"):
+        VisualReference.model_validate(payload)
