@@ -48,6 +48,14 @@ class CreativeReview(BaseModel):
     evidence_safety: float = Field(ge=0, le=1)
     original_execution: float = Field(ge=0, le=1)
 
+    @field_validator("name")
+    @classmethod
+    def normalize_name(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("creative review name must not be blank")
+        return value
+
     @property
     def total(self) -> float:
         return (
