@@ -26,6 +26,44 @@ def test_creative_strategy_persists_reframing_and_bridge_fields() -> None:
     assert strategy.expression_form == "split-old-vs-new"
 
 
+def test_creative_strategy_text_is_canonical_when_provided() -> None:
+    strategy = CreativeStrategy(
+        category_default="  better physical keyboard  ",
+        deleted_constraint="  physical keyboard  ",
+        new_competition_axis="  direct touch interaction  ",
+        bridge_type="action-motion",
+        bridge="  the promoted product becomes the action itself  ",
+        expression_form="split-old-vs-new",
+    )
+
+    assert strategy.category_default == "better physical keyboard"
+    assert strategy.deleted_constraint == "physical keyboard"
+    assert strategy.new_competition_axis == "direct touch interaction"
+    assert strategy.bridge == "the promoted product becomes the action itself"
+
+
+def test_creative_strategy_rejects_blank_text_when_provided() -> None:
+    for field_name in (
+        "category_default",
+        "deleted_constraint",
+        "new_competition_axis",
+        "bridge",
+    ):
+        values = {
+            "category_default": None,
+            "deleted_constraint": None,
+            "new_competition_axis": None,
+            "bridge": None,
+            "expression_form": "single-visual-metaphor",
+        }
+        values[field_name] = "   "
+        try:
+            CreativeStrategy(**values)
+        except ValueError:
+            continue
+        raise AssertionError(f"whitespace-only {field_name} must be rejected when provided")
+
+
 def test_constraint_deletion_wins_over_narrative_format() -> None:
     signals = CreativeSignals(
         has_deleted_constraint=True,
