@@ -244,6 +244,14 @@ class CreativeBeat(BaseModel):
     caption: str | None = None
     intent: str = Field(min_length=1)
 
+    @field_validator("scene", "intent")
+    @classmethod
+    def normalize_render_text(cls, value: str, info) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError(f"creative beat {info.field_name} must not be blank")
+        return value
+
 
 class CreativeConcept(BaseModel):
     """Renderer-neutral creative contract that is not tied to a four-panel layout."""
