@@ -23,6 +23,27 @@ def test_trend_candidate_requires_core_identity():
     assert candidate.evidence == []
 
 
+def test_trend_candidate_normalizes_source_identity():
+    candidate = TrendCandidate(
+        id="dailyhot:1",
+        title="A current topic",
+        url="https://example.com/topic",
+        source="  dailyhot  ",
+    )
+
+    assert candidate.source == "dailyhot"
+
+
+def test_trend_candidate_rejects_blank_source_identity():
+    with pytest.raises(ValueError, match="trend source must not be blank"):
+        TrendCandidate(
+            id="dailyhot:1",
+            title="A current topic",
+            url="https://example.com/topic",
+            source="   ",
+        )
+
+
 def test_product_profile_defaults_to_satirical_comparison_posture():
     product = ProductProfile(name="InkClawAgent", url="https://inkclawagent.com/home")
     assert product.name == "InkClawAgent"
