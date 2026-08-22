@@ -204,6 +204,15 @@ class VisualReference(BaseModel):
     artifact_hash: str | None = None
     provenance_note: str = Field(min_length=1)
 
+    @field_validator("source_title", "source_type", "provenance_note")
+    @classmethod
+    def normalize_provenance_identity(cls, value: str, info) -> str:
+        value = value.strip()
+        if not value:
+            field_name = info.field_name.replace("_", " ")
+            raise ValueError(f"visual reference {field_name} must not be blank")
+        return value
+
     @field_validator("observed_at")
     @classmethod
     def ensure_reference_timezone(cls, value: datetime) -> datetime:
