@@ -64,6 +64,23 @@ def test_named_comparison_cannot_remain_needs_evidence_in_production() -> None:
         CreativeConcept(**payload)
 
 
+def test_creative_comparison_target_is_canonical() -> None:
+    payload = _concept_payload()
+    payload["comparison_target"] = "  Named Competitor  "
+
+    concept = CreativeConcept(**payload)
+
+    assert concept.comparison_target == "Named Competitor"
+
+
+def test_creative_comparison_target_rejects_blank_identity() -> None:
+    payload = _concept_payload()
+    payload["comparison_target"] = "   "
+
+    with pytest.raises(ValidationError, match="comparison target must not be blank"):
+        CreativeConcept(**payload)
+
+
 def test_render_v2_preserves_comparison_evidence_provenance() -> None:
     payload = _concept_payload()
     payload["claim_status"] = "supported"
