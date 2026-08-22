@@ -280,6 +280,23 @@ class CreativeConcept(BaseModel):
             raise ValueError("comparison target must not be blank")
         return value
 
+    @field_validator("genre_treatment", "image_prompt", "negative_prompt")
+    @classmethod
+    def normalize_required_render_text(cls, value: str, info) -> str:
+        value = value.strip()
+        if not value:
+            field_name = info.field_name.replace("_", " ")
+            raise ValueError(f"creative concept {field_name} must not be blank")
+        return value
+
+    @field_validator("punchlines")
+    @classmethod
+    def normalize_punchlines(cls, values: list[str]) -> list[str]:
+        normalized = [value.strip() for value in values]
+        if any(not value for value in normalized):
+            raise ValueError("creative concept punchlines must not contain blank text")
+        return normalized
+
     @model_validator(mode="after")
     def enforce_comparison_claim_safety(self) -> CreativeConcept:
         if self.claim_status == "supported" and not self.comparison_evidence:
