@@ -2,7 +2,13 @@ from datetime import UTC, datetime
 
 import pytest
 
-from hottop.models import Evidence, ProductProfile, PromotionContext, TrendCandidate
+from hottop.models import (
+    ComparisonCandidate,
+    Evidence,
+    ProductProfile,
+    PromotionContext,
+    TrendCandidate,
+)
 
 
 def test_trend_candidate_requires_core_identity():
@@ -56,3 +62,17 @@ def test_promotion_context_rejects_blank_identity_fields(field: str):
 
     with pytest.raises(ValueError, match=f"promotion {field.replace('_', ' ')} must not be blank"):
         PromotionContext(**payload)
+
+
+def test_comparison_candidate_normalizes_name_identity():
+    candidate = ComparisonCandidate(
+        name="  Named Competitor  ",
+        relation="direct-competitor",
+    )
+
+    assert candidate.name == "Named Competitor"
+
+
+def test_comparison_candidate_rejects_blank_name_identity():
+    with pytest.raises(ValueError, match="comparison candidate name must not be blank"):
+        ComparisonCandidate(name="   ", relation="direct-competitor")
