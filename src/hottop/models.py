@@ -66,6 +66,14 @@ class Evidence(BaseModel):
     source_quality: float | None = Field(default=None, ge=0, le=1)
     note: str | None = None
 
+    @field_validator("source")
+    @classmethod
+    def normalize_source_identity(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("evidence source must not be blank")
+        return value
+
     @field_validator("observed_at", "published_at")
     @classmethod
     def ensure_timezone(cls, value: datetime | None) -> datetime | None:
