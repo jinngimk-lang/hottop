@@ -105,6 +105,34 @@ def test_default_is_single_visual_metaphor() -> None:
     assert select_expression_form(CreativeSignals()) == "single-visual-metaphor"
 
 
+def test_bridge_candidate_text_is_canonical() -> None:
+    candidate = BridgeCandidate(
+        bridge_type="shape-material",
+        bridge="  the product material becomes the hotspot action  ",
+        product_specificity=0.95,
+        hotspot_fit=0.9,
+        visual_clarity=0.95,
+        surprise=0.85,
+    )
+
+    assert candidate.bridge == "the product material becomes the hotspot action"
+
+
+def test_bridge_candidate_rejects_blank_text() -> None:
+    try:
+        BridgeCandidate(
+            bridge_type="shape-material",
+            bridge="   ",
+            product_specificity=0.95,
+            hotspot_fit=0.9,
+            visual_clarity=0.95,
+            surprise=0.85,
+        )
+    except ValueError:
+        return
+    raise AssertionError("whitespace-only bridge candidate text must be rejected")
+
+
 def test_best_bridge_prefers_product_specific_visual_link() -> None:
     generic = BridgeCandidate(
         bridge_type="role",
