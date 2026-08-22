@@ -26,6 +26,14 @@ class BridgeCandidate(BaseModel):
     visual_clarity: float = Field(ge=0, le=1)
     surprise: float = Field(ge=0, le=1)
 
+    @field_validator("bridge")
+    @classmethod
+    def normalize_bridge(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("bridge candidate text must not be blank")
+        return value
+
     @property
     def score(self) -> float:
         return (
