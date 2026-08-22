@@ -168,6 +168,17 @@ class PromotionContext(BaseModel):
             raise ValueError(f"promotion {field_name} must not be blank")
         return value
 
+    @field_validator("primary_job", "primary_pain_point", "primary_differentiator")
+    @classmethod
+    def normalize_optional_semantic_field(cls, value: str | None, info) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            field_name = info.field_name.replace("_", " ")
+            raise ValueError(f"promotion {field_name} must not be blank")
+        return value
+
 
 class ComparisonCandidate(BaseModel):
     name: str = Field(min_length=1)
