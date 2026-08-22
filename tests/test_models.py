@@ -71,6 +71,17 @@ def test_product_profile_defaults_to_satirical_comparison_posture():
     assert product.default_claim_status == "satire"
 
 
+def test_product_profile_normalizes_name_identity():
+    product = ProductProfile(name="  Ribbon Lunch  ")
+
+    assert product.name == "Ribbon Lunch"
+
+
+def test_product_profile_rejects_blank_name_identity():
+    with pytest.raises(ValueError, match="product profile name must not be blank"):
+        ProductProfile(name="   ")
+
+
 def test_evidence_keeps_timestamp_timezone_aware():
     now = datetime.now(UTC)
     evidence = Evidence(url="https://example.com/a", source="example", observed_at=now)
