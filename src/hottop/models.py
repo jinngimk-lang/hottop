@@ -200,6 +200,17 @@ class CreativeStrategy(BaseModel):
     bridge: str | None = None
     expression_form: ExpressionForm
 
+    @field_validator("category_default", "deleted_constraint", "new_competition_axis", "bridge")
+    @classmethod
+    def normalize_optional_strategy_text(cls, value: str | None, info) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            field_name = info.field_name.replace("_", " ")
+            raise ValueError(f"creative strategy {field_name} must not be blank")
+        return value
+
 
 class VisualReference(BaseModel):
     """Provenance-first abstraction of a visual reference, not a reproduction target."""
