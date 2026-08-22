@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-22 12:00 +08:00
+Last updated: 2026-08-22 13:59 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -25,7 +25,8 @@ Milestone: Foundation v0.1
 - Package/orchestration review identities are bound and canonical: option labels are nonblank, normalized, unique, and must match base/contextual review identities; contextual identities are canonicalized before durable results.
 - Promotion identities are canonical and cross-bound: `PromotionContext.subject_name`/`category`, resolved `CreativeIntent.promotion_target`, package options and orchestration options cannot silently diverge across promoted subjects.
 - Comparison identities are canonical: `ComparisonCandidate.name` and `CreativeConcept.comparison_target` strip surrounding whitespace and reject blank identities.
-- Evidence provenance identity is now canonical: `Evidence.source` strips surrounding whitespace and rejects blank/whitespace-only source identities. RED run 611 produced exactly the two targeted failures (2 failed / 181 passed); implementation head `ceb4c27ca23a476866dd4b79be47415008d5ddaf` passed exact-head CI run 613.
+- Evidence provenance identity is canonical: `Evidence.source` strips surrounding whitespace and rejects blank/whitespace-only source identities. RED run 611 produced exactly the two targeted failures (2 failed / 181 passed); implementation head `ceb4c27ca23a476866dd4b79be47415008d5ddaf` passed exact-head CI run 613.
+- Trend provenance identity is canonical: `TrendCandidate.source` strips surrounding whitespace and rejects blank/whitespace-only source identities, aligning raw trend records with downstream evidence/archive provenance. RED run 617 produced exactly the two targeted failures (2 failed / 183 passed); implementation head `288004a018a2f7b8888595162c387b9d452267fc` passed exact-head CI run 619.
 - Added live archive `examples/runs/2026-08-21-1257-briefs.json` with evidence-linked robotics, BirdTok and digital-popover creative directions while keeping factual/safety caveats explicit.
 - Persistent project memory protocol is active: `PROJECT.md` is durable direction, `STATUS.md` is the execution snapshot, reusable skills carry operational doctrine, and repository truth is reread under context pressure.
 
