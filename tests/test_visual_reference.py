@@ -158,3 +158,28 @@ def test_visual_reference_rejects_blank_optional_grammar(field: str) -> None:
 
     with pytest.raises(ValueError, match="must not be blank"):
         VisualReference.model_validate(payload)
+
+
+def test_visual_reference_artifact_hash_is_canonical_when_present() -> None:
+    reference = VisualReference(
+        source_url="https://example.com/a",
+        source_title="Example",
+        source_type="public-web",
+        rights_mode="analysis-only",
+        provenance_note="Direct public observation.",
+        artifact_hash="  sha256:abc123  ",
+    )
+
+    assert reference.artifact_hash == "sha256:abc123"
+
+
+def test_visual_reference_rejects_blank_artifact_hash() -> None:
+    with pytest.raises(ValueError, match="artifact hash must not be blank"):
+        VisualReference(
+            source_url="https://example.com/a",
+            source_title="Example",
+            source_type="public-web",
+            rights_mode="analysis-only",
+            provenance_note="Direct public observation.",
+            artifact_hash="   ",
+        )
