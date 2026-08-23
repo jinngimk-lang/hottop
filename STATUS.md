@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-23 16:55 +08:00
+Last updated: 2026-08-24 03:58 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -28,6 +28,7 @@ Milestone: Foundation v0.1
 - Resolved promotion semantics are canonical when present: `PromotionContext.primary_job`, `primary_pain_point` and `primary_differentiator` strip surrounding whitespace and reject blank/whitespace-only values while preserving `None` for genuinely unresolved semantics. RED run 657 produced exactly the four targeted failures (4 failed / 207 passed); implementation head `435bb093b4bffacd1711d7cd39b2ae70c59e97c1` passed run 659 on Python 3.11/3.12.
 - Bridge-candidate semantics are canonical before ranking: `BridgeCandidate.bridge` strips surrounding whitespace and rejects blank/whitespace-only bridge text, preventing empty bridge records from participating in deterministic scoring. Implementation head `4bd5a71387b89af530b9697badb1118c591c231e` passed exact-head CI run 655.
 - Comparison identities are canonical: `ComparisonCandidate.name` and `CreativeConcept.comparison_target` strip surrounding whitespace and reject blank identities.
+- Comparison handoff notes are canonical: every `ComparisonCandidate.notes` item is stripped and blank/whitespace-only notes are rejected, so durable comparison context cannot claim to carry research/creative handoff semantics while storing empty text. RED head `fcff32664d62396d1c7a9549b5747d2d7c4212c4` failed exact-head CI run 701; implementation head `9b628803fccff2ebe217a7d72304fce912027650` passed exact-head CI run 703.
 - Evidence provenance identity is canonical: `Evidence.source` strips surrounding whitespace and rejects blank/whitespace-only source identities. RED run 611 produced exactly the two targeted failures (2 failed / 181 passed); implementation head `ceb4c27ca23a476866dd4b79be47415008d5ddaf` passed exact-head CI run 613.
 - Trend provenance identity is canonical: `TrendCandidate.source` strips surrounding whitespace and rejects blank/whitespace-only source identities, aligning raw trend records with downstream evidence/archive provenance. RED run 617 produced exactly the two targeted failures (2 failed / 183 passed); implementation head `288004a018a2f7b8888595162c387b9d452267fc` passed exact-head CI run 619.
 - Creative strategy semantic text is canonical when present: `category_default`, `deleted_constraint`, `new_competition_axis` and `bridge` strip surrounding whitespace and reject blank/whitespace-only values while preserving `None` for genuinely absent reframing fields. RED run 647 produced exactly the targeted two failures (2 failed / 203 passed); implementation head `51f1e502b9b22e1a39cea5c3b9e03bc24c2b30fe` passed exact-head CI run 649 on Python 3.11/3.12.
@@ -56,7 +57,7 @@ Milestone: Foundation v0.1
 
 ## In progress
 
-- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, identity canonicalization, unresolved named-comparison, cross-promotion, strategy-semantic-text, optional beat-caption, visual-reference-exclusion and creative-risk-metadata gaps.
+- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, identity canonicalization, unresolved named-comparison, cross-promotion, strategy-semantic-text, optional beat-caption, visual-reference-exclusion, creative-risk-metadata and comparison-handoff-note gaps.
 - Continue fresh trend research across entertainment, animation, technology, internet culture, social phenomena and consumer culture without collapsing discovery into AI/tech only.
 - RSSHub remains an optional pilot awaiting an explicitly configured operator-controlled instance; no credential or external-service setup is performed autonomously.
 
