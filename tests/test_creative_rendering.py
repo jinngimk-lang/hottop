@@ -65,6 +65,17 @@ def test_creative_concept_rejects_blank_punchline() -> None:
         _concept(punchlines=["   "])
 
 
+def test_creative_concept_canonicalizes_risk_flags() -> None:
+    concept = _concept(risk_flags=["  avoid protected likenesses  "])
+
+    assert concept.risk_flags == ["avoid protected likenesses"]
+
+
+def test_creative_concept_rejects_blank_risk_flag() -> None:
+    with pytest.raises(ValidationError):
+        _concept(risk_flags=["   "])
+
+
 def test_swipe_reveal_render_request_preserves_strategy_and_medium() -> None:
     topic = TrendCandidate(
         id="culture:stretch-food",
