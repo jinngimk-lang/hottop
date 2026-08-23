@@ -149,6 +149,27 @@ def test_promotion_context_rejects_blank_resolved_semantics(field: str):
         PromotionContext(**payload)
 
 
+def test_promotion_context_normalizes_semantic_terms():
+    context = PromotionContext(
+        subject_name="Ribbon Lunch",
+        subject_type="product",
+        category="food",
+        semantic_terms=["  ribbon-like shape  ", "  playful lunch ritual  "],
+    )
+
+    assert context.semantic_terms == ["ribbon-like shape", "playful lunch ritual"]
+
+
+def test_promotion_context_rejects_blank_semantic_terms():
+    with pytest.raises(ValueError, match="promotion semantic terms must not contain blank text"):
+        PromotionContext(
+            subject_name="Ribbon Lunch",
+            subject_type="product",
+            category="food",
+            semantic_terms=["ribbon-like shape", "   "],
+        )
+
+
 def test_comparison_candidate_normalizes_name_identity():
     candidate = ComparisonCandidate(
         name="  Named Competitor  ",
