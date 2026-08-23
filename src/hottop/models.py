@@ -251,6 +251,25 @@ class VisualReference(BaseModel):
             raise ValueError(f"visual reference {field_name} must not be blank")
         return value
 
+    @field_validator("composition_grammar")
+    @classmethod
+    def normalize_composition_grammar(cls, values: list[str]) -> list[str]:
+        normalized = [value.strip() for value in values]
+        if any(not value for value in normalized):
+            raise ValueError("visual reference composition grammar must not contain blank text")
+        return normalized
+
+    @field_validator("reveal_pattern", "text_grammar", "why_effective")
+    @classmethod
+    def normalize_optional_grammar_text(cls, value: str | None, info) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            field_name = info.field_name.replace("_", " ")
+            raise ValueError(f"visual reference {field_name} must not be blank")
+        return value
+
     @field_validator("what_not_to_copy")
     @classmethod
     def normalize_copy_exclusions(cls, values: list[str]) -> list[str]:
