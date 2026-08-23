@@ -149,6 +149,22 @@ class ProductProfile(BaseModel):
             raise ValueError("product profile name must not be blank")
         return value
 
+    @field_validator(
+        "keywords",
+        "jobs_to_be_done",
+        "pain_points_solved",
+        "differentiators",
+        "known_alternatives",
+        "strengths",
+        "preferred_roles",
+    )
+    @classmethod
+    def normalize_semantic_lists(cls, values: list[str]) -> list[str]:
+        normalized = [value.strip() for value in values]
+        if any(not value for value in normalized):
+            raise ValueError("product profile semantic lists must not contain blank text")
+        return normalized
+
 
 class PromotionContext(BaseModel):
     subject_name: str
