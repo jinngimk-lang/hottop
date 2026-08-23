@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-23 10:56 +08:00
+Last updated: 2026-08-23 16:55 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -32,6 +32,7 @@ Milestone: Foundation v0.1
 - Trend provenance identity is canonical: `TrendCandidate.source` strips surrounding whitespace and rejects blank/whitespace-only source identities, aligning raw trend records with downstream evidence/archive provenance. RED run 617 produced exactly the two targeted failures (2 failed / 183 passed); implementation head `288004a018a2f7b8888595162c387b9d452267fc` passed exact-head CI run 619.
 - Creative strategy semantic text is canonical when present: `category_default`, `deleted_constraint`, `new_competition_axis` and `bridge` strip surrounding whitespace and reject blank/whitespace-only values while preserving `None` for genuinely absent reframing fields. RED run 647 produced exactly the targeted two failures (2 failed / 203 passed); implementation head `51f1e502b9b22e1a39cea5c3b9e03bc24c2b30fe` passed exact-head CI run 649 on Python 3.11/3.12.
 - Optional `CreativeBeat.caption` text is canonical when present: captions strip surrounding whitespace and reject blank/whitespace-only values while preserving `None` for deliberately captionless beats. RED run 663 produced exactly the two targeted failures (2 failed / 211 passed); implementation head `647be99f90ead8ae1aa6964a5881438777ac4860` passed run 665 on Python 3.11/3.12.
+- Creative safety metadata is canonical: every `CreativeConcept.risk_flags` item is stripped and blank/whitespace-only flags are rejected, so durable render-v2 concepts cannot claim to carry a risk marker that has no semantic content. RED head `3e4c66c5e6b4b2129dfeb51dbde81a2bab2c4545` failed exact-head CI run 683; implementation head `da5831d261046c62f51d5063e090ea74c3ee397a` passed exact-head CI run 685.
 - Added live archive `examples/runs/2026-08-21-1257-briefs.json` with evidence-linked robotics, BirdTok and digital-popover creative directions while keeping factual/safety caveats explicit.
 - Persistent project memory protocol is active: `PROJECT.md` is durable direction, `STATUS.md` is the execution snapshot, reusable skills carry operational doctrine, and repository truth is reread under context pressure.
 
@@ -55,7 +56,7 @@ Milestone: Foundation v0.1
 
 ## In progress
 
-- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, identity canonicalization, unresolved named-comparison, cross-promotion, strategy-semantic-text, optional beat-caption and visual-reference-exclusion gaps.
+- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, identity canonicalization, unresolved named-comparison, cross-promotion, strategy-semantic-text, optional beat-caption, visual-reference-exclusion and creative-risk-metadata gaps.
 - Continue fresh trend research across entertainment, animation, technology, internet culture, social phenomena and consumer culture without collapsing discovery into AI/tech only.
 - RSSHub remains an optional pilot awaiting an explicitly configured operator-controlled instance; no credential or external-service setup is performed autonomously.
 
