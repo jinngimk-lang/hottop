@@ -7,55 +7,20 @@ from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
 
 ClaimStatus = Literal["satire", "supported", "needs_evidence"]
 PromotionSubjectType = Literal[
-    "brand",
-    "product",
-    "service",
-    "feature",
-    "campaign",
-    "person",
-    "idea",
-    "keyword",
-    "tool",
+    "brand", "product", "service", "feature", "campaign", "person", "idea", "keyword", "tool",
 ]
 ComparisonRelation = Literal[
-    "direct-competitor",
-    "adjacent-substitute",
-    "incumbent-default",
-    "legacy-workflow",
-    "manual-workaround",
+    "direct-competitor", "adjacent-substitute", "incumbent-default", "legacy-workflow", "manual-workaround",
 ]
-BridgeType = Literal[
-    "shape-material",
-    "action-motion",
-    "role",
-    "function",
-    "emotion-ritual",
-    "language-symbol",
-]
+BridgeType = Literal["shape-material", "action-motion", "role", "function", "emotion-ritual", "language-symbol"]
 ExpressionForm = Literal[
-    "single-visual-metaphor",
-    "swipe-reveal",
-    "four-panel",
-    "faux-film-still",
-    "split-old-vs-new",
-    "product-as-prop",
+    "single-visual-metaphor", "swipe-reveal", "four-panel", "faux-film-still", "split-old-vs-new", "product-as-prop",
 ]
 VisualMedium = Literal[
-    "live-action-cinematic",
-    "animation-2d",
-    "animation-3d",
-    "animation-low-poly",
-    "documentary-social",
-    "technology-realism",
-    "commercial-product",
-    "internet-native",
+    "live-action-cinematic", "animation-2d", "animation-3d", "animation-low-poly", "documentary-social",
+    "technology-realism", "commercial-product", "internet-native",
 ]
-ReferenceRightsMode = Literal[
-    "analysis-only",
-    "public-domain",
-    "rights-cleared",
-    "unknown",
-]
+ReferenceRightsMode = Literal["analysis-only", "public-domain", "rights-cleared", "unknown"]
 
 
 class Evidence(BaseModel):
@@ -72,6 +37,16 @@ class Evidence(BaseModel):
         value = value.strip()
         if not value:
             raise ValueError("evidence source must not be blank")
+        return value
+
+    @field_validator("note")
+    @classmethod
+    def normalize_optional_note(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            raise ValueError("evidence note must not be blank")
         return value
 
     @field_validator("observed_at", "published_at")
@@ -127,7 +102,6 @@ class TrendScore(BaseModel):
 
 class ProductProfile(BaseModel):
     """Backward-compatible promotion profile for any subject, not only AI products."""
-
     name: str = Field(min_length=1)
     url: HttpUrl | None = None
     subject_type: PromotionSubjectType = "product"
@@ -149,15 +123,7 @@ class ProductProfile(BaseModel):
             raise ValueError("product profile name must not be blank")
         return value
 
-    @field_validator(
-        "keywords",
-        "jobs_to_be_done",
-        "pain_points_solved",
-        "differentiators",
-        "known_alternatives",
-        "strengths",
-        "preferred_roles",
-    )
+    @field_validator("keywords", "jobs_to_be_done", "pain_points_solved", "differentiators", "known_alternatives", "strengths", "preferred_roles")
     @classmethod
     def normalize_semantic_lists(cls, values: list[str]) -> list[str]:
         normalized = [value.strip() for value in values]
@@ -180,8 +146,7 @@ class PromotionContext(BaseModel):
     def normalize_identity_field(cls, value: str, info) -> str:
         value = value.strip()
         if not value:
-            field_name = info.field_name.replace("_", " ")
-            raise ValueError(f"promotion {field_name} must not be blank")
+            raise ValueError(f"promotion {info.field_name.replace('_', ' ')} must not be blank")
         return value
 
     @field_validator("primary_job", "primary_pain_point", "primary_differentiator")
@@ -191,8 +156,7 @@ class PromotionContext(BaseModel):
             return None
         value = value.strip()
         if not value:
-            field_name = info.field_name.replace("_", " ")
-            raise ValueError(f"promotion {field_name} must not be blank")
+            raise ValueError(f"promotion {info.field_name.replace('_', ' ')} must not be blank")
         return value
 
     @field_validator("semantic_terms")
@@ -226,8 +190,6 @@ class ComparisonCandidate(BaseModel):
 
 
 class CreativeStrategy(BaseModel):
-    """Durable creative reframe independent of a specific output renderer."""
-
     category_default: str | None = None
     deleted_constraint: str | None = None
     new_competition_axis: str | None = None
@@ -242,14 +204,11 @@ class CreativeStrategy(BaseModel):
             return None
         value = value.strip()
         if not value:
-            field_name = info.field_name.replace("_", " ")
-            raise ValueError(f"creative strategy {field_name} must not be blank")
+            raise ValueError(f"creative strategy {info.field_name.replace('_', ' ')} must not be blank")
         return value
 
 
 class VisualReference(BaseModel):
-    """Provenance-first abstraction of a visual reference, not a reproduction target."""
-
     source_url: HttpUrl
     source_title: str = Field(min_length=1)
     source_type: str = Field(min_length=1)
@@ -271,8 +230,7 @@ class VisualReference(BaseModel):
     def normalize_provenance_identity(cls, value: str, info) -> str:
         value = value.strip()
         if not value:
-            field_name = info.field_name.replace("_", " ")
-            raise ValueError(f"visual reference {field_name} must not be blank")
+            raise ValueError(f"visual reference {info.field_name.replace('_', ' ')} must not be blank")
         return value
 
     @field_validator("composition_grammar")
@@ -290,8 +248,7 @@ class VisualReference(BaseModel):
             return None
         value = value.strip()
         if not value:
-            field_name = info.field_name.replace("_", " ")
-            raise ValueError(f"visual reference {field_name} must not be blank")
+            raise ValueError(f"visual reference {info.field_name.replace('_', ' ')} must not be blank")
         return value
 
     @field_validator("what_not_to_copy")
@@ -321,8 +278,6 @@ class VisualReference(BaseModel):
 
 
 class CreativeBeat(BaseModel):
-    """One visual beat in a flexible single-image, carousel, split, or narrative concept."""
-
     scene: str = Field(min_length=1)
     caption: str | None = None
     intent: str = Field(min_length=1)
@@ -347,8 +302,6 @@ class CreativeBeat(BaseModel):
 
 
 class CreativeConcept(BaseModel):
-    """Renderer-neutral creative contract that is not tied to a four-panel layout."""
-
     topic: TrendCandidate
     promotion: PromotionContext
     strategy: CreativeStrategy
@@ -378,8 +331,7 @@ class CreativeConcept(BaseModel):
     def normalize_required_render_text(cls, value: str, info) -> str:
         value = value.strip()
         if not value:
-            field_name = info.field_name.replace("_", " ")
-            raise ValueError(f"creative concept {field_name} must not be blank")
+            raise ValueError(f"creative concept {info.field_name.replace('_', ' ')} must not be blank")
         return value
 
     @field_validator("punchlines")
@@ -403,9 +355,7 @@ class CreativeConcept(BaseModel):
         if self.claim_status == "supported" and not self.comparison_evidence:
             raise ValueError("supported creative claims require comparison evidence")
         if self.comparison_target and self.claim_status == "needs_evidence":
-            raise ValueError(
-                "named creative comparisons must be supported by evidence or explicit satire"
-            )
+            raise ValueError("named creative comparisons must be supported by evidence or explicit satire")
         return self
 
 
