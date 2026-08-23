@@ -251,6 +251,14 @@ class VisualReference(BaseModel):
             raise ValueError(f"visual reference {field_name} must not be blank")
         return value
 
+    @field_validator("what_not_to_copy")
+    @classmethod
+    def normalize_copy_exclusions(cls, values: list[str]) -> list[str]:
+        normalized = [value.strip() for value in values]
+        if any(not value for value in normalized):
+            raise ValueError("visual reference what not to copy must not contain blank text")
+        return normalized
+
     @field_validator("observed_at")
     @classmethod
     def ensure_reference_timezone(cls, value: datetime) -> datetime:
