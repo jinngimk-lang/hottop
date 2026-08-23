@@ -366,6 +366,14 @@ class CreativeConcept(BaseModel):
             raise ValueError("creative concept punchlines must not contain blank text")
         return normalized
 
+    @field_validator("risk_flags")
+    @classmethod
+    def normalize_risk_flags(cls, values: list[str]) -> list[str]:
+        normalized = [value.strip() for value in values]
+        if any(not value for value in normalized):
+            raise ValueError("creative concept risk flags must not contain blank text")
+        return normalized
+
     @model_validator(mode="after")
     def enforce_comparison_claim_safety(self) -> CreativeConcept:
         if self.claim_status == "supported" and not self.comparison_evidence:
