@@ -278,6 +278,16 @@ class VisualReference(BaseModel):
             raise ValueError("visual reference what not to copy must not contain blank text")
         return normalized
 
+    @field_validator("artifact_hash")
+    @classmethod
+    def normalize_artifact_hash(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            raise ValueError("visual reference artifact hash must not be blank")
+        return value
+
     @field_validator("observed_at")
     @classmethod
     def ensure_reference_timezone(cls, value: datetime) -> datetime:
