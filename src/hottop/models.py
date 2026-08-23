@@ -188,6 +188,14 @@ class ComparisonCandidate(BaseModel):
             raise ValueError("comparison candidate name must not be blank")
         return value
 
+    @field_validator("notes")
+    @classmethod
+    def normalize_notes(cls, values: list[str]) -> list[str]:
+        normalized = [value.strip() for value in values]
+        if any(not value for value in normalized):
+            raise ValueError("comparison candidate notes must not contain blank text")
+        return normalized
+
 
 class CreativeStrategy(BaseModel):
     category_default: str | None = None
