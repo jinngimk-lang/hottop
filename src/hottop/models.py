@@ -179,6 +179,14 @@ class PromotionContext(BaseModel):
             raise ValueError(f"promotion {field_name} must not be blank")
         return value
 
+    @field_validator("semantic_terms")
+    @classmethod
+    def normalize_semantic_terms(cls, values: list[str]) -> list[str]:
+        normalized = [value.strip() for value in values]
+        if any(not value for value in normalized):
+            raise ValueError("promotion semantic terms must not contain blank text")
+        return normalized
+
 
 class ComparisonCandidate(BaseModel):
     name: str = Field(min_length=1)
