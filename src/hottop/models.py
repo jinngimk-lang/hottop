@@ -141,6 +141,16 @@ class ProductProfile(BaseModel):
             raise ValueError("product profile name must not be blank")
         return value
 
+    @field_validator("category")
+    @classmethod
+    def normalize_optional_category(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            raise ValueError("product profile category must not be blank")
+        return value
+
     @field_validator("keywords", "jobs_to_be_done", "pain_points_solved", "differentiators", "known_alternatives", "strengths", "preferred_roles")
     @classmethod
     def normalize_semantic_lists(cls, values: list[str]) -> list[str]:
