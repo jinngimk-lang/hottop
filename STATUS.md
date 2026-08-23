@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-23 08:59 +08:00
+Last updated: 2026-08-23 10:56 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -15,6 +15,7 @@ Milestone: Foundation v0.1
 - Provider-neutral flexible rendering is implemented via `hottop.render.v2`; legacy four-panel `hottop.render.v1` remains backward compatible. `hottop render-concept`, `hottop package-concepts`, `hottop orchestrate` and `hottop creative-batch` are wired.
 - Enrichment is an explicit production handoff through `hottop enrich-creative`, preserving the selected candidate, source markdown/provider and fallback failures before creative work.
 - Provenance-first `VisualReference` and `hottop reference-plan` are implemented for grammar-only reference research with Playwright CLI planning, analysis-only defaults and explicit `what_not_to_copy`.
+- Visual-reference exclusion safety is canonical: every `what_not_to_copy` item is stripped and blank/whitespace-only exclusions are rejected, so a manifest cannot satisfy the grammar-only safety boundary with empty durable instructions. Implementation head `d9a8255578f81b28e186cf5363b9074f70de59d3` passed exact-head CI run 671.
 - RSSHub external-feed pilot is implemented as an optional RSS adapter. It requires explicit `RSSHUB_BASE_URL`; `hottop doctor` reports configuration and core operation does not depend on RSSHub.
 - Batch-config `preset` is now functional rather than descriptive: `_discover_configured()` passes the selected preset into DailyHot, NewsNow, RSS and RSSHub collectors, and source-quality resolution uses it. The RED contract in `tests/test_batch_preset_routing.py` exposed the dropped value; subsequent exact-head CI is green.
 - Representative project-shape Creative Package fixtures exist for consumer swipe-reveal, software category reframe and social-native meme output, all validating through `hottop.render.v2`.
@@ -54,7 +55,7 @@ Milestone: Foundation v0.1
 
 ## In progress
 
-- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, identity canonicalization, unresolved named-comparison, cross-promotion, strategy-semantic-text and optional beat-caption gaps.
+- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, identity canonicalization, unresolved named-comparison, cross-promotion, strategy-semantic-text, optional beat-caption and visual-reference-exclusion gaps.
 - Continue fresh trend research across entertainment, animation, technology, internet culture, social phenomena and consumer culture without collapsing discovery into AI/tech only.
 - RSSHub remains an optional pilot awaiting an explicitly configured operator-controlled instance; no credential or external-service setup is performed autonomously.
 
