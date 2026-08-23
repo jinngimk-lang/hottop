@@ -219,6 +219,25 @@ def test_comparison_candidate_rejects_blank_name_identity():
         ComparisonCandidate(name="   ", relation="direct-competitor")
 
 
+def test_comparison_candidate_normalizes_notes():
+    candidate = ComparisonCandidate(
+        name="Named Competitor",
+        relation="direct-competitor",
+        notes=["  factual limitation for creative handoff  "],
+    )
+
+    assert candidate.notes == ["factual limitation for creative handoff"]
+
+
+def test_comparison_candidate_rejects_blank_notes():
+    with pytest.raises(ValueError, match="comparison candidate notes must not contain blank text"):
+        ComparisonCandidate(
+            name="Named Competitor",
+            relation="direct-competitor",
+            notes=["supported context", "   "],
+        )
+
+
 def test_creative_beat_normalizes_render_text():
     beat = CreativeBeat(
         scene="  Ribbon stretches across the table  ",
