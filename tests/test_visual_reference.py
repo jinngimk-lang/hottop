@@ -87,3 +87,28 @@ def test_visual_reference_rejects_blank_provenance_identity(field: str) -> None:
 
     with pytest.raises(ValueError, match="must not be blank"):
         VisualReference.model_validate(payload)
+
+
+def test_visual_reference_exclusions_are_canonical() -> None:
+    reference = VisualReference(
+        source_url="https://example.com/a",
+        source_title="Example",
+        source_type="public-web",
+        rights_mode="analysis-only",
+        provenance_note="Direct public observation.",
+        what_not_to_copy=["  exact layout  ", "  logo lockup  "],
+    )
+
+    assert reference.what_not_to_copy == ["exact layout", "logo lockup"]
+
+
+def test_visual_reference_rejects_blank_exclusions() -> None:
+    with pytest.raises(ValueError, match="what not to copy must not contain blank text"):
+        VisualReference(
+            source_url="https://example.com/a",
+            source_title="Example",
+            source_type="public-web",
+            rights_mode="analysis-only",
+            provenance_note="Direct public observation.",
+            what_not_to_copy=["exact layout", "   "],
+        )
