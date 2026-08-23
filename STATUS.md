@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-24 06:00 +08:00
+Last updated: 2026-08-24 07:00 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -25,6 +25,7 @@ Milestone: Foundation v0.1
 - Foundation closure review fixed the flexible production evidence boundary: `CreativeConcept` cannot declare `claim_status=supported` without attached `comparison_evidence`, `hottop.render.v2` preserves that evidence, and unresolved named comparisons are rejected unless evidence-backed or explicitly satire.
 - Package/orchestration review identities are bound and canonical: option labels are nonblank, normalized, unique, and must match base/contextual review identities; contextual identities are canonicalized before durable results.
 - Promotion identities are canonical and cross-bound: `PromotionContext.subject_name`/`category`, resolved `CreativeIntent.promotion_target`, package options and orchestration options cannot silently diverge across promoted subjects.
+- Product-profile category semantics are canonical when present: `ProductProfile.category` strips surrounding whitespace and rejects blank/whitespace-only values while preserving `None` for genuinely unresolved category. RED head `5063818206996b14a5f60df4dca4001f69475302` failed exact-head CI run 713 with exactly the two targeted failures (2 failed / 248 passed); implementation head `61698c34c055fd8e635c301952b06d764907b760` passed exact-head CI run 715.
 - Resolved promotion semantics are canonical when present: `PromotionContext.primary_job`, `primary_pain_point` and `primary_differentiator` strip surrounding whitespace and reject blank/whitespace-only values while preserving `None` for genuinely unresolved semantics. RED run 657 produced exactly the four targeted failures (4 failed / 207 passed); implementation head `435bb093b4bffacd1711d7cd39b2ae70c59e97c1` passed run 659 on Python 3.11/3.12.
 - Bridge-candidate semantics are canonical before ranking: `BridgeCandidate.bridge` strips surrounding whitespace and rejects blank/whitespace-only bridge text, preventing empty bridge records from participating in deterministic scoring. Implementation head `4bd5a71387b89af530b9697badb1118c591c231e` passed exact-head CI run 655.
 - Comparison identities are canonical: `ComparisonCandidate.name` and `CreativeConcept.comparison_target` strip surrounding whitespace and reject blank identities.
@@ -58,7 +59,7 @@ Milestone: Foundation v0.1
 
 ## In progress
 
-- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, identity canonicalization, unresolved named-comparison, cross-promotion, strategy-semantic-text, optional beat-caption, visual-reference-exclusion, creative-risk-metadata, comparison-handoff-note and trend-semantic-text gaps.
+- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, identity canonicalization, unresolved named-comparison, cross-promotion, product-profile-category, strategy-semantic-text, optional beat-caption, visual-reference-exclusion, creative-risk-metadata, comparison-handoff-note and trend-semantic-text gaps.
 - Continue fresh trend research across entertainment, animation, technology, internet culture, social phenomena and consumer culture without collapsing discovery into AI/tech only.
 - RSSHub remains an optional pilot awaiting an explicitly configured operator-controlled instance; no credential or external-service setup is performed autonomously.
 
