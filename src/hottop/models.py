@@ -94,6 +94,24 @@ class TrendCandidate(BaseModel):
             raise ValueError("trend source must not be blank")
         return value
 
+    @field_validator("summary")
+    @classmethod
+    def normalize_optional_summary(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            raise ValueError("trend summary must not be blank")
+        return value
+
+    @field_validator("tags")
+    @classmethod
+    def normalize_tags(cls, values: list[str]) -> list[str]:
+        normalized = [value.strip() for value in values]
+        if any(not value for value in normalized):
+            raise ValueError("trend tags must not contain blank text")
+        return normalized
+
 
 class TrendScore(BaseModel):
     total: float = Field(ge=0, le=100)
