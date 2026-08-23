@@ -274,6 +274,16 @@ class CreativeBeat(BaseModel):
             raise ValueError(f"creative beat {info.field_name} must not be blank")
         return value
 
+    @field_validator("caption")
+    @classmethod
+    def normalize_optional_caption(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            raise ValueError("creative beat caption must not be blank")
+        return value
+
 
 class CreativeConcept(BaseModel):
     """Renderer-neutral creative contract that is not tied to a four-panel layout."""
