@@ -183,3 +183,22 @@ def test_creative_beat_rejects_blank_render_text(field: str):
 
     with pytest.raises(ValueError, match=f"creative beat {field} must not be blank"):
         CreativeBeat(**payload)
+
+
+def test_creative_beat_normalizes_caption_when_present():
+    beat = CreativeBeat(
+        scene="Ribbon stretches across the table",
+        caption="  Keep pulling.  ",
+        intent="delay the product reveal",
+    )
+
+    assert beat.caption == "Keep pulling."
+
+
+def test_creative_beat_rejects_blank_caption_when_present():
+    with pytest.raises(ValueError, match="creative beat caption must not be blank"):
+        CreativeBeat(
+            scene="Ribbon stretches across the table",
+            caption="   ",
+            intent="delay the product reveal",
+        )
