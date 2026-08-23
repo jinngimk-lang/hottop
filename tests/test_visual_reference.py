@@ -112,3 +112,49 @@ def test_visual_reference_rejects_blank_exclusions() -> None:
             provenance_note="Direct public observation.",
             what_not_to_copy=["exact layout", "   "],
         )
+
+
+def test_visual_reference_abstract_grammar_is_canonical() -> None:
+    reference = VisualReference(
+        source_url="https://example.com/a",
+        source_title="Example",
+        source_type="public-web",
+        rights_mode="analysis-only",
+        provenance_note="Direct public observation.",
+        composition_grammar=["  single dominant object  ", "  large negative space  "],
+        reveal_pattern="  tease -> extend -> reveal  ",
+        text_grammar="  one short line after the reveal  ",
+        why_effective="  the viewer completes the association first  ",
+    )
+
+    assert reference.composition_grammar == ["single dominant object", "large negative space"]
+    assert reference.reveal_pattern == "tease -> extend -> reveal"
+    assert reference.text_grammar == "one short line after the reveal"
+    assert reference.why_effective == "the viewer completes the association first"
+
+
+def test_visual_reference_rejects_blank_composition_grammar() -> None:
+    with pytest.raises(ValueError, match="composition grammar must not contain blank text"):
+        VisualReference(
+            source_url="https://example.com/a",
+            source_title="Example",
+            source_type="public-web",
+            rights_mode="analysis-only",
+            provenance_note="Direct public observation.",
+            composition_grammar=["single dominant object", "   "],
+        )
+
+
+@pytest.mark.parametrize("field", ["reveal_pattern", "text_grammar", "why_effective"])
+def test_visual_reference_rejects_blank_optional_grammar(field: str) -> None:
+    payload = {
+        "source_url": "https://example.com/a",
+        "source_title": "Example",
+        "source_type": "public-web",
+        "rights_mode": "analysis-only",
+        "provenance_note": "Direct public observation.",
+        field: "   ",
+    }
+
+    with pytest.raises(ValueError, match="must not be blank"):
+        VisualReference.model_validate(payload)
