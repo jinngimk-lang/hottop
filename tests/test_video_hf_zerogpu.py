@@ -1,8 +1,8 @@
 from pathlib import Path
 
 import pytest
-from hottop.video_hf_zerogpu import HfZeroGpuRequest, ZeroGpuError, execute_hf_zerogpu
 
+from hottop.video_hf_zerogpu import HfZeroGpuRequest, ZeroGpuError, execute_hf_zerogpu
 from hottop.video_production import ZeroCostCandidateConfig
 
 
