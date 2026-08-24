@@ -78,6 +78,27 @@ def test_video_run_dry_run_materializes_workspace_without_spawning(monkeypatch, 
     assert result.runtime_commands[0].args[-1] != ""
 
 
+def test_motion_canvas_dry_run_does_not_mutate_project_tree(monkeypatch, tmp_path):
+    config = load_video_production_config(Path("config/video/anti-polish-short.yml"))
+
+    def forbidden_run(*_args, **_kwargs):
+        raise AssertionError("dry-run must not spawn external processes")
+
+    monkeypatch.setattr("hottop.video_execution.subprocess.run", forbidden_run)
+    project_manifest = tmp_path / "video/motion-canvas/hottop-video-plan.json"
+
+    result = run_video_production(
+        _request(),
+        config,
+        output_dir=tmp_path / "run",
+        project_root=tmp_path,
+        execute=False,
+    )
+
+    assert Path(result.compositor_manifest_path).is_file()
+    assert not project_manifest.exists()
+
+
 def test_video_run_execute_fails_closed_before_spawning_when_environment_is_not_ready(
     monkeypatch, tmp_path
 ):
