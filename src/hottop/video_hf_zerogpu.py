@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import json
+import mimetypes
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 from urllib.parse import urljoin
 
 import httpx
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from .video_production import ZeroCostCandidateConfig
 
@@ -21,6 +22,9 @@ class ZeroGpuError(RuntimeError):
         self.retryable = retryable
 
 
+ReferenceRights = Literal["generated-original", "user-provided-rights-cleared"]
+
+
 class HfZeroGpuRequest(BaseModel):
     candidate: ZeroCostCandidateConfig
     prompt: str = Field(min_length=1)
@@ -31,6 +35,24 @@ class HfZeroGpuRequest(BaseModel):
     seed: int = 42
     poll_interval_seconds: float = Field(default=2.0, gt=0)
     timeout_seconds: float = Field(default=900.0, gt=0)
+    reference_image: Path | None = None
+    reference_rights: ReferenceRights | None = None
+
+    @model_validator(mode="after")
+    def validate_reference_image(self) -> HfZeroGpuRequest:
+        if self.reference_image is None:
+            if self.reference_rights is not None:
+                raise ValueError("reference_rights requires reference_image")
+            return self
+        if self.reference_rights is None:
+            raise ValueError("reference_image requires an explicit rights-cleared reference_rights mode")
+        if not self.reference_image.is_file():
+            raise ValueError(f"reference_image does not exist: {self.reference_image}")
+        if self.candidate.profile != "ltx23":
+            raise ValueError(
+                "reference-image ZeroGPU generation is currently validated only for the ltx23 profile"
+            )
+        return self
 
 
 def _headers(token: str | None, *, accept: str | None = None) -> dict[str, str]:
@@ -70,11 +92,15 @@ def _raise_for_http(response: Any, *, operation: str) -> None:
     )
 
 
-def _build_generation_data(request: HfZeroGpuRequest) -> list[Any]:
+def _build_generation_data(
+    request: HfZeroGpuRequest,
+    *,
+    image_input: dict[str, Any] | None = None,
+) -> list[Any]:
     candidate = request.candidate
     if candidate.profile == "ltx23":
         return [
-            None,
+            image_input,
             request.prompt,
             request.duration_seconds,
             False,
@@ -171,6 +197,51 @@ def _completed_output(text: str) -> tuple[str, str | None]:
     return "running", None
 
 
+def _uploaded_path(payload: Any) -> str | None:
+    if isinstance(payload, list) and payload:
+        first = payload[0]
+        if isinstance(first, str) and first.strip():
+            return first.strip()
+        if isinstance(first, dict):
+            for key in ("path", "name"):
+                value = first.get(key)
+                if isinstance(value, str) and value.strip():
+                    return value.strip()
+    if isinstance(payload, dict):
+        for key in ("path", "name"):
+            value = payload.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+        files = payload.get("files")
+        if isinstance(files, list) and files:
+            return _uploaded_path(files)
+    return None
+
+
+def _upload_reference_image(
+    request: HfZeroGpuRequest,
+    http: Any,
+) -> dict[str, Any] | None:
+    if request.reference_image is None:
+        return None
+    image_path = request.reference_image
+    mime_type = mimetypes.guess_type(image_path.name)[0] or "application/octet-stream"
+    response = http.post(
+        f"{request.candidate.space_url}/gradio_api/upload",
+        headers=_headers(request.token),
+        files={"files": (image_path.name, image_path.read_bytes(), mime_type)},
+    )
+    _raise_for_http(response, operation="reference upload")
+    uploaded_path = _uploaded_path(_response_json(response))
+    if not uploaded_path:
+        raise ZeroGpuError(
+            "Hugging Face ZeroGPU reference upload returned no file path",
+            code="hf_zerogpu_upload_missing_path",
+            retryable=False,
+        )
+    return {"path": uploaded_path, "meta": {"_type": "gradio.FileData"}}
+
+
 def execute_hf_zerogpu(
     request: HfZeroGpuRequest,
     *,
@@ -183,10 +254,11 @@ def execute_hf_zerogpu(
     candidate = request.candidate
     submit_url = f"{candidate.space_url}/gradio_api/call/{candidate.api_name}"
     try:
+        image_input = _upload_reference_image(request, http)
         response = http.post(
             submit_url,
             headers=_headers(request.token),
-            json={"data": _build_generation_data(request)},
+            json={"data": _build_generation_data(request, image_input=image_input)},
         )
         _raise_for_http(response, operation="submission")
         payload = _response_json(response)
