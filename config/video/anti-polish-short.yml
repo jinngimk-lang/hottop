@@ -51,7 +51,11 @@ wan22:
   offload_model: true
   convert_model_dtype: true
 motion_canvas:
-  project_dir: ./video/motion-canvas
+  # The bundled ./video/motion-canvas project is a planning/interactive-preview scaffold only.
+  # Explicit video-run --execute must point at a separate operator-provided project whose render
+  # script actually emits the expected composite MP4; Hottop never treats the planning scaffold
+  # as an executable compositor.
+  project_dir: ./video/motion-canvas-executor
   manifest_name: hottop-video-plan.json
 ffmpeg:
   video_codec: libx264
