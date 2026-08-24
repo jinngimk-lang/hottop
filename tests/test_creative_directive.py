@@ -130,3 +130,53 @@ def test_breakout_ambition_does_not_turn_premium_creative_into_comedy():
 
     assert directive.humor_expected is False
     assert directive.joke_mechanics == []
+
+
+def test_hotspot_short_video_preserves_motion_and_ad_light_distribution_policy():
+    intent = resolve_intent(
+        "给 InkClawAgent 做抖音热点短视频，要有连续动效，不要网址和二维码",
+        overrides={"campaign_goal": "hotspot-participation", "style": "funny-meme"},
+    )
+    promotion = PromotionContext(
+        subject_name="InkClawAgent",
+        subject_type="tool",
+        category="B2B software",
+        primary_job="start useful multi-agent work quickly",
+        primary_pain_point="setup ceremony delays useful work",
+        primary_differentiator="open and start working",
+        semantic_terms=["multi-agent", "workflow", "open-and-work"],
+    )
+
+    assert intent.distribution_mode.value == "motion"
+    assert intent.distribution_mode.source == "inferred"
+
+    directive = build_creative_directive(intent, promotion)
+
+    assert directive.distribution_mode == "motion"
+    assert directive.motion_continuity_required is True
+    assert directive.in_asset_cta_policy == "no-destination"
+    assert any("url" in item.lower() or "qr" in item.lower() for item in directive.platform_instructions)
+    assert any("slideshow" in item.lower() for item in directive.precision_requirements)
+
+
+def test_conversion_brief_can_explicitly_keep_destination_policy():
+    intent = resolve_intent(
+        "给 GlowPatch 做付费投放转化海报",
+        overrides={"style": "commercial-product"},
+    )
+    promotion = PromotionContext(
+        subject_name="GlowPatch",
+        subject_type="product",
+        category="beauty retail",
+        primary_job="explain a skincare ritual",
+        primary_differentiator="visible translucent patch texture",
+        semantic_terms=["translucent", "patch", "ritual"],
+    )
+
+    assert intent.distribution_mode.value == "static"
+
+    directive = build_creative_directive(intent, promotion)
+
+    assert directive.distribution_mode == "static"
+    assert directive.in_asset_cta_policy == "conversion-destination"
+    assert directive.motion_continuity_required is False
