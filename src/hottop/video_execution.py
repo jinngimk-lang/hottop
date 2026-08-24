@@ -718,6 +718,8 @@ def _verify_artifact_provenance(
     command: ExternalCommandSpec,
     manifest_path: Path | None,
     output_path: Path | None,
+    *,
+    config: VideoProductionConfig,
 ) -> None:
     if manifest_path is None:
         return
@@ -743,6 +745,16 @@ def _verify_artifact_provenance(
             f"video generation artifact provenance must describe exactly one shot: {manifest_path}"
         )
     artifact = manifest.shots[0]
+    if artifact.artifact_kind == "ai-generated":
+        allowed_backends = (
+            {candidate.id for candidate in config.zero_cost.candidates}
+            if config.generation_backend == "zero-cost-router" and config.zero_cost is not None
+            else set()
+        )
+        if artifact.backend not in allowed_backends:
+            raise VideoExecutionError(
+                f"video generation artifact provenance artifact backend mismatch: {manifest_path}"
+            )
     if expected_shot_index is None or artifact.shot_index != expected_shot_index:
         raise VideoExecutionError(
             f"video generation artifact provenance shot identity mismatch: {manifest_path}"
@@ -862,7 +874,12 @@ def run_video_production(
                     f"video {command.stage} stage failed with return code {completed.returncode}"
                 )
             _verify_stage_output(command.stage, expected_output)
-            _verify_artifact_provenance(command, artifact_path, expected_output)
+            _verify_artifact_provenance(
+                command,
+                artifact_path,
+                expected_output,
+                config=config,
+            )
 
     return VideoRunResult(
         execute_requested=execute,
