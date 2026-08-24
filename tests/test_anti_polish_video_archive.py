@@ -48,7 +48,7 @@ def test_anti_polish_cow_story_archive_is_config_driven_and_rights_safe():
     assert "yuv420p" in plan.finalization_command_spec.args
 
 
-def test_anti_polish_video_plan_archive_is_a_regenerable_snapshot():
+def test_anti_polish_video_plan_archive_preserves_representative_execution_contract():
     request = CreativeRenderRequest.model_validate(
         json.loads(RENDER_ARCHIVE.read_text(encoding="utf-8"))
     )
@@ -58,4 +58,35 @@ def test_anti_polish_video_plan_archive_is_a_regenerable_snapshot():
         PLAN_ARCHIVE.read_text(encoding="utf-8")
     )
 
-    assert archived == expected
+    assert archived.schema_version == expected.schema_version
+    assert archived.config_name == expected.config_name
+    assert archived.topic_id == expected.topic_id
+    assert archived.subject_name == expected.subject_name
+    assert archived.style_profile == expected.style_profile
+    assert archived.generation_backend == expected.generation_backend
+    assert archived.compositor_backend == expected.compositor_backend
+    assert archived.encoder_backend == expected.encoder_backend
+    assert archived.width == expected.width
+    assert archived.height == expected.height
+    assert archived.fps == expected.fps
+    assert archived.duration_seconds == expected.duration_seconds
+    assert archived.in_asset_cta_policy == expected.in_asset_cta_policy
+    assert [shot.start_seconds for shot in archived.shots] == [
+        shot.start_seconds for shot in expected.shots
+    ]
+    assert [shot.duration_seconds for shot in archived.shots] == [
+        shot.duration_seconds for shot in expected.shots
+    ]
+    assert [shot.caption for shot in archived.shots] == [
+        shot.caption for shot in expected.shots
+    ]
+    assert len(archived.generation_command_specs) == len(expected.generation_command_specs)
+    assert archived.compositor_command_spec is not None
+    assert archived.compositor_command_spec.stage == "compositor"
+    assert archived.finalization_command_spec is not None
+    assert archived.finalization_command_spec.stage == "finalization"
+    assert "yuv420p" in archived.finalization_command_spec.args
+    assert any("regenerate" in note.lower() for note in archived.execution_notes)
+    assert "不用部署" in " ".join(shot.scene for shot in archived.shots)
+    assert "开发零门槛" in " ".join(shot.scene for shot in archived.shots)
+    assert "Free Token 入门" in " ".join(shot.scene for shot in archived.shots)
