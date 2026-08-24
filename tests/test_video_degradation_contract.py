@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from hottop.video_execution import VideoShotArtifact
+from hottop.video_artifacts import VideoArtifactManifest, VideoShotArtifact
 
 
 def test_deterministic_fallback_artifact_is_explicitly_non_generative():
@@ -14,9 +14,16 @@ def test_deterministic_fallback_artifact_is_explicitly_non_generative():
         degradation_reason="zero_cost_routes_exhausted",
     )
 
-    assert artifact.artifact_kind == "deterministic-non-generative"
-    assert artifact.degraded_from == "zero-cost-router"
-    assert artifact.degradation_reason == "zero_cost_routes_exhausted"
+    manifest = VideoArtifactManifest(
+        planned_generation_backend="zero-cost-router",
+        shots=[artifact],
+    )
+
+    assert manifest.schema_version == "hottop.video-artifacts.v1"
+    assert manifest.planned_generation_backend == "zero-cost-router"
+    assert manifest.shots[0].artifact_kind == "deterministic-non-generative"
+    assert manifest.shots[0].degraded_from == "zero-cost-router"
+    assert manifest.shots[0].degradation_reason == "zero_cost_routes_exhausted"
 
 
 def test_deterministic_fallback_cannot_hide_its_degradation_provenance():
