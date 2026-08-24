@@ -47,3 +47,43 @@ def test_video_run_removes_partial_output_from_failed_stage(monkeypatch, tmp_pat
 
     assert partial_output is not None
     assert not partial_output.exists()
+
+
+def test_video_run_removes_zero_byte_output_from_successful_stage(monkeypatch, tmp_path):
+    render_request = CreativeRenderRequest.model_validate(
+        json.loads(
+            Path("examples/video/inkclaw-cow-snake.render.json").read_text(
+                encoding="utf-8"
+            )
+        )
+    )
+    config = load_video_production_config(Path("config/video/anti-polish-direct.yml"))
+    output_dir = tmp_path / "video-output"
+    empty_output: Path | None = None
+
+    monkeypatch.setattr(
+        "hottop.video_execution.inspect_video_environment",
+        lambda *_args, **_kwargs: SimpleNamespace(ready=True, actions_required=[]),
+    )
+
+    def succeed_with_empty_output(command, **_kwargs):
+        nonlocal empty_output
+        save_index = command.index("--save_file") + 1
+        empty_output = Path(command[save_index])
+        empty_output.parent.mkdir(parents=True, exist_ok=True)
+        empty_output.write_bytes(b"")
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr("hottop.video_execution.subprocess.run", succeed_with_empty_output)
+
+    with pytest.raises(VideoExecutionError, match="did not produce expected output"):
+        run_video_production(
+            render_request,
+            config,
+            output_dir=output_dir,
+            project_root=tmp_path,
+            execute=True,
+        )
+
+    assert empty_output is not None
+    assert not empty_output.exists()
