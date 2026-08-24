@@ -15,6 +15,7 @@ CompositorBackend = Literal["motion-canvas", "external"]
 EncoderBackend = Literal["ffmpeg", "external"]
 OutputFormat = Literal["mp4", "webm", "gif"]
 AudioCueKind = Literal["dialogue", "foley", "sfx", "bgm"]
+CommandStage = Literal["generation", "compositor", "finalization"]
 
 
 class ShotPolicy(BaseModel):
@@ -110,6 +111,13 @@ class AudioCue(BaseModel):
     duck_bgm_db: float | None = None
 
 
+class ExternalCommandSpec(BaseModel):
+    program: str
+    args: list[str] = Field(default_factory=list)
+    cwd: str | None = None
+    stage: CommandStage
+
+
 class VideoProductionPlan(BaseModel):
     schema_version: Literal["hottop.video-plan.v1"] = "hottop.video-plan.v1"
     config_name: str
@@ -129,8 +137,11 @@ class VideoProductionPlan(BaseModel):
     shots: list[VideoShot] = Field(min_length=1)
     audio_cues: list[AudioCue] = Field(default_factory=list)
     generation_commands: list[str] = Field(default_factory=list)
+    generation_command_specs: list[ExternalCommandSpec] = Field(default_factory=list)
     compositor_manifest: dict[str, object] = Field(default_factory=dict)
+    compositor_command_spec: ExternalCommandSpec | None = None
     finalization_command: list[str] = Field(default_factory=list)
+    finalization_command_spec: ExternalCommandSpec | None = None
     execution_notes: list[str] = Field(default_factory=list)
 
 
@@ -185,11 +196,13 @@ def _negative_prompt(render_request: CreativeRenderRequest, config: VideoProduct
     return ", ".join(part.strip() for part in parts if part.strip())
 
 
-def _wan22_command(config: VideoProductionConfig, prompt: str) -> str | None:
+def _wan22_command_spec(
+    config: VideoProductionConfig,
+    prompt: str,
+) -> ExternalCommandSpec | None:
     if not config.generation_backend.startswith("wan22") or config.wan22 is None:
         return None
     args = [
-        "python",
         "generate.py",
         "--task",
         config.wan22.task,
@@ -203,7 +216,36 @@ def _wan22_command(config: VideoProductionConfig, prompt: str) -> str | None:
     if config.wan22.convert_model_dtype:
         args.append("--convert_model_dtype")
     args.extend(["--prompt", prompt])
-    return " ".join(shlex.quote(value) for value in args)
+    return ExternalCommandSpec(
+        program="python",
+        args=args,
+        cwd="integrations/Wan2.2",
+        stage="generation",
+    )
+
+
+def _wan22_command(config: VideoProductionConfig, prompt: str) -> str | None:
+    spec = _wan22_command_spec(config, prompt)
+    if spec is None:
+        return None
+    return " ".join(shlex.quote(value) for value in [spec.program, *spec.args])
+
+
+def _compositor_command_spec(config: VideoProductionConfig) -> ExternalCommandSpec | None:
+    if config.compositor_backend != "motion-canvas" or config.motion_canvas is None:
+        return None
+    return ExternalCommandSpec(
+        program="npm",
+        args=[
+            "run",
+            "render",
+            "--",
+            "--plan",
+            config.motion_canvas.manifest_name,
+        ],
+        cwd=str(Path(config.motion_canvas.project_dir)),
+        stage="compositor",
+    )
 
 
 def _audio_cues(
@@ -261,6 +303,17 @@ def _finalization_command(config: VideoProductionConfig) -> list[str]:
     ]
 
 
+def _finalization_command_spec(config: VideoProductionConfig) -> ExternalCommandSpec | None:
+    command = _finalization_command(config)
+    if not command:
+        return None
+    return ExternalCommandSpec(
+        program=command[0],
+        args=command[1:],
+        stage="finalization",
+    )
+
+
 def build_video_production_plan(
     render_request: CreativeRenderRequest,
     config: VideoProductionConfig,
@@ -269,6 +322,7 @@ def build_video_production_plan(
     duration = _shot_duration(config, shot_count)
     shots: list[VideoShot] = []
     commands: list[str] = []
+    command_specs: list[ExternalCommandSpec] = []
 
     for position, frame in enumerate(render_request.frames, start=1):
         start = round((position - 1) * duration, 3)
@@ -291,6 +345,9 @@ def build_video_production_plan(
         command = _wan22_command(config, prompt)
         if command:
             commands.append(command)
+        command_spec = _wan22_command_spec(config, prompt)
+        if command_spec:
+            command_specs.append(command_spec)
 
     audio_cues = _audio_cues(render_request, config, shots)
     compositor_manifest: dict[str, object] = {
@@ -312,6 +369,7 @@ def build_video_production_plan(
         "Wan2.2 execution is optional/local and requires operator-controlled model files and GPU resources.",
         "Do not auto-fetch copyrighted film footage, protected character assets or commercial soundtracks.",
     ]
+    finalization_command = _finalization_command(config)
 
     return VideoProductionPlan(
         config_name=config.name,
@@ -331,7 +389,10 @@ def build_video_production_plan(
         shots=shots,
         audio_cues=audio_cues,
         generation_commands=commands,
+        generation_command_specs=command_specs,
         compositor_manifest=compositor_manifest,
-        finalization_command=_finalization_command(config),
+        compositor_command_spec=_compositor_command_spec(config),
+        finalization_command=finalization_command,
+        finalization_command_spec=_finalization_command_spec(config),
         execution_notes=execution_notes,
     )
