@@ -40,7 +40,7 @@ def _request() -> CreativeRenderRequest:
     )
 
 
-def _config() -> VideoProductionConfig:
+def _config(*, deterministic_reference_fallback: bool = False) -> VideoProductionConfig:
     return VideoProductionConfig.model_validate(
         {
             "name": "cinematic-zero-cost-test",
@@ -65,6 +65,7 @@ def _config() -> VideoProductionConfig:
             "zero_cost": {
                 "enabled": True,
                 "allow_paid_fallback": False,
+                "deterministic_reference_fallback": deterministic_reference_fallback,
                 "max_attempts_per_shot": 2,
                 "quality_gate": {
                     "min_motion_delta": 2,
@@ -120,12 +121,36 @@ def test_zero_cost_dry_run_materializes_public_runtime_without_secret(monkeypatc
     assert "--prompt" in generation[0].args
     assert "--duration-seconds" in generation[0].args
     assert "--output" in generation[0].args
+    assert "--allow-deterministic-fallback" not in generation[0].args
+    assert "--shot-index" in generation[0].args
+    assert "--artifact-manifest" in generation[0].args
     assert "super-secret-free-token" not in joined
 
     runtime_path = output_dir / "zero-cost-runtime.json"
     runtime = json.loads(runtime_path.read_text(encoding="utf-8"))
     serialized = json.dumps(runtime, ensure_ascii=False)
     assert runtime["allow_paid_fallback"] is False
+    assert runtime["deterministic_reference_fallback"] is False
     assert runtime["candidates"][0]["token_env"] == "HF_TOKEN"
     assert "super-secret-free-token" not in serialized
     assert runtime["candidates"][0]["cost_per_unit"] == 0
+
+
+def test_zero_cost_runtime_requires_explicit_config_to_enable_deterministic_fallback(tmp_path: Path):
+    output_dir = tmp_path / "run"
+
+    result = run_video_production(
+        _request(),
+        _config(deterministic_reference_fallback=True),
+        output_dir=output_dir,
+        project_root=tmp_path,
+        execute=False,
+    )
+
+    generation = [command for command in result.runtime_commands if command.stage == "generation"]
+    assert len(generation) == 1
+    assert "--allow-deterministic-fallback" in generation[0].args
+    artifact_index = generation[0].args.index("--artifact-manifest") + 1
+    assert generation[0].args[artifact_index].endswith("shots/shot-001.artifact.json")
+    shot_index = generation[0].args.index("--shot-index") + 1
+    assert generation[0].args[shot_index] == "1"
