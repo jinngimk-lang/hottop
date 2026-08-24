@@ -5,13 +5,14 @@ from pydantic import ValidationError
 
 from hottop.rendering import CreativeRenderFrame
 from hottop.video_execution import _zero_cost_runtime_generation_commands
+from hottop.video_hf_zerogpu import ZeroGpuError
 from hottop.video_production import (
     VideoProductionPlan,
     VideoReference,
     VideoShot,
     load_video_production_config,
 )
-from hottop.video_zero_cost import run_zero_cost_shot
+from hottop.video_zero_cost import ZeroCostRoutesExhaustedError, run_zero_cost_shot
 
 
 def test_video_reference_rejects_remote_and_inline_locators():
@@ -149,3 +150,62 @@ def test_zero_cost_shot_forwards_reference_to_hf_request(tmp_path: Path, monkeyp
         "reference_image": reference,
         "reference_rights": "generated-original",
     }
+
+
+def test_reference_route_skips_ineligible_t2v_fallback_as_structured_failure(
+    tmp_path: Path, monkeypatch
+):
+    config_path = tmp_path / "runtime.json"
+    config_path.write_text(
+        """{
+  "enabled": true,
+  "allow_paid_fallback": false,
+  "max_attempts_per_shot": 2,
+  "candidates": [
+    {
+      "id": "ltx23",
+      "kind": "hf-zerogpu",
+      "profile": "ltx23",
+      "space_url": "https://first.hf.space",
+      "api_name": "generate_video",
+      "allow_anonymous": true,
+      "cost_per_unit": 0,
+      "weights_license_review": "required"
+    },
+    {
+      "id": "ltx-fast",
+      "kind": "hf-zerogpu",
+      "profile": "ltx-fast",
+      "space_url": "https://second.hf.space",
+      "api_name": "text_to_video",
+      "allow_anonymous": true,
+      "cost_per_unit": 0,
+      "weights_license_review": "required"
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+    reference = tmp_path / "character.png"
+    reference.write_bytes(b"png")
+
+    def unavailable(_request):
+        raise ZeroGpuError("queue unavailable", code="queue_busy", retryable=True)
+
+    monkeypatch.setattr("hottop.video_zero_cost.execute_hf_zerogpu", unavailable)
+
+    with pytest.raises(ZeroCostRoutesExhaustedError) as exc_info:
+        run_zero_cost_shot(
+            config_path,
+            prompt="same original character crosses the workshop",
+            duration_seconds=2,
+            output=tmp_path / "shot.mp4",
+            env={},
+            reference_image=reference,
+            reference_rights="generated-original",
+        )
+
+    failures = exc_info.value.failures
+    assert [failure.candidate_id for failure in failures] == ["ltx23", "ltx-fast"]
+    assert failures[1].code == "zero_cost_reference_unsupported"
