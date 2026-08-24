@@ -28,6 +28,7 @@ def _request() -> CreativeRenderRequest:
         ],
         master_prompt="original cinematic meme",
         negative_prompt="copied film frame",
+        punchlines=["provenance first"],
         risk_flags=["original staging only"],
         claim_status="satire",
     )
