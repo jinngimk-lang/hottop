@@ -13,7 +13,7 @@ def test_video_environment_reports_ready_without_installing(monkeypatch, tmp_pat
     config = load_video_production_config(Path("config/video/anti-polish-short.yml"))
     wan_repo = tmp_path / "integrations" / "Wan2.2"
     model_dir = tmp_path / "models" / "Wan2.2-TI2V-5B"
-    motion_dir = tmp_path / "video" / "motion-canvas"
+    motion_dir = tmp_path / "video" / "motion-canvas-executor"
     _touch(wan_repo / "generate.py", "print('stub')")
     model_dir.mkdir(parents=True)
     _touch(motion_dir / "package.json", '{"scripts":{"render":"echo render"}}')
@@ -68,5 +68,5 @@ def test_video_environment_rejects_planning_only_motion_canvas_scaffold(monkeypa
     status = inspect_video_environment(config, project_root=Path("."))
 
     assert status.motion_canvas.ready is False
-    assert "Motion Canvas executable render adapter" in status.motion_canvas.missing
+    assert "Motion Canvas project package.json" in status.motion_canvas.missing
     assert any("Motion Canvas" in action for action in status.actions_required)
