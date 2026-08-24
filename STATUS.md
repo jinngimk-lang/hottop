@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-24 17:38 +08:00
+Last updated: 2026-08-24 18:05 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 PR: #1 — open, draft, mergeable
@@ -16,12 +16,21 @@ PR: #1 — open, draft, mergeable
 ## Style-routed video path
 
 - **Anti-Polish / Controlled Badness** remains a durable selectable strategy: `low production feel + high comedy control`. Rough/cheap 3D, simple materials, awkward motion, deadpan acting, crude Foley and cheap-sounding music may be intentional; character continuity, scene geography, cause/effect, subtitle correctness, dialogue intelligibility, comedy timing, product semantics, claim safety and rights safety remain hard requirements.
-- **Roughness is not universal.** `VideoProductionConfig.roughness_score` now makes intentional surface polish explicit on a 0–100 scale. High values may embrace controlled low-budget artifacts; cinematic/film hotspots use lower values so faces, costumes, lighting and camera work stay presentable.
+- **Roughness is not universal.** `VideoProductionConfig.roughness_score` makes intentional surface polish explicit on a 0–100 scale. High values may embrace controlled low-budget artifacts; cinematic/film hotspots use lower values so faces, costumes, lighting and camera work stay presentable.
 - `config/video/anti-polish-direct.yml`: unattended headless profile, `style_profile=anti-polish`, `roughness_score=78`, Wan2.2 optional generation → MoviePy → FFmpeg.
 - `config/video/cinematic-meme-direct.yml`: presentable film-meme profile, `style_profile=cinematic`, `roughness_score=28`, Wan2.2 optional generation → MoviePy → FFmpeg.
 - `config/video/anti-polish-short.yml` keeps Motion Canvas as an optional advanced vector-motion / interactive-preview path.
 - `hottop video-plan <render-v2.json> --config ...` remains planning-only. `hottop video-run <render-v2.json> --config ... --output-dir ...` is dry-run by default; only explicit `--execute` may spawn trusted configured stages after readiness passes.
 - Execute mode requires fresh non-empty stage outputs and removes partial output from a failed external stage before raising. Stale/corrupt half-files cannot satisfy success.
+
+## Provider-neutral generation adapters
+
+- Wan2.2 remains the operator-controlled local/open-source generation route; Hottop never downloads weights or provisions GPU resources automatically.
+- `comfy-api-v2` is now an explicit optional remote/self-hosted generation adapter behind the same `render.v2 → video-plan → video-run` contract.
+- Comfy adapter configuration contains endpoint, workflow path, prompt node/input mapping, token **environment-variable name**, polling interval and timeout. Secrets themselves are never written into plans/runtime command arguments.
+- `video-doctor`/`inspect_video_environment()` fail closed when the workflow JSON or configured token environment variable is missing.
+- Dry-run emits structured `python -m hottop.video_comfy_api ...` generation commands using `shell=False`; actual HTTP submission happens only under explicit `video-run --execute` after readiness passes.
+- The adapter sends configured workflow JSON plus generated prompt/job metadata; it does not silently upload arbitrary local assets, create credentials or authorize paid usage. Operator endpoint/cost policy remains external to Hottop.
 
 ## Audio is now first-class
 
@@ -41,11 +50,10 @@ PR: #1 — open, draft, mergeable
 
 ## Verification evidence
 
-- Earlier provider-neutral video planning, `video-doctor`, structured command specs, MoviePy/headless execution, Motion Canvas project-tree safety, stage-output verification and fresh-output safety were introduced RED-first and verified on Python 3.11 / 3.12; prior exact-head run 895 was green before the audio/style increment.
-- The new audio/style work was introduced RED-first through `tests/test_video_audio_pipeline.py`, `tests/test_video_style_profiles.py`, and `tests/test_odyssey_video_archive.py`.
-- During RED, CI also exposed a concrete failed-stage cleanup gap; `src/hottop/video_execution.py` now removes a partial output before raising on a nonzero stage result.
-- Exact branch head `3eb8055d5ddefb106b2a284e39d0613914613f4b` passed CI run **933** on both Python **3.11** and **3.12**; Ruff and pytest succeeded in both jobs.
-- `PROJECT.md` and this STATUS were then synchronized with the style-routed/audio-first architecture. Re-verify exact head after remaining skill/PR synchronization before final Foundation closure claims.
+- Earlier provider-neutral video planning, `video-doctor`, structured command specs, MoviePy/headless execution, Motion Canvas project-tree safety, stage-output verification and fresh-output safety were introduced RED-first and verified on Python 3.11 / 3.12.
+- Audio/style work was introduced RED-first through `tests/test_video_audio_pipeline.py`, `tests/test_video_style_profiles.py`, and `tests/test_odyssey_video_archive.py`; exact head `3eb8055d5ddefb106b2a284e39d0613914613f4b` passed CI run 933 on both Python versions before doctrine synchronization.
+- The Comfy API v2 adapter began with RED contract `40c9df0d18da80e22a7edaeb6f2ea55cd287a79c`. CI run 941 first exposed only a Ruff import-order issue before pytest could execute; after implementation and normalization, exact head `f174e24a0d9b960fc3c0df70941527530cbaf89c` passed CI run **951** on Python **3.11** and **3.12**, with Ruff and full pytest successful in both jobs.
+- The Comfy tests verify environment-only credential reference, fail-closed missing-token readiness, workflow prompt injection, job polling and successful video download without embedding the secret in dry-run commands.
 
 ## Current creative doctrine
 
@@ -60,19 +68,17 @@ PR: #1 — open, draft, mergeable
 
 ## In progress
 
-- Persist `roughness_score` and first-class voice/music/SFX rules in the reusable creative skill and PR summary.
-- Re-run exact-head CI after status/skill/PR synchronization.
-- Next architecture increment: provider-neutral external/cloud generation adapter contract (for example a configured ComfyUI endpoint) that preserves the same `render.v2 → video-plan → video-run` semantics. It must remain fail-closed and must not silently upload assets, use credentials or incur paid usage.
-- After the adapter contract exists, evaluate current video backends for style/continuity fit rather than hard-coding one model for every hotspot.
+- Synchronize PR #1 summary with the now-green optional Comfy API v2 adapter.
+- Next architecture increment: a higher-quality provider-neutral voice/music adapter interface while retaining the deterministic local audio fallback and the same explicit credential/cost boundaries.
+- Evaluate current video backends for style/continuity fit rather than hard-coding one model for every hotspot; keep Wan2.2 and Comfy adapters selectable rather than universal.
 - Foundation v0.1 accumulated PR diff / production-contract closure review continues.
 
 ## Next actions
 
-1. Update the reusable creative skill with style-routed roughness and first-class audio production rules.
-2. Synchronize PR #1 body and verify the resulting exact head on Python 3.11/3.12.
-3. Add an explicit external/cloud video adapter configuration + readiness contract; no real paid/cloud invocation without operator-controlled endpoint/credentials and an allowed cost boundary.
-4. Add a higher-quality voice/music adapter interface while retaining the deterministic local audio fallback.
-5. Continue Foundation closure review; keep PR draft until closure criteria are checked against exact-head CI.
+1. Synchronize PR #1 body with the green Comfy API v2 optional generation adapter and exact-head CI 951 evidence.
+2. Add a higher-quality voice/music adapter interface while retaining `espeak` + synthetic/procedural local fallback and fail-closed credential/cost behavior.
+3. Add targeted contracts for adapter output/metadata integrity only when a concrete gap is reproducible; do not add generic cloud infrastructure for its own sake.
+4. Continue Foundation closure review; keep PR draft until closure criteria are checked against exact-head CI.
 
 ## Constraints
 
