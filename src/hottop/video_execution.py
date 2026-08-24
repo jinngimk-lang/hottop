@@ -687,6 +687,24 @@ def _verify_stage_output(stage: str, path: Path | None) -> None:
         )
 
 
+def _zero_cost_reference_actions(
+    plan: VideoProductionPlan,
+    config: VideoProductionConfig,
+    *,
+    project_root: Path,
+) -> list[str]:
+    if config.generation_backend != "zero-cost-router":
+        return []
+    actions: list[str] = []
+    for shot in plan.shots:
+        if shot.reference is None:
+            continue
+        reference_path = _resolve(project_root, shot.reference.image_path).resolve()
+        if not reference_path.is_file():
+            actions.append(f"reference image for shot {shot.index} is missing: {reference_path}")
+    return actions
+
+
 def run_video_production(
     render_request: CreativeRenderRequest,
     config: VideoProductionConfig,
@@ -727,11 +745,18 @@ def run_video_production(
         final_output=final_output,
     )
     readiness = inspect_video_environment(config, project_root=root)
+    reference_actions = _zero_cost_reference_actions(
+        plan,
+        config,
+        project_root=root,
+    )
+    actions_required = [*readiness.actions_required, *reference_actions]
+    ready = readiness.ready and not reference_actions
     summaries: list[str] = []
 
-    if execute and not readiness.ready:
+    if execute and not ready:
         raise VideoExecutionError(
-            "video execution environment is not ready: " + "; ".join(readiness.actions_required)
+            "video execution environment is not ready: " + "; ".join(actions_required)
         )
 
     if execute:
@@ -765,7 +790,7 @@ def run_video_production(
     return VideoRunResult(
         execute_requested=execute,
         executed=execute,
-        ready=readiness.ready,
+        ready=ready,
         output_dir=str(workspace),
         shots_dir=str(shots_dir),
         audio_dir=str(audio_dir),
@@ -775,5 +800,5 @@ def run_video_production(
         final_output_path=str(final_output),
         runtime_commands=commands,
         command_summaries=summaries,
-        actions_required=readiness.actions_required,
+        actions_required=actions_required,
     )
