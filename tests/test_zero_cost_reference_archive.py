@@ -1,10 +1,6 @@
 from pathlib import Path
 
-from hottop.rendering import CreativeRenderRequest
-from hottop.video_production import (
-    build_video_production_plan,
-    load_video_production_config,
-)
+from hottop import rendering, video_production
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,7 +14,9 @@ def test_zero_cost_reference_i2v_archive_is_rights_safe_and_executable_by_contra
     assert reference_path.is_file()
     assert reference_path.read_text(encoding="ascii").startswith("P3\n")
 
-    render = CreativeRenderRequest.model_validate_json(source_path.read_text(encoding="utf-8"))
+    render = rendering.CreativeRenderRequest.model_validate_json(
+        source_path.read_text(encoding="utf-8")
+    )
     assert render.distribution_mode == "motion"
     assert render.motion_continuity_required is True
     assert render.in_asset_cta_policy == "no-destination"
@@ -35,8 +33,10 @@ def test_zero_cost_reference_i2v_archive_is_rights_safe_and_executable_by_contra
         if frame.reference is not None
     )
 
-    config = load_video_production_config(ROOT / "config/video/cinematic-zero-cost.yml")
-    plan = build_video_production_plan(render, config)
+    config = video_production.load_video_production_config(
+        ROOT / "config/video/cinematic-zero-cost.yml"
+    )
+    plan = video_production.build_video_production_plan(render, config)
 
     assert plan.generation_backend == "zero-cost-router"
     assert config.zero_cost is not None
