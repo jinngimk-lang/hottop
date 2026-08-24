@@ -216,6 +216,16 @@ class ComparisonCandidate(BaseModel):
             raise ValueError("comparison candidate name must not be blank")
         return value
 
+    @field_validator("category")
+    @classmethod
+    def normalize_optional_category(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            raise ValueError("comparison candidate category must not be blank")
+        return value
+
     @field_validator("notes")
     @classmethod
     def normalize_notes(cls, values: list[str]) -> list[str]:
