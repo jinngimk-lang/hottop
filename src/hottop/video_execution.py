@@ -12,6 +12,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from .rendering import CreativeRenderRequest
+from .video_artifacts import VideoArtifactManifest
 from .video_production import (
     ExternalCommandSpec,
     VideoProductionConfig,
@@ -679,6 +680,22 @@ def _expected_stage_output(
     return None
 
 
+def _artifact_manifest_path(command: ExternalCommandSpec) -> Path | None:
+    if command.stage != "generation":
+        return None
+    try:
+        return Path(command.args[command.args.index("--artifact-manifest") + 1])
+    except (ValueError, IndexError):
+        return None
+
+
+def _shot_index(command: ExternalCommandSpec) -> int | None:
+    try:
+        return int(command.args[command.args.index("--shot-index") + 1])
+    except (ValueError, IndexError):
+        return None
+
+
 def _prepare_stage_output(stage: str, path: Path | None) -> None:
     if path is None:
         raise VideoExecutionError(f"video {stage} stage has unresolved expected output path")
@@ -694,6 +711,41 @@ def _verify_stage_output(stage: str, path: Path | None) -> None:
         raise VideoExecutionError(
             f"video {stage} stage did not produce expected output; "
             f"fresh expected output missing: {rendered}"
+        )
+
+
+def _verify_artifact_provenance(
+    command: ExternalCommandSpec,
+    manifest_path: Path | None,
+    output_path: Path | None,
+) -> None:
+    if manifest_path is None:
+        return
+    if not manifest_path.is_file() or manifest_path.stat().st_size <= 0:
+        raise VideoExecutionError(
+            f"video generation artifact provenance is missing or empty: {manifest_path}"
+        )
+    try:
+        manifest = VideoArtifactManifest.model_validate_json(
+            manifest_path.read_text(encoding="utf-8")
+        )
+    except (OSError, ValueError) as exc:
+        raise VideoExecutionError(
+            f"video generation artifact provenance is invalid: {manifest_path}"
+        ) from exc
+    expected_shot_index = _shot_index(command)
+    if len(manifest.shots) != 1:
+        raise VideoExecutionError(
+            f"video generation artifact provenance must describe exactly one shot: {manifest_path}"
+        )
+    artifact = manifest.shots[0]
+    if expected_shot_index is None or artifact.shot_index != expected_shot_index:
+        raise VideoExecutionError(
+            f"video generation artifact provenance shot identity mismatch: {manifest_path}"
+        )
+    if output_path is None or Path(artifact.path).resolve() != output_path.resolve():
+        raise VideoExecutionError(
+            f"video generation artifact provenance output mismatch: {manifest_path}"
         )
 
 
@@ -781,7 +833,10 @@ def run_video_production(
                 composite_output=composite_output,
                 final_output=final_output,
             )
+            artifact_path = _artifact_manifest_path(command)
             _prepare_stage_output(command.stage, expected_output)
+            if artifact_path is not None:
+                _prepare_stage_output("artifact provenance", artifact_path)
             completed = subprocess.run(
                 [command.program, *command.args],
                 cwd=command.cwd,
@@ -797,10 +852,13 @@ def run_video_production(
             if completed.returncode != 0:
                 if expected_output is not None and expected_output.is_file():
                     expected_output.unlink()
+                if artifact_path is not None and artifact_path.is_file():
+                    artifact_path.unlink()
                 raise VideoExecutionError(
                     f"video {command.stage} stage failed with return code {completed.returncode}"
                 )
             _verify_stage_output(command.stage, expected_output)
+            _verify_artifact_provenance(command, artifact_path, expected_output)
 
     return VideoRunResult(
         execute_requested=execute,
