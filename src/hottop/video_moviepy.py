@@ -24,6 +24,20 @@ class MoviePyTimelineCaption(BaseModel):
     duration_seconds: float = Field(gt=0)
 
 
+class MoviePyTimelineDialogueTrack(BaseModel):
+    source: str
+    start_seconds: float = Field(ge=0)
+    duration_seconds: float | None = Field(default=None, gt=0)
+    character: str | None = None
+    delivery: str | None = None
+
+
+class MoviePyTimelineSfxCue(BaseModel):
+    start_seconds: float = Field(ge=0)
+    duration_seconds: float | None = Field(default=None, gt=0)
+    description: str
+
+
 class MoviePyTimeline(BaseModel):
     schema_version: Literal["hottop.moviepy-timeline.v1"] = "hottop.moviepy-timeline.v1"
     width: int = Field(gt=0)
@@ -32,14 +46,18 @@ class MoviePyTimeline(BaseModel):
     duration_seconds: float = Field(gt=0)
     shots: list[MoviePyTimelineShot] = Field(min_length=1)
     captions: list[MoviePyTimelineCaption] = Field(default_factory=list)
+    dialogue_tracks: list[MoviePyTimelineDialogueTrack] = Field(default_factory=list)
+    sfx_cues: list[MoviePyTimelineSfxCue] = Field(default_factory=list)
     bgm_description: str
     generate_synthetic_bgm: bool = True
+    generate_procedural_sfx: bool = True
 
 
 def build_moviepy_timeline(
     plan: VideoProductionPlan,
     *,
     shots_dir: Path,
+    audio_dir: Path | None = None,
 ) -> MoviePyTimeline:
     """Map a trusted Hottop video plan into deterministic headless compositor inputs."""
 
@@ -65,6 +83,38 @@ def build_moviepy_timeline(
         (cue.text for cue in plan.audio_cues if cue.kind == "bgm" and cue.text.strip()),
         "cheap comedic plucks and crude percussion",
     )
+    resolved_audio_dir = audio_dir if audio_dir is not None else shots_dir.parent / "audio"
+    dialogue_cues = [cue for cue in plan.audio_cues if cue.kind == "dialogue"]
+    voice_enabled = plan.audio_profile is not None and plan.audio_profile.voice_backend != "none"
+    dialogue_tracks = (
+        [
+            MoviePyTimelineDialogueTrack(
+                source=str(resolved_audio_dir / f"dialogue-{index:03d}.wav"),
+                start_seconds=cue.start_seconds,
+                duration_seconds=cue.duration_seconds,
+                character=cue.character,
+                delivery=cue.delivery,
+            )
+            for index, cue in enumerate(dialogue_cues, start=1)
+        ]
+        if voice_enabled
+        else []
+    )
+    sfx_cues = [
+        MoviePyTimelineSfxCue(
+            start_seconds=cue.start_seconds,
+            duration_seconds=cue.duration_seconds,
+            description=cue.text,
+        )
+        for cue in plan.audio_cues
+        if cue.kind in {"foley", "sfx"}
+    ]
+    generate_synthetic_bgm = (
+        plan.audio_profile is None or plan.audio_profile.music_backend == "synthetic"
+    )
+    generate_procedural_sfx = (
+        plan.audio_profile is None or plan.audio_profile.sfx_backend == "procedural"
+    )
     return MoviePyTimeline(
         width=plan.width,
         height=plan.height,
@@ -72,12 +122,20 @@ def build_moviepy_timeline(
         duration_seconds=plan.duration_seconds,
         shots=shots,
         captions=captions,
+        dialogue_tracks=dialogue_tracks,
+        sfx_cues=sfx_cues,
         bgm_description=bgm_description,
+        generate_synthetic_bgm=generate_synthetic_bgm,
+        generate_procedural_sfx=generate_procedural_sfx,
     )
 
 
-def _synthetic_bgm_array(duration_seconds: float, sample_rate: int = 44100):
-    """Build deliberately cheap original plucks without shipping copyrighted music."""
+def _synthetic_bgm_array(
+    duration_seconds: float,
+    description: str = "",
+    sample_rate: int = 44100,
+):
+    """Build an original low-cost music bed; style words affect tempo/register, not source audio."""
 
     try:
         import numpy as np
@@ -86,22 +144,53 @@ def _synthetic_bgm_array(duration_seconds: float, sample_rate: int = 44100):
 
     sample_count = max(1, int(duration_seconds * sample_rate))
     audio = np.zeros(sample_count, dtype=float)
-    notes = (110.0, 146.83, 164.81, 130.81)
-    beat_seconds = 0.5
+    lowered = description.lower()
+    epic = any(token in lowered for token in ("epic", "myth", "史诗", "dark"))
+    notes = (73.42, 98.0, 110.0, 82.41) if epic else (110.0, 146.83, 164.81, 130.81)
+    beat_seconds = 0.65 if epic else 0.5
     beat_count = int(math.ceil(duration_seconds / beat_seconds))
     for beat in range(beat_count):
         start_seconds = beat * beat_seconds
         start = int(start_seconds * sample_rate)
-        end = min(sample_count, start + int(0.24 * sample_rate))
+        end = min(sample_count, start + int((0.34 if epic else 0.24) * sample_rate))
         if end <= start:
             continue
         local = np.arange(end - start, dtype=float) / sample_rate
         frequency = notes[beat % len(notes)]
-        envelope = np.exp(-12.0 * local)
+        envelope = np.exp((-8.0 if epic else -12.0) * local)
         pluck = np.sin(2 * math.pi * frequency * local) * envelope
         if beat % 4 == 0:
-            pluck += 0.35 * np.sin(2 * math.pi * 55.0 * local) * np.exp(-18.0 * local)
-        audio[start:end] += 0.12 * pluck
+            pluck += 0.35 * np.sin(2 * math.pi * (frequency / 2) * local) * np.exp(-15.0 * local)
+        audio[start:end] += (0.09 if epic else 0.12) * pluck
+    stereo = np.column_stack((audio, audio))
+    return stereo, sample_rate
+
+
+def _procedural_sfx_array(
+    duration_seconds: float,
+    cues: list[MoviePyTimelineSfxCue],
+    sample_rate: int = 44100,
+):
+    """Create small original Foley hits so the baseline pipeline has SFX without a stock library."""
+
+    try:
+        import numpy as np
+    except ImportError as exc:  # pragma: no cover - execution-environment guard
+        raise RuntimeError("MoviePy video execution requires the optional `video` dependencies") from exc
+
+    sample_count = max(1, int(duration_seconds * sample_rate))
+    audio = np.zeros(sample_count, dtype=float)
+    for index, cue in enumerate(cues):
+        start = min(sample_count - 1, int(cue.start_seconds * sample_rate))
+        hit_length = min(sample_count - start, int(0.16 * sample_rate))
+        if hit_length <= 0:
+            continue
+        local = np.arange(hit_length, dtype=float) / sample_rate
+        rng = np.random.default_rng(index + 104729)
+        noise = rng.normal(0.0, 1.0, hit_length)
+        envelope = np.exp(-22.0 * local)
+        tonal = np.sin(2 * math.pi * (145.0 + 37.0 * (index % 5)) * local)
+        audio[start : start + hit_length] += 0.035 * noise * envelope + 0.055 * tonal * envelope
     stereo = np.column_stack((audio, audio))
     return stereo, sample_rate
 
@@ -111,11 +200,12 @@ def render_moviepy_timeline(
     *,
     output: Path,
 ) -> None:
-    """Render generated shot files with captions and an original synthetic rough-comedy bed."""
+    """Render shots with captions, dialogue, original music and procedural Foley/SFX."""
 
     try:
         from moviepy import (
             AudioArrayClip,
+            AudioFileClip,
             CompositeAudioClip,
             CompositeVideoClip,
             TextClip,
@@ -127,16 +217,23 @@ def render_moviepy_timeline(
             "MoviePy compositor is not installed. Install the optional Hottop video dependencies."
         ) from exc
 
-    missing = [shot.source for shot in timeline.shots if not Path(shot.source).is_file()]
-    if missing:
-        raise FileNotFoundError("Missing generated video shots: " + ", ".join(missing))
+    missing_shots = [shot.source for shot in timeline.shots if not Path(shot.source).is_file()]
+    if missing_shots:
+        raise FileNotFoundError("Missing generated video shots: " + ", ".join(missing_shots))
+    missing_dialogue = [
+        track.source for track in timeline.dialogue_tracks if not Path(track.source).is_file()
+    ]
+    if missing_dialogue:
+        raise FileNotFoundError("Missing dialogue audio tracks: " + ", ".join(missing_dialogue))
 
     clips = []
-    opened = []
+    opened_video = []
+    opened_audio = []
+    composite = None
     try:
         for shot in timeline.shots:
             clip = VideoFileClip(shot.source)
-            opened.append(clip)
+            opened_video.append(clip)
             if clip.duration > shot.duration_seconds:
                 clip = clip.subclipped(0, shot.duration_seconds)
             elif clip.duration < shot.duration_seconds:
@@ -169,14 +266,33 @@ def render_moviepy_timeline(
 
         composite = CompositeVideoClip(layers, size=(timeline.width, timeline.height))
         duration = min(composite.duration, timeline.duration_seconds)
+        audio_layers = []
+        if composite.audio is not None:
+            audio_layers.append(composite.audio)
+
         if timeline.generate_synthetic_bgm:
-            audio_array, sample_rate = _synthetic_bgm_array(duration)
+            audio_array, sample_rate = _synthetic_bgm_array(
+                duration,
+                timeline.bgm_description,
+            )
             bgm = AudioArrayClip(audio_array, fps=sample_rate).with_duration(duration)
-            if composite.audio is not None:
-                audio = CompositeAudioClip([composite.audio, bgm])
-            else:
-                audio = bgm
-            composite = composite.with_audio(audio)
+            audio_layers.append(bgm)
+
+        if timeline.generate_procedural_sfx and timeline.sfx_cues:
+            sfx_array, sample_rate = _procedural_sfx_array(duration, timeline.sfx_cues)
+            sfx = AudioArrayClip(sfx_array, fps=sample_rate).with_duration(duration)
+            audio_layers.append(sfx)
+
+        for track in timeline.dialogue_tracks:
+            voice = AudioFileClip(track.source)
+            opened_audio.append(voice)
+            if track.duration_seconds is not None and voice.duration > track.duration_seconds:
+                voice = voice.subclipped(0, track.duration_seconds)
+            voice = voice.with_start(track.start_seconds)
+            audio_layers.append(voice)
+
+        if audio_layers:
+            composite = composite.with_audio(CompositeAudioClip(audio_layers))
 
         output.parent.mkdir(parents=True, exist_ok=True)
         composite.write_videofile(
@@ -187,9 +303,12 @@ def render_moviepy_timeline(
             preset="medium",
             logger=None,
         )
-        composite.close()
     finally:
-        for clip in opened:
+        if composite is not None:
+            composite.close()
+        for clip in opened_video:
+            clip.close()
+        for clip in opened_audio:
             clip.close()
 
 
@@ -201,10 +320,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Compose a Hottop video plan headlessly with MoviePy")
     parser.add_argument("--plan", type=Path, required=True)
     parser.add_argument("--shots-dir", type=Path, required=True)
+    parser.add_argument("--audio-dir", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
 
-    timeline = build_moviepy_timeline(_load_plan(args.plan), shots_dir=args.shots_dir)
+    timeline = build_moviepy_timeline(
+        _load_plan(args.plan),
+        shots_dir=args.shots_dir,
+        audio_dir=args.audio_dir,
+    )
     render_moviepy_timeline(timeline, output=args.output)
     return 0
 
