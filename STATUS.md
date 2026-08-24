@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-24 19:40 +08:00
+Last updated: 2026-08-24 22:22 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 PR: #1 — open, draft, mergeable
@@ -15,13 +15,15 @@ PR: #1 — open, draft, mergeable
 
 ## Zero-cost video path
 
-- **`ZERO_COST_MODE=true` is now the preferred unattended generation policy.** Hottop reserves free/shared or operator-owned GPU capacity for high-value generative shots while retaining deterministic MoviePy/FFmpeg/audio production for the rest.
+- **`ZERO_COST_MODE=true` is the preferred unattended generation policy.** Hottop reserves free/shared or operator-owned GPU capacity for high-value generative shots while retaining deterministic MoviePy/FFmpeg/audio production for the rest.
 - `generation_backend: zero-cost-router` is implemented with `ZeroCostConfig`: `allow_paid_fallback` is literally constrained to `false`, candidates require `cost_per_unit: 0`, attempts are bounded, and free-route exhaustion never consults a paid backend.
 - `src/hottop/video_hf_zerogpu.py` implements Hugging Face ZeroGPU Gradio submit/poll/download with optional environment-only token lookup, SSE terminal handling, timeout/error classification and atomic `.part` output replacement.
-- **Rights-safe reference I2V is now end-to-end on the normal zero-cost runtime for the validated LTX 2.3 profile.** `VideoReference` carries a local reference locator plus explicit rights mode (`generated-original` or `user-provided-rights-cleared`) from `CreativeRenderFrame` → `hottop.video-plan.v1` → structured `video-run` command → `hottop.video_zero_cost` → `HfZeroGpuRequest`. Missing rights metadata, remote/data locators and unsupported profiles fail locally before upload.
-- `video-run` now preflights every zero-cost reference locator before any external stage is spawned. Missing local reference files make dry-run readiness false and make explicit `--execute` fail closed before consuming free GPU capacity or uploading anything.
+- **Rights-safe reference I2V is end-to-end on the normal zero-cost runtime for the validated LTX 2.3 profile.** `VideoReference` carries a local reference locator plus explicit rights mode (`generated-original` or `user-provided-rights-cleared`) from `CreativeRenderFrame` → `hottop.video-plan.v1` → structured `video-run` command → `hottop.video_zero_cost` → `HfZeroGpuRequest`. Missing rights metadata, remote/data locators and unsupported profiles fail locally before upload.
+- `video-run` preflights every zero-cost reference locator before any external stage is spawned. Missing local reference files make dry-run readiness false and make explicit `--execute` fail closed before consuming free GPU capacity or uploading anything.
 - `src/hottop/video_quality.py` deterministically inspects generated MP4s with ffprobe/ffmpeg: video stream, terminal-frame decode, sampled grayscale frame delta and duplicate-frame ratio.
 - **Quality-gated failover is wired into the free router.** A bad/duplicate-heavy candidate output is deleted, converted to retryable `zero_cost_quality_rejected`, and the next configured free candidate may run. Only a quality-passing fresh artifact is accepted.
+- **All-free-routes exhaustion has an explicit non-generative degradation contract.** Deterministic reference-motion fallback is disabled by default, may run only when explicitly enabled and a rights-safe local reference exists, and is recorded as `artifact_kind=deterministic-non-generative`, `backend=deterministic-reference-motion`, `degraded_from=zero-cost-router`, `degradation_reason=zero_cost_routes_exhausted`. It is never reported as AI-generated footage.
+- **Zero-cost artifact provenance is now verified before composition.** The manifest must declare `planned_generation_backend=zero-cost-router`; AI-generated shot backends must be IDs from the currently configured cost-zero candidate set; deterministic fallback is accepted only when explicitly enabled and only with the canonical reference-motion backend/degradation metadata. A mismatched manifest fails closed even when the external generation command returned success.
 - `config/video/cinematic-zero-cost.yml` is the first production profile for this path: cinematic roughness 28, HF ZeroGPU candidate list, bounded quality gate, local `espeak` dialogue + synthetic music + procedural SFX, MoviePy composition and FFmpeg finalization. Public Space availability is not treated as guaranteed.
 - `docs/integrations/zero-cost-video-radar.md` records the admission policy for mature projects. Code license and model/weights license are always reviewed separately; stars/demos alone do not qualify a backend.
 - Current watchlist: Wan2.2 for operator-controlled local generation; FramePack for future low-VRAM/reference I2V isolation; FastVideo for future self-hosted acceleration; ViMax/Toonflow for planning/provider architecture ideas; OpenMontage architecture only because its code is AGPL; RIFE/Real-ESRGAN only after a measurable post-processing gap exists.
@@ -53,7 +55,7 @@ PR: #1 — open, draft, mergeable
 - `hottop.video-plan.v1` carries an `audio_profile`; dialogue cues preserve character, delivery and voice profile alongside BGM/Foley timing.
 - Local executable baseline is deliberately dependency-light and free: `espeak` for Mandarin dialogue + Hottop-generated original synthetic music + deterministic procedural SFX/Foley. This baseline is a fallback/testable execution path, not the quality ceiling.
 - `video-run` runtime order is generation → audio → compositor → finalization. Dry-run creates both `shots/` and `audio/` workspaces without spawning subprocesses.
-- MoviePy headless composition now mixes shot audio, generated dialogue WAVs, original synthetic BGM and procedural SFX before FFmpeg H.264/AAC/yuv420p/fast-start finalization.
+- MoviePy headless composition mixes shot audio, generated dialogue WAVs, original synthetic BGM and procedural SFX before FFmpeg H.264/AAC/yuv420p/fast-start finalization.
 - External/cloud voice/music backends stay fail-closed until explicitly configured. No paid API, credential use, upload or commercial-license activation is automatic.
 
 ## Representative video sources
@@ -70,8 +72,11 @@ PR: #1 — open, draft, mergeable
 - Zero-cost quality integration began with RED `46f93c45b9baf92e6d506a3ec2f24c6fdcc69fc3`; CI run **1000** passed Ruff and produced exactly **1 failed / 305 passed**, proving the first bad free candidate was still accepted. GREEN `0dd18b546b608c5a34a2b5c0c41728a0f5d53e7e` wired `inspect_video_quality` into failover; CI run **1002** passed Ruff + full pytest on Python 3.11 / 3.12.
 - Zero-cost production profile/radar/doctrine began with normalized RED `c4906602b9fc143950bdd215b7f910998593c8b2`; CI run **1006** passed Ruff and produced exactly **2 failed / 306 passed**, both missing-artifact contracts. After adding the profile, radar, `PROJECT.md` decision and skill rule, exact head `dd55e31b9b6cf3b6e3700745734d2afe6886c86d` passed CI run **1014** on Python 3.11 / 3.12.
 - Reference-I2V provider safety began with RED `0ca588fb028ac0e929aa6d1c1bf1d360b966135c`; CI run **1018** passed Ruff and produced exactly **2 failed / 308 passed**, proving missing reference-rights validation and missing Gradio upload. GREEN `30e0d716251825475def8d335fcf7afc02fdd809` added explicit rights modes plus LTX 2.3 upload/FileData handling; CI run **1020** passed Ruff + full pytest on Python 3.11 / 3.12.
-- Provider-neutral reference propagation is covered by `tests/test_video_reference_runtime.py`: local rights-safe references survive `render.v2 → video-plan → compositor manifest → zero-cost runtime args → HfZeroGpuRequest`; current baseline exact head `2cf101b5e1314d1900635f7620b1e00530a55607` passed CI run **1040**.
-- Full-plan reference preflight began with RED `0d4c5644ea715c4f1d79208a1c421fcbe15376c8`; CI run **1042** passed Ruff and produced exactly **1 failed / 316 passed**, proving a missing reference still allowed the first external generation command to spawn. GREEN `31a819cf815bb12deb7f747d9c5c8bbb5d29d36f` adds zero-cost reference readiness to `video-run`; CI run **1044** passed the full suite.
+- Provider-neutral reference propagation is covered by `tests/test_video_reference_runtime.py`: local rights-safe references survive `render.v2 → video-plan → compositor manifest → zero-cost runtime args → HfZeroGpuRequest`; baseline exact head `2cf101b5e1314d1900635f7620b1e00530a55607` passed CI run **1040**.
+- Full-plan reference preflight began with RED `0d4c5644ea715c4f1d79208a1c421fcbe15376c8`; CI run **1042** passed Ruff and produced exactly **1 failed / 316 passed**, proving a missing reference still allowed the first external generation command to spawn. GREEN `31a819cf815bb12deb7f747d9c5c8bbb5d29d36f` added zero-cost reference readiness to `video-run`; CI run **1044** passed the full suite.
+- Planned-backend artifact binding began with RED `5d639e5af90759154451770b99a3c4ff9c7d27e2`; CI run **1082** passed Ruff and produced exactly **1 failed / 325 passed**, proving a zero-cost execution could accept a manifest claiming another planned backend. GREEN `9232de8f34756e1647894274960108b3389cadac` bound the manifest to `zero-cost-router`; CI run **1084** passed.
+- Actual free-candidate binding began with RED `293ba4de9624fb9ccfbf9e91a4db42468b196440`; CI run **1086** passed Ruff and produced exactly **1 failed / 326 passed**, proving a manifest could claim an unconfigured provider. GREEN `afff51734b56895dcb35559d3e3c62ca3bad4600` requires AI artifact backends to belong to the configured cost-zero candidate IDs; CI run **1088** passed.
+- Deterministic-fallback provenance binding began with RED `ea63ccea36c89d97c802e4e96c1f97b897c65897`; CI run **1090** passed Ruff and produced exactly **2 failed / 327 passed**, proving deterministic artifacts were accepted when fallback was disabled and arbitrary deterministic backends were accepted. GREEN `406175a940491d1ed9b6a803145b1b56e2849be9` requires fallback to be explicitly enabled and binds `backend=deterministic-reference-motion`, `degraded_from=zero-cost-router`, and `degradation_reason=zero_cost_routes_exhausted`; CI run **1092** passed on Python 3.11 / 3.12.
 
 ## Current creative doctrine
 
@@ -88,13 +93,14 @@ PR: #1 — open, draft, mergeable
 ## In progress
 
 - Foundation v0.1 accumulated PR diff / production-contract closure review continues.
-- Reference-I2V propagation and preflight are now closed for the normal zero-cost LTX 2.3 route. The next consistency question is how to degrade when every free route is unavailable without ever presenting deterministic fallback footage as successful generative output.
-- Higher-quality voice/music adapters remain useful but must not displace the stricter zero-cost video consistency/runtime work or introduce hidden cloud cost.
+- Reference propagation, full-plan reference preflight, explicit deterministic degradation, and backend-level artifact provenance are now closed for the normal zero-cost route.
+- The next concrete execution-integrity gap is **exact-byte artifact binding**: current manifests bind path/backend/kind but not a digest/size of the MP4 bytes consumed downstream. Any future attestation must verify the generated file itself rather than trusting a pathname alone.
+- Higher-quality voice/music adapters remain useful but must not displace stricter zero-cost video consistency/runtime work or introduce hidden cloud cost.
 
 ## Next actions
 
-1. Define an explicit artifact-level degradation contract for all-free-routes-unavailable cases: the final plan/result must record that a shot used deterministic non-generative fallback rather than AI-generated footage.
-2. Only after that contract is testable, implement the smallest deterministic CPU fallback for eligible failed generative shots while preserving the existing quality gate and never treating a mock/placeholder as generated footage.
+1. Add RED-first exact-byte provenance for zero-cost shot artifacts: persist a deterministic content digest/size after successful generation or deterministic fallback and verify it before composition. Do not weaken existing quality gates or accept stale-path identity as evidence.
+2. After byte binding is green, review whether composition needs a second verification immediately before consuming shot bytes so provenance cannot become stale between generation and compositor stages.
 3. Add a representative rights-safe reference-I2V production archive only when it can use an original/generated or user-cleared reference asset without committing protected pixels.
 4. Benchmark FramePack only when operator-controlled GPU/runtime is available; never invoke its automatic >30GB model download from unattended Hottop/CI. Keep FastVideo as a future acceleration candidate until a measurable self-hosted performance gap exists.
 5. Continue Foundation closure review and keep PR draft until exact-head CI and accumulated contract review are complete.
