@@ -120,3 +120,38 @@ def test_intent_promotion_identity_is_canonical_in_orchestration_result():
     payload = OrchestrationInput(intent=intent, promotion_context=_promotion_context(), options=[_option()], references=[])
     result = orchestrate(payload)
     assert result.intent.promotion_target.value == result.promotion_context.subject_name == "Ribbon Lunch"
+
+
+def test_orchestrator_applies_motion_distribution_directive_to_selected_concept_and_render():
+    intent = resolve_intent(
+        "给 Ribbon Lunch 做抖音热点短视频，要连续动效，不要网址和二维码",
+        overrides={"promotion_target": "Ribbon Lunch", "campaign_goal": "hotspot-participation"},
+    )
+    payload = OrchestrationInput(intent=intent, promotion_context=_promotion_context(), options=[_option()], references=[])
+
+    assert payload.options[0].concept.distribution_mode == "auto"
+
+    result = orchestrate(payload)
+
+    assert result.selected_concept.distribution_mode == "motion"
+    assert result.selected_concept.motion_continuity_required is True
+    assert result.selected_concept.in_asset_cta_policy == "no-destination"
+    assert result.selected_render.distribution_mode == "motion"
+    assert result.selected_render.motion_continuity_required is True
+    assert result.selected_render.in_asset_cta_policy == "no-destination"
+
+
+def test_orchestrator_applies_conversion_destination_policy_without_forcing_motion():
+    intent = resolve_intent(
+        "给 Ribbon Lunch 做付费投放转化海报",
+        overrides={"promotion_target": "Ribbon Lunch"},
+    )
+    payload = OrchestrationInput(intent=intent, promotion_context=_promotion_context(), options=[_option()], references=[])
+
+    result = orchestrate(payload)
+
+    assert result.selected_concept.distribution_mode == "static"
+    assert result.selected_concept.motion_continuity_required is False
+    assert result.selected_concept.in_asset_cta_policy == "conversion-destination"
+    assert result.selected_render.distribution_mode == "static"
+    assert result.selected_render.in_asset_cta_policy == "conversion-destination"
