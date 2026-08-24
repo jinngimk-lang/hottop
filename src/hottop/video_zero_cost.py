@@ -152,9 +152,10 @@ def run_zero_cost_shot(
     reference_rights: ReferenceRights | None = None,
     shot_index: int = 1,
     artifact_manifest_path: Path | None = None,
+    allow_deterministic_fallback: bool = False,
     fallback_renderer: FallbackRenderer = render_reference_motion,
 ) -> Path:
-    """Generate one shot through bounded free routes, degrading only from a rights-safe reference."""
+    """Generate one shot through bounded free routes; fallback is explicit and reference-only."""
 
     config = load_zero_cost_runtime(config_path)
     environment = os.environ if env is None else env
@@ -202,6 +203,8 @@ def run_zero_cost_shot(
             max_attempts=config.max_attempts_per_shot,
         )
     except ZeroCostRoutesExhaustedError:
+        if not allow_deterministic_fallback:
+            raise
         if reference_image is None or reference_rights is None:
             raise
         if not reference_image.is_file():
@@ -255,6 +258,7 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--shot-index", type=int, default=1)
     parser.add_argument("--artifact-manifest")
+    parser.add_argument("--allow-deterministic-fallback", action="store_true")
     return parser.parse_args()
 
 
@@ -272,6 +276,7 @@ def main() -> None:
             artifact_manifest_path=(
                 Path(args.artifact_manifest) if args.artifact_manifest else None
             ),
+            allow_deterministic_fallback=args.allow_deterministic_fallback,
         )
     except (ZeroGpuError, ZeroCostRoutesExhaustedError) as exc:
         raise SystemExit(str(exc)) from exc
