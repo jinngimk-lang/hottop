@@ -435,21 +435,32 @@ def _zero_cost_runtime_generation_commands(
     runtime_config = (shots_dir.parent / "zero-cost-runtime.json").resolve()
     commands: list[ExternalCommandSpec] = []
     for shot in plan.shots:
+        args = [
+            "-m",
+            "hottop.video_zero_cost",
+            "--config",
+            str(runtime_config),
+            "--prompt",
+            shot.generation_prompt,
+            "--duration-seconds",
+            str(shot.duration_seconds),
+            "--output",
+            str((shots_dir / f"shot-{shot.index:03d}.mp4").resolve()),
+        ]
+        if shot.reference is not None:
+            reference_path = _resolve(project_root, shot.reference.image_path).resolve()
+            args.extend(
+                [
+                    "--reference-image",
+                    str(reference_path),
+                    "--reference-rights",
+                    shot.reference.rights,
+                ]
+            )
         commands.append(
             ExternalCommandSpec(
                 program=sys.executable,
-                args=[
-                    "-m",
-                    "hottop.video_zero_cost",
-                    "--config",
-                    str(runtime_config),
-                    "--prompt",
-                    shot.generation_prompt,
-                    "--duration-seconds",
-                    str(shot.duration_seconds),
-                    "--output",
-                    str((shots_dir / f"shot-{shot.index:03d}.mp4").resolve()),
-                ],
+                args=args,
                 cwd=str(project_root.resolve()),
                 stage="generation",
             )
