@@ -61,10 +61,9 @@ class VideoArtifactManifest(BaseModel):
     planned_generation_backend: str = Field(min_length=1)
     shots: list[VideoShotArtifact] = Field(default_factory=list)
 
-    @model_validator(mode="after")
-    def validate_zero_cost_byte_identity(self) -> VideoArtifactManifest:
+    def verify_zero_cost_byte_identity(self) -> None:
         if self.planned_generation_backend != "zero-cost-router":
-            return self
+            return
         for artifact in self.shots:
             if artifact.sha256 is None or artifact.size_bytes is None:
                 raise ValueError("zero-cost artifact byte identity missing")
@@ -74,4 +73,13 @@ class VideoArtifactManifest(BaseModel):
             actual_sha256, actual_size = _file_byte_identity(artifact_path)
             if actual_size != artifact.size_bytes or actual_sha256 != artifact.sha256:
                 raise ValueError("zero-cost artifact content mismatch")
-        return self
+
+    @classmethod
+    def model_validate_json(
+        cls,
+        json_data: str | bytes | bytearray,
+        **kwargs: object,
+    ) -> VideoArtifactManifest:
+        manifest = super().model_validate_json(json_data, **kwargs)
+        manifest.verify_zero_cost_byte_identity()
+        return manifest
