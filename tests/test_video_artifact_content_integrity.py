@@ -112,7 +112,7 @@ def test_execute_rejects_artifact_manifest_for_different_video_bytes(monkeypatch
 
     monkeypatch.setattr("hottop.video_execution.subprocess.run", fake_run)
 
-    with pytest.raises(VideoExecutionError, match="artifact content mismatch"):
+    with pytest.raises(VideoExecutionError, match="artifact provenance is invalid"):
         run_video_production(
             _request(),
             _config(),
@@ -153,7 +153,7 @@ def test_execute_rejects_zero_cost_artifact_without_byte_identity(monkeypatch, t
 
     monkeypatch.setattr("hottop.video_execution.subprocess.run", fake_run)
 
-    with pytest.raises(VideoExecutionError, match="artifact byte identity missing"):
+    with pytest.raises(VideoExecutionError, match="artifact provenance is invalid"):
         run_video_production(
             _request(),
             _config(),
