@@ -85,7 +85,6 @@ def _synthetic_bgm_array(duration_seconds: float, sample_rate: int = 44100):
         raise RuntimeError("MoviePy video execution requires the optional `video` dependencies") from exc
 
     sample_count = max(1, int(duration_seconds * sample_rate))
-    time = np.arange(sample_count, dtype=float) / sample_rate
     audio = np.zeros(sample_count, dtype=float)
     notes = (110.0, 146.83, 164.81, 130.81)
     beat_seconds = 0.5
