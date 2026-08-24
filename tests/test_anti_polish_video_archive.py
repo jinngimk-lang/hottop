@@ -2,10 +2,15 @@ import json
 from pathlib import Path
 
 from hottop.rendering import CreativeRenderRequest
-from hottop.video_production import build_video_production_plan, load_video_production_config
+from hottop.video_production import (
+    VideoProductionPlan,
+    build_video_production_plan,
+    load_video_production_config,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 RENDER_ARCHIVE = ROOT / "examples/video/inkclaw-cow-snake.render.json"
+PLAN_ARCHIVE = ROOT / "examples/video/inkclaw-cow-snake.video-plan.json"
 CONFIG = ROOT / "config/video/anti-polish-direct.yml"
 
 
@@ -41,3 +46,16 @@ def test_anti_polish_cow_story_archive_is_config_driven_and_rights_safe():
     assert all(shot.continuity_instruction for shot in plan.shots)
     assert plan.finalization_command_spec is not None
     assert "yuv420p" in plan.finalization_command_spec.args
+
+
+def test_anti_polish_video_plan_archive_is_a_regenerable_snapshot():
+    request = CreativeRenderRequest.model_validate(
+        json.loads(RENDER_ARCHIVE.read_text(encoding="utf-8"))
+    )
+    config = load_video_production_config(CONFIG)
+    expected = build_video_production_plan(request, config)
+    archived = VideoProductionPlan.model_validate_json(
+        PLAN_ARCHIVE.read_text(encoding="utf-8")
+    )
+
+    assert archived == expected
