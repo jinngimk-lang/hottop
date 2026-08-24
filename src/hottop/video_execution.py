@@ -153,6 +153,7 @@ def _zero_cost_readiness(config: VideoProductionConfig) -> BackendReadiness:
         missing.append("zero-cost route configuration")
     else:
         checks.append(f"allow_paid_fallback={route.allow_paid_fallback}")
+        checks.append(f"deterministic_reference_fallback={route.deterministic_reference_fallback}")
         checks.append(f"candidate_count={len(route.candidates)}")
         for candidate in route.candidates:
             checks.append(
@@ -435,6 +436,8 @@ def _zero_cost_runtime_generation_commands(
     runtime_config = (shots_dir.parent / "zero-cost-runtime.json").resolve()
     commands: list[ExternalCommandSpec] = []
     for shot in plan.shots:
+        output_path = (shots_dir / f"shot-{shot.index:03d}.mp4").resolve()
+        artifact_path = (shots_dir / f"shot-{shot.index:03d}.artifact.json").resolve()
         args = [
             "-m",
             "hottop.video_zero_cost",
@@ -445,8 +448,14 @@ def _zero_cost_runtime_generation_commands(
             "--duration-seconds",
             str(shot.duration_seconds),
             "--output",
-            str((shots_dir / f"shot-{shot.index:03d}.mp4").resolve()),
+            str(output_path),
+            "--shot-index",
+            str(shot.index),
+            "--artifact-manifest",
+            str(artifact_path),
         ]
+        if config.zero_cost.deterministic_reference_fallback:
+            args.append("--allow-deterministic-fallback")
         if shot.reference is not None:
             reference_path = _resolve(project_root, shot.reference.image_path).resolve()
             args.extend(
