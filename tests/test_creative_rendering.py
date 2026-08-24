@@ -158,3 +158,26 @@ def test_flexible_render_contract_does_not_require_four_frames() -> None:
 
     assert len(request.frames) == 1
     assert request.expression_form == "faux-film-still"
+
+
+def test_motion_distribution_contract_survives_creative_render_handoff() -> None:
+    concept = _concept(
+        distribution_mode="motion",
+        in_asset_cta_policy="no-destination",
+        motion_continuity_required=True,
+    )
+
+    request = build_creative_render_request(concept)
+    payload = request.model_dump(mode="json")
+
+    assert payload["distribution_mode"] == "motion"
+    assert payload["in_asset_cta_policy"] == "no-destination"
+    assert payload["motion_continuity_required"] is True
+
+
+def test_distribution_render_contract_is_backward_compatible_for_existing_concepts() -> None:
+    request = build_creative_render_request(_concept())
+
+    assert request.distribution_mode == "auto"
+    assert request.in_asset_cta_policy == "no-destination"
+    assert request.motion_continuity_required is False
