@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-25 00:04 +08:00
+Last updated: 2026-08-25 00:58 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 PR: #1 — open, draft, mergeable
@@ -38,7 +38,7 @@ PR: #1 — open, draft, mergeable
 - `config/video/cinematic-zero-cost.yml`: presentable free-only profile, `style_profile=cinematic`, `roughness_score=28`, bounded HF ZeroGPU route → quality gate → MoviePy → FFmpeg.
 - **The bundled `video/motion-canvas` project is planning/interactive-preview only.** Its `render` script prepares `src/generated-plan.ts` and explicitly does not spawn a renderer. `config/video/anti-polish-short.yml` therefore points explicit execution at a separate operator-provided `video/motion-canvas-executor` project. If that executor is absent, `video-doctor`/`video-run --execute` fail readiness before spawning npm. MoviePy remains the unattended compositor default.
 - `hottop video-plan <render-v2.json> --config ...` remains planning-only. `hottop video-run <render-v2.json> --config ... --output-dir ...` is dry-run by default; only explicit `--execute` may spawn trusted configured stages after readiness passes.
-- Execute mode requires fresh non-empty stage outputs and removes partial output from a failed external stage before raising. Stale/corrupt half-files cannot satisfy success.
+- Execute mode requires fresh non-empty stage outputs and removes residual output both when an external stage returns failure and when a nominally successful stage leaves an empty/invalid expected artifact. Stale/corrupt/zero-byte half-files cannot satisfy success or remain behind as misleading workspace artifacts.
 - **Final delivery is media-verified, not merely file-verified.** After configured FFmpeg finalization returns success, `video-run --execute` runs ffprobe against the fresh output and requires positive duration plus the configured video codec, pixel format and audio codec (for the default MP4 path: H.264 / yuv420p / AAC). A non-media or incompatible final artifact is deleted and execution fails closed instead of reporting `executed=True`.
 
 ## Provider-neutral generation adapters
@@ -84,6 +84,7 @@ PR: #1 — open, draft, mergeable
 - The representative reference-I2V archive contract reached a clean RED at `e38483a96ed45e3853ef940331e9880063759836`: CI run **1124** passed Ruff and produced exactly **1 failed / 332 passed** because the rights-safe source archive did not yet exist. GREEN `669f5357cf327976f759f1d05d33d3314ad99863` added only the repository-generated PPM reference plus its `hottop.render.v2` archive; CI run **1128** passed on Python 3.11 / 3.12.
 - Motion Canvas execution-boundary review reached a clean RED at `f69a42f42bc57a603cc3697d2f19dfbfe862f282`: CI run **1132** passed Ruff and produced exactly **1 failed / 333 passed**, proving the bundled planning-only scaffold was reported `ready=True`. The GREEN separates the bundled scaffold from execution by pointing `anti-polish-short` at an operator-provided `video/motion-canvas-executor`; intermediate run **1135** exposed only the obsolete structured-command cwd assertion, and final exact head `5fa636e2cc7a858ee89b91aac1430e20b8ab8024` passed CI run **1138** on Python 3.11 / 3.12.
 - Final-delivery media integrity began with RED `5377eb323afda20bc2a097a0e51544aa0298a253`: CI run **1142** passed Ruff and produced exactly **1 failed / 334 passed**, proving FFmpeg could return 0 and leave non-media bytes that were still reported as a successful final artifact. After correcting the verifier's canonical `FFmpegConfig` type name, GREEN exact head `7b131c1acdd80d07dabb95eed0b86cd0433768b9` passed CI run **1147** on Python 3.11 / 3.12. Finalized output now must pass ffprobe stream/codec/pixel-format/duration checks before execution is reported successful.
+- Successful-stage residue cleanup began with RED `02255121a3f43b708ab1ba1096a9d6a76b0002ac`: CI run **1152** passed Ruff and produced exactly **1 failed / 335 passed**, proving a stage could return 0, leave a zero-byte expected output, correctly fail verification, but still leave that invalid file behind. GREEN `d40feb28e401be86d260569aedb26132799ecb1d` deletes an invalid file inside `_verify_stage_output()` before raising; CI run **1154** passed Ruff + full pytest on Python 3.11 / 3.12.
 
 ## Current creative doctrine
 
@@ -100,7 +101,7 @@ PR: #1 — open, draft, mergeable
 ## In progress
 
 - Foundation v0.1 accumulated PR diff / production-contract closure review continues.
-- Reference propagation, full-plan reference preflight, explicit deterministic degradation, backend-level artifact provenance, exact-byte shot binding, immediate MoviePy pre-consumption verification, representative generated-original reference-I2V archive, and final-delivery media verification are closed for the normal unattended path.
+- Reference propagation, full-plan reference preflight, explicit deterministic degradation, backend-level artifact provenance, exact-byte shot binding, immediate MoviePy pre-consumption verification, successful-stage invalid-output cleanup, representative generated-original reference-I2V archive, and final-delivery media verification are closed for the normal unattended path.
 - The bundled Motion Canvas project is now explicitly planning/preview-only and cannot satisfy execution readiness by itself. A future operator-provided Motion Canvas executor must actually emit the composite MP4 and should receive the same immediate pre-consumption byte-verification scrutiny before it can become a trusted execution path.
 - Higher-quality voice/music adapters remain useful but must not displace stricter zero-cost video consistency/runtime work or introduce hidden cloud cost.
 
