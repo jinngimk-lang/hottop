@@ -17,6 +17,9 @@ class CreativeDirective(BaseModel):
     style: str
     project_shape: ProjectShape
     product_visibility: str
+    distribution_mode: Literal["auto", "static", "motion"] = "auto"
+    in_asset_cta_policy: Literal["no-destination", "conversion-destination"] = "no-destination"
+    motion_continuity_required: bool = False
     direction_lanes: list[str] = Field(min_length=3)
     preferred_forms: list[str] = Field(min_length=1)
     bridge_biases: list[str] = Field(min_length=1)
@@ -79,6 +82,32 @@ def _visibility_instruction(intent: CreativeIntent) -> str:
     return "Balance metaphor and attribution: establish the bridge early and make the product explicit before payoff."
 
 
+def _destination_is_explicitly_blocked(intent: CreativeIntent) -> bool:
+    lowered = intent.request.lower()
+    return any(
+        term in lowered
+        for term in (
+            "不要网址",
+            "不要链接",
+            "不要二维码",
+            "别放网址",
+            "别放链接",
+            "别放二维码",
+            "no url",
+            "no link",
+            "no qr",
+        )
+    )
+
+
+def _in_asset_cta_policy(intent: CreativeIntent) -> Literal["no-destination", "conversion-destination"]:
+    if _destination_is_explicitly_blocked(intent):
+        return "no-destination"
+    if intent.campaign_goal.value == "conversion" or intent.platform.value == "paid-social":
+        return "conversion-destination"
+    return "no-destination"
+
+
 def _precision_requirements(intent: CreativeIntent, promotion: PromotionContext) -> list[str]:
     hints = derive_routing_hints(intent, promotion)
     requirements = [
@@ -104,6 +133,14 @@ def _precision_requirements(intent: CreativeIntent, promotion: PromotionContext)
         requirements.append(
             "State category_default, deleted_constraint, and new_competition_axis before locking the concept."
         )
+    if intent.distribution_mode.value == "motion":
+        requirements.extend(
+            [
+                "Preserve scene geography, character identity, and action continuity across the motion sequence.",
+                "Reject slideshow-like still-frame cuts when the concept is supposed to feel like continuous motion.",
+                "Let benefits emerge through action or consequence before adding feature labels.",
+            ]
+        )
     return requirements
 
 
@@ -118,6 +155,21 @@ def build_creative_directive(
     if hints.platform.early_product_bias >= 0.9:
         platform_instructions.append("Prioritize early brand attribution in the opening beat.")
 
+    cta_policy = _in_asset_cta_policy(intent)
+    if cta_policy == "no-destination":
+        platform_instructions.append(
+            "Keep the social asset ad-light: no in-asset URL or QR code; use compact brand/product attribution at payoff."
+        )
+    else:
+        platform_instructions.append(
+            "A conversion destination may appear because the brief is explicitly conversion/paid-social oriented."
+        )
+
+    if intent.distribution_mode.value == "motion":
+        platform_instructions.append(
+            "Use continuous motion grammar with camera/action continuity instead of a sequence of unrelated stills."
+        )
+
     reject_patterns = [
         "Reject hot-character + logo concepts.",
         "Reject feature lists wearing a cultural costume.",
@@ -130,6 +182,9 @@ def build_creative_directive(
         style=hints.style.style,
         project_shape=hints.project_shape.shape,
         product_visibility=intent.product_visibility.value,
+        distribution_mode=intent.distribution_mode.value,
+        in_asset_cta_policy=cta_policy,
+        motion_continuity_required=intent.distribution_mode.value == "motion",
         direction_lanes=_direction_lanes(intent),
         preferred_forms=hints.preferred_forms,
         bridge_biases=hints.project_shape.bridge_biases,
