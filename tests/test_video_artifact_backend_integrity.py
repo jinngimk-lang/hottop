@@ -1,3 +1,4 @@
+import hashlib
 import json
 import subprocess
 from pathlib import Path
@@ -78,13 +79,19 @@ def _config() -> VideoProductionConfig:
 
 
 def _install_fake_manifest_run(monkeypatch, manifest_factory):
+    output_bytes = b"fresh-video"
+
     def fake_run(argv, **kwargs):
         output = Path(argv[argv.index("--output") + 1])
         artifact_manifest = Path(argv[argv.index("--artifact-manifest") + 1])
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_bytes(b"fresh-video")
+        output.write_bytes(output_bytes)
+        manifest = manifest_factory(output)
+        for artifact in manifest.get("shots", []):
+            artifact.setdefault("sha256", hashlib.sha256(output_bytes).hexdigest())
+            artifact.setdefault("size_bytes", len(output_bytes))
         artifact_manifest.write_text(
-            json.dumps(manifest_factory(output)),
+            json.dumps(manifest),
             encoding="utf-8",
         )
         return subprocess.CompletedProcess(argv, 0, stdout="", stderr="")
