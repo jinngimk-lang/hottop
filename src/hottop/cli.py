@@ -45,6 +45,7 @@ from .rendering import (
     build_render_request,
 )
 from .scoring import score_candidate
+from .video_execution import inspect_video_environment
 from .video_production import build_video_production_plan, load_video_production_config
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
@@ -205,6 +206,20 @@ def video_plan_command(
     render_request = CreativeRenderRequest.model_validate(raw)
     video_config = load_video_production_config(config)
     _write_or_echo(build_video_production_plan(render_request, video_config), output)
+
+
+@app.command(name="video-doctor")
+def video_doctor_command(
+    config: Path = typer.Option(..., "--config", exists=True, dir_okay=False),
+    project_root: Path = typer.Option(Path("."), "--project-root", file_okay=False),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Inspect local video execution dependencies without installing or downloading them."""
+    video_config = load_video_production_config(config)
+    _write_or_echo(
+        inspect_video_environment(video_config, project_root=project_root),
+        output,
+    )
 
 
 @app.command()
