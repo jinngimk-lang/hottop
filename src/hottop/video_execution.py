@@ -13,6 +13,11 @@ from pydantic import BaseModel, Field
 
 from .rendering import CreativeRenderRequest
 from .video_artifacts import VideoArtifactManifest
+from .video_final_output import (
+    FinalVideoOutputError,
+    assert_final_video_output,
+    inspect_final_video_output,
+)
 from .video_production import (
     ExternalCommandSpec,
     VideoProductionConfig,
@@ -887,6 +892,20 @@ def run_video_production(
                     f"video {command.stage} stage failed with return code {completed.returncode}"
                 )
             _verify_stage_output(command.stage, expected_output)
+            if command.stage == "finalization" and config.ffmpeg is not None and expected_output is not None:
+                report = inspect_final_video_output(
+                    expected_output,
+                    config.ffmpeg,
+                    runner=subprocess.run,
+                )
+                try:
+                    assert_final_video_output(report)
+                except FinalVideoOutputError as exc:
+                    if expected_output.is_file():
+                        expected_output.unlink()
+                    raise VideoExecutionError(
+                        f"final output media verification failed: {exc}"
+                    ) from exc
             _verify_artifact_provenance(
                 command,
                 artifact_path,
