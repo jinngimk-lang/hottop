@@ -12,7 +12,7 @@ def _odyssey_request() -> CreativeRenderRequest:
         topic_title="witch turns coding crew into pigs",
         subject_name="InkClawAgent",
         expression_form="faux-film-still",
-        visual_medium="live-action",
+        visual_medium="live-action-cinematic",
         genre_treatment="original mythic cinematic meme with controlled roughness",
         distribution_mode="motion",
         in_asset_cta_policy="no-destination",
