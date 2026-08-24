@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from .video_hf_zerogpu import HfZeroGpuRequest, ZeroGpuError, execute_hf_zerogpu
 from .video_production import ZeroCostCandidateConfig, ZeroCostConfig
 from .video_quality import VideoQualityPolicy, inspect_video_quality
+from .video_reference import ReferenceRights
 
 T = TypeVar("T")
 
@@ -112,6 +113,8 @@ def run_zero_cost_shot(
     duration_seconds: float,
     output: Path,
     env: Mapping[str, str] | None = None,
+    reference_image: Path | None = None,
+    reference_rights: ReferenceRights | None = None,
 ) -> Path:
     """Generate one shot through bounded cost-zero candidates only."""
 
@@ -133,6 +136,8 @@ def run_zero_cost_shot(
             duration_seconds=duration_seconds,
             output=output,
             token=token,
+            reference_image=reference_image,
+            reference_rights=reference_rights,
         )
         generated = execute_hf_zerogpu(request)
         report = inspect_video_quality(generated, quality_policy)
@@ -162,6 +167,11 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--prompt", required=True)
     parser.add_argument("--duration-seconds", required=True, type=float)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--reference-image")
+    parser.add_argument(
+        "--reference-rights",
+        choices=["generated-original", "user-provided-rights-cleared"],
+    )
     return parser.parse_args()
 
 
@@ -173,6 +183,8 @@ def main() -> None:
             prompt=args.prompt,
             duration_seconds=args.duration_seconds,
             output=Path(args.output),
+            reference_image=Path(args.reference_image) if args.reference_image else None,
+            reference_rights=args.reference_rights,
         )
     except (ZeroGpuError, ZeroCostRoutesExhaustedError) as exc:
         raise SystemExit(str(exc)) from exc
