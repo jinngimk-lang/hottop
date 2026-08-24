@@ -1,85 +1,61 @@
 # Hottop Status
 
-Last updated: 2026-08-24 11:06 +08:00
+Last updated: 2026-08-24 11:10 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
+PR: #1 — open, draft, mergeable
 
-## Done
+## Current foundation state
 
-- Core trend pipeline is in place: DailyHotApi, NewsNow, RSS, dedupe/ranking, briefing, batch fan-in, source presets, enrichment fallback (Crawl4AI → Firecrawl → plain HTTP), doctor, renderer handoff and CLI commands.
-- Promotion semantics are generalized beyond InkClawAgent/AI: brand, product, service, feature, campaign, person, idea, keyword or tool.
-- Evidence-aware positioning/comparison handoff is implemented. `hottop position --comparisons` accepts internal `ComparisonCandidate` records or public `research_results`; unsupported `supported` claims are normalized back to satire and named competitor negatives require evidence.
-- Adaptive interaction is implemented with `CreativeIntent`, provenance/confidence, 0–3 high-impact questions, platform/style/ambition/product-visibility routing and project-shape profiles.
-- Structured creative contracts are implemented: `CreativeStrategy` preserves `category_default`, `deleted_constraint`, `new_competition_axis`, bridge type/bridge and expression form; `CreativeConcept` preserves flexible beats, medium, genre treatment, prompts, risks and claim status.
-- Deterministic bridge scoring, expression-form selection, hotspot-medium routing, seven-part Creative Review, contextual review/ranking and orchestration are implemented. Contextual scores may rank passing work but never bypass the base creative gate.
-- Provider-neutral flexible rendering is implemented via `hottop.render.v2`; legacy four-panel `hottop.render.v1` remains backward compatible. `hottop render-concept`, `hottop package-concepts`, `hottop orchestrate` and `hottop creative-batch` are wired.
-- Enrichment is an explicit production handoff through `hottop enrich-creative`, preserving the selected candidate, source markdown/provider and fallback failures before creative work.
-- Provenance-first `VisualReference` and `hottop reference-plan` are implemented for grammar-only reference research with Playwright CLI planning, analysis-only defaults and explicit `what_not_to_copy`.
-- Visual-reference exclusion safety is canonical: every `what_not_to_copy` item is stripped and blank/whitespace-only exclusions are rejected, so a manifest cannot satisfy the grammar-only safety boundary with empty durable instructions. Implementation head `d9a8255578f81b28e186cf5363b9074f70de59d3` passed exact-head CI run 671.
-- RSSHub external-feed pilot is implemented as an optional RSS adapter. It requires explicit `RSSHUB_BASE_URL`; `hottop doctor` reports configuration and core operation does not depend on RSSHub.
-- Batch-config `preset` is now functional rather than descriptive: `_discover_configured()` passes the selected preset into DailyHot, NewsNow, RSS and RSSHub collectors, and source-quality resolution uses it. The RED contract in `tests/test_batch_preset_routing.py` exposed the dropped value; subsequent exact-head CI is green.
-- Representative project-shape Creative Package fixtures exist for consumer swipe-reveal, software category reframe and social-native meme output, all validating through `hottop.render.v2`.
-- A deterministic pre-generation `CreativeDirective` contract now converts resolved intent + promotion semantics into generation guidance: three direction lanes, preferred forms, bridge biases, humor/joke mechanics, product-visibility instruction, platform instructions, precision requirements and reject patterns. It is exposed as `hottop creative-directive <input.json>`. This codifies existing doctrine rather than replacing the Creative Review or inventing quality scores.
-- `CreativeDirective` treats humor as an actual routing intent rather than a universal default: `funny-meme` requires humor, and explicit/inferred `witty` or `breakout` can require humor, while a defaulted `witty` value does not force jokes into an explicitly `minimal-premium` direction.
-- Added `examples/runs/consumer-swipe-reveal-production.json`, a synthetic/non-factual representative production archive that exercises intent → enrichment handoff → grammar-only `VisualReference` → `CreativeDirective` → reviewed orchestration → three-frame `swipe-reveal` → `hottop.render.v2`. It preserves category default, deleted constraint, new competition axis, sensory bridge, exclusions, risks and claim posture.
-- Foundation closure review fixed the flexible production evidence boundary: `CreativeConcept` cannot declare `claim_status=supported` without attached `comparison_evidence`, `hottop.render.v2` preserves that evidence, and unresolved named comparisons are rejected unless evidence-backed or explicitly satire.
-- Package/orchestration review identities are bound and canonical: option labels are nonblank, normalized, unique, and must match base/contextual review identities; contextual identities are canonicalized before durable results.
-- Promotion identities are canonical and cross-bound: `PromotionContext.subject_name`/`category`, resolved `CreativeIntent.promotion_target`, package options and orchestration options cannot silently diverge across promoted subjects.
-- Product-profile category semantics are canonical when present: `ProductProfile.category` strips surrounding whitespace and rejects blank/whitespace-only values while preserving `None` for genuinely unresolved category. RED head `5063818206996b14a5f60df4dca4001f69475302` failed exact-head CI run 713 with exactly the two targeted failures (2 failed / 248 passed); implementation head `61698c34c055fd8e635c301952b06d764907b760` passed exact-head CI run 715.
-- Resolved promotion semantics are canonical when present: `PromotionContext.primary_job`, `primary_pain_point` and `primary_differentiator` strip surrounding whitespace and reject blank/whitespace-only values while preserving `None` for genuinely unresolved semantics. RED run 657 produced exactly the four targeted failures (4 failed / 207 passed); implementation head `435bb093b4bffacd1711d7cd39b2ae70c59e97c1` passed run 659 on Python 3.11/3.12.
-- Bridge-candidate semantics are canonical before ranking: `BridgeCandidate.bridge` strips surrounding whitespace and rejects blank/whitespace-only bridge text, preventing empty bridge records from participating in deterministic scoring. Implementation head `4bd5a71387b89af530b9697badb1118c591c231e` passed exact-head CI run 655.
-- Comparison identities are canonical: `ComparisonCandidate.name` and `CreativeConcept.comparison_target` strip surrounding whitespace and reject blank identities.
-- Comparison handoff notes are canonical: every `ComparisonCandidate.notes` item is stripped and blank/whitespace-only notes are rejected, so durable comparison context cannot claim to carry research/creative handoff semantics while storing empty text. RED head `fcff32664d62396d1c7a9549b5747d2d7c4212c4` failed exact-head CI run 701; implementation head `9b628803fccff2ebe217a7d72304fce912027650` passed exact-head CI run 703.
-- Evidence provenance identity is canonical: `Evidence.source` strips surrounding whitespace and rejects blank/whitespace-only source identities. RED run 611 produced exactly the two targeted failures (2 failed / 181 passed); implementation head `ceb4c27ca23a476866dd4b79be47415008d5ddaf` passed exact-head CI run 613.
-- Trend provenance identity is canonical: `TrendCandidate.source` strips surrounding whitespace and rejects blank/whitespace-only source identities, aligning raw trend records with downstream evidence/archive provenance. RED run 617 produced exactly the two targeted failures (2 failed / 183 passed); implementation head `288004a018a2f7b8888595162c387b9d452267fc` passed exact-head CI run 619.
-- Trend semantic text is canonical: optional `TrendCandidate.summary` strips surrounding whitespace and rejects blank/whitespace-only content when present; every tag is stripped and blank tags are rejected. RED head `1b49cf024080a056e53a658ccbe7e2f237f61721` failed exact-head CI run 707; implementation head `13bfecfc1ee09a09e4943616abdd75924f7ae4c1` passed exact-head CI run 709.
-- Creative strategy semantic text is canonical when present: `category_default`, `deleted_constraint`, `new_competition_axis` and `bridge` strip surrounding whitespace and reject blank/whitespace-only values while preserving `None` for genuinely absent reframing fields. RED run 647 produced exactly the targeted two failures (2 failed / 203 passed); implementation head `51f1e502b9b22e1a39cea5c3b9e03bc24c2b30fe` passed exact-head CI run 649 on Python 3.11/3.12.
-- Optional `CreativeBeat.caption` text is canonical when present: captions strip surrounding whitespace and reject blank/whitespace-only values while preserving `None` for deliberately captionless beats. RED run 663 produced exactly the two targeted failures (2 failed / 211 passed); implementation head `647be99f90ead8ae1aa6964a5881438777ac4860` passed run 665 on Python 3.11/3.12.
-- Creative safety metadata is canonical: every `CreativeConcept.risk_flags` item is stripped and blank/whitespace-only flags are rejected, so durable render-v2 concepts cannot claim to carry a risk marker that has no semantic content. RED head `3e4c66c5e6b4b2129dfeb51dbde81a2bab2c4545` failed exact-head CI run 683; implementation head `da5831d261046c62f51d5063e090ea74c3ee397a` passed exact-head CI run 685.
-- Distribution doctrine is now explicitly ad-light and motion-aware for hotspot/meme/brand-memory work: URLs, QR codes and hard conversion commands are omitted inside the asset by default; motion-native ideas prefer short video/GIF/animation; narrative motion must preserve scene/character/action continuity instead of slideshow-like hard cuts; product benefits should first appear as consequences of the scene. This durable rule is recorded in `PROJECT.md` and `skills/brand-metaphor-creative/SKILL.md` and supersedes the old habit of automatically adding a URL CTA or flattening dynamic ideas into posters.
-- Corrected `examples/runs/2026-08-24-inkclaw-aura-farming.json` from a static 4:5 URL-CTA poster into a 9:16 continuous-motion social short treatment with dialogue, sound design, action continuity and no in-asset destination. The archive still preserves user-provided claim provenance and avoids unsupported superiority claims.
-- Distribution intent is now a first-class guided-intake/directive contract. `CreativeIntent.distribution_mode` deterministically preserves explicit/inferred `static` vs `motion` requests without adding another routine question; `CreativeDirective` carries `distribution_mode`, `in_asset_cta_policy` and `motion_continuity_required`. Hotspot short-video directives add no-URL/QR, continuity, anti-slideshow and benefits-as-consequences instructions; conversion/paid-social briefs may retain a destination unless the user explicitly blocks it. RED head `5512d946a0bc5df7f1e901846f2c111bf6fe668a` failed CI run 733 with exactly the two new missing-field tests; GREEN implementation head `0f0d4311e14efbfb8f16b673f5eae7824d0b5503` passed exact-head CI run 737.
-- Added live archive `examples/runs/2026-08-21-1257-briefs.json` with evidence-linked robotics, BirdTok and digital-popover creative directions while keeping factual/safety caveats explicit.
-- Persistent project memory protocol is active: `PROJECT.md` is durable direction, `STATUS.md` is the execution snapshot, reusable skills carry operational doctrine, and repository truth is reread under context pressure.
+- Hottop is a cross-category brand creative engine, not InkClawAgent-only, AI-only or four-panel-only. `PROJECT.md` and the reusable skills are canonical for doctrine.
+- Core trend discovery, enrichment, dedupe/ranking, source presets, optional RSSHub, evidence-aware comparison handoff, adaptive intake, project/platform routing, category reframing, bridge scoring, expression-form routing, Creative Review/contextual review, orchestration and provider-neutral rendering are implemented.
+- Flexible `CreativeConcept` + `hottop.render.v2` is the primary production contract; legacy four-panel `hottop.render.v1` remains backward compatible.
+- Provenance-first `VisualReference` + `reference-plan` are implemented with grammar-only research, analysis-only defaults, explicit `what_not_to_copy`, and no pixel-level reproduction target.
+- Representative archives include a consumer swipe-reveal production path and cross-category live evidence runs.
+- Foundation closure review has hardened durable identities, comparison/evidence safety, review binding, cross-promotion integrity, render text, strategy text, trend/product/comparison semantics, visual-reference provenance/exclusions, and risk metadata through targeted RED → GREEN contracts.
+
+## Distribution doctrine closure
+
+- Durable doctrine is now **ad-light and motion-aware** for hotspot/meme/brand-memory work: omit in-asset URL/QR/hard CTA by default; conversion briefs may explicitly retain a destination; use motion when timing/action/dialogue/sound carries the idea; preserve scene/character/action continuity rather than slideshow-like hard cuts; show benefits first as consequences of the scene.
+- This rule is persisted in `PROJECT.md` and `skills/brand-metaphor-creative/SKILL.md` and supersedes the older habit of automatically adding a URL CTA or forcing a dynamic hotspot into a static poster.
+- `examples/runs/2026-08-24-inkclaw-aura-farming.json` was corrected from a static 4:5 URL-CTA poster into a 9:16 continuous-motion social-short treatment with dialogue, sound design, action continuity and no in-asset destination.
+- Guided intake now preserves static-vs-motion intent without adding a routine question: `CreativeIntent.distribution_mode` is `auto | static | motion`.
+- `CreativeDirective` now serializes `distribution_mode`, `in_asset_cta_policy`, and `motion_continuity_required`, adding anti-slideshow, continuity, no-URL/QR and benefits-as-consequences instructions where appropriate.
+- RED head `5512d946a0bc5df7f1e901846f2c111bf6fe668a` failed CI run 733 with exactly the two missing distribution-intent/directive tests; GREEN directive head `0f0d4311e14efbfb8f16b673f5eae7824d0b5503` passed run 737. Status head `0832c330fd6cc1750ce73fd244f4c67d47b7883d` passed run 739.
+- The downstream handoff gap is also closed: `CreativeConcept` and `CreativeRenderRequest` now carry the same three distribution fields with backward-compatible defaults, and `build_creative_render_request()` preserves them into `hottop.render.v2`.
+- RED head `5cd4fb0828e8fd449e0bf6a271176a61cc8ec995` failed exact-head CI run 741 with exactly two targeted render-handoff failures (`2 failed / 254 passed`, Ruff green). GREEN implementation head `79d787660cfd93b1d2617c7aec3145d46f0417db` passed exact-head CI run 745.
 
 ## Current creative doctrine
 
-- **Reframe before optimize:** identify the category default, test deleting the constraint, then derive the new competition axis.
-- **Natural bridge before logo:** search shape/material, action/motion, role, function, emotion/ritual and language/symbol links.
-- **Product role is flexible:** the promoted subject may be hero, prop, material, gesture, route, transformation, environment or reveal.
-- **Adaptive intake, not a static form:** infer known intent, ask only high-impact unresolved questions and let platform/style/ambition/product visibility/project shape change creative structure.
-- **Format follows the idea:** single visual metaphor, swipe-reveal, four-panel, faux film still/poster, split old-vs-new or product-as-prop.
-- **Medium follows the hotspot:** source-medium grammar and recognition cues matter; protected production assets do not become generation targets.
-- **Distribution stays native:** hotspot/meme/brand-memory creative is ad-light by default; no in-asset URL/QR/hard CTA unless conversion intent explicitly requires it, and motion-native jokes stay motion-native with real continuity rather than slideshow cuts.
-- **Competitor is optional; truth is mandatory:** use evidence-backed named comparisons, generic proxies, satire/metaphor or the old assumption itself as antagonist.
-- **Creative quality gate stays hard:** instant comprehension, natural linkage, product centrality, surprise, ownability, evidence safety and original execution.
-- **Reference research is grammar-only:** retain provenance, composition/reveal/medium lessons and `what_not_to_copy`; never use third-party pixels as a reproduction target.
-
-## Latest live evidence notes
-
-- Reuters, 2026-08-20: robotics leaders discussed a future “ChatGPT moment,” while broad practical capability is not yet here. Creative use: waiting for a universal breakthrough vs coordinating useful capability today. Do not imply control of robots or unsupported superiority over a robotics company.
-- The Guardian, 2026-08-15: younger audiences showed renewed interest in birding/BirdTok amid a noisy online environment. Creative use: useful signal vs another noisy feed. Treat as cultural observation; do not copy TikTok UI or creators.
-- The Guardian, 2026-08-18: humorous vocabulary for intrusive digital layers provides a constraint-deletion cue: question the need for the interface layer instead of designing a prettier obstruction. Use generic UI and never imply bypass of required permissions/authentication.
+- Reframe before optimize: identify `category_default`, test constraint deletion, derive `new_competition_axis`.
+- Natural bridge before logo: search shape/material, action/motion, role, function, emotion/ritual and language/symbol.
+- Product role is flexible: hero, prop, material, gesture, route, transformation, environment or reveal.
+- Adaptive intake, not a static questionnaire: ask only high-impact unresolved questions.
+- Format follows the idea; medium follows the hotspot.
+- Distribution stays native: motion-native jokes stay motion-native; hotspot/meme/brand-memory assets remain ad-light unless conversion intent overrides.
+- Named competitor negatives require evidence or unmistakable satire; otherwise use a generic proxy or the old assumption itself.
+- Creative Review remains a hard gate: instant comprehension, natural linkage, product centrality, surprise, ownability, evidence safety, original execution.
+- Visual-reference research is grammar-only with provenance and explicit exclusions.
 
 ## In progress
 
-- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, identity canonicalization, unresolved named-comparison, cross-promotion, product-profile-category, strategy-semantic-text, optional beat-caption, visual-reference-exclusion, creative-risk-metadata, comparison-handoff-note, trend-semantic-text and distribution-intent gaps.
-- Distribution doctrine is persisted in charter/skill/archive and now survives guided intake → CreativeDirective. The remaining closure question is whether `CreativeConcept` / `hottop.render.v2` also need the same fields so a downstream renderer cannot lose the selected motion/CTA treatment.
-- Continue fresh trend research across entertainment, animation, technology, internet culture, social phenomena and consumer culture without collapsing discovery into AI/tech only.
-- RSSHub remains an optional pilot awaiting an explicitly configured operator-controlled instance; no credential or external-service setup is performed autonomously.
+- Foundation v0.1 accumulated PR diff / production-contract closure review continues. The distribution doctrine now survives intent → directive → concept → `hottop.render.v2`; do not create a parallel video renderer unless a concrete backend gap appears later.
+- Continue checking for concrete regressions, dead compatibility assumptions, evidence/safety/integrity edges and missing deterministic handoffs. Use targeted RED → GREEN only for reproducible gaps.
+- Continue fresh cross-category trend/evidence research when it materially improves creative coverage; do not collapse discovery into AI/tech only.
+- RSSHub remains an optional pilot until an operator-controlled `RSSHUB_BASE_URL` is explicitly available.
 
 ## Next actions
 
-1. Inspect `CreativeConcept` → `hottop.render.v2` serialization for the new distribution contract. If directive-selected `distribution_mode`, `motion_continuity_required` or `in_asset_cta_policy` can be lost before renderer handoff, add the smallest backward-compatible RED → GREEN fields and preservation tests; do not create a separate video renderer yet.
-2. Continue PR #1 / Foundation v0.1 diff review for concrete regressions or contract gaps; use targeted RED → GREEN cycles only where the review finds a real issue.
-3. Exercise the RSSHub pilot only when an operator-controlled `RSSHUB_BASE_URL` is explicitly available; otherwise keep the adapter optional and skip live-instance claims.
-4. Refresh PR #1 completion text and mark ready only after the remaining Foundation review criteria are actually satisfied and exact-head CI stays green.
-5. Keep producing fresh cross-category trend/evidence archives when they materially improve creative coverage.
-6. After Foundation v0.1, add a lightweight project-bootstrap template/command so long-running projects can create charter/status/skill recovery files consistently.
+1. Continue PR #1 / Foundation v0.1 accumulated diff and production-contract closure review from exact-head CI run 745; repair CI first if a future head fails.
+2. Inspect whether orchestration / creative-package assembly actually copies the selected `CreativeDirective` distribution fields into newly generated `CreativeConcept` objects, rather than relying on callers to populate them manually. Add a minimal RED → GREEN bridge only if a reproducible drop exists.
+3. Refresh PR #1 completion text and mark ready only after remaining Foundation review criteria are satisfied and exact-head CI remains green.
+4. Exercise the RSSHub pilot only with an explicitly configured operator-controlled instance.
+5. Keep producing fresh cross-category evidence/creative archives when useful.
+6. After Foundation v0.1, add a lightweight project-bootstrap template/command for charter/status/skill recovery files.
 
 ## Constraints
 
-- No secrets/cookies/browser profiles in Git or CI logs.
+- No secrets, cookies or browser profiles in Git/CI logs.
 - No unsupported factual superiority claims or invented competitor defects.
-- No direct reproduction of actor likenesses, exact film frames, official posters, protected character designs, proprietary UI, logos, distinctive trade dress or copied advertising layouts without rights-cleared user assets.
+- No direct reproduction of actor likenesses, exact film frames, official posters, protected character designs, proprietary UI, logos, distinctive trade dress or copied ad layouts without rights-cleared user assets.
 - Preserve broad cultural/medium recognition while building original staging and assets.
