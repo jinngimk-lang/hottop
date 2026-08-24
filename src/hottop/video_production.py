@@ -168,7 +168,7 @@ class VideoProductionPlan(BaseModel):
     output_format: OutputFormat
     in_asset_cta_policy: str
     shots: list[VideoShot] = Field(min_length=1)
-    audio_profile: AudioProductionProfile
+    audio_profile: AudioProductionProfile | None = None
     audio_cues: list[AudioCue] = Field(default_factory=list)
     generation_commands: list[str] = Field(default_factory=list)
     generation_command_specs: list[ExternalCommandSpec] = Field(default_factory=list)
