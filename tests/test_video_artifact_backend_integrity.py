@@ -116,3 +116,44 @@ def test_execute_rejects_zero_cost_artifact_manifest_for_another_planned_backend
             project_root=tmp_path,
             execute=True,
         )
+
+
+def test_execute_rejects_ai_artifact_from_unconfigured_zero_cost_backend(
+    monkeypatch, tmp_path: Path
+):
+    def fake_run(argv, **kwargs):
+        output = Path(argv[argv.index("--output") + 1])
+        artifact_manifest = Path(argv[argv.index("--artifact-manifest") + 1])
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(b"fresh-video")
+        artifact_manifest.write_text(
+            json.dumps(
+                {
+                    "schema_version": "hottop.video-artifacts.v1",
+                    "planned_generation_backend": "zero-cost-router",
+                    "shots": [
+                        {
+                            "shot_index": 1,
+                            "path": str(output),
+                            "artifact_kind": "ai-generated",
+                            "backend": "paid-or-unconfigured-provider",
+                            "degraded_from": None,
+                            "degradation_reason": None,
+                        }
+                    ],
+                }
+            ),
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(argv, 0, stdout="", stderr="")
+
+    monkeypatch.setattr("hottop.video_execution.subprocess.run", fake_run)
+
+    with pytest.raises(VideoExecutionError, match="artifact backend mismatch"):
+        run_video_production(
+            _request(),
+            _config(),
+            output_dir=tmp_path / "run",
+            project_root=tmp_path,
+            execute=True,
+        )
