@@ -1,3 +1,4 @@
+import hashlib
 import json
 from pathlib import Path
 
@@ -45,13 +46,14 @@ def test_zero_cost_exhaustion_degrades_reference_shot_with_explicit_artifact_pro
     output = tmp_path / "shot-002.mp4"
     artifact_manifest = tmp_path / "shot-002.artifact.json"
     fallback_calls: list[tuple[Path, Path, float]] = []
+    expected_bytes = b"deterministic-reference-motion"
 
     def fail_free_route(*args, **kwargs):
         raise ZeroGpuError("free capacity exhausted", code="busy", retryable=True)
 
     def render_fallback(reference_image: Path, target: Path, duration_seconds: float) -> Path:
         fallback_calls.append((reference_image, target, duration_seconds))
-        target.write_bytes(b"deterministic-reference-motion")
+        target.write_bytes(expected_bytes)
         return target
 
     monkeypatch.setattr("hottop.video_zero_cost.execute_hf_zerogpu", fail_free_route)
@@ -82,6 +84,8 @@ def test_zero_cost_exhaustion_degrades_reference_shot_with_explicit_artifact_pro
             "backend": "deterministic-reference-motion",
             "degraded_from": "zero-cost-router",
             "degradation_reason": "zero_cost_routes_exhausted",
+            "sha256": hashlib.sha256(expected_bytes).hexdigest(),
+            "size_bytes": len(expected_bytes),
         }
     ]
 
