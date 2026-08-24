@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 from collections.abc import Callable, Mapping
@@ -109,6 +110,22 @@ def _quality_policy(config: ZeroCostConfig) -> VideoQualityPolicy:
     )
 
 
+def _artifact_byte_identity(output: Path) -> tuple[str, int]:
+    digest = hashlib.sha256()
+    size_bytes = 0
+    with output.open("rb") as stream:
+        while chunk := stream.read(1024 * 1024):
+            digest.update(chunk)
+            size_bytes += len(chunk)
+    if size_bytes <= 0:
+        raise ZeroGpuError(
+            f"generated artifact is empty: {output}",
+            code="zero_cost_empty_artifact",
+            retryable=False,
+        )
+    return digest.hexdigest(), size_bytes
+
+
 def _write_artifact_manifest(
     path: Path | None,
     *,
@@ -121,6 +138,7 @@ def _write_artifact_manifest(
 ) -> None:
     if path is None:
         return
+    sha256, size_bytes = _artifact_byte_identity(output)
     manifest = VideoArtifactManifest(
         planned_generation_backend="zero-cost-router",
         shots=[
@@ -131,6 +149,8 @@ def _write_artifact_manifest(
                 backend=backend,
                 degraded_from=degraded_from,
                 degradation_reason=degradation_reason,
+                sha256=sha256,
+                size_bytes=size_bytes,
             )
         ],
     )
