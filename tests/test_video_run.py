@@ -68,10 +68,13 @@ def test_video_run_dry_run_materializes_workspace_without_spawning(monkeypatch, 
     assert Path(result.plan_path).is_file()
     assert Path(result.compositor_manifest_path).is_file()
     assert Path(result.shots_dir).is_dir()
+    assert Path(result.audio_dir).is_dir()
     assert result.final_output_path.endswith("hottop-output.mp4")
     assert [command.stage for command in result.runtime_commands] == [
         "generation",
         "generation",
+        "audio",
+        "audio",
         "compositor",
         "finalization",
     ]
