@@ -131,6 +131,7 @@ class ZeroCostQualityConfig(BaseModel):
 class ZeroCostConfig(BaseModel):
     enabled: bool = True
     allow_paid_fallback: Literal[False] = False
+    deterministic_reference_fallback: bool = False
     max_attempts_per_shot: int = Field(default=2, ge=1, le=8)
     candidates: list[ZeroCostCandidateConfig] = Field(min_length=1)
     quality_gate: ZeroCostQualityConfig = Field(default_factory=ZeroCostQualityConfig)
