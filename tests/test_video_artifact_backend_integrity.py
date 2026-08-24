@@ -77,36 +77,41 @@ def _config() -> VideoProductionConfig:
     )
 
 
-def test_execute_rejects_zero_cost_artifact_manifest_for_another_planned_backend(
-    monkeypatch, tmp_path: Path
-):
+def _install_fake_manifest_run(monkeypatch, manifest_factory):
     def fake_run(argv, **kwargs):
         output = Path(argv[argv.index("--output") + 1])
         artifact_manifest = Path(argv[argv.index("--artifact-manifest") + 1])
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_bytes(b"fresh-video")
         artifact_manifest.write_text(
-            json.dumps(
-                {
-                    "schema_version": "hottop.video-artifacts.v1",
-                    "planned_generation_backend": "comfy-api-v2",
-                    "shots": [
-                        {
-                            "shot_index": 1,
-                            "path": str(output),
-                            "artifact_kind": "ai-generated",
-                            "backend": "hf-public",
-                            "degraded_from": None,
-                            "degradation_reason": None,
-                        }
-                    ],
-                }
-            ),
+            json.dumps(manifest_factory(output)),
             encoding="utf-8",
         )
         return subprocess.CompletedProcess(argv, 0, stdout="", stderr="")
 
     monkeypatch.setattr("hottop.video_execution.subprocess.run", fake_run)
+
+
+def test_execute_rejects_zero_cost_artifact_manifest_for_another_planned_backend(
+    monkeypatch, tmp_path: Path
+):
+    _install_fake_manifest_run(
+        monkeypatch,
+        lambda output: {
+            "schema_version": "hottop.video-artifacts.v1",
+            "planned_generation_backend": "comfy-api-v2",
+            "shots": [
+                {
+                    "shot_index": 1,
+                    "path": str(output),
+                    "artifact_kind": "ai-generated",
+                    "backend": "hf-public",
+                    "degraded_from": None,
+                    "degradation_reason": None,
+                }
+            ],
+        },
+    )
 
     with pytest.raises(VideoExecutionError, match="planned backend mismatch"):
         run_video_production(
@@ -121,38 +126,93 @@ def test_execute_rejects_zero_cost_artifact_manifest_for_another_planned_backend
 def test_execute_rejects_ai_artifact_from_unconfigured_zero_cost_backend(
     monkeypatch, tmp_path: Path
 ):
-    def fake_run(argv, **kwargs):
-        output = Path(argv[argv.index("--output") + 1])
-        artifact_manifest = Path(argv[argv.index("--artifact-manifest") + 1])
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_bytes(b"fresh-video")
-        artifact_manifest.write_text(
-            json.dumps(
+    _install_fake_manifest_run(
+        monkeypatch,
+        lambda output: {
+            "schema_version": "hottop.video-artifacts.v1",
+            "planned_generation_backend": "zero-cost-router",
+            "shots": [
                 {
-                    "schema_version": "hottop.video-artifacts.v1",
-                    "planned_generation_backend": "zero-cost-router",
-                    "shots": [
-                        {
-                            "shot_index": 1,
-                            "path": str(output),
-                            "artifact_kind": "ai-generated",
-                            "backend": "paid-or-unconfigured-provider",
-                            "degraded_from": None,
-                            "degradation_reason": None,
-                        }
-                    ],
+                    "shot_index": 1,
+                    "path": str(output),
+                    "artifact_kind": "ai-generated",
+                    "backend": "paid-or-unconfigured-provider",
+                    "degraded_from": None,
+                    "degradation_reason": None,
                 }
-            ),
-            encoding="utf-8",
-        )
-        return subprocess.CompletedProcess(argv, 0, stdout="", stderr="")
-
-    monkeypatch.setattr("hottop.video_execution.subprocess.run", fake_run)
+            ],
+        },
+    )
 
     with pytest.raises(VideoExecutionError, match="artifact backend mismatch"):
         run_video_production(
             _request(),
             _config(),
+            output_dir=tmp_path / "run",
+            project_root=tmp_path,
+            execute=True,
+        )
+
+
+def test_execute_rejects_deterministic_artifact_when_fallback_not_enabled(
+    monkeypatch, tmp_path: Path
+):
+    _install_fake_manifest_run(
+        monkeypatch,
+        lambda output: {
+            "schema_version": "hottop.video-artifacts.v1",
+            "planned_generation_backend": "zero-cost-router",
+            "shots": [
+                {
+                    "shot_index": 1,
+                    "path": str(output),
+                    "artifact_kind": "deterministic-non-generative",
+                    "backend": "deterministic-reference-motion",
+                    "degraded_from": "zero-cost-router",
+                    "degradation_reason": "zero_cost_routes_exhausted",
+                }
+            ],
+        },
+    )
+
+    with pytest.raises(VideoExecutionError, match="deterministic fallback not enabled"):
+        run_video_production(
+            _request(),
+            _config(),
+            output_dir=tmp_path / "run",
+            project_root=tmp_path,
+            execute=True,
+        )
+
+
+def test_execute_rejects_unrecognized_deterministic_fallback_backend(
+    monkeypatch, tmp_path: Path
+):
+    config = _config()
+    assert config.zero_cost is not None
+    config.zero_cost.deterministic_reference_fallback = True
+    _install_fake_manifest_run(
+        monkeypatch,
+        lambda output: {
+            "schema_version": "hottop.video-artifacts.v1",
+            "planned_generation_backend": "zero-cost-router",
+            "shots": [
+                {
+                    "shot_index": 1,
+                    "path": str(output),
+                    "artifact_kind": "deterministic-non-generative",
+                    "backend": "arbitrary-local-renderer",
+                    "degraded_from": "zero-cost-router",
+                    "degradation_reason": "zero_cost_routes_exhausted",
+                }
+            ],
+        },
+    )
+
+    with pytest.raises(VideoExecutionError, match="deterministic fallback backend mismatch"):
+        run_video_production(
+            _request(),
+            config,
             output_dir=tmp_path / "run",
             project_root=tmp_path,
             execute=True,
