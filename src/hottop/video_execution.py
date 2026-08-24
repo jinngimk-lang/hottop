@@ -60,6 +60,7 @@ class VideoRunResult(BaseModel):
     compositor_manifest_path: str
     composite_output_path: str
     final_output_path: str
+    artifact_manifest_paths: list[str] = Field(default_factory=list)
     runtime_commands: list[ExternalCommandSpec] = Field(default_factory=list)
     command_summaries: list[str] = Field(default_factory=list)
     actions_required: list[str] = Field(default_factory=list)
@@ -753,6 +754,11 @@ def run_video_production(
         composite_output=composite_output,
         final_output=final_output,
     )
+    artifact_manifest_paths = (
+        [str((shots_dir / f"shot-{shot.index:03d}.artifact.json").resolve()) for shot in plan.shots]
+        if config.generation_backend == "zero-cost-router"
+        else []
+    )
     readiness = inspect_video_environment(config, project_root=root)
     reference_actions = _zero_cost_reference_actions(
         plan,
@@ -807,6 +813,7 @@ def run_video_production(
         compositor_manifest_path=str(manifest_path),
         composite_output_path=str(composite_output),
         final_output_path=str(final_output),
+        artifact_manifest_paths=artifact_manifest_paths,
         runtime_commands=commands,
         command_summaries=summaries,
         actions_required=actions_required,
