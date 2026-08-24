@@ -3,13 +3,14 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from hottop.rendering import CreativeRenderFrame
+from hottop.rendering import CreativeRenderFrame, CreativeRenderRequest
 from hottop.video_execution import _zero_cost_runtime_generation_commands
 from hottop.video_hf_zerogpu import ZeroGpuError
 from hottop.video_production import (
     VideoProductionPlan,
     VideoReference,
     VideoShot,
+    build_video_production_plan,
     load_video_production_config,
 )
 from hottop.video_zero_cost import ZeroCostRoutesExhaustedError, run_zero_cost_shot
@@ -39,6 +40,47 @@ def test_creative_frame_requires_rights_safe_local_reference():
     assert frame.reference is not None
     assert frame.reference.image_path == "assets/original-character.png"
     assert frame.reference.rights == "generated-original"
+
+
+def test_render_reference_survives_into_video_plan():
+    config = load_video_production_config(Path("config/video/cinematic-zero-cost.yml"))
+    render = CreativeRenderRequest(
+        topic_id="topic",
+        topic_title="topic",
+        subject_name="subject",
+        expression_form="faux-film-still",
+        visual_medium="animation-low-poly",
+        genre_treatment="original cinematic animation",
+        distribution_mode="motion",
+        in_asset_cta_policy="no-destination",
+        motion_continuity_required=True,
+        frames=[
+            CreativeRenderFrame(
+                index=1,
+                scene="same original character crosses the workshop",
+                intent="preserve identity",
+                reference=VideoReference(
+                    image_path="assets/original-character.png",
+                    rights="generated-original",
+                ),
+            )
+        ],
+        master_prompt="original character continuity",
+        negative_prompt="identity drift",
+        punchlines=["keep moving"],
+        claim_status="satire",
+    )
+
+    plan = build_video_production_plan(render, config)
+
+    assert plan.shots[0].reference == VideoReference(
+        image_path="assets/original-character.png",
+        rights="generated-original",
+    )
+    assert plan.compositor_manifest["shots"][0]["reference"] == {
+        "image_path": "assets/original-character.png",
+        "rights": "generated-original",
+    }
 
 
 def test_zero_cost_runtime_command_preserves_reference_locator_and_rights(tmp_path: Path):
