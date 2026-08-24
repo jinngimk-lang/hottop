@@ -358,6 +358,33 @@ def _runtime_commands(
     return commands
 
 
+def _expected_stage_output(
+    command: ExternalCommandSpec,
+    *,
+    composite_output: Path,
+    final_output: Path,
+) -> Path | None:
+    if command.stage == "generation":
+        try:
+            save_index = command.args.index("--save_file") + 1
+            return Path(command.args[save_index])
+        except (ValueError, IndexError):
+            return None
+    if command.stage == "compositor":
+        return composite_output
+    if command.stage == "finalization":
+        return final_output
+    return None
+
+
+def _verify_stage_output(stage: str, path: Path | None) -> None:
+    if path is None or not path.is_file() or path.stat().st_size <= 0:
+        rendered = str(path) if path is not None else "unresolved output path"
+        raise VideoExecutionError(
+            f"video {stage} stage did not produce expected output: {rendered}"
+        )
+
+
 def run_video_production(
     render_request: CreativeRenderRequest,
     config: VideoProductionConfig,
@@ -418,6 +445,14 @@ def run_video_production(
                 raise VideoExecutionError(
                     f"video {command.stage} stage failed with return code {completed.returncode}"
                 )
+            _verify_stage_output(
+                command.stage,
+                _expected_stage_output(
+                    command,
+                    composite_output=composite_output,
+                    final_output=final_output,
+                ),
+            )
 
     return VideoRunResult(
         execute_requested=execute,
