@@ -54,13 +54,21 @@ wan22:
   default_enabled: false
   notes: "Primary open-source shot-generation candidate for config-driven motion. Prefer TI2V-5B for the general local path; model files and GPU execution remain operator-controlled."
 
+moviepy:
+  repo: Zulko/moviepy
+  version: 2.2.0
+  license: MIT
+  integration: optional_headless_video_compositor
+  default_enabled: false
+  notes: "Default deterministic headless compositor when a video profile selects it. Install via Hottop's optional video extra; no browser/UI is required. It assembles generated shots, captions and original synthetic audio before FFmpeg compatibility finalization."
+
 motion_canvas:
   repo: motion-canvas/motion-canvas
   commit: 7b91435c301d530351dcf5ebb91dd139c002e405
   license: MIT
-  integration: external_motion_compositor
+  integration: optional_advanced_motion_compositor
   default_enabled: false
-  notes: "Deterministic compositor for shot timing, captions, simple motion graphics, dialogue/SFX/BGM timing and continuity. Install outside Hottop when executing a video plan."
+  notes: "Optional advanced vector-motion, interactive preview and special-effects compositor. Keep it available for authored motion work, but do not require it for the unattended headless video-run path."
 
 ffmpeg:
   repo: FFmpeg/FFmpeg
