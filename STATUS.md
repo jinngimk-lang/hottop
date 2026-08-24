@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-24 16:06 +08:00
+Last updated: 2026-08-24 17:38 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 PR: #1 — open, draft, mergeable
@@ -8,45 +8,51 @@ PR: #1 — open, draft, mergeable
 ## Current foundation state
 
 - Hottop is a cross-category hot-topic brand creative engine, not InkClawAgent-only, AI-only, static-only or four-panel-only. `PROJECT.md` and reusable skills are the durable doctrine.
-- Core trend discovery/enrichment, dedupe/ranking, evidence-aware comparison, adaptive intake, project/platform/style routing, category reframing, bridge search, Creative Review/contextual review, orchestration, flexible `CreativeConcept` and provider-neutral `hottop.render.v2` are implemented.
+- Core trend discovery/enrichment, dedupe/ranking, evidence-aware comparison, adaptive intake, project/platform/style routing, category reframing, bridge search, Creative Review/contextual review, orchestration, flexible `CreativeConcept`, provider-neutral `hottop.render.v2`, config-driven `hottop.video-plan.v1`, and dry-run-first `video-run` are implemented.
 - Social/hotspot creative is ad-light by default: no in-asset URL/QR/hard CTA for meme/brand-memory work unless conversion intent explicitly overrides it.
 - Motion-native ideas preserve character/scene/action continuity instead of becoming slideshow-like still sequences. Product benefits appear first as dialogue, action or visible consequences.
-- Provenance-first visual references remain grammar-only; protected film frames, soundtrack, character designs, proprietary UI and copied layouts are not default generation inputs.
+- Provenance-first visual references remain grammar-only; protected film frames, actor likenesses, soundtrack, character designs, proprietary UI and copied layouts are not default generation inputs.
 
-## Anti-Polish / Controlled Badness video path
+## Style-routed video path
 
-- **Anti-Polish / Controlled Badness** is a durable selectable Hottop strategy: `low production feel + high comedy control`. Rough/cheap 3D, simple materials, awkward motion, deadpan acting, crude Foley and cheap-sounding music may be intentional; character continuity, scene geography, cause/effect, subtitle correctness, dialogue intelligibility, comedy timing, product semantics, claim safety and rights safety remain hard requirements.
-- Durable rule: **Do not polish the badness away; make the badness precise.** Product UI/benefits should remain native to the rough world instead of switching into generic glossy blue-purple AI-ad aesthetics.
-- `config/video/anti-polish-direct.yml` is the unattended direct profile: Wan2.2 optional local generation → MoviePy deterministic headless composition → FFmpeg compatibility encoding. `config/video/anti-polish-short.yml` keeps Motion Canvas as an optional advanced compositor path.
-- `src/hottop/video_production.py` defines `VideoProductionConfig`, `VideoProductionPlan`, ordered shots, continuity instructions, audio cues and trusted structured command specs (`program`, `args`, `cwd`, `stage`).
-- `hottop video-plan <render-v2.json> --config ... [--output plan.json]` emits provider-neutral `hottop.video-plan.v1`. Planning is side-effect free with respect to external tools.
-- `src/hottop/video_execution.py` provides fail-closed readiness inspection plus `hottop video-doctor`; it checks only operator-controlled local state and never installs packages, downloads models, provisions GPUs or calls paid services.
-- `hottop video-run <render-v2.json> --config ... --output-dir ...` is implemented. It is dry-run by default and materializes the plan/workspace without spawning external processes. Only explicit `--execute` may run trusted stages after readiness passes, using structured argument arrays, `shell=False`, fixed stage order and explicit working directories.
-- Execute mode now requires **fresh stage outputs**: before each generation/compositor/finalization command, any pre-existing expected output file is removed; a zero return code is accepted only if that stage then produces a new non-empty file. Stale files from a previous run cannot satisfy the success contract.
-- Dry-run is now project-tree safe for the Motion Canvas path: it no longer writes `hottop-video-plan.json` into `video/motion-canvas/`; the optional compositor receives the output-workspace plan via an absolute `--plan` path only when the runtime command is executed.
-- `video/motion-canvas/` remains a pinned Motion Canvas 3.17.2 scaffold for advanced vector-motion / interactive-preview treatment rather than a requirement for unattended execution.
-- `examples/video/inkclaw-cow-snake.render.json` is the editable canonical Anti-Polish cow/snake/mother story source. `examples/video/inkclaw-cow-snake.video-plan.json` is a representative `hottop.video-plan.v1` derived archive; its execution notes explicitly require regeneration from the render + repository config when planner behavior changes rather than treating the archive as a second creative source of truth.
-- The representative story keeps the user-provided wording `不用部署`, `开发零门槛`, and `Free Token 入门`, while avoiding unlimited/permanent-free implications, named-competitor defect claims, protected source footage, protected character designs and copyrighted soundtrack.
-- Upstreams remain pinned in `integrations/versions.yml`: Wan2.2 optional Apache-2.0 local generation, MoviePy MIT headless composition, Motion Canvas MIT optional advanced composition, and FFmpeg external compatibility encoding with build-dependent licensing. Remotion remains disabled by default pending operator license review.
-- Design/spec: `docs/superpowers/specs/2026-08-24-config-driven-video-production-design.md`.
-- Planning implementation: `docs/superpowers/plans/2026-08-24-config-driven-video-production.md`.
-- Safe execution follow-on: `docs/superpowers/plans/2026-08-24-video-execution-adapter.md`.
+- **Anti-Polish / Controlled Badness** remains a durable selectable strategy: `low production feel + high comedy control`. Rough/cheap 3D, simple materials, awkward motion, deadpan acting, crude Foley and cheap-sounding music may be intentional; character continuity, scene geography, cause/effect, subtitle correctness, dialogue intelligibility, comedy timing, product semantics, claim safety and rights safety remain hard requirements.
+- **Roughness is not universal.** `VideoProductionConfig.roughness_score` now makes intentional surface polish explicit on a 0–100 scale. High values may embrace controlled low-budget artifacts; cinematic/film hotspots use lower values so faces, costumes, lighting and camera work stay presentable.
+- `config/video/anti-polish-direct.yml`: unattended headless profile, `style_profile=anti-polish`, `roughness_score=78`, Wan2.2 optional generation → MoviePy → FFmpeg.
+- `config/video/cinematic-meme-direct.yml`: presentable film-meme profile, `style_profile=cinematic`, `roughness_score=28`, Wan2.2 optional generation → MoviePy → FFmpeg.
+- `config/video/anti-polish-short.yml` keeps Motion Canvas as an optional advanced vector-motion / interactive-preview path.
+- `hottop video-plan <render-v2.json> --config ...` remains planning-only. `hottop video-run <render-v2.json> --config ... --output-dir ...` is dry-run by default; only explicit `--execute` may spawn trusted configured stages after readiness passes.
+- Execute mode requires fresh non-empty stage outputs and removes partial output from a failed external stage before raising. Stale/corrupt half-files cannot satisfy success.
+
+## Audio is now first-class
+
+- `CreativeRenderFrame` supports `speaker` and `delivery`, so character role and performance direction survive from creative source into production.
+- `VideoProductionConfig.audio` carries explicit **voice**, **music**, and **SFX/Foley** backends/profiles, Mandarin rate/language settings, dialogue ducking, and `original_music_only`.
+- `hottop.video-plan.v1` carries an `audio_profile`; dialogue cues preserve character, delivery and voice profile alongside BGM/Foley timing.
+- Local executable baseline is deliberately dependency-light and free: `espeak` for Mandarin dialogue + Hottop-generated original synthetic music + deterministic procedural SFX/Foley. This baseline is a fallback/testable execution path, not the quality ceiling.
+- `video-run` runtime order is generation → audio → compositor → finalization. Dry-run creates both `shots/` and `audio/` workspaces without spawning subprocesses.
+- MoviePy headless composition now mixes shot audio, generated dialogue WAVs, original synthetic BGM and procedural SFX before FFmpeg H.264/AAC/yuv420p/fast-start finalization.
+- External/cloud voice/music backends stay fail-closed until explicitly configured. No paid API, credential use, upload or commercial-license activation is automatic.
+
+## Representative video sources
+
+- `examples/video/inkclaw-cow-snake.render.json` — high-roughness original Anti-Polish story source; its derived `hottop.video-plan.v1` archive remains a snapshot rather than a second creative source of truth.
+- `examples/video/inkclaw-odyssey-witch-pigs.render.json` — lower-roughness cinematic mythic meme source: sailors code/eat in one original witch banquet hall, an unmistakably satirical magical obstruction turns them into pigs, an original returning-sailor hero uses InkClawAgent to break the curse, and `不用部署 / 开发零门槛 / Free Token 入门` appear as story consequences rather than glossy feature cards.
+- The Odyssey source explicitly excludes copied film frames, actor likenesses, official character designs, source footage and commercial soundtrack. The `某包 / Work巴迪?` prop is framed only as magical satire/metaphor, not as a factual defect claim.
 
 ## Verification evidence
 
-- Earlier provider-neutral video planning, `video-doctor`, trusted structured command specs and Motion Canvas scaffold contracts were introduced RED-first and verified on Python 3.11 / 3.12.
-- Recovery head `fc17af66dcc2e2dd040d9603dc0ee71ccf634a6b` exposed a Ruff-only import-order regression in `tests/test_anti_polish_doctrine_contract.py` (CI run 871). Minimal formatting fix `567f1231d0ee5d0d6b0c398d94865449b5d70c8d` restored exact-head CI in run 873.
-- The representative video-plan archive was introduced RED-first at `47427420ff7f42fdcda397cf9828456a69158a1f`: run 875 passed Ruff and failed exactly once because `examples/video/inkclaw-cow-snake.video-plan.json` did not exist (`1 failed / 275 passed`). The representative derived archive plus contract head `fe418ee7aff38d3bf74c5ac4ce35ad284e8c7146` passed exact-head CI run 879.
-- Motion Canvas dry-run project-tree safety was introduced RED-first at `d259f92dcb6e3a6834175ace19ca9f472b300dc8`: run 881 passed Ruff and failed exactly once because dry-run wrote a plan into the compositor project (`1 failed / 276 passed`). Minimal implementation head `645111dbcc9061a6bbdb09feb09ebe3a4702e3ae` now passes exact-head CI run 883 on Python 3.11 and 3.12.
-- Basic execute-stage output verification was added at `7ca96c7d45fde4c8df9fe46bb2dcad76ba592e06`; exact-head CI run 889 passed after requiring generation/compositor/finalization to emit non-empty expected files.
-- Fresh-output safety was introduced RED-first at `a484c8c8d1eec13a1cefd5848d391f2872274dab`: CI run 891 passed Ruff and failed exactly once because pre-existing non-empty MP4s could satisfy a no-op successful stage (`1 failed / 278 passed`). The implementation now removes each expected output before the trusted command and verifies a newly produced non-empty file. An initial GREEN wording change exposed only a backward-compatible error-message assertion in run 893; compatibility fix head `fce71de7539bf2078086a7a9f361b5ee4a7fd9eb` passes exact-head CI run 895 on Python 3.11 and 3.12.
+- Earlier provider-neutral video planning, `video-doctor`, structured command specs, MoviePy/headless execution, Motion Canvas project-tree safety, stage-output verification and fresh-output safety were introduced RED-first and verified on Python 3.11 / 3.12; prior exact-head run 895 was green before the audio/style increment.
+- The new audio/style work was introduced RED-first through `tests/test_video_audio_pipeline.py`, `tests/test_video_style_profiles.py`, and `tests/test_odyssey_video_archive.py`.
+- During RED, CI also exposed a concrete failed-stage cleanup gap; `src/hottop/video_execution.py` now removes a partial output before raising on a nonzero stage result.
+- Exact branch head `3eb8055d5ddefb106b2a284e39d0613914613f4b` passed CI run **933** on both Python **3.11** and **3.12**; Ruff and pytest succeeded in both jobs.
+- `PROJECT.md` and this STATUS were then synchronized with the style-routed/audio-first architecture. Re-verify exact head after remaining skill/PR synchronization before final Foundation closure claims.
 
 ## Current creative doctrine
 
 - Reframe before optimize: identify `category_default`, test constraint deletion, derive `new_competition_axis`.
 - Natural bridge before logo: search shape/material, action/motion, role, function, emotion/ritual and language/symbol.
 - Format follows the idea; medium follows the hotspot; motion follows timing/action/dialogue/sound when those carry recognition.
-- Anti-Polish is a valid competition axis when intentional roughness makes the work more native, memorable and less ad-like.
+- Roughness follows the idea too: Anti-Polish is differentiated, not universal. A cinematic meme may be weird without looking broken.
 - Product benefits belong inside the joke as consequences; do not replace the joke with feature cards.
 - Named competitor negatives require evidence or unmistakable satire; otherwise use a generic proxy or old category assumption.
 - Creative Review remains the hard gate; contextual fit only ranks concepts that already pass.
@@ -54,19 +60,19 @@ PR: #1 — open, draft, mergeable
 
 ## In progress
 
+- Persist `roughness_score` and first-class voice/music/SFX rules in the reusable creative skill and PR summary.
+- Re-run exact-head CI after status/skill/PR synchronization.
+- Next architecture increment: provider-neutral external/cloud generation adapter contract (for example a configured ComfyUI endpoint) that preserves the same `render.v2 → video-plan → video-run` semantics. It must remain fail-closed and must not silently upload assets, use credentials or incur paid usage.
+- After the adapter contract exists, evaluate current video backends for style/continuity fit rather than hard-coding one model for every hotspot.
 - Foundation v0.1 accumulated PR diff / production-contract closure review continues.
-- The safe video execution adapter is implemented at the code-contract level: provider-neutral plan, readiness inspection, dry-run workspace, explicit opt-in execution, MoviePy headless composition, optional Motion Canvas path, FFmpeg finalization, stage output verification and stale-output rejection are present. Actual Wan2.2 model files, GPU execution, optional packages and external binaries remain operator-controlled environment concerns and are intentionally not CI requirements.
-- Continue reviewing the explicit execution path only for concrete reproducible safety/integrity gaps; do not add infrastructure merely to create activity.
-- Continue fresh cross-category trend/evidence research when it materially improves creative coverage; do not collapse discovery into AI/tech only.
-- RSSHub remains optional until an operator-controlled `RSSHUB_BASE_URL` is explicitly available.
 
 ## Next actions
 
-1. Finish PR #1 accumulated diff/contract closure review; keep the PR draft until closure criteria are reviewed against exact-head CI.
-2. Review the explicit `video-run --execute` path for remaining concrete reproducible safety/integrity gaps; add RED → GREEN contracts only where a real gap exists.
-3. Reconcile PR #1 completion text with the now-implemented fresh-output guarantee in addition to MoviePy/headless execution, representative video-plan archive and dry-run project-tree safety, then keep exact-head CI green.
-4. Keep PR draft until Foundation closure criteria are reviewed; do not mark ready solely because the video adapter is green.
-5. After Foundation v0.1, add the lightweight project-bootstrap template/command for charter/status/skill recovery.
+1. Update the reusable creative skill with style-routed roughness and first-class audio production rules.
+2. Synchronize PR #1 body and verify the resulting exact head on Python 3.11/3.12.
+3. Add an explicit external/cloud video adapter configuration + readiness contract; no real paid/cloud invocation without operator-controlled endpoint/credentials and an allowed cost boundary.
+4. Add a higher-quality voice/music adapter interface while retaining the deterministic local audio fallback.
+5. Continue Foundation closure review; keep PR draft until closure criteria are checked against exact-head CI.
 
 ## Constraints
 
