@@ -51,6 +51,7 @@ HotspotPreference = Literal[
     "current-best",
     "auto",
 ]
+DistributionMode = Literal["auto", "static", "motion"]
 
 T = TypeVar("T")
 
@@ -71,6 +72,9 @@ class CreativeIntent(BaseModel):
     product_visibility: IntentValue[ProductVisibility]
     audience: IntentValue[str | None]
     hotspot_preference: IntentValue[HotspotPreference]
+    distribution_mode: IntentValue[DistributionMode] = Field(
+        default_factory=lambda: IntentValue(value="auto", source="defaulted", confidence=0.0)
+    )
     constraints: list[str] = Field(default_factory=list)
 
     @field_validator("promotion_target")
@@ -215,6 +219,27 @@ def _infer_hotspot(text: str) -> IntentValue[HotspotPreference]:
     return _default("auto")
 
 
+def _infer_distribution_mode(text: str) -> IntentValue[DistributionMode]:
+    lowered = text.lower()
+    if any(
+        term in lowered
+        for term in (
+            "短视频",
+            "视频",
+            "动效",
+            "连续镜头",
+            "动态",
+            "motion",
+            "video",
+            "gif",
+        )
+    ):
+        return _inferred("motion", 0.94)
+    if any(term in lowered for term in ("海报", "单图", "静态", "poster", "still image", "single image")):
+        return _inferred("static", 0.92)
+    return _default("auto")
+
+
 def _infer_goal(text: str) -> IntentValue[CampaignGoal]:
     lowered = text.lower()
     if any(term in lowered for term in ("破框", "重构", "旧范式", "category reframe")):
@@ -247,6 +272,7 @@ def resolve_intent(request: str, overrides: dict[str, object] | None = None) -> 
         product_visibility=_infer_visibility(request),
         audience=_default(None),
         hotspot_preference=_infer_hotspot(request),
+        distribution_mode=_infer_distribution_mode(request),
         constraints=[],
     )
 
@@ -263,6 +289,7 @@ def resolve_intent(request: str, overrides: dict[str, object] | None = None) -> 
         "product_visibility",
         "audience",
         "hotspot_preference",
+        "distribution_mode",
     }
     for key, value in overrides.items():
         if key == "constraints":
