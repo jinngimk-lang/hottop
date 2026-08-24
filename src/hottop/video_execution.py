@@ -394,7 +394,8 @@ def _verify_stage_output(stage: str, path: Path | None) -> None:
     if path is None or not path.is_file() or path.stat().st_size <= 0:
         rendered = str(path) if path is not None else "unresolved output path"
         raise VideoExecutionError(
-            f"video {stage} stage did not produce fresh expected output: {rendered}"
+            f"video {stage} stage did not produce expected output; "
+            f"fresh expected output missing: {rendered}"
         )
 
 
