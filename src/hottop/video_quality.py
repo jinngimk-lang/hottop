@@ -1,0 +1,246 @@
+from __future__ import annotations
+
+import json
+import subprocess
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
+
+from pydantic import BaseModel, Field
+
+
+class VideoQualityError(RuntimeError):
+    """Raised when a generated video artifact fails deterministic quality checks."""
+
+
+class VideoQualityPolicy(BaseModel):
+    min_motion_delta: float = Field(default=2.0, ge=0)
+    max_duplicate_ratio: float = Field(default=0.6, ge=0, le=1)
+    duplicate_delta: float = Field(default=1.0, ge=0)
+    sample_fps: int = Field(default=4, ge=1, le=12)
+    sample_width: int = Field(default=96, ge=32, le=320)
+    sample_height: int = Field(default=54, ge=18, le=180)
+
+
+class VideoQualityReport(BaseModel):
+    pass_: bool
+    duration: float = 0
+    width: int = 0
+    height: int = 0
+    fps: float = 0
+    terminal_frame_decodable: bool = False
+    frame_count: int = 0
+    mean_motion_delta: float = 0
+    duplicate_ratio: float = 1
+    reasons: list[str] = Field(default_factory=list)
+
+
+def _mean_absolute_delta(left: bytes, right: bytes) -> float:
+    if not left or len(left) != len(right):
+        raise ValueError("motion frames must be non-empty and equal length")
+    return sum(abs(a - b) for a, b in zip(left, right, strict=True)) / len(left)
+
+
+def evaluate_motion_frames(
+    frames: list[bytes],
+    policy: VideoQualityPolicy,
+) -> VideoQualityReport:
+    if len(frames) < 2:
+        return VideoQualityReport(
+            pass_=False,
+            frame_count=len(frames),
+            reasons=["insufficient motion samples"],
+        )
+
+    deltas: list[float] = []
+    duplicates = 0
+    for previous, current in zip(frames, frames[1:], strict=False):
+        delta = _mean_absolute_delta(previous, current)
+        deltas.append(delta)
+        if delta <= policy.duplicate_delta:
+            duplicates += 1
+
+    mean_delta = sum(deltas) / len(deltas)
+    duplicate_ratio = duplicates / len(deltas)
+    reasons: list[str] = []
+    if mean_delta < policy.min_motion_delta:
+        reasons.append(
+            f"motion delta {mean_delta:.3f} below {policy.min_motion_delta:.3f}"
+        )
+    if duplicate_ratio > policy.max_duplicate_ratio:
+        reasons.append(
+            f"duplicate ratio {duplicate_ratio:.3f} above {policy.max_duplicate_ratio:.3f}"
+        )
+    return VideoQualityReport(
+        pass_=not reasons,
+        frame_count=len(frames),
+        mean_motion_delta=mean_delta,
+        duplicate_ratio=duplicate_ratio,
+        terminal_frame_decodable=True,
+        reasons=reasons,
+    )
+
+
+def _parse_rate(value: Any) -> float:
+    text = str(value or "")
+    if not text:
+        return 0
+    numerator, _, denominator = text.partition("/")
+    try:
+        n = float(numerator)
+        d = float(denominator or "1")
+    except ValueError:
+        return 0
+    return n / d if d else 0
+
+
+def _result_stdout(result: Any) -> Any:
+    return getattr(result, "stdout", "")
+
+
+def _run(
+    runner: Callable[..., Any],
+    args: list[str],
+    *,
+    text: bool,
+) -> Any:
+    return runner(
+        args,
+        capture_output=True,
+        check=False,
+        text=text,
+    )
+
+
+def inspect_video_quality(
+    path: Path,
+    policy: VideoQualityPolicy,
+    *,
+    runner: Callable[..., Any] = subprocess.run,
+) -> VideoQualityReport:
+    """Inspect media integrity and observable motion without optional heavy dependencies."""
+
+    if not path.is_file() or path.stat().st_size <= 0:
+        return VideoQualityReport(pass_=False, reasons=["video file missing or empty"])
+
+    probe = _run(
+        runner,
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-show_entries",
+            "format=duration:stream=codec_type,codec_name,width,height,avg_frame_rate",
+            "-of",
+            "json",
+            str(path),
+        ],
+        text=True,
+    )
+    if int(getattr(probe, "returncode", 1)) != 0:
+        return VideoQualityReport(pass_=False, reasons=["ffprobe failed"])
+    try:
+        raw_probe = json.loads(str(_result_stdout(probe) or "{}"))
+    except json.JSONDecodeError:
+        return VideoQualityReport(pass_=False, reasons=["ffprobe returned invalid JSON"])
+
+    streams = raw_probe.get("streams") if isinstance(raw_probe, dict) else None
+    streams = streams if isinstance(streams, list) else []
+    video = next(
+        (stream for stream in streams if isinstance(stream, dict) and stream.get("codec_type") == "video"),
+        None,
+    )
+    try:
+        duration = float(raw_probe.get("format", {}).get("duration") or 0)
+    except (TypeError, ValueError):
+        duration = 0
+    if video is None:
+        return VideoQualityReport(
+            pass_=False,
+            duration=duration,
+            reasons=["video stream missing"],
+        )
+
+    width = int(video.get("width") or 0)
+    height = int(video.get("height") or 0)
+    fps = _parse_rate(video.get("avg_frame_rate"))
+    base_reasons: list[str] = []
+    if duration <= 0:
+        base_reasons.append("video duration is zero")
+    if width <= 0 or height <= 0:
+        base_reasons.append("video dimensions are invalid")
+
+    terminal = _run(
+        runner,
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-sseof",
+            "-0.25",
+            "-i",
+            str(path),
+            "-frames:v",
+            "1",
+            "-f",
+            "null",
+            "-",
+        ],
+        text=False,
+    )
+    terminal_decodable = int(getattr(terminal, "returncode", 1)) == 0
+    if not terminal_decodable:
+        base_reasons.append("terminal frame not decodable")
+
+    sampled = _run(
+        runner,
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-i",
+            str(path),
+            "-vf",
+            (
+                f"fps={policy.sample_fps},scale={policy.sample_width}:{policy.sample_height}:"
+                "flags=area,format=gray"
+            ),
+            "-f",
+            "rawvideo",
+            "-pix_fmt",
+            "gray",
+            "pipe:1",
+        ],
+        text=False,
+    )
+    frame_size = policy.sample_width * policy.sample_height
+    frames: list[bytes] = []
+    if int(getattr(sampled, "returncode", 1)) == 0:
+        output = _result_stdout(sampled)
+        byte_output = output if isinstance(output, bytes) else bytes(output or b"")
+        for offset in range(0, len(byte_output) - frame_size + 1, frame_size):
+            frames.append(byte_output[offset : offset + frame_size])
+
+    motion = evaluate_motion_frames(frames, policy)
+    reasons = [*base_reasons, *motion.reasons]
+    return VideoQualityReport(
+        pass_=not reasons,
+        duration=duration,
+        width=width,
+        height=height,
+        fps=fps,
+        terminal_frame_decodable=terminal_decodable,
+        frame_count=motion.frame_count,
+        mean_motion_delta=motion.mean_motion_delta,
+        duplicate_ratio=motion.duplicate_ratio,
+        reasons=reasons,
+    )
+
+
+def assert_video_quality(report: VideoQualityReport) -> None:
+    if report.pass_:
+        return
+    reasons = "; ".join(report.reasons) or "generated video quality gate failed"
+    raise VideoQualityError(f"generated video rejected: {reasons}")
