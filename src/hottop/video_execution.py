@@ -38,6 +38,7 @@ class VideoExecutionStatus(BaseModel):
     ready: bool
     wan22: BackendReadiness
     comfy_api: BackendReadiness | None = None
+    zero_cost: BackendReadiness | None = None
     voice: BackendReadiness | None = None
     motion_canvas: BackendReadiness
     moviepy: BackendReadiness | None = None
@@ -138,6 +139,42 @@ def _comfy_api_readiness(
     )
 
 
+def _zero_cost_readiness(config: VideoProductionConfig) -> BackendReadiness:
+    if config.generation_backend != "zero-cost-router":
+        return BackendReadiness(backend="zero-cost-router", ready=True, checks=["not selected"])
+
+    missing: list[str] = []
+    checks: list[str] = [f"python={sys.executable}"]
+    if not Path(sys.executable).is_file():
+        missing.append("python executable")
+
+    route = config.zero_cost
+    if route is None:
+        missing.append("zero-cost route configuration")
+    else:
+        checks.append(f"allow_paid_fallback={route.allow_paid_fallback}")
+        checks.append(f"candidate_count={len(route.candidates)}")
+        for candidate in route.candidates:
+            checks.append(
+                f"candidate={candidate.id}; profile={candidate.profile}; space={candidate.space_url}; "
+                f"anonymous={candidate.allow_anonymous}; token_env={candidate.token_env or 'none'}"
+            )
+            if candidate.cost_per_unit != 0:
+                missing.append(f"cost-zero candidate required: {candidate.id}")
+            if not candidate.allow_anonymous:
+                if not candidate.token_env:
+                    missing.append(f"token environment variable name for {candidate.id}")
+                elif not os.environ.get(candidate.token_env):
+                    missing.append(f"{candidate.token_env} environment variable")
+
+    return BackendReadiness(
+        backend="zero-cost-router",
+        ready=not missing,
+        checks=checks,
+        missing=missing,
+    )
+
+
 def _voice_readiness(config: VideoProductionConfig) -> BackendReadiness:
     backend = config.audio.voice_backend
     if backend == "none":
@@ -232,6 +269,7 @@ def inspect_video_environment(
     root = project_root.resolve()
     wan22 = _wan22_readiness(config, root)
     comfy_api = _comfy_api_readiness(config, root)
+    zero_cost = _zero_cost_readiness(config)
     voice = _voice_readiness(config)
     motion_canvas = _motion_canvas_readiness(config, root)
     moviepy = _moviepy_readiness(config)
@@ -245,6 +283,10 @@ def inspect_video_environment(
     if not comfy_api.ready:
         actions.append(
             "Configure the operator-approved Comfy API v2 HTTPS endpoint, workflow JSON and token environment variable; Hottop will not create credentials or enable paid usage."
+        )
+    if not zero_cost.ready:
+        actions.append(
+            "Configure at least one valid cost-zero video candidate. Anonymous candidates need no token; authenticated free routes use environment variables only. Paid fallback is forbidden."
         )
     if not voice.ready:
         actions.append(
@@ -267,6 +309,7 @@ def inspect_video_environment(
         ready=(
             wan22.ready
             and comfy_api.ready
+            and zero_cost.ready
             and voice.ready
             and motion_canvas.ready
             and moviepy.ready
@@ -274,6 +317,7 @@ def inspect_video_environment(
         ),
         wan22=wan22,
         comfy_api=comfy_api,
+        zero_cost=zero_cost,
         voice=voice,
         motion_canvas=motion_canvas,
         moviepy=moviepy,
@@ -379,6 +423,40 @@ def _comfy_runtime_generation_commands(
     return commands
 
 
+def _zero_cost_runtime_generation_commands(
+    plan: VideoProductionPlan,
+    config: VideoProductionConfig,
+    *,
+    project_root: Path,
+    shots_dir: Path,
+) -> list[ExternalCommandSpec]:
+    if config.generation_backend != "zero-cost-router" or config.zero_cost is None:
+        return []
+    runtime_config = (shots_dir.parent / "zero-cost-runtime.json").resolve()
+    commands: list[ExternalCommandSpec] = []
+    for shot in plan.shots:
+        commands.append(
+            ExternalCommandSpec(
+                program=sys.executable,
+                args=[
+                    "-m",
+                    "hottop.video_zero_cost",
+                    "--config",
+                    str(runtime_config),
+                    "--prompt",
+                    shot.generation_prompt,
+                    "--duration-seconds",
+                    str(shot.duration_seconds),
+                    "--output",
+                    str((shots_dir / f"shot-{shot.index:03d}.mp4").resolve()),
+                ],
+                cwd=str(project_root.resolve()),
+                stage="generation",
+            )
+        )
+    return commands
+
+
 def _runtime_generation_commands(
     plan: VideoProductionPlan,
     config: VideoProductionConfig,
@@ -388,6 +466,13 @@ def _runtime_generation_commands(
 ) -> list[ExternalCommandSpec]:
     if config.generation_backend == "comfy-api-v2":
         return _comfy_runtime_generation_commands(
+            plan,
+            config,
+            project_root=project_root,
+            shots_dir=shots_dir,
+        )
+    if config.generation_backend == "zero-cost-router":
+        return _zero_cost_runtime_generation_commands(
             plan,
             config,
             project_root=project_root,
@@ -617,6 +702,8 @@ def run_video_production(
     final_output = workspace / f"hottop-output.{config.output_format}"
     _write_json(plan_path, plan)
     _write_json(manifest_path, plan.compositor_manifest)
+    if config.generation_backend == "zero-cost-router" and config.zero_cost is not None:
+        _write_json(workspace / "zero-cost-runtime.json", config.zero_cost)
 
     commands = _runtime_commands(
         plan,
