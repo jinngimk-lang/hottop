@@ -11,6 +11,7 @@ from pydantic import BaseModel
 
 from .video_hf_zerogpu import HfZeroGpuRequest, ZeroGpuError, execute_hf_zerogpu
 from .video_production import ZeroCostCandidateConfig, ZeroCostConfig
+from .video_quality import VideoQualityPolicy, inspect_video_quality
 
 T = TypeVar("T")
 
@@ -93,6 +94,17 @@ def load_zero_cost_runtime(path: Path) -> ZeroCostConfig:
         ) from exc
 
 
+def _quality_policy(config: ZeroCostConfig) -> VideoQualityPolicy:
+    quality = config.quality_gate
+    return VideoQualityPolicy(
+        min_motion_delta=quality.min_motion_delta,
+        max_duplicate_ratio=quality.max_duplicate_ratio,
+        sample_fps=quality.sample_fps,
+        sample_width=quality.sample_width,
+        sample_height=quality.sample_height,
+    )
+
+
 def run_zero_cost_shot(
     config_path: Path,
     *,
@@ -105,6 +117,7 @@ def run_zero_cost_shot(
 
     config = load_zero_cost_runtime(config_path)
     environment = os.environ if env is None else env
+    quality_policy = _quality_policy(config)
 
     def execute(candidate: ZeroCostCandidateConfig) -> Path:
         token = environment.get(candidate.token_env) if candidate.token_env else None
@@ -121,7 +134,17 @@ def run_zero_cost_shot(
             output=output,
             token=token,
         )
-        return execute_hf_zerogpu(request)
+        generated = execute_hf_zerogpu(request)
+        report = inspect_video_quality(generated, quality_policy)
+        if not report.pass_:
+            generated.unlink(missing_ok=True)
+            reasons = "; ".join(report.reasons) or "generated video quality gate failed"
+            raise ZeroGpuError(
+                f"generated video rejected by quality gate: {reasons}",
+                code="zero_cost_quality_rejected",
+                retryable=True,
+            )
+        return generated
 
     result = run_zero_cost_candidates(
         config.candidates,
