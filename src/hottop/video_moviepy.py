@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -130,6 +131,40 @@ def build_moviepy_timeline(
     )
 
 
+def verify_moviepy_shot_artifacts(timeline: MoviePyTimeline) -> None:
+    """Reverify generated shot bytes immediately before the compositor consumes them."""
+
+    for shot in timeline.shots:
+        source = Path(shot.source)
+        manifest_path = source.with_suffix(".artifact.json")
+        if not manifest_path.is_file():
+            raise ValueError(f"Missing artifact manifest for MoviePy shot {shot.index}: {manifest_path}")
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        records = manifest.get("shots")
+        if not isinstance(records, list):
+            raise ValueError(f"Invalid artifact manifest for MoviePy shot {shot.index}")
+        record = next(
+            (
+                item
+                for item in records
+                if isinstance(item, dict)
+                and item.get("shot_index") == shot.index
+                and item.get("path") == str(source)
+            ),
+            None,
+        )
+        if record is None:
+            raise ValueError(f"Artifact manifest does not bind MoviePy shot {shot.index} to {source}")
+        if not source.is_file():
+            raise ValueError(f"MoviePy shot {shot.index} content mismatch: source file is missing")
+        content = source.read_bytes()
+        expected_size = record.get("size_bytes")
+        expected_sha256 = record.get("sha256")
+        actual_sha256 = hashlib.sha256(content).hexdigest()
+        if expected_size != len(content) or expected_sha256 != actual_sha256:
+            raise ValueError(f"MoviePy shot {shot.index} content mismatch with artifact provenance")
+
+
 def _synthetic_bgm_array(
     duration_seconds: float,
     description: str = "",
@@ -201,6 +236,8 @@ def render_moviepy_timeline(
     output: Path,
 ) -> None:
     """Render shots with captions, dialogue, original music and procedural Foley/SFX."""
+
+    verify_moviepy_shot_artifacts(timeline)
 
     try:
         from moviepy import (
