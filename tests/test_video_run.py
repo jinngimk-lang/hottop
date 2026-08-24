@@ -1,4 +1,5 @@
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -112,6 +113,29 @@ def test_video_run_execute_fails_closed_before_spawning_when_environment_is_not_
     monkeypatch.setattr("hottop.video_execution.subprocess.run", forbidden_run)
 
     with pytest.raises(VideoExecutionError, match="not ready"):
+        run_video_production(
+            _request(),
+            config,
+            output_dir=tmp_path / "run",
+            project_root=tmp_path,
+            execute=True,
+        )
+
+
+def test_video_run_execute_fails_closed_when_successful_stage_produces_no_output(
+    monkeypatch, tmp_path
+):
+    config = load_video_production_config(Path("config/video/anti-polish-direct.yml"))
+    monkeypatch.setattr(
+        "hottop.video_execution.inspect_video_environment",
+        lambda *_args, **_kwargs: SimpleNamespace(ready=True, actions_required=[]),
+    )
+    monkeypatch.setattr(
+        "hottop.video_execution.subprocess.run",
+        lambda *_args, **_kwargs: SimpleNamespace(returncode=0, stdout="ok", stderr=""),
+    )
+
+    with pytest.raises(VideoExecutionError, match="did not produce expected output"):
         run_video_production(
             _request(),
             config,
