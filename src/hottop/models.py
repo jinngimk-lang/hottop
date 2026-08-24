@@ -21,6 +21,8 @@ VisualMedium = Literal[
     "technology-realism", "commercial-product", "internet-native",
 ]
 ReferenceRightsMode = Literal["analysis-only", "public-domain", "rights-cleared", "unknown"]
+DistributionMode = Literal["auto", "static", "motion"]
+InAssetCtaPolicy = Literal["no-destination", "conversion-destination"]
 
 
 class Evidence(BaseModel):
@@ -361,6 +363,9 @@ class CreativeConcept(BaseModel):
     negative_prompt: str = Field(min_length=1)
     risk_flags: list[str] = Field(default_factory=list)
     claim_status: ClaimStatus = "satire"
+    distribution_mode: DistributionMode = "auto"
+    in_asset_cta_policy: InAssetCtaPolicy = "no-destination"
+    motion_continuity_required: bool = False
 
     @field_validator("comparison_target")
     @classmethod
