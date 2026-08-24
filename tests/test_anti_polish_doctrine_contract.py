@@ -1,4 +1,5 @@
 from pathlib import Path
+import tomllib
 
 import yaml
 
@@ -40,3 +41,11 @@ def test_video_upstreams_are_pinned_with_safe_roles():
     assert versions["ffmpeg"]["commit"] == "1019f8f036602a8464185baa4857654337eeca14"
     assert versions["remotion"]["default_enabled"] is False
     assert "license" in versions["remotion"]["notes"].lower()
+
+
+def test_moviepy_is_an_optional_video_dependency_not_a_core_requirement():
+    pyproject = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+    dependencies = pyproject["project"]["optional-dependencies"]["video"]
+
+    assert "moviepy>=2.2,<3" in dependencies
+    assert all(not dependency.startswith("moviepy") for dependency in pyproject["project"]["dependencies"])
