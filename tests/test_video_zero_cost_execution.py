@@ -125,6 +125,9 @@ def test_zero_cost_dry_run_materializes_public_runtime_without_secret(monkeypatc
     assert "--shot-index" in generation[0].args
     assert "--artifact-manifest" in generation[0].args
     assert "super-secret-free-token" not in joined
+    assert result.artifact_manifest_paths == [
+        str((output_dir / "shots" / "shot-001.artifact.json").resolve())
+    ]
 
     runtime_path = output_dir / "zero-cost-runtime.json"
     runtime = json.loads(runtime_path.read_text(encoding="utf-8"))
