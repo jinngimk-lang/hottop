@@ -89,3 +89,28 @@ def test_anti_polish_prompt_keeps_badness_controlled_not_broken():
     assert "character continuity" in " ".join(plan.execution_notes).lower()
     assert "subtitle correctness" in " ".join(plan.execution_notes).lower()
     assert "glossy ai ad" in plan.shots[0].negative_prompt.lower()
+
+
+def test_video_plan_exposes_trusted_structured_command_specs():
+    config = load_video_production_config(Path("config/video/anti-polish-short.yml"))
+    plan = build_video_production_plan(_motion_render_request(), config)
+
+    assert len(plan.generation_command_specs) == len(plan.shots)
+    generation = plan.generation_command_specs[0]
+    assert generation.stage == "generation"
+    assert generation.program == "python"
+    assert generation.args[0] == "generate.py"
+    assert generation.cwd == "integrations/Wan2.2"
+
+    compositor = plan.compositor_command_spec
+    assert compositor is not None
+    assert compositor.stage == "compositor"
+    assert compositor.program == "npm"
+    assert compositor.cwd == "video/motion-canvas"
+    assert compositor.args == ["run", "render", "--", "--plan", "hottop-video-plan.json"]
+
+    finalizer = plan.finalization_command_spec
+    assert finalizer is not None
+    assert finalizer.stage == "finalization"
+    assert finalizer.program == "ffmpeg"
+    assert finalizer.args == plan.finalization_command[1:]
