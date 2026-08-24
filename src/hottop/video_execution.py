@@ -36,6 +36,7 @@ class VideoExecutionStatus(BaseModel):
     )
     ready: bool
     wan22: BackendReadiness
+    voice: BackendReadiness | None = None
     motion_canvas: BackendReadiness
     moviepy: BackendReadiness | None = None
     ffmpeg: BackendReadiness
@@ -51,6 +52,7 @@ class VideoRunResult(BaseModel):
     ready: bool
     output_dir: str
     shots_dir: str
+    audio_dir: str
     plan_path: str
     compositor_manifest_path: str
     composite_output_path: str
@@ -98,6 +100,26 @@ def _wan22_readiness(
         ready=not missing,
         checks=checks,
         missing=missing,
+    )
+
+
+def _voice_readiness(config: VideoProductionConfig) -> BackendReadiness:
+    backend = config.audio.voice_backend
+    if backend == "none":
+        return BackendReadiness(backend="none", ready=True, checks=["voice disabled"])
+    if backend == "espeak":
+        resolved = shutil.which("espeak")
+        return BackendReadiness(
+            backend="espeak",
+            ready=resolved is not None,
+            checks=[f"espeak={resolved or 'missing'}"],
+            missing=[] if resolved else ["espeak executable"],
+        )
+    return BackendReadiness(
+        backend=backend,
+        ready=False,
+        checks=["external voice adapter requires explicit operator configuration"],
+        missing=["configured external voice adapter"],
     )
 
 
@@ -174,6 +196,7 @@ def inspect_video_environment(
 
     root = project_root.resolve()
     wan22 = _wan22_readiness(config, root)
+    voice = _voice_readiness(config)
     motion_canvas = _motion_canvas_readiness(config, root)
     moviepy = _moviepy_readiness(config)
     ffmpeg = _ffmpeg_readiness(config)
@@ -182,6 +205,10 @@ def inspect_video_environment(
     if not wan22.ready:
         actions.append(
             "Configure the operator-controlled Wan2.2 repository/model files; Hottop will not download them."
+        )
+    if not voice.ready:
+        actions.append(
+            "Install/expose the configured local voice backend or configure an explicit external voice adapter."
         )
     if not motion_canvas.ready:
         actions.append(
@@ -197,8 +224,9 @@ def inspect_video_environment(
         )
 
     return VideoExecutionStatus(
-        ready=wan22.ready and motion_canvas.ready and moviepy.ready and ffmpeg.ready,
+        ready=wan22.ready and voice.ready and motion_canvas.ready and moviepy.ready and ffmpeg.ready,
         wan22=wan22,
+        voice=voice,
         motion_canvas=motion_canvas,
         moviepy=moviepy,
         ffmpeg=ffmpeg,
@@ -258,12 +286,45 @@ def _runtime_generation_commands(
     return commands
 
 
+def _runtime_audio_commands(
+    plan: VideoProductionPlan,
+    config: VideoProductionConfig,
+    *,
+    project_root: Path,
+    audio_dir: Path,
+) -> list[ExternalCommandSpec]:
+    if config.audio.voice_backend != "espeak":
+        return []
+    dialogue = [cue for cue in plan.audio_cues if cue.kind == "dialogue"]
+    commands: list[ExternalCommandSpec] = []
+    for index, cue in enumerate(dialogue, start=1):
+        output = (audio_dir / f"dialogue-{index:03d}.wav").resolve()
+        commands.append(
+            ExternalCommandSpec(
+                program="espeak",
+                args=[
+                    "-v",
+                    config.audio.voice_language,
+                    "-s",
+                    str(config.audio.voice_rate_wpm),
+                    "-w",
+                    str(output),
+                    cue.text,
+                ],
+                cwd=str(project_root.resolve()),
+                stage="audio",
+            )
+        )
+    return commands
+
+
 def _runtime_compositor_command(
     config: VideoProductionConfig,
     *,
     project_root: Path,
     plan_path: Path,
     shots_dir: Path,
+    audio_dir: Path,
     composite_output: Path,
 ) -> ExternalCommandSpec | None:
     if config.compositor_backend == "moviepy" and config.moviepy is not None:
@@ -276,6 +337,8 @@ def _runtime_compositor_command(
                 str(plan_path.resolve()),
                 "--shots-dir",
                 str(shots_dir.resolve()),
+                "--audio-dir",
+                str(audio_dir.resolve()),
                 "--output",
                 str(composite_output.resolve()),
             ],
@@ -329,6 +392,7 @@ def _runtime_commands(
     project_root: Path,
     plan_path: Path,
     shots_dir: Path,
+    audio_dir: Path,
     composite_output: Path,
     final_output: Path,
 ) -> list[ExternalCommandSpec]:
@@ -338,11 +402,20 @@ def _runtime_commands(
         project_root=project_root,
         shots_dir=shots_dir,
     )
+    commands.extend(
+        _runtime_audio_commands(
+            plan,
+            config,
+            project_root=project_root,
+            audio_dir=audio_dir,
+        )
+    )
     compositor = _runtime_compositor_command(
         config,
         project_root=project_root,
         plan_path=plan_path,
         shots_dir=shots_dir,
+        audio_dir=audio_dir,
         composite_output=composite_output,
     )
     if compositor is not None:
@@ -370,6 +443,12 @@ def _expected_stage_output(
             return Path(command.args[save_index])
         except (ValueError, IndexError):
             return None
+    if command.stage == "audio":
+        try:
+            output_index = command.args.index("-w") + 1
+            return Path(command.args[output_index])
+        except (ValueError, IndexError):
+            return None
     if command.stage == "compositor":
         return composite_output
     if command.stage == "finalization":
@@ -379,14 +458,10 @@ def _expected_stage_output(
 
 def _prepare_stage_output(stage: str, path: Path | None) -> None:
     if path is None:
-        raise VideoExecutionError(
-            f"video {stage} stage has unresolved expected output path"
-        )
+        raise VideoExecutionError(f"video {stage} stage has unresolved expected output path")
     if path.exists():
         if not path.is_file():
-            raise VideoExecutionError(
-                f"video {stage} stage expected output is not a file: {path}"
-            )
+            raise VideoExecutionError(f"video {stage} stage expected output is not a file: {path}")
         path.unlink()
 
 
@@ -414,6 +489,8 @@ def run_video_production(
     workspace.mkdir(parents=True, exist_ok=True)
     shots_dir = workspace / (config.moviepy.shot_dir if config.moviepy else "shots")
     shots_dir.mkdir(parents=True, exist_ok=True)
+    audio_dir = workspace / "audio"
+    audio_dir.mkdir(parents=True, exist_ok=True)
 
     plan = build_video_production_plan(render_request, config)
     plan_path = workspace / "hottop-video-plan.json"
@@ -430,6 +507,7 @@ def run_video_production(
         project_root=root,
         plan_path=plan_path,
         shots_dir=shots_dir,
+        audio_dir=audio_dir,
         composite_output=composite_output,
         final_output=final_output,
     )
@@ -475,6 +553,7 @@ def run_video_production(
         ready=readiness.ready,
         output_dir=str(workspace),
         shots_dir=str(shots_dir),
+        audio_dir=str(audio_dir),
         plan_path=str(plan_path),
         compositor_manifest_path=str(manifest_path),
         composite_output_path=str(composite_output),
