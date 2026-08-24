@@ -8,8 +8,10 @@ from hottop.models import (
     BridgeType,
     ClaimStatus,
     CreativeConcept,
+    DistributionMode,
     Evidence,
     ExpressionForm,
+    InAssetCtaPolicy,
     MemeBrief,
     VisualMedium,
 )
@@ -56,6 +58,9 @@ class CreativeRenderRequest(BaseModel):
     expression_form: ExpressionForm
     visual_medium: VisualMedium
     genre_treatment: str
+    distribution_mode: DistributionMode = "auto"
+    in_asset_cta_policy: InAssetCtaPolicy = "no-destination"
+    motion_continuity_required: bool = False
     category_default: str | None = None
     deleted_constraint: str | None = None
     new_competition_axis: str | None = None
@@ -104,6 +109,9 @@ def build_creative_render_request(concept: CreativeConcept) -> CreativeRenderReq
         expression_form=strategy.expression_form,
         visual_medium=concept.visual_medium,
         genre_treatment=concept.genre_treatment,
+        distribution_mode=concept.distribution_mode,
+        in_asset_cta_policy=concept.in_asset_cta_policy,
+        motion_continuity_required=concept.motion_continuity_required,
         category_default=strategy.category_default,
         deleted_constraint=strategy.deleted_constraint,
         new_competition_axis=strategy.new_competition_axis,
