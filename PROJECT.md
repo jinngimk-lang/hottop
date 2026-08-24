@@ -76,13 +76,25 @@ For swipe-reveal, each frame must add information; do not reveal the full answer
 
 Match the medium and recognition cues, not protected production assets.
 
-### 6. Comparison is optional; truth is not
+### 6. Distribution-native restraint and motion
+
+For hotspot participation, meme reach and brand-memory creative, optimize first for the audience experience and only second for conversion mechanics. A social meme should not become a poster-shaped landing page merely because a URL is available.
+
+- **No in-asset destination by default:** omit URLs, QR codes, app-store badges and commands such as `立即体验` unless the user explicitly requests conversion creative or the distribution channel genuinely requires an in-asset destination. Compact brand/product attribution plus a payoff is the default.
+- **Motion when timing carries the idea:** prefer short video, GIF or animated sequence when recognition depends on character action, transformation, dialogue, sound, reaction timing, escalation, or film/animation-native movement. Do not flatten a motion-native hotspot into a static poster merely because it is easier to render.
+- **Continuous motion over slideshow cuts:** narrative video should preserve scene geography, character identity and action continuity. Use follow/pan/reaction/match-action/foreground-occlusion transitions where useful; unrelated stills with hard cuts are not a substitute for cinematic motion.
+- **Benefits as consequences:** show the product's value through what happens—the obstruction disappears, the task starts, the ritual shortens—before adding benefit labels. Do not let a feature list replace the gag.
+- **Light payoff:** the final attribution should remain compact enough that the audience still experiences the asset as a meme/scene rather than an advertisement.
+
+This supersedes the older production habit of automatically adding a URL CTA or treating static poster output as the default even when the hotspot and joke are inherently dynamic.
+
+### 7. Comparison is optional; truth is not
 
 Research direct competitors, recognizable defaults, substitutes and old workflows. Select the clearest pain-point contrast, not automatically the most famous rival.
 
 A named competitor may appear only when the negative side is a supported factual limitation, accurate design/category tradeoff, a job it is not designed to solve, or clearly subjective satire. Never invent benchmarks, outages, prices, quality defects, safety failures or customer sentiment. When evidence is weak, use a generic category proxy or make the old assumption itself the antagonist.
 
-### 7. References teach grammar, not pixels
+### 8. References teach grammar, not pixels
 
 Hottop may research public advertising, cultural and visual examples when composition, reveal pacing, social distribution grammar, product photography or source-medium cues would improve the concept. The durable output of this research is an **abstract reference manifest**, not a copied image.
 
@@ -275,6 +287,7 @@ A mature creative concept/package should be serializable with:
 - bridge type + one-sentence bridge;
 - selected expression form;
 - platform/style/project-shape routing hints when useful;
+- distribution treatment: static/motion choice, motion-continuity note when relevant, and in-asset CTA policy;
 - reveal/narrative beats;
 - visual medium + genre treatment;
 - captions/copy/punchlines;
@@ -285,6 +298,10 @@ A mature creative concept/package should be serializable with:
 - risk flags;
 - factual-claim status (`satire`, `supported`, `needs_evidence`);
 - provider-neutral `hottop.render.v2` handoff.
+
+## Decision log
+
+- **2026-08-24 — Social creative is ad-light by default; motion-native ideas stay motion-native.** Repeated production feedback showed that in-asset URLs/QR-style CTAs weakened meme distribution grammar and that dynamic film/animation/social jokes became slideshow-like when forced into static poster frames. Hottop now defaults to compact attribution without an in-asset destination for hotspot/meme/brand-memory work, and selects short video/GIF/animation when timing, dialogue, sound or character action carries the recognition. Conversion briefs may explicitly override this default.
 
 ## Reusable skills
 
