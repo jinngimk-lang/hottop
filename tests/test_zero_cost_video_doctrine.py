@@ -2,7 +2,6 @@ from pathlib import Path
 
 from hottop.video_production import load_video_production_config
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
