@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-24 10:56 +08:00
+Last updated: 2026-08-24 11:06 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 
@@ -38,6 +38,7 @@ Milestone: Foundation v0.1
 - Creative safety metadata is canonical: every `CreativeConcept.risk_flags` item is stripped and blank/whitespace-only flags are rejected, so durable render-v2 concepts cannot claim to carry a risk marker that has no semantic content. RED head `3e4c66c5e6b4b2129dfeb51dbde81a2bab2c4545` failed exact-head CI run 683; implementation head `da5831d261046c62f51d5063e090ea74c3ee397a` passed exact-head CI run 685.
 - Distribution doctrine is now explicitly ad-light and motion-aware for hotspot/meme/brand-memory work: URLs, QR codes and hard conversion commands are omitted inside the asset by default; motion-native ideas prefer short video/GIF/animation; narrative motion must preserve scene/character/action continuity instead of slideshow-like hard cuts; product benefits should first appear as consequences of the scene. This durable rule is recorded in `PROJECT.md` and `skills/brand-metaphor-creative/SKILL.md` and supersedes the old habit of automatically adding a URL CTA or flattening dynamic ideas into posters.
 - Corrected `examples/runs/2026-08-24-inkclaw-aura-farming.json` from a static 4:5 URL-CTA poster into a 9:16 continuous-motion social short treatment with dialogue, sound design, action continuity and no in-asset destination. The archive still preserves user-provided claim provenance and avoids unsupported superiority claims.
+- Distribution intent is now a first-class guided-intake/directive contract. `CreativeIntent.distribution_mode` deterministically preserves explicit/inferred `static` vs `motion` requests without adding another routine question; `CreativeDirective` carries `distribution_mode`, `in_asset_cta_policy` and `motion_continuity_required`. Hotspot short-video directives add no-URL/QR, continuity, anti-slideshow and benefits-as-consequences instructions; conversion/paid-social briefs may retain a destination unless the user explicitly blocks it. RED head `5512d946a0bc5df7f1e901846f2c111bf6fe668a` failed CI run 733 with exactly the two new missing-field tests; GREEN implementation head `0f0d4311e14efbfb8f16b673f5eae7824d0b5503` passed exact-head CI run 737.
 - Added live archive `examples/runs/2026-08-21-1257-briefs.json` with evidence-linked robotics, BirdTok and digital-popover creative directions while keeping factual/safety caveats explicit.
 - Persistent project memory protocol is active: `PROJECT.md` is durable direction, `STATUS.md` is the execution snapshot, reusable skills carry operational doctrine, and repository truth is reread under context pressure.
 
@@ -62,14 +63,14 @@ Milestone: Foundation v0.1
 
 ## In progress
 
-- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, identity canonicalization, unresolved named-comparison, cross-promotion, product-profile-category, strategy-semantic-text, optional beat-caption, visual-reference-exclusion, creative-risk-metadata, comparison-handoff-note and trend-semantic-text gaps.
-- Distribution doctrine has now been corrected at charter/skill/archive level. The next code-contract review should determine whether `CreativeDirective` / `CreativeConcept` / `hottop.render.v2` need explicit serializable fields for distribution treatment, motion continuity and in-asset CTA policy rather than leaving those decisions only in prose/archives.
+- Foundation v0.1 closure review: continue inspecting the accumulated PR diff, tests and production-path contracts for contradictions, dead compatibility assumptions and missing evidence/safety/integrity edges after closing the render-v2 comparison-evidence, review-binding, identity canonicalization, unresolved named-comparison, cross-promotion, product-profile-category, strategy-semantic-text, optional beat-caption, visual-reference-exclusion, creative-risk-metadata, comparison-handoff-note, trend-semantic-text and distribution-intent gaps.
+- Distribution doctrine is persisted in charter/skill/archive and now survives guided intake → CreativeDirective. The remaining closure question is whether `CreativeConcept` / `hottop.render.v2` also need the same fields so a downstream renderer cannot lose the selected motion/CTA treatment.
 - Continue fresh trend research across entertainment, animation, technology, internet culture, social phenomena and consumer culture without collapsing discovery into AI/tech only.
 - RSSHub remains an optional pilot awaiting an explicitly configured operator-controlled instance; no credential or external-service setup is performed autonomously.
 
 ## Next actions
 
-1. Review the current directive/concept/render-v2 contracts for the newly durable distribution rule; if the production handoff cannot deterministically preserve static-vs-motion choice, continuity requirements and in-asset CTA policy, add the smallest evidence-backed/TDD contract rather than inventing a parallel renderer.
+1. Inspect `CreativeConcept` → `hottop.render.v2` serialization for the new distribution contract. If directive-selected `distribution_mode`, `motion_continuity_required` or `in_asset_cta_policy` can be lost before renderer handoff, add the smallest backward-compatible RED → GREEN fields and preservation tests; do not create a separate video renderer yet.
 2. Continue PR #1 / Foundation v0.1 diff review for concrete regressions or contract gaps; use targeted RED → GREEN cycles only where the review finds a real issue.
 3. Exercise the RSSHub pilot only when an operator-controlled `RSSHUB_BASE_URL` is explicitly available; otherwise keep the adapter optional and skip live-instance claims.
 4. Refresh PR #1 completion text and mark ready only after the remaining Foundation review criteria are actually satisfied and exact-head CI stays green.
