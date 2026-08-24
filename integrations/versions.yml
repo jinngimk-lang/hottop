@@ -45,3 +45,35 @@ firecrawl:
   license: AGPL-3.0
   integration: optional_external_api_mcp
   notes: "Optional search/scrape fallback; hosted use needs FIRECRAWL_API_KEY or a self-hosted endpoint."
+
+wan22:
+  repo: Wan-Video/Wan2.2
+  commit: 42bf4cfaa384bc21833865abc2f9e6c0e67233dc
+  license: Apache-2.0
+  integration: optional_local_video_generation
+  default_enabled: false
+  notes: "Primary open-source shot-generation candidate for config-driven motion. Prefer TI2V-5B for the general local path; model files and GPU execution remain operator-controlled."
+
+motion_canvas:
+  repo: motion-canvas/motion-canvas
+  commit: 7b91435c301d530351dcf5ebb91dd139c002e405
+  license: MIT
+  integration: external_motion_compositor
+  default_enabled: false
+  notes: "Deterministic compositor for shot timing, captions, simple motion graphics, dialogue/SFX/BGM timing and continuity. Install outside Hottop when executing a video plan."
+
+ffmpeg:
+  repo: FFmpeg/FFmpeg
+  commit: 1019f8f036602a8464185baa4857654337eeca14
+  license: build-dependent-LGPL-GPL
+  integration: external_encoder
+  default_enabled: false
+  notes: "Final compatibility encoder for H.264/AAC/yuv420p/fast-start and optional WebM/GIF. License obligations depend on the actual FFmpeg build and enabled codecs."
+
+remotion:
+  repo: remotion-dev/remotion
+  commit: 05075f384a0a28e193876c1fd43ab9fba5ef10f9
+  license: Remotion-License
+  integration: optional_video_adapter_candidate
+  default_enabled: false
+  notes: "Not a default dependency. Commercial eligibility depends on the current Remotion license and entity size; require operator license review before enabling."
