@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-24 19:08 +08:00
+Last updated: 2026-08-24 19:15 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 PR: #1 — open, draft, mergeable
@@ -18,8 +18,9 @@ PR: #1 — open, draft, mergeable
 - **`ZERO_COST_MODE=true` is now the preferred unattended generation policy.** Hottop reserves free/shared or operator-owned GPU capacity for high-value generative shots while retaining deterministic MoviePy/FFmpeg/audio production for the rest.
 - `generation_backend: zero-cost-router` is implemented with `ZeroCostConfig`: `allow_paid_fallback` is literally constrained to `false`, candidates require `cost_per_unit: 0`, attempts are bounded, and free-route exhaustion never consults a paid backend.
 - `src/hottop/video_hf_zerogpu.py` implements Hugging Face ZeroGPU Gradio submit/poll/download with optional environment-only token lookup, SSE terminal handling, timeout/error classification and atomic `.part` output replacement.
+- **Rights-safe reference I2V is now supported at the HF provider boundary for the validated LTX 2.3 profile.** `HfZeroGpuRequest.reference_image` is accepted only with explicit `reference_rights` of `generated-original` or `user-provided-rights-cleared`; missing rights metadata or unsupported profiles fail locally before upload. The adapter uploads the image through the documented Gradio upload route and passes returned `gradio.FileData` into generation.
 - `src/hottop/video_quality.py` deterministically inspects generated MP4s with ffprobe/ffmpeg: video stream, terminal-frame decode, sampled grayscale frame delta and duplicate-frame ratio.
-- **Quality-gated failover is now wired into the free router.** A bad/duplicate-heavy candidate output is deleted, converted to retryable `zero_cost_quality_rejected`, and the next configured free candidate may run. Only a quality-passing fresh artifact is accepted.
+- **Quality-gated failover is wired into the free router.** A bad/duplicate-heavy candidate output is deleted, converted to retryable `zero_cost_quality_rejected`, and the next configured free candidate may run. Only a quality-passing fresh artifact is accepted.
 - `config/video/cinematic-zero-cost.yml` is the first production profile for this path: cinematic roughness 28, HF ZeroGPU candidate list, bounded quality gate, local `espeak` dialogue + synthetic music + procedural SFX, MoviePy composition and FFmpeg finalization. Public Space availability is not treated as guaranteed.
 - `docs/integrations/zero-cost-video-radar.md` records the admission policy for mature projects. Code license and model/weights license are always reviewed separately; stars/demos alone do not qualify a backend.
 - Current watchlist: Wan2.2 for operator-controlled local generation; FramePack for future low-VRAM/reference I2V isolation; FastVideo for future self-hosted acceleration; ViMax/Toonflow for planning/provider architecture ideas; OpenMontage architecture only because its code is AGPL; RIFE/Real-ESRGAN only after a measurable post-processing gap exists.
@@ -66,7 +67,8 @@ PR: #1 — open, draft, mergeable
 - Audio/style work was introduced RED-first through `tests/test_video_audio_pipeline.py`, `tests/test_video_style_profiles.py`, and `tests/test_odyssey_video_archive.py`; exact head `3eb8055d5ddefb106b2a284e39d0613914613f4b` passed CI run 933 on both Python versions before doctrine synchronization.
 - The Comfy API v2 adapter began with RED contract `40c9df0d18da80e22a7edaeb6f2ea55cd287a79c`; exact head `f174e24a0d9b960fc3c0df70941527530cbaf89c` passed CI run 951 on Python 3.11 / 3.12.
 - Zero-cost quality integration began with RED `46f93c45b9baf92e6d506a3ec2f24c6fdcc69fc3`; CI run **1000** passed Ruff and produced exactly **1 failed / 305 passed**, proving the first bad free candidate was still accepted. GREEN `0dd18b546b608c5a34a2b5c0c41728a0f5d53e7e` wired `inspect_video_quality` into failover; CI run **1002** passed Ruff + full pytest on Python 3.11 / 3.12.
-- Zero-cost production profile/radar/doctrine began with normalized RED `c4906602b9fc143950bdd215b7f910998593c8b2`; CI run **1006** passed Ruff and produced exactly **2 failed / 306 passed**, both missing-artifact contracts (`cinematic-zero-cost.yml` and `zero-cost-video-radar.md`). After adding the profile, radar, `PROJECT.md` decision and skill rule, exact head `dd55e31b9b6cf3b6e3700745734d2afe6886c86d` passed CI run **1014** on Python 3.11 / 3.12.
+- Zero-cost production profile/radar/doctrine began with normalized RED `c4906602b9fc143950bdd215b7f910998593c8b2`; CI run **1006** passed Ruff and produced exactly **2 failed / 306 passed**, both missing-artifact contracts. After adding the profile, radar, `PROJECT.md` decision and skill rule, exact head `dd55e31b9b6cf3b6e3700745734d2afe6886c86d` passed CI run **1014** on Python 3.11 / 3.12.
+- Reference-I2V safety began with RED `0ca588fb028ac0e929aa6d1c1bf1d360b966135c`; CI run **1018** passed Ruff and produced exactly **2 failed / 308 passed**, proving missing reference-rights validation and missing Gradio upload. GREEN `30e0d716251825475def8d335fcf7afc02fdd809` added explicit rights modes plus LTX 2.3 upload/FileData handling; CI run **1020** passed Ruff + full pytest on Python 3.11 / 3.12.
 
 ## Current creative doctrine
 
@@ -83,16 +85,17 @@ PR: #1 — open, draft, mergeable
 ## In progress
 
 - Foundation v0.1 accumulated PR diff / production-contract closure review continues.
-- Next zero-cost capability gap: **reference-first I2V consistency**. The current HF adapter is text-to-video only even though the preferred architecture fixes a character/product keyframe before motion generation. Add this only through a rights-safe reference contract and isolated adapter path.
-- After reference I2V, evaluate a clearly labeled deterministic degradation path for free-route exhaustion; never publish a mock placeholder as successful generative footage.
+- Reference-I2V is implemented at the HF provider boundary, but **normal `zero-cost-router` shot execution does not yet carry a reference image/rights mode from `hottop.video-plan.v1` into `HfZeroGpuRequest`**. This is now the concrete consistency gap.
+- After planner/runtime reference propagation, evaluate a clearly labeled deterministic degradation path for free-route exhaustion; never publish a mock placeholder as successful generative footage.
 - Higher-quality voice/music adapters remain useful but must not displace the stricter zero-cost video consistency/runtime work or introduce hidden cloud cost.
 
 ## Next actions
 
-1. Add a TDD-first reference-image contract for zero-cost/high-value I2V so a rights-cleared fixed character/product keyframe can survive into eligible free/local generation; preserve env-only credentials and no paid fallback.
-2. Add a deterministic, explicitly labeled degradation strategy for all-free-routes-unavailable cases only after defining how the final artifact records that it is non-generative fallback footage.
-3. Benchmark FramePack only when operator-controlled GPU/runtime is available; never invoke its automatic >30GB model download from unattended Hottop/CI. Keep FastVideo as a future acceleration candidate until a measurable self-hosted performance gap exists.
-4. Continue Foundation closure review and keep PR draft until exact-head CI and accumulated contract review are complete.
+1. Add a provider-neutral per-shot reference asset/rights contract to the motion plan/runtime command so eligible zero-cost I2V shots can use a fixed generated-original or rights-cleared character/product keyframe without embedding pixels in Git/plan JSON.
+2. Propagate that reference path + rights mode through `video-run` to `hottop.video_zero_cost`, while preserving dry-run safety, environment-only credentials, bounded free failover and quality rejection.
+3. Add a deterministic, explicitly labeled degradation strategy for all-free-routes-unavailable cases only after defining how the final artifact records that it is non-generative fallback footage.
+4. Benchmark FramePack only when operator-controlled GPU/runtime is available; never invoke its automatic >30GB model download from unattended Hottop/CI. Keep FastVideo as a future acceleration candidate until a measurable self-hosted performance gap exists.
+5. Continue Foundation closure review and keep PR draft until exact-head CI and accumulated contract review are complete.
 
 ## Constraints
 
