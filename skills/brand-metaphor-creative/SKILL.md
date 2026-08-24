@@ -90,7 +90,21 @@ Treat the social asset as entertainment first and attribution second when the br
 
 This rule supersedes the older habit of automatically adding a URL CTA or forcing a dynamic hotspot into a static poster merely because the poster is easier to render.
 
-## 9. Adaptive interaction routing
+## 9. Anti-Polish / Controlled Badness for motion
+
+Use **Anti-Polish / Controlled Badness** when the creative advantage comes from looking deliberately cheap, strange, awkward or homemade while the comedy itself remains tightly directed. The stable formula is **low production feel + high comedy control**.
+
+Deliberately permit rough/low-poly 3D, simple materials, imperfect lighting, slightly stiff movement, blunt Foley, cheap-sounding instrumentation, deadpan acting, abrupt physical comedy and absurd events treated seriously. These are aesthetic choices, not permission for random failure.
+
+Never sacrifice **character continuity**, scene geography, cause/effect, **subtitle correctness**, dialogue intelligibility, **comedy timing**, product semantics, claim safety or rights safety. The story and joke must be more controlled precisely because the surface looks uncontrolled.
+
+Keep the promoted product native to the intentionally crude world. Do not suddenly insert glossy blue-purple AI holograms, polished mascot teams, luxury product lighting, feature-card UI or a premium sci-fi end card unless the concept explicitly calls for them. Product benefits should be dramatized as dialogue, action and consequences inside the joke.
+
+For config-driven video production inside Hottop, preserve the provider-neutral `hottop.render.v2` creative handoff and route downstream through `hottop.video-plan.v1`. **Wan2.2** is the primary optional open-source local shot-generation candidate; **Motion Canvas** is the deterministic compositor for shot timing, captions, simple motion graphics, dialogue/SFX/BGM timing and continuity; **FFmpeg** is the final compatibility encoder. Model downloads, GPU execution and external binaries remain operator-controlled. Remotion may be evaluated only as an optional adapter after its current license is reviewed for the operator's entity.
+
+Broad low-budget 3D grammar, archetypal animal roles, deadpan family dynamics and crude animation language may be re-created with original staging. Do not use exact film frames, soundtrack, source footage, protected character designs or pixel-level copies as generation targets.
+
+## 10. Adaptive interaction routing
 
 Treat intake as a creative-director conversation, not a static questionnaire. Resolve what the user already said, attach provenance/confidence to inferred values, and **ask only high-impact questions** that materially change the creative output. The default interaction budget is 0–3 questions; stop asking once the remaining uncertainty no longer justifies interruption.
 
@@ -172,6 +186,6 @@ The target is not merely persistence. Each recovery should make the project **mo
 
 ## Output contract
 
-Return or archive: promotion context; interaction intent/provenance; category default; deleted constraint; new competition axis; hotspot; bridge type + bridge sentence; comparison target + evidence mode; selected format; platform/style/project-shape treatment; reveal/narrative beats; visual medium; copy/punchline; image prompt; exclusions; risk flags; claim status.
+Return or archive: promotion context; interaction intent/provenance; category default; deleted constraint; new competition axis; hotspot; bridge type + bridge sentence; comparison target + evidence mode; selected format; platform/style/project-shape treatment; distribution treatment; reveal/narrative beats; visual medium; copy/punchline; image/video prompt; dialogue/SFX/BGM cues when motion is selected; exclusions; risk flags; claim status; provider-neutral `hottop.render.v2`; and `hottop.video-plan.v1` when a config-driven motion plan is requested.
 
 When working inside `hottop`, read `PROJECT.md` and `STATUS.md` first. Use `hottop-meme` for hotspot acquisition, evidence handling, and four-panel-specific execution when that format is selected.
