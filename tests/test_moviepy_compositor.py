@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from hottop.video_moviepy import build_moviepy_timeline
-
 from hottop.rendering import CreativeRenderFrame, CreativeRenderRequest
+from hottop.video_moviepy import build_moviepy_timeline
 from hottop.video_production import build_video_production_plan, load_video_production_config
 
 
