@@ -1,8 +1,8 @@
 import pytest
-from hottop.video_hf_zerogpu import ZeroGpuError
-from hottop.video_zero_cost import ZeroCostRoutesExhaustedError, run_zero_cost_candidates
 
+from hottop.video_hf_zerogpu import ZeroGpuError
 from hottop.video_production import ZeroCostCandidateConfig
+from hottop.video_zero_cost import ZeroCostRoutesExhaustedError, run_zero_cost_candidates
 
 
 def _candidate(candidate_id: str) -> ZeroCostCandidateConfig:
