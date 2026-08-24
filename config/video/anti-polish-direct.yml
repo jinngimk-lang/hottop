@@ -1,6 +1,7 @@
 schema_version: hottop.video-config.v1
 name: anti-polish-direct
 style_profile: anti-polish
+roughness_score: 78
 generation_backend: wan22-ti2v-5b
 compositor_backend: moviepy
 encoder_backend: ffmpeg
