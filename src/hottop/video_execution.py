@@ -462,6 +462,8 @@ def run_video_production(
                 f"stdout={completed.stdout[-400:]!r}; stderr={completed.stderr[-400:]!r}"
             )
             if completed.returncode != 0:
+                if expected_output is not None and expected_output.is_file():
+                    expected_output.unlink()
                 raise VideoExecutionError(
                     f"video {command.stage} stage failed with return code {completed.returncode}"
                 )
