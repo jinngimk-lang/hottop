@@ -5,12 +5,18 @@ from pathlib import Path
 from typing import Literal
 
 import yaml
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from .rendering import CreativeRenderRequest
 
 VideoStyleProfile = Literal["anti-polish", "cinematic", "social-native"]
-GenerationBackend = Literal["wan22-ti2v-5b", "wan22-i2v-a14b", "comfy-api-v2", "external"]
+GenerationBackend = Literal[
+    "wan22-ti2v-5b",
+    "wan22-i2v-a14b",
+    "comfy-api-v2",
+    "zero-cost-router",
+    "external",
+]
 CompositorBackend = Literal["motion-canvas", "moviepy", "external"]
 EncoderBackend = Literal["ffmpeg", "external"]
 OutputFormat = Literal["mp4", "webm", "gif"]
@@ -91,6 +97,44 @@ class ComfyApiV2Config(BaseModel):
     timeout_seconds: float = Field(default=900.0, gt=0)
 
 
+class ZeroCostCandidateConfig(BaseModel):
+    id: str = Field(min_length=1)
+    kind: Literal["hf-zerogpu"] = "hf-zerogpu"
+    profile: str = Field(min_length=1)
+    space_url: str
+    api_name: str = Field(min_length=1)
+    token_env: str | None = None
+    allow_anonymous: bool = True
+    cost_per_unit: Literal[0] = 0
+    weights_license_review: str = Field(min_length=1)
+    width: int = Field(default=768, gt=0)
+    height: int = Field(default=512, gt=0)
+
+    @field_validator("space_url")
+    @classmethod
+    def validate_space_url(cls, value: str) -> str:
+        normalized = value.strip().rstrip("/")
+        if not normalized.startswith("https://"):
+            raise ValueError("zero-cost remote candidates must use HTTPS")
+        return normalized
+
+
+class ZeroCostQualityConfig(BaseModel):
+    min_motion_delta: float = Field(default=2.0, ge=0)
+    max_duplicate_ratio: float = Field(default=0.6, ge=0, le=1)
+    sample_fps: int = Field(default=4, ge=1, le=12)
+    sample_width: int = Field(default=96, ge=32, le=320)
+    sample_height: int = Field(default=54, ge=18, le=180)
+
+
+class ZeroCostConfig(BaseModel):
+    enabled: bool = True
+    allow_paid_fallback: Literal[False] = False
+    max_attempts_per_shot: int = Field(default=2, ge=1, le=8)
+    candidates: list[ZeroCostCandidateConfig] = Field(min_length=1)
+    quality_gate: ZeroCostQualityConfig = Field(default_factory=ZeroCostQualityConfig)
+
+
 class MotionCanvasConfig(BaseModel):
     project_dir: str
     manifest_name: str = "hottop-video-plan.json"
@@ -127,9 +171,16 @@ class VideoProductionConfig(BaseModel):
     anti_polish: AntiPolishConfig = Field(default_factory=AntiPolishConfig)
     wan22: Wan22Config | None = None
     comfy_api_v2: ComfyApiV2Config | None = None
+    zero_cost: ZeroCostConfig | None = None
     motion_canvas: MotionCanvasConfig | None = None
     moviepy: MoviePyConfig | None = None
     ffmpeg: FFmpegConfig | None = None
+
+    @model_validator(mode="after")
+    def validate_selected_generation_backend(self) -> VideoProductionConfig:
+        if self.generation_backend == "zero-cost-router" and self.zero_cost is None:
+            raise ValueError("zero-cost-router requires zero_cost configuration")
+        return self
 
 
 class VideoShot(BaseModel):
@@ -482,7 +533,11 @@ def build_video_production_plan(
         (
             "Comfy API v2 execution is optional and operator-configured; only workflow JSON, generated prompts and explicit job metadata are sent. Credentials remain environment-only."
             if config.generation_backend == "comfy-api-v2"
-            else "Wan2.2 execution is optional/local and requires operator-controlled model files and GPU resources."
+            else (
+                "Zero-cost execution may use only configured cost=0 candidates and must never fall back to paid generation."
+                if config.generation_backend == "zero-cost-router"
+                else "Wan2.2 execution is optional/local and requires operator-controlled model files and GPU resources."
+            )
         ),
         "Do not auto-fetch copyrighted film footage, protected character assets or commercial soundtracks.",
     ]
