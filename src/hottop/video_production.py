@@ -8,6 +8,7 @@ import yaml
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from .rendering import CreativeRenderRequest
+from .video_reference import VideoReference
 
 VideoStyleProfile = Literal["anti-polish", "cinematic", "social-native"]
 GenerationBackend = Literal[
@@ -194,6 +195,7 @@ class VideoShot(BaseModel):
     continuity_instruction: str
     generation_prompt: str
     negative_prompt: str
+    reference: VideoReference | None = None
 
 
 class AudioCue(BaseModel):
@@ -489,6 +491,7 @@ def build_video_production_plan(
                 continuity_instruction=_continuity_instruction(config, position),
                 generation_prompt=prompt,
                 negative_prompt=_negative_prompt(render_request, config),
+                reference=frame.reference,
             )
         )
         command = _wan22_command(config, prompt)
