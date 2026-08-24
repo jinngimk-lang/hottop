@@ -11,7 +11,7 @@ from .rendering import CreativeRenderRequest
 
 VideoStyleProfile = Literal["anti-polish", "cinematic", "social-native"]
 GenerationBackend = Literal["wan22-ti2v-5b", "wan22-i2v-a14b", "external"]
-CompositorBackend = Literal["motion-canvas", "external"]
+CompositorBackend = Literal["motion-canvas", "moviepy", "external"]
 EncoderBackend = Literal["ffmpeg", "external"]
 OutputFormat = Literal["mp4", "webm", "gif"]
 AudioCueKind = Literal["dialogue", "foley", "sfx", "bgm"]
@@ -61,6 +61,11 @@ class MotionCanvasConfig(BaseModel):
     manifest_name: str = "hottop-video-plan.json"
 
 
+class MoviePyConfig(BaseModel):
+    shot_dir: str = "shots"
+    composite_name: str = "hottop-composite.mp4"
+
+
 class FFmpegConfig(BaseModel):
     video_codec: str = "libx264"
     audio_codec: str = "aac"
@@ -86,6 +91,7 @@ class VideoProductionConfig(BaseModel):
     anti_polish: AntiPolishConfig = Field(default_factory=AntiPolishConfig)
     wan22: Wan22Config | None = None
     motion_canvas: MotionCanvasConfig | None = None
+    moviepy: MoviePyConfig | None = None
     ffmpeg: FFmpegConfig | None = None
 
 
@@ -232,20 +238,36 @@ def _wan22_command(config: VideoProductionConfig, prompt: str) -> str | None:
 
 
 def _compositor_command_spec(config: VideoProductionConfig) -> ExternalCommandSpec | None:
-    if config.compositor_backend != "motion-canvas" or config.motion_canvas is None:
-        return None
-    return ExternalCommandSpec(
-        program="npm",
-        args=[
-            "run",
-            "render",
-            "--",
-            "--plan",
-            config.motion_canvas.manifest_name,
-        ],
-        cwd=str(Path(config.motion_canvas.project_dir)),
-        stage="compositor",
-    )
+    if config.compositor_backend == "motion-canvas" and config.motion_canvas is not None:
+        return ExternalCommandSpec(
+            program="npm",
+            args=[
+                "run",
+                "render",
+                "--",
+                "--plan",
+                config.motion_canvas.manifest_name,
+            ],
+            cwd=str(Path(config.motion_canvas.project_dir)),
+            stage="compositor",
+        )
+    if config.compositor_backend == "moviepy" and config.moviepy is not None:
+        return ExternalCommandSpec(
+            program="python",
+            args=[
+                "-m",
+                "hottop.video_moviepy",
+                "--plan",
+                "hottop-video-plan.json",
+                "--shots-dir",
+                config.moviepy.shot_dir,
+                "--output",
+                config.moviepy.composite_name,
+            ],
+            cwd=".",
+            stage="compositor",
+        )
+    return None
 
 
 def _audio_cues(
@@ -283,6 +305,12 @@ def _audio_cues(
     return cues
 
 
+def _composite_input_name(config: VideoProductionConfig) -> str:
+    if config.compositor_backend == "moviepy" and config.moviepy is not None:
+        return config.moviepy.composite_name
+    return "motion-canvas-output.mp4"
+
+
 def _finalization_command(config: VideoProductionConfig) -> list[str]:
     if config.encoder_backend != "ffmpeg" or config.ffmpeg is None:
         return []
@@ -290,7 +318,7 @@ def _finalization_command(config: VideoProductionConfig) -> list[str]:
     return [
         "ffmpeg",
         "-i",
-        "motion-canvas-output.mp4",
+        _composite_input_name(config),
         "-c:v",
         config.ffmpeg.video_codec,
         "-pix_fmt",
@@ -353,15 +381,24 @@ def build_video_production_plan(
     compositor_manifest: dict[str, object] = {
         "backend": config.compositor_backend,
         "project_dir": config.motion_canvas.project_dir if config.motion_canvas else None,
-        "manifest_name": config.motion_canvas.manifest_name if config.motion_canvas else None,
+        "manifest_name": (
+            config.motion_canvas.manifest_name if config.motion_canvas else "hottop-video-plan.json"
+        ),
+        "shot_dir": config.moviepy.shot_dir if config.moviepy else None,
+        "composite_name": config.moviepy.composite_name if config.moviepy else None,
         "width": config.width,
         "height": config.height,
         "fps": config.fps,
         "shots": [shot.model_dump(mode="json") for shot in shots],
         "audio_cues": [cue.model_dump(mode="json") for cue in audio_cues],
     }
+    compositor_note = (
+        "MoviePy is the headless deterministic compositor for captions, basic audio timing and shot assembly."
+        if config.compositor_backend == "moviepy"
+        else "Motion Canvas is the deterministic compositor for subtitles, SFX/BGM timing and continuity."
+    )
     execution_notes = [
-        "Motion Canvas is the deterministic compositor for subtitles, SFX/BGM timing and continuity.",
+        compositor_note,
         (
             "Preserve character continuity, scene geography, cause/effect, subtitle correctness, "
             "dialogue intelligibility and comedy timing even when production looks intentionally rough."
