@@ -39,8 +39,13 @@ from .positioning import (
     infer_promotion_context,
     normalize_comparison_candidates,
 )
-from .rendering import build_creative_render_request, build_render_request
+from .rendering import (
+    CreativeRenderRequest,
+    build_creative_render_request,
+    build_render_request,
+)
 from .scoring import score_candidate
+from .video_production import build_video_production_plan, load_video_production_config
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
 
@@ -187,6 +192,19 @@ def creative_directive_command(
     resolved_intent = CreativeIntent.model_validate(raw["intent"])
     promotion_context = PromotionContext.model_validate(raw["promotion_context"])
     _write_or_echo(build_creative_directive(resolved_intent, promotion_context), output)
+
+
+@app.command(name="video-plan")
+def video_plan_command(
+    render_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    config: Path = typer.Option(..., "--config", exists=True, dir_okay=False),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Turn `hottop.render.v2` plus a video profile into an executable production plan."""
+    raw = json.loads(render_path.read_text(encoding="utf-8"))
+    render_request = CreativeRenderRequest.model_validate(raw)
+    video_config = load_video_production_config(config)
+    _write_or_echo(build_video_production_plan(render_request, video_config), output)
 
 
 @app.command()
