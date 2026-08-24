@@ -8,7 +8,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from .video_production import FfmpegConfig
+from .video_production import FFmpegConfig
 
 
 class FinalVideoOutputError(RuntimeError):
@@ -35,7 +35,7 @@ def _expected_codec(configured: str) -> str:
 
 def inspect_final_video_output(
     path: Path,
-    config: FfmpegConfig,
+    config: FFmpegConfig,
     *,
     runner: Callable[..., Any] = subprocess.run,
 ) -> FinalVideoOutputReport:
