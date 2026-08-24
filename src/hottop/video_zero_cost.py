@@ -9,12 +9,15 @@ from typing import Generic, TypeVar
 
 from pydantic import BaseModel
 
+from .video_artifacts import VideoArtifactManifest, VideoShotArtifact
 from .video_hf_zerogpu import HfZeroGpuRequest, ZeroGpuError, execute_hf_zerogpu
 from .video_production import ZeroCostCandidateConfig, ZeroCostConfig
 from .video_quality import VideoQualityPolicy, inspect_video_quality
 from .video_reference import ReferenceRights
+from .video_reference_motion import render_reference_motion
 
 T = TypeVar("T")
+FallbackRenderer = Callable[[Path, Path, float], Path]
 
 
 class ZeroCostCandidateFailure(BaseModel):
@@ -106,6 +109,38 @@ def _quality_policy(config: ZeroCostConfig) -> VideoQualityPolicy:
     )
 
 
+def _write_artifact_manifest(
+    path: Path | None,
+    *,
+    shot_index: int,
+    output: Path,
+    artifact_kind: str,
+    backend: str,
+    degraded_from: str | None = None,
+    degradation_reason: str | None = None,
+) -> None:
+    if path is None:
+        return
+    manifest = VideoArtifactManifest(
+        planned_generation_backend="zero-cost-router",
+        shots=[
+            VideoShotArtifact(
+                shot_index=shot_index,
+                path=str(output),
+                artifact_kind=artifact_kind,
+                backend=backend,
+                degraded_from=degraded_from,
+                degradation_reason=degradation_reason,
+            )
+        ],
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(manifest.model_dump(mode="json"), ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
 def run_zero_cost_shot(
     config_path: Path,
     *,
@@ -115,8 +150,11 @@ def run_zero_cost_shot(
     env: Mapping[str, str] | None = None,
     reference_image: Path | None = None,
     reference_rights: ReferenceRights | None = None,
+    shot_index: int = 1,
+    artifact_manifest_path: Path | None = None,
+    fallback_renderer: FallbackRenderer = render_reference_motion,
 ) -> Path:
-    """Generate one shot through bounded cost-zero candidates only."""
+    """Generate one shot through bounded free routes, degrading only from a rights-safe reference."""
 
     config = load_zero_cost_runtime(config_path)
     environment = os.environ if env is None else env
@@ -157,10 +195,47 @@ def run_zero_cost_shot(
             )
         return generated
 
-    result = run_zero_cost_candidates(
-        config.candidates,
-        execute,
-        max_attempts=config.max_attempts_per_shot,
+    try:
+        result = run_zero_cost_candidates(
+            config.candidates,
+            execute,
+            max_attempts=config.max_attempts_per_shot,
+        )
+    except ZeroCostRoutesExhaustedError:
+        if reference_image is None or reference_rights is None:
+            raise
+        if not reference_image.is_file():
+            raise ZeroGpuError(
+                f"deterministic fallback reference image is missing: {reference_image}",
+                code="zero_cost_fallback_reference_missing",
+                retryable=False,
+            )
+        try:
+            fallback_renderer(reference_image, output, duration_seconds)
+        except Exception as exc:
+            output.unlink(missing_ok=True)
+            raise ZeroGpuError(
+                f"deterministic reference-motion fallback failed: {exc}",
+                code="zero_cost_deterministic_fallback_failed",
+                retryable=False,
+            ) from exc
+        _write_artifact_manifest(
+            artifact_manifest_path,
+            shot_index=shot_index,
+            output=output,
+            artifact_kind="deterministic-non-generative",
+            backend="deterministic-reference-motion",
+            degraded_from="zero-cost-router",
+            degradation_reason="zero_cost_routes_exhausted",
+        )
+        return output
+
+    _write_artifact_manifest(
+        artifact_manifest_path,
+        shot_index=shot_index,
+        output=result.value,
+        artifact_kind="ai-generated",
+        backend=result.candidate_id,
     )
     return result.value
 
@@ -178,6 +253,8 @@ def _parse_args() -> argparse.Namespace:
         "--reference-rights",
         choices=["generated-original", "user-provided-rights-cleared"],
     )
+    parser.add_argument("--shot-index", type=int, default=1)
+    parser.add_argument("--artifact-manifest")
     return parser.parse_args()
 
 
@@ -191,6 +268,10 @@ def main() -> None:
             output=Path(args.output),
             reference_image=Path(args.reference_image) if args.reference_image else None,
             reference_rights=args.reference_rights,
+            shot_index=args.shot_index,
+            artifact_manifest_path=(
+                Path(args.artifact_manifest) if args.artifact_manifest else None
+            ),
         )
     except (ZeroGpuError, ZeroCostRoutesExhaustedError) as exc:
         raise SystemExit(str(exc)) from exc
