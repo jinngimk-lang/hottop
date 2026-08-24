@@ -15,7 +15,10 @@ CompositorBackend = Literal["motion-canvas", "moviepy", "external"]
 EncoderBackend = Literal["ffmpeg", "external"]
 OutputFormat = Literal["mp4", "webm", "gif"]
 AudioCueKind = Literal["dialogue", "foley", "sfx", "bgm"]
-CommandStage = Literal["generation", "compositor", "finalization"]
+VoiceBackend = Literal["none", "espeak", "external"]
+MusicBackend = Literal["none", "synthetic", "external"]
+SfxBackend = Literal["none", "procedural", "external"]
+CommandStage = Literal["generation", "audio", "compositor", "finalization"]
 
 
 class ShotPolicy(BaseModel):
@@ -28,6 +31,28 @@ class AudioConfig(BaseModel):
     bgm_style: str
     dialogue_duck_db: float = -8
     foley_style: str
+    voice_backend: VoiceBackend = "none"
+    voice_profile: str = "natural-dialogue"
+    voice_language: str = "zh"
+    voice_rate_wpm: int = Field(default=155, ge=80, le=320)
+    music_backend: MusicBackend = "synthetic"
+    music_profile: str | None = None
+    sfx_backend: SfxBackend = "procedural"
+    sfx_profile: str | None = None
+    original_music_only: bool = True
+
+
+class AudioProductionProfile(BaseModel):
+    voice_backend: VoiceBackend
+    voice_profile: str
+    voice_language: str
+    voice_rate_wpm: int
+    music_backend: MusicBackend
+    music_profile: str
+    sfx_backend: SfxBackend
+    sfx_profile: str
+    original_music_only: bool
+    dialogue_duck_db: float
 
 
 class TextConfig(BaseModel):
@@ -114,6 +139,8 @@ class AudioCue(BaseModel):
     duration_seconds: float | None = Field(default=None, gt=0)
     text: str
     character: str | None = None
+    delivery: str | None = None
+    voice_profile: str | None = None
     duck_bgm_db: float | None = None
 
 
@@ -141,6 +168,7 @@ class VideoProductionPlan(BaseModel):
     output_format: OutputFormat
     in_asset_cta_policy: str
     shots: list[VideoShot] = Field(min_length=1)
+    audio_profile: AudioProductionProfile
     audio_cues: list[AudioCue] = Field(default_factory=list)
     generation_commands: list[str] = Field(default_factory=list)
     generation_command_specs: list[ExternalCommandSpec] = Field(default_factory=list)
@@ -270,17 +298,33 @@ def _compositor_command_spec(config: VideoProductionConfig) -> ExternalCommandSp
     return None
 
 
+def _audio_profile(config: VideoProductionConfig) -> AudioProductionProfile:
+    return AudioProductionProfile(
+        voice_backend=config.audio.voice_backend,
+        voice_profile=config.audio.voice_profile,
+        voice_language=config.audio.voice_language,
+        voice_rate_wpm=config.audio.voice_rate_wpm,
+        music_backend=config.audio.music_backend,
+        music_profile=config.audio.music_profile or config.audio.bgm_style,
+        sfx_backend=config.audio.sfx_backend,
+        sfx_profile=config.audio.sfx_profile or config.audio.foley_style,
+        original_music_only=config.audio.original_music_only,
+        dialogue_duck_db=config.audio.dialogue_duck_db,
+    )
+
+
 def _audio_cues(
     render_request: CreativeRenderRequest,
     config: VideoProductionConfig,
     shots: list[VideoShot],
 ) -> list[AudioCue]:
+    profile = _audio_profile(config)
     cues = [
         AudioCue(
             kind="bgm",
             start_seconds=0,
             duration_seconds=config.duration_seconds,
-            text=config.audio.bgm_style,
+            text=profile.music_profile,
         )
     ]
     for shot, frame in zip(shots, render_request.frames, strict=True):
@@ -289,7 +333,7 @@ def _audio_cues(
                 kind="foley",
                 start_seconds=shot.start_seconds,
                 duration_seconds=shot.duration_seconds,
-                text=f"{config.audio.foley_style}; follow the visible action in shot {shot.index}",
+                text=f"{profile.sfx_profile}; follow the visible action in shot {shot.index}",
             )
         )
         if frame.caption:
@@ -299,6 +343,9 @@ def _audio_cues(
                     start_seconds=shot.start_seconds,
                     duration_seconds=shot.duration_seconds,
                     text=frame.caption,
+                    character=frame.speaker,
+                    delivery=frame.delivery,
+                    voice_profile=profile.voice_profile,
                     duck_bgm_db=config.audio.dialogue_duck_db,
                 )
             )
@@ -377,6 +424,7 @@ def build_video_production_plan(
         if command_spec:
             command_specs.append(command_spec)
 
+    audio_profile = _audio_profile(config)
     audio_cues = _audio_cues(render_request, config, shots)
     compositor_manifest: dict[str, object] = {
         "backend": config.compositor_backend,
@@ -390,10 +438,11 @@ def build_video_production_plan(
         "height": config.height,
         "fps": config.fps,
         "shots": [shot.model_dump(mode="json") for shot in shots],
+        "audio_profile": audio_profile.model_dump(mode="json"),
         "audio_cues": [cue.model_dump(mode="json") for cue in audio_cues],
     }
     compositor_note = (
-        "MoviePy is the headless deterministic compositor for captions, basic audio timing and shot assembly."
+        "MoviePy is the headless deterministic compositor for captions, dialogue, original music, procedural SFX and shot assembly."
         if config.compositor_backend == "moviepy"
         else "Motion Canvas is the deterministic compositor for subtitles, SFX/BGM timing and continuity."
     )
@@ -403,6 +452,8 @@ def build_video_production_plan(
             "Preserve character continuity, scene geography, cause/effect, subtitle correctness, "
             "dialogue intelligibility and comedy timing even when production looks intentionally rough."
         ),
+        "Voice, music and SFX are explicit production profiles; changing audio providers must not change creative semantics.",
+        "When original_music_only is true, do not fetch or imitate copyrighted commercial soundtrack audio.",
         "Wan2.2 execution is optional/local and requires operator-controlled model files and GPU resources.",
         "Do not auto-fetch copyrighted film footage, protected character assets or commercial soundtracks.",
     ]
@@ -424,6 +475,7 @@ def build_video_production_plan(
         output_format=config.output_format,
         in_asset_cta_policy=render_request.in_asset_cta_policy,
         shots=shots,
+        audio_profile=audio_profile,
         audio_cues=audio_cues,
         generation_commands=commands,
         generation_command_specs=command_specs,
