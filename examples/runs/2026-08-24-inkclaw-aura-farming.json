@@ -1,0 +1,112 @@
+{
+  "schema_version": "hottop.creative-run.v1",
+  "created_at": "2026-08-24T09:20:00+08:00",
+  "promotion": {
+    "subject_name": "InkClawAgent",
+    "subject_type": "tool",
+    "category": "AI intelligent document and task platform",
+    "known_repo_strengths": [
+      "multi-agent collaboration",
+      "brainstorming and long-form creation",
+      "review-edit-revise workflow",
+      "document review",
+      "coding assistance"
+    ],
+    "user_supplied_claims": [
+      {
+        "claim": "不用部署",
+        "provenance": "user-provided in creative request",
+        "claim_status": "user-provided"
+      },
+      {
+        "claim": "开发零门槛",
+        "provenance": "user-provided in creative request",
+        "claim_status": "user-provided"
+      },
+      {
+        "claim": "Free Token 入门",
+        "provenance": "user-provided as 'free token'; wording intentionally avoids unlimited/permanent-free implication",
+        "claim_status": "user-provided"
+      }
+    ]
+  },
+  "hotspot": {
+    "name": "Aura Farming battles",
+    "observed_at": "2026-08-24T09:20:00+08:00",
+    "source_url": "https://www.euronews.com/culture/2026/08/22/what-is-aura-farming-tiktoks-strange-viral-battles-hit-the-streets",
+    "source_note": "Street/social battles where participants compete through poses, gestures and recognizable meme performance to project charisma and style.",
+    "rights_mode": "analysis-only"
+  },
+  "creative_directive": {
+    "campaign_goal": "hotspot-participation",
+    "platform": "generic-social",
+    "style": "funny-meme",
+    "creative_ambition": "breakout",
+    "product_visibility": "balanced",
+    "project_shape": "software-b2b",
+    "direction_lane": "bridge-led-metaphor",
+    "preferred_expression_form": "split-old-vs-new",
+    "visual_medium": "documentary-social",
+    "humor_expected": true
+  },
+  "strategy": {
+    "category_default": "Trying an AI-agent workflow often feels like a developer project before useful work begins: setup, environments, keys, deployment and billing decisions.",
+    "deleted_constraint": "Remove the requirement to become the deployment engineer before starting the actual task.",
+    "new_competition_axis": "time-to-first-use and creative/workflow output instead of setup ceremony",
+    "bridge_type": "language-symbol",
+    "bridge": "Turn the current Aura Farming battle format into a developer setup battle: one side farms aura by stacking setup rituals; InkClawAgent wins by bringing only the task and immediately working."
+  },
+  "concept": {
+    "title": "2026 Agent 开发 Aura Farming 大赛",
+    "layout": "single 4:5 meme poster using an original anonymous street-battle scene split into two competitors, with a faux scoreboard",
+    "left_side": {
+      "label": "传统 AI Agent 路线",
+      "visual": "anonymous developer overloaded with boxes/cards labeled Docker, 环境变量, API Key, Deploy, 依赖, Token 账单",
+      "score": "AURA 12",
+      "caption": "先把开发环境叠满"
+    },
+    "right_side": {
+      "label": "InkClawAgent",
+      "visual": "relaxed anonymous creator with a laptop; clean aura rings carry product-value labels",
+      "score": "AURA 999",
+      "value_labels": ["不用部署", "开发零门槛", "Free Token 入门", "多 Agent 协作"],
+      "caption": "打开 → 直接干活"
+    },
+    "dialogue": {
+      "judge": "你怎么什么都没带？",
+      "inkclawagent": "我带需求就够了。"
+    },
+    "product_explainer": "InkClawAgent = 打开就用的多 Agent 工作台",
+    "use_cases": "长文创作 · 文档审阅 · Review/改写 · Coding Assist",
+    "cta": "inkclawagent.com"
+  },
+  "creative_review": {
+    "instant_comprehension": "high: setup pile vs relaxed open-and-work contrast is legible before reading all text",
+    "natural_linkage": "high: aura farming maps directly to performative setup ceremony versus useful work",
+    "product_centrality": "high: the joke depends on InkClawAgent removing setup friction",
+    "surprise": "high: developer tooling ceremony becomes an aura battle",
+    "ownability": "medium-high: strengthened by specific no-deploy/low-barrier/free-token/multi-agent product claims",
+    "evidence_safety": "use user-provided product claims without adding unlimited/permanent-free or superiority claims",
+    "original_execution": "use anonymous original characters and original staging; do not reproduce real viral participants or protected meme frames"
+  },
+  "render_notes": {
+    "aspect_ratio": "4:5",
+    "visual_style": "internet-native documentary comedy, slightly exaggerated street sports broadcast, crisp commercial typography",
+    "text_priority": [
+      "2026 Agent 开发 Aura Farming 大赛",
+      "不用部署",
+      "开发零门槛",
+      "Free Token 入门",
+      "多 Agent 协作",
+      "打开 → 直接干活",
+      "InkClawAgent = 打开就用的多 Agent 工作台"
+    ],
+    "avoid": [
+      "real influencer likenesses",
+      "TikTok/RedNote proprietary UI recreation",
+      "protected meme screenshots",
+      "claims of unlimited or permanent free tokens",
+      "unsupported faster/better/cheaper claims"
+    ]
+  }
+}
