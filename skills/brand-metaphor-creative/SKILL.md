@@ -78,7 +78,19 @@ Film/live-action hotspots should feel like original live-action cinema; animatio
 
 Match **medium and recognition cues**, not protected assets. Do not reproduce actor likenesses, exact frames, official posters, protected character designs, proprietary UI, logos, or distinctive trade dress unless the user supplied assets they are entitled to use.
 
-## 8. Adaptive interaction routing
+## 8. Distribution-native restraint and motion
+
+Treat the social asset as entertainment first and attribution second when the brief is hotspot participation, meme reach, or brand memory. Do not turn a good joke into a conversion poster by default.
+
+- **No in-asset destination by default** — omit URLs, QR codes, app-store badges and commands such as `立即体验` unless the user explicitly requests conversion creative or the channel genuinely requires the destination inside the asset. Brand/product attribution and a short payoff are usually enough.
+- **Motion when timing carries the joke** — if recognition depends on character action, transformation, dialogue, sound, reaction timing, physical escalation, or a film/animation-native cue, prefer a short video, GIF, or animated sequence over flattening the idea into a static poster.
+- **Continuous motion, not slideshow cosplay** — a narrative video should preserve scene geography, character continuity and action continuity with follow/pan/reaction/match-action/foreground-occlusion transitions where useful. Do not assemble unrelated stills with hard cuts and call it cinematic motion.
+- **Benefits appear as consequences** — product advantages should emerge from what happens in the scene (the task starts, the obstruction disappears, the ritual shortens) before they appear as labels. Avoid feature-list end cards unless a conversion brief explicitly asks for one.
+- **Keep the payoff light** — the final attribution should be compact enough that the audience still experiences the piece as a meme/scene rather than an advertisement.
+
+This rule supersedes the older habit of automatically adding a URL CTA or forcing a dynamic hotspot into a static poster merely because the poster is easier to render.
+
+## 9. Adaptive interaction routing
 
 Treat intake as a creative-director conversation, not a static questionnaire. Resolve what the user already said, attach provenance/confidence to inferred values, and **ask only high-impact questions** that materially change the creative output. The default interaction budget is 0–3 questions; stop asking once the remaining uncertainty no longer justifies interruption.
 
