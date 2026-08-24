@@ -53,3 +53,20 @@ def test_video_environment_fails_closed_when_heavy_dependencies_are_missing(monk
     assert any("FFmpeg" in action for action in status.actions_required)
     assert status.auto_install is False
     assert status.auto_download_models is False
+
+
+def test_video_environment_rejects_planning_only_motion_canvas_scaffold(monkeypatch):
+    config = load_video_production_config(Path("config/video/anti-polish-short.yml"))
+    binaries = {
+        "python": "/usr/bin/python",
+        "node": "/usr/bin/node",
+        "npm": "/usr/bin/npm",
+        "ffmpeg": "/usr/bin/ffmpeg",
+    }
+    monkeypatch.setattr("hottop.video_execution.shutil.which", binaries.get)
+
+    status = inspect_video_environment(config, project_root=Path("."))
+
+    assert status.motion_canvas.ready is False
+    assert "Motion Canvas executable render adapter" in status.motion_canvas.missing
+    assert any("Motion Canvas" in action for action in status.actions_required)
