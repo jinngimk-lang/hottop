@@ -100,6 +100,8 @@ The promoted product must remain native to the crude world. Do not suddenly swit
 
 This style is selectable rather than universal. Use it when a low-budget film/animation grammar, internet meme, absurd social phenomenon or campaign benefits from looking like a strange native artifact rather than a polished advertisement. Broad low-budget 3D grammar, archetypal animal roles, deadpan family relationships and crude animation language may be re-created through original staging; exact film frames, source footage, soundtrack and protected character designs remain off-limits by default.
 
+**Roughness is a routing variable, not the product identity.** Video profiles carry a `roughness_score` from 0–100. High values may deliberately embrace low-budget artifacts when that strengthens the meme; cinematic, premium, social-native or emotionally serious hotspots should use a lower score and preserve credible faces, costumes, lighting and camera work. Surface polish may vary; directing precision may not. A video is never allowed to become incoherent, unreadable, continuity-broken or embarrassing merely because Anti-Polish exists.
+
 ### 8. Comparison is optional; truth is not
 
 Research direct competitors, recognizable defaults, substitutes and old workflows. Select the clearest pain-point contrast, not automatically the most famous rival.
@@ -184,7 +186,7 @@ Revision controls such as `换方向`, `更有梗`, `更大胆`, `产品更明�
 12. **Write** — beats, captions, reveal order, punchlines and medium-matched prompts.
 13. **Review and select** — hard creative gate first, contextual review second; regenerate rather than force a winner if all fail.
 14. **Guardrail** — claims, copyright/likeness/trademark, misleading competitor framing.
-15. **Plan motion when selected** — convert provider-neutral `hottop.render.v2` plus a repository video profile into `hottop.video-plan.v1`, preserving ordered shots, continuity, dialogue/SFX/BGM cues, generation/compositor/encoder routing and execution notes.
+15. **Plan motion when selected** — convert provider-neutral `hottop.render.v2` plus a repository video profile into `hottop.video-plan.v1`, preserving ordered shots, continuity, style/roughness routing, role-aware dialogue, original music/SFX cues, generation/compositor/encoder routing and execution notes.
 16. **Archive** — intent/provenance, evidence, reference manifests, rejected assumptions, selected bridge, format, reviews, prompts and outcome notes.
 
 ## Persistent project memory protocol
@@ -246,6 +248,7 @@ After meaningful doctrine or architecture updates, reread the charter with fresh
 - No requirement to deploy a vector database, browser agent or GPU render stack before a measured use case exists.
 - No static mandatory intake questionnaire; the interaction must stop asking once the remaining uncertainty no longer justifies interruption.
 - No assumption that more polished or photorealistic output is always more effective; Anti-Polish is an intentional selectable strategy when roughness improves memorability or native meme grammar.
+- No assumption that every hotspot should inherit Anti-Polish roughness; cinematic and premium styles must remain presentable when the source grammar calls for them.
 
 ## Upstream integrations
 
@@ -267,14 +270,19 @@ Use Playwright CLI as the preferred optional visual-reference browser adapter fo
 
 ### Config-driven video production
 
-Keep video production downstream of the provider-neutral creative contract rather than coupling Hottop to one model or editor: `hottop.render.v2 → VideoProductionConfig → hottop.video-plan.v1 → optional generation backend → compositor → encoder`.
+Keep video production downstream of the provider-neutral creative contract rather than coupling Hottop to one model or editor: `hottop.render.v2 → VideoProductionConfig → hottop.video-plan.v1 → optional generation backend → audio production → compositor → encoder`.
 
 - **Wan2.2** (`Wan-Video/Wan2.2`, Apache-2.0) is the primary optional open-source local shot-generation candidate. Prefer the TI2V-5B path for the general local profile; model downloads and GPU execution are never a CI requirement and remain operator-controlled.
-- **Motion Canvas** (`motion-canvas/motion-canvas`, MIT) is the preferred deterministic compositor for shot timing, captions, simple intentionally crude motion graphics, dialogue/SFX/BGM timing and continuity.
+- **MoviePy** is the default deterministic **headless** compositor for unattended config-driven assembly: ordered shots, captions, dialogue timing, original generated music, procedural SFX/Foley and final audio mix.
+- **Motion Canvas** (`motion-canvas/motion-canvas`, MIT) remains an optional advanced vector-motion / interactive-preview compositor when a project needs richer custom motion graphics instead of the default unattended path.
 - **FFmpeg** is the final external compatibility encoder for H.264/AAC/yuv420p/fast-start and optional WebM/GIF. Licensing obligations depend on the actual FFmpeg build and enabled codecs.
 - **Remotion** is an optional adapter candidate only. Its current commercial license conditions depend on entity size, so Hottop must not silently enable it or make it a default dependency without an operator license review.
 
-The first committed production profile is `config/video/anti-polish-short.yml`. `hottop video-plan <render-v2.json> --config config/video/anti-polish-short.yml` must remain planning-only: it emits commands/manifests but does not silently download models, invoke paid APIs, require GPU, install Node packages or execute FFmpeg.
+Audio is a first-class production contract, not an afterthought. `VideoProductionConfig.audio` selects **voice**, **music** and **SFX/Foley** backends/profiles; `hottop.video-plan.v1` preserves role-aware dialogue cues (`speaker`, `delivery`, voice profile), BGM style and SFX timing. The free local executable baseline is `espeak` for Mandarin dialogue plus Hottop-generated original synthetic music and deterministic procedural Foley/SFX. These are replaceable adapters, not creative semantics. Future cloud TTS/music providers may replace the baseline only through explicit adapters, and paid calls/credentials remain operator-controlled. When `original_music_only` is true, do not fetch or imitate copyrighted commercial soundtrack audio.
+
+Production quality is profile-routed. `roughness_score` controls intentional surface polish without relaxing continuity. `config/video/anti-polish-direct.yml` is the high-roughness headless profile; `config/video/cinematic-meme-direct.yml` is the lower-roughness cinematic meme profile for film-like hotspots that still need absurdity but must remain presentable. `config/video/anti-polish-short.yml` remains the Motion Canvas planning/advanced-motion profile.
+
+`hottop video-plan <render-v2.json> --config <profile.yml>` remains planning-only. `hottop video-run <render-v2.json> --config <profile.yml>` materializes a workspace and is also dry-run by default; only explicit `--execute` may spawn configured local generation/audio/compositor/finalization stages. Neither command may silently download models, invoke paid APIs, require GPU provisioning, install packages or fetch protected source assets.
 
 ### Future semantic visual memory
 
@@ -282,7 +290,7 @@ When a sufficiently large rights-aware reference corpus exists, evaluate pinned 
 
 ### Future render backends
 
-Keep rendering provider-neutral. ComfyUI is a candidate optional local/offline backend because reusable workflows can be exposed through APIs, but it must remain isolated behind an adapter, pinned to a tested stable release/workflow, and preserve per-model/license provenance. Do not silently enable paid API nodes or make GPU availability a core requirement.
+Keep rendering provider-neutral. ComfyUI is a candidate optional local/offline or explicitly configured remote orchestration backend because reusable workflows can be exposed through APIs, but it must remain isolated behind an adapter, pinned to a tested stable release/workflow, and preserve per-model/license provenance. Do not silently enable paid API nodes, upload sensitive assets, or make GPU/cloud availability a core requirement.
 
 ## Repository operating rules
 
@@ -323,10 +331,11 @@ A mature creative concept/package should be serializable with:
 - risk flags;
 - factual-claim status (`satire`, `supported`, `needs_evidence`);
 - provider-neutral `hottop.render.v2` handoff;
-- when motion/config-driven production is selected: `hottop.video-plan.v1` with ordered shots, continuity instructions, dialogue/Foley/SFX/BGM cues, backend commands/manifests, final encoding contract and execution notes.
+- when motion/config-driven production is selected: `hottop.video-plan.v1` with ordered shots, continuity instructions, style profile + `roughness_score`, role-aware dialogue (`speaker`, `delivery`, voice profile), music/SFX profiles and cues, backend commands/manifests, final encoding contract and execution notes.
 
 ## Decision log
 
+- **2026-08-24 — Video roughness becomes style-routed and audio becomes first-class.** Anti-Polish remains a differentiated strategy, not a universal look. `roughness_score` now makes intentional polish explicit so cinematic film memes can remain convincing while low-budget absurdity can still be selected deliberately. Voice, original music and SFX/Foley are now part of the video production contract and execution order rather than ad-hoc post-production. The local baseline is free/offline-friendly; cloud providers remain replaceable explicit adapters rather than hidden paid dependencies.
 - **2026-08-24 — Anti-Polish / Controlled Badness becomes a first-class selectable video strategy.** The category default in AI video is to compete on smoother, more photorealistic and more expensive-looking output. Hottop explicitly deletes that constraint when roughness strengthens the cultural bridge: low production feel + high comedy control can be more memorable and feel less like an advertisement. This does not relax continuity, timing, subtitle, claim or rights standards; only the surface production grammar is intentionally crude.
 - **2026-08-24 — Social creative is ad-light by default; motion-native ideas stay motion-native.** Repeated production feedback showed that in-asset URLs/QR-style CTAs weakened meme distribution grammar and that dynamic film/animation/social jokes became slideshow-like when forced into static poster frames. Hottop now defaults to compact attribution without an in-asset destination for hotspot/meme/brand-memory work, and selects short video/GIF/animation when timing, dialogue, sound or character action carries the recognition. Conversion briefs may explicitly override this default.
 
@@ -340,7 +349,7 @@ A mature creative concept/package should be serializable with:
 
 **Foundation v0.1**
 
-Close the foundation with arbitrary-promotion semantics, adaptive guided intake, platform/style/project-shape routing, evidence-aware comparison discovery, hotspot acquisition/enrichment, creative-doctrine persistence, reference-research contracts, bridge/format contracts, contextual review, provider-neutral renderer handoff, config-driven motion planning, tests, CI and representative live archives.
+Close the foundation with arbitrary-promotion semantics, adaptive guided intake, platform/style/project-shape routing, evidence-aware comparison discovery, hotspot acquisition/enrichment, creative-doctrine persistence, reference-research contracts, bridge/format contracts, contextual review, provider-neutral renderer handoff, config-driven motion planning/execution, first-class audio profiles, tests, CI and representative live archives.
 
 ## Session recovery
 
