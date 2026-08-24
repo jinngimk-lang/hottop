@@ -102,6 +102,7 @@ class VideoProductionConfig(BaseModel):
     schema_version: Literal["hottop.video-config.v1"] = "hottop.video-config.v1"
     name: str
     style_profile: VideoStyleProfile
+    roughness_score: int = Field(default=40, ge=0, le=100)
     generation_backend: GenerationBackend
     compositor_backend: CompositorBackend
     encoder_backend: EncoderBackend
@@ -158,6 +159,7 @@ class VideoProductionPlan(BaseModel):
     topic_title: str
     subject_name: str
     style_profile: VideoStyleProfile
+    roughness_score: int = Field(default=40, ge=0, le=100)
     generation_backend: GenerationBackend
     compositor_backend: CompositorBackend
     encoder_backend: EncoderBackend
@@ -212,10 +214,20 @@ def _generation_prompt(
     scene: str,
 ) -> str:
     parts = [render_request.master_prompt, scene]
-    if config.anti_polish.enabled:
+    if config.anti_polish.enabled or config.roughness_score >= 65:
         parts.append(
             "Intentional rough cheap low-budget 3D: simple geometry and materials, slightly awkward "
             "motion, deadpan acting, crude but purposeful staging; preserve character continuity."
+        )
+    elif config.style_profile == "cinematic" or config.roughness_score <= 40:
+        parts.append(
+            "Controlled cinematic polish: convincing lighting, faces, costumes, depth and camera motion; "
+            "retain a small amount of handmade imperfection and meme timing without looking broken."
+        )
+    else:
+        parts.append(
+            "Moderate production polish with visible personality; avoid both glossy generic AI advertising "
+            "and accidental low-quality artifacts."
         )
     return " ".join(part.strip() for part in parts if part.strip())
 
@@ -437,6 +449,7 @@ def build_video_production_plan(
         "width": config.width,
         "height": config.height,
         "fps": config.fps,
+        "roughness_score": config.roughness_score,
         "shots": [shot.model_dump(mode="json") for shot in shots],
         "audio_profile": audio_profile.model_dump(mode="json"),
         "audio_cues": [cue.model_dump(mode="json") for cue in audio_cues],
@@ -452,6 +465,7 @@ def build_video_production_plan(
             "Preserve character continuity, scene geography, cause/effect, subtitle correctness, "
             "dialogue intelligibility and comedy timing even when production looks intentionally rough."
         ),
+        "Roughness is style-routed: surface polish may vary by hotspot, but continuity and directing precision may not.",
         "Voice, music and SFX are explicit production profiles; changing audio providers must not change creative semantics.",
         "When original_music_only is true, do not fetch or imitate copyrighted commercial soundtrack audio.",
         "Wan2.2 execution is optional/local and requires operator-controlled model files and GPU resources.",
@@ -465,6 +479,7 @@ def build_video_production_plan(
         topic_title=render_request.topic_title,
         subject_name=render_request.subject_name,
         style_profile=config.style_profile,
+        roughness_score=config.roughness_score,
         generation_backend=config.generation_backend,
         compositor_backend=config.compositor_backend,
         encoder_backend=config.encoder_backend,
