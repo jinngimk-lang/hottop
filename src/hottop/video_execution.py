@@ -755,6 +755,19 @@ def _verify_artifact_provenance(
             raise VideoExecutionError(
                 f"video generation artifact provenance artifact backend mismatch: {manifest_path}"
             )
+    elif artifact.artifact_kind == "deterministic-non-generative":
+        if config.zero_cost is None or not config.zero_cost.deterministic_reference_fallback:
+            raise VideoExecutionError(
+                f"video generation artifact provenance deterministic fallback not enabled: {manifest_path}"
+            )
+        if (
+            artifact.backend != "deterministic-reference-motion"
+            or artifact.degraded_from != "zero-cost-router"
+            or artifact.degradation_reason != "zero_cost_routes_exhausted"
+        ):
+            raise VideoExecutionError(
+                f"video generation artifact provenance deterministic fallback backend mismatch: {manifest_path}"
+            )
     if expected_shot_index is None or artifact.shot_index != expected_shot_index:
         raise VideoExecutionError(
             f"video generation artifact provenance shot identity mismatch: {manifest_path}"
