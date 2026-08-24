@@ -106,7 +106,7 @@ def test_video_plan_exposes_trusted_structured_command_specs():
     assert compositor is not None
     assert compositor.stage == "compositor"
     assert compositor.program == "npm"
-    assert compositor.cwd == "video/motion-canvas"
+    assert compositor.cwd == "video/motion-canvas-executor"
     assert compositor.args == ["run", "render", "--", "--plan", "hottop-video-plan.json"]
 
     finalizer = plan.finalization_command_spec
