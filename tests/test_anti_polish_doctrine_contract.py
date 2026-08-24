@@ -17,6 +17,8 @@ def test_project_and_skill_persist_controlled_badness_doctrine():
         "subtitle correctness",
         "comedy timing",
         "Wan2.2",
+        "MoviePy",
+        "headless",
         "Motion Canvas",
         "FFmpeg",
     ):
@@ -30,6 +32,9 @@ def test_video_upstreams_are_pinned_with_safe_roles():
 
     assert versions["wan22"]["repo"] == "Wan-Video/Wan2.2"
     assert versions["wan22"]["license"] == "Apache-2.0"
+    assert versions["moviepy"]["repo"] == "Zulko/moviepy"
+    assert versions["moviepy"]["version"] == "2.2.0"
+    assert versions["moviepy"]["license"] == "MIT"
     assert versions["motion_canvas"]["commit"] == "7b91435c301d530351dcf5ebb91dd139c002e405"
     assert versions["motion_canvas"]["license"] == "MIT"
     assert versions["ffmpeg"]["commit"] == "1019f8f036602a8464185baa4857654337eeca14"
