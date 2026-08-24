@@ -45,7 +45,11 @@ from .rendering import (
     build_render_request,
 )
 from .scoring import score_candidate
-from .video_execution import inspect_video_environment
+from .video_execution import (
+    VideoExecutionError,
+    inspect_video_environment,
+    run_video_production,
+)
 from .video_production import build_video_production_plan, load_video_production_config
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
@@ -220,6 +224,32 @@ def video_doctor_command(
         inspect_video_environment(video_config, project_root=project_root),
         output,
     )
+
+
+@app.command(name="video-run")
+def video_run_command(
+    render_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    config: Path = typer.Option(..., "--config", exists=True, dir_okay=False),
+    output_dir: Path = typer.Option(Path("artifacts/video-run"), "--output-dir", file_okay=False),
+    project_root: Path = typer.Option(Path("."), "--project-root", file_okay=False),
+    execute: bool = typer.Option(False, "--execute", help="Run trusted local stages after readiness checks"),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Materialize a video workspace; execute only when `--execute` is explicitly supplied."""
+    raw = json.loads(render_path.read_text(encoding="utf-8"))
+    render_request = CreativeRenderRequest.model_validate(raw)
+    video_config = load_video_production_config(config)
+    try:
+        result = run_video_production(
+            render_request,
+            video_config,
+            output_dir=output_dir,
+            project_root=project_root,
+            execute=execute,
+        )
+    except VideoExecutionError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    _write_or_echo(result, output)
 
 
 @app.command()
