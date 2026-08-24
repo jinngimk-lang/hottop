@@ -733,6 +733,10 @@ def _verify_artifact_provenance(
         raise VideoExecutionError(
             f"video generation artifact provenance is invalid: {manifest_path}"
         ) from exc
+    if manifest.planned_generation_backend != "zero-cost-router":
+        raise VideoExecutionError(
+            f"video generation artifact provenance planned backend mismatch: {manifest_path}"
+        )
     expected_shot_index = _shot_index(command)
     if len(manifest.shots) != 1:
         raise VideoExecutionError(
