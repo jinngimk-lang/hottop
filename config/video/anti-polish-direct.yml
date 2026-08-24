@@ -22,6 +22,15 @@ audio:
   bgm_style: cheap xylophone, bass plucks, crude folk accents, light electronic drums
   dialogue_duck_db: -8
   foley_style: blunt comedic Foley, slightly exaggerated and intentionally cheap
+  voice_backend: espeak
+  voice_profile: rough-mandarin-dialogue
+  voice_language: zh
+  voice_rate_wpm: 155
+  music_backend: synthetic
+  music_profile: cheap-comedy-original
+  sfx_backend: procedural
+  sfx_profile: blunt-comedic-foley
+  original_music_only: true
 text:
   subtitle_mode: dialogue-first
   max_end_card_seconds: 0.8
