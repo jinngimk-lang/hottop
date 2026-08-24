@@ -377,11 +377,24 @@ def _expected_stage_output(
     return None
 
 
+def _prepare_stage_output(stage: str, path: Path | None) -> None:
+    if path is None:
+        raise VideoExecutionError(
+            f"video {stage} stage has unresolved expected output path"
+        )
+    if path.exists():
+        if not path.is_file():
+            raise VideoExecutionError(
+                f"video {stage} stage expected output is not a file: {path}"
+            )
+        path.unlink()
+
+
 def _verify_stage_output(stage: str, path: Path | None) -> None:
     if path is None or not path.is_file() or path.stat().st_size <= 0:
         rendered = str(path) if path is not None else "unresolved output path"
         raise VideoExecutionError(
-            f"video {stage} stage did not produce expected output: {rendered}"
+            f"video {stage} stage did not produce fresh expected output: {rendered}"
         )
 
 
@@ -429,6 +442,12 @@ def run_video_production(
 
     if execute:
         for command in commands:
+            expected_output = _expected_stage_output(
+                command,
+                composite_output=composite_output,
+                final_output=final_output,
+            )
+            _prepare_stage_output(command.stage, expected_output)
             completed = subprocess.run(
                 [command.program, *command.args],
                 cwd=command.cwd,
@@ -445,14 +464,7 @@ def run_video_production(
                 raise VideoExecutionError(
                     f"video {command.stage} stage failed with return code {completed.returncode}"
                 )
-            _verify_stage_output(
-                command.stage,
-                _expected_stage_output(
-                    command,
-                    composite_output=composite_output,
-                    final_output=final_output,
-                ),
-            )
+            _verify_stage_output(command.stage, expected_output)
 
     return VideoRunResult(
         execute_requested=execute,
