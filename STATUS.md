@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-24 12:08 +08:00
+Last updated: 2026-08-24 13:02 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 PR: #1 — open, draft, mergeable
@@ -23,6 +23,7 @@ PR: #1 — open, draft, mergeable
 - `hottop video-plan <render-v2.json> --config config/video/anti-polish-short.yml [--output plan.json]` emits provider-neutral `hottop.video-plan.v1`. It is planning-only and does not execute external tools.
 - `src/hottop/video_execution.py` defines fail-closed local readiness inspection for Wan2.2 repository/model files, Node/npm + Motion Canvas project metadata, and FFmpeg. It never installs packages, downloads models, provisions GPU, or invokes paid services.
 - `hottop video-doctor --config ... [--project-root ...] [--output ...]` exposes that readiness inspection without executing external commands.
+- `video/motion-canvas/` is now a pinned Motion Canvas 3.17.2 scaffold. It validates `hottop.video-plan.v1`, writes a generated typed plan, and maps ordered shots/captions/audio-cue timing onto one continuous scene. Generated shot placeholders use deterministic `/shots/shot-NNN.mp4` paths. The scaffold does not install packages, download assets, spawn a renderer or invoke FFmpeg.
 - Upstreams are pinned in `integrations/versions.yml`: Wan2.2 as optional Apache-2.0 local shot generation; Motion Canvas as MIT deterministic compositor; FFmpeg as external compatibility encoder with build-dependent licensing; Remotion remains disabled-by-default and requires operator license review before use.
 - Design/spec: `docs/superpowers/specs/2026-08-24-config-driven-video-production-design.md`.
 - Planning implementation: `docs/superpowers/plans/2026-08-24-config-driven-video-production.md`.
@@ -37,6 +38,7 @@ PR: #1 — open, draft, mergeable
 - Safe readiness inspection landed before CLI exposure; recovery baseline head `ce08fceadbfe2a0b14db22dd94bda64da97e78af` passed exact CI run 793.
 - `video-doctor` was introduced RED-first at `70d5f7a03c11e4e617292c9c4a42d0bff8acda52`: Ruff passed and pytest failed exactly once because the command was missing (`1 failed / 265 passed`). Minimal CLI implementation head `fc90f46d3ba4f548bddecec1e4a7ba145d67e58c` passed exact CI run 797 on Python 3.11 and 3.12.
 - Structured trusted command specs were introduced RED-first at `c2a5b81652e4b736bd340f04b7327b379bfd3af5`: Ruff passed and pytest failed exactly once because `VideoProductionPlan` lacked the new structured fields (`1 failed / 266 passed`). Implementation head `9bfece07230e4de636b42448832735ab7742f457` passed exact CI run 803 on Python 3.11 and 3.12.
+- Motion Canvas scaffold contracts were introduced RED-first. After correcting the test import formatting, exact-head run 811 passed Ruff and failed only because the scaffold files did not exist (`2 failed / 267 passed`). Implementation head `893002540a528a4c2657214e8c97f10e99bea578` passed exact CI run 831 on Python 3.11 and 3.12.
 
 ## Current creative doctrine
 
@@ -52,19 +54,18 @@ PR: #1 — open, draft, mergeable
 ## In progress
 
 - Foundation v0.1 closure review continues across the accumulated PR diff.
-- Config-driven video planning, structured trusted command specs and fail-closed readiness inspection are implemented. Actual local GPU generation, Motion Canvas rendering and FFmpeg invocation remain intentionally operator/execution-environment concerns rather than CI requirements.
-- The safe execution adapter is still incomplete: Motion Canvas scaffold and opt-in `video-run --execute` remain to be added. No external process should be spawned until those contracts are green.
+- Config-driven video planning, structured trusted command specs, fail-closed readiness inspection and the pinned Motion Canvas scaffold are implemented. Actual local GPU generation, Motion Canvas rendering and FFmpeg invocation remain intentionally operator/execution-environment concerns rather than CI requirements.
+- The safe execution adapter is still incomplete: representative Anti-Polish video-plan archive and opt-in `video-run --execute` remain to be added. No external process should be spawned until those contracts are green.
 - Continue fresh cross-category trend/evidence research when it materially improves creative coverage; do not collapse discovery into AI/tech only.
 - RSSHub remains optional until an operator-controlled `RSSHUB_BASE_URL` is explicitly available.
 
 ## Next actions
 
-1. Finish PR #1 accumulated diff/contract review; PR completion text is refreshed for the motion/video planning + doctor path, but keep the PR draft until closure criteria are reviewed against exact-head CI.
-2. Add the small pinned Motion Canvas project scaffold that consumes `hottop-video-plan.json`; CI should validate files/contracts only, not install npm packages or render.
-3. Add a representative `hottop.video-plan.v1` archive for the original InkClawAgent “cow / snake / mother” Anti-Polish story, with no protected source footage or soundtrack.
-4. Add `video-run` dry-run by default, then explicit `--execute` process spawning with `shell=False`, fixed stage order, explicit cwd and fail-closed readiness. Never auto-install/download/provision anything.
-5. Keep PR draft until Foundation closure criteria are reviewed against exact-head CI.
-6. After Foundation v0.1, add the lightweight project-bootstrap template/command for charter/status/skill recovery.
+1. Finish PR #1 accumulated diff/contract review; keep the PR draft until closure criteria are reviewed against exact-head CI.
+2. Add a representative `hottop.video-plan.v1` archive for the original InkClawAgent “cow / snake / mother” Anti-Polish story, with no protected source footage or soundtrack.
+3. Add `video-run` dry-run by default, then explicit `--execute` process spawning with `shell=False`, fixed stage order, explicit cwd and fail-closed readiness. Never auto-install/download/provision anything.
+4. Keep PR draft until Foundation closure criteria are reviewed against exact-head CI.
+5. After Foundation v0.1, add the lightweight project-bootstrap template/command for charter/status/skill recovery.
 
 ## Constraints
 
