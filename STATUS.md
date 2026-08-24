@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-24 18:05 +08:00
+Last updated: 2026-08-24 19:08 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 PR: #1 — open, draft, mergeable
@@ -13,12 +13,24 @@ PR: #1 — open, draft, mergeable
 - Motion-native ideas preserve character/scene/action continuity instead of becoming slideshow-like still sequences. Product benefits appear first as dialogue, action or visible consequences.
 - Provenance-first visual references remain grammar-only; protected film frames, actor likenesses, soundtrack, character designs, proprietary UI and copied layouts are not default generation inputs.
 
+## Zero-cost video path
+
+- **`ZERO_COST_MODE=true` is now the preferred unattended generation policy.** Hottop reserves free/shared or operator-owned GPU capacity for high-value generative shots while retaining deterministic MoviePy/FFmpeg/audio production for the rest.
+- `generation_backend: zero-cost-router` is implemented with `ZeroCostConfig`: `allow_paid_fallback` is literally constrained to `false`, candidates require `cost_per_unit: 0`, attempts are bounded, and free-route exhaustion never consults a paid backend.
+- `src/hottop/video_hf_zerogpu.py` implements Hugging Face ZeroGPU Gradio submit/poll/download with optional environment-only token lookup, SSE terminal handling, timeout/error classification and atomic `.part` output replacement.
+- `src/hottop/video_quality.py` deterministically inspects generated MP4s with ffprobe/ffmpeg: video stream, terminal-frame decode, sampled grayscale frame delta and duplicate-frame ratio.
+- **Quality-gated failover is now wired into the free router.** A bad/duplicate-heavy candidate output is deleted, converted to retryable `zero_cost_quality_rejected`, and the next configured free candidate may run. Only a quality-passing fresh artifact is accepted.
+- `config/video/cinematic-zero-cost.yml` is the first production profile for this path: cinematic roughness 28, HF ZeroGPU candidate list, bounded quality gate, local `espeak` dialogue + synthetic music + procedural SFX, MoviePy composition and FFmpeg finalization. Public Space availability is not treated as guaranteed.
+- `docs/integrations/zero-cost-video-radar.md` records the admission policy for mature projects. Code license and model/weights license are always reviewed separately; stars/demos alone do not qualify a backend.
+- Current watchlist: Wan2.2 for operator-controlled local generation; FramePack for future low-VRAM/reference I2V isolation; FastVideo for future self-hosted acceleration; ViMax/Toonflow for planning/provider architecture ideas; OpenMontage architecture only because its code is AGPL; RIFE/Real-ESRGAN only after a measurable post-processing gap exists.
+
 ## Style-routed video path
 
 - **Anti-Polish / Controlled Badness** remains a durable selectable strategy: `low production feel + high comedy control`. Rough/cheap 3D, simple materials, awkward motion, deadpan acting, crude Foley and cheap-sounding music may be intentional; character continuity, scene geography, cause/effect, subtitle correctness, dialogue intelligibility, comedy timing, product semantics, claim safety and rights safety remain hard requirements.
 - **Roughness is not universal.** `VideoProductionConfig.roughness_score` makes intentional surface polish explicit on a 0–100 scale. High values may embrace controlled low-budget artifacts; cinematic/film hotspots use lower values so faces, costumes, lighting and camera work stay presentable.
 - `config/video/anti-polish-direct.yml`: unattended headless profile, `style_profile=anti-polish`, `roughness_score=78`, Wan2.2 optional generation → MoviePy → FFmpeg.
 - `config/video/cinematic-meme-direct.yml`: presentable film-meme profile, `style_profile=cinematic`, `roughness_score=28`, Wan2.2 optional generation → MoviePy → FFmpeg.
+- `config/video/cinematic-zero-cost.yml`: presentable free-only profile, `style_profile=cinematic`, `roughness_score=28`, bounded HF ZeroGPU route → quality gate → MoviePy → FFmpeg.
 - `config/video/anti-polish-short.yml` keeps Motion Canvas as an optional advanced vector-motion / interactive-preview path.
 - `hottop video-plan <render-v2.json> --config ...` remains planning-only. `hottop video-run <render-v2.json> --config ... --output-dir ...` is dry-run by default; only explicit `--execute` may spawn trusted configured stages after readiness passes.
 - Execute mode requires fresh non-empty stage outputs and removes partial output from a failed external stage before raising. Stale/corrupt half-files cannot satisfy success.
@@ -26,7 +38,7 @@ PR: #1 — open, draft, mergeable
 ## Provider-neutral generation adapters
 
 - Wan2.2 remains the operator-controlled local/open-source generation route; Hottop never downloads weights or provisions GPU resources automatically.
-- `comfy-api-v2` is now an explicit optional remote/self-hosted generation adapter behind the same `render.v2 → video-plan → video-run` contract.
+- `comfy-api-v2` remains an explicit optional remote/self-hosted generation adapter behind the same `render.v2 → video-plan → video-run` contract.
 - Comfy adapter configuration contains endpoint, workflow path, prompt node/input mapping, token **environment-variable name**, polling interval and timeout. Secrets themselves are never written into plans/runtime command arguments.
 - `video-doctor`/`inspect_video_environment()` fail closed when the workflow JSON or configured token environment variable is missing.
 - Dry-run emits structured `python -m hottop.video_comfy_api ...` generation commands using `shell=False`; actual HTTP submission happens only under explicit `video-run --execute` after readiness passes.
@@ -52,8 +64,9 @@ PR: #1 — open, draft, mergeable
 
 - Earlier provider-neutral video planning, `video-doctor`, structured command specs, MoviePy/headless execution, Motion Canvas project-tree safety, stage-output verification and fresh-output safety were introduced RED-first and verified on Python 3.11 / 3.12.
 - Audio/style work was introduced RED-first through `tests/test_video_audio_pipeline.py`, `tests/test_video_style_profiles.py`, and `tests/test_odyssey_video_archive.py`; exact head `3eb8055d5ddefb106b2a284e39d0613914613f4b` passed CI run 933 on both Python versions before doctrine synchronization.
-- The Comfy API v2 adapter began with RED contract `40c9df0d18da80e22a7edaeb6f2ea55cd287a79c`. CI run 941 first exposed only a Ruff import-order issue before pytest could execute; after implementation and normalization, exact head `f174e24a0d9b960fc3c0df70941527530cbaf89c` passed CI run **951** on Python **3.11** and **3.12**, with Ruff and full pytest successful in both jobs.
-- The Comfy tests verify environment-only credential reference, fail-closed missing-token readiness, workflow prompt injection, job polling and successful video download without embedding the secret in dry-run commands.
+- The Comfy API v2 adapter began with RED contract `40c9df0d18da80e22a7edaeb6f2ea55cd287a79c`; exact head `f174e24a0d9b960fc3c0df70941527530cbaf89c` passed CI run 951 on Python 3.11 / 3.12.
+- Zero-cost quality integration began with RED `46f93c45b9baf92e6d506a3ec2f24c6fdcc69fc3`; CI run **1000** passed Ruff and produced exactly **1 failed / 305 passed**, proving the first bad free candidate was still accepted. GREEN `0dd18b546b608c5a34a2b5c0c41728a0f5d53e7e` wired `inspect_video_quality` into failover; CI run **1002** passed Ruff + full pytest on Python 3.11 / 3.12.
+- Zero-cost production profile/radar/doctrine began with normalized RED `c4906602b9fc143950bdd215b7f910998593c8b2`; CI run **1006** passed Ruff and produced exactly **2 failed / 306 passed**, both missing-artifact contracts (`cinematic-zero-cost.yml` and `zero-cost-video-radar.md`). After adding the profile, radar, `PROJECT.md` decision and skill rule, exact head `dd55e31b9b6cf3b6e3700745734d2afe6886c86d` passed CI run **1014** on Python 3.11 / 3.12.
 
 ## Current creative doctrine
 
@@ -65,25 +78,26 @@ PR: #1 — open, draft, mergeable
 - Named competitor negatives require evidence or unmistakable satire; otherwise use a generic proxy or old category assumption.
 - Creative Review remains the hard gate; contextual fit only ranks concepts that already pass.
 - References teach grammar, not pixels.
+- Zero-cost generation is hybrid, not magical unlimited compute: use free capacity selectively, reject bad artifacts, keep deterministic production alive, and never pay silently.
 
 ## In progress
 
-- Synchronize PR #1 summary with the now-green optional Comfy API v2 adapter.
-- Next architecture increment: a higher-quality provider-neutral voice/music adapter interface while retaining the deterministic local audio fallback and the same explicit credential/cost boundaries.
-- Evaluate current video backends for style/continuity fit rather than hard-coding one model for every hotspot; keep Wan2.2 and Comfy adapters selectable rather than universal.
 - Foundation v0.1 accumulated PR diff / production-contract closure review continues.
+- Next zero-cost capability gap: **reference-first I2V consistency**. The current HF adapter is text-to-video only even though the preferred architecture fixes a character/product keyframe before motion generation. Add this only through a rights-safe reference contract and isolated adapter path.
+- After reference I2V, evaluate a clearly labeled deterministic degradation path for free-route exhaustion; never publish a mock placeholder as successful generative footage.
+- Higher-quality voice/music adapters remain useful but must not displace the stricter zero-cost video consistency/runtime work or introduce hidden cloud cost.
 
 ## Next actions
 
-1. Synchronize PR #1 body with the green Comfy API v2 optional generation adapter and exact-head CI 951 evidence.
-2. Add a higher-quality voice/music adapter interface while retaining `espeak` + synthetic/procedural local fallback and fail-closed credential/cost behavior.
-3. Add targeted contracts for adapter output/metadata integrity only when a concrete gap is reproducible; do not add generic cloud infrastructure for its own sake.
-4. Continue Foundation closure review; keep PR draft until closure criteria are checked against exact-head CI.
+1. Add a TDD-first reference-image contract for zero-cost/high-value I2V so a rights-cleared fixed character/product keyframe can survive into eligible free/local generation; preserve env-only credentials and no paid fallback.
+2. Add a deterministic, explicitly labeled degradation strategy for all-free-routes-unavailable cases only after defining how the final artifact records that it is non-generative fallback footage.
+3. Benchmark FramePack only when operator-controlled GPU/runtime is available; never invoke its automatic >30GB model download from unattended Hottop/CI. Keep FastVideo as a future acceleration candidate until a measurable self-hosted performance gap exists.
+4. Continue Foundation closure review and keep PR draft until exact-head CI and accumulated contract review are complete.
 
 ## Constraints
 
 - No secrets, cookies or browser profiles in Git/CI logs.
-- No autonomous model downloads, GPU provisioning, paid API calls or commercial-license activation.
+- No autonomous model downloads, GPU provisioning, paid API calls, automatic overage or commercial-license activation.
 - No unsupported factual superiority claims or invented competitor defects.
 - No direct reproduction of actor likenesses, exact film frames, official posters, protected character designs, proprietary UI, logos, distinctive trade dress, copyrighted soundtrack or copied ad layouts without rights-cleared user assets.
 - Preserve broad cultural/medium recognition while building original staging and assets.
