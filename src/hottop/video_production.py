@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 from .rendering import CreativeRenderRequest
 
 VideoStyleProfile = Literal["anti-polish", "cinematic", "social-native"]
-GenerationBackend = Literal["wan22-ti2v-5b", "wan22-i2v-a14b", "external"]
+GenerationBackend = Literal["wan22-ti2v-5b", "wan22-i2v-a14b", "comfy-api-v2", "external"]
 CompositorBackend = Literal["motion-canvas", "moviepy", "external"]
 EncoderBackend = Literal["ffmpeg", "external"]
 OutputFormat = Literal["mp4", "webm", "gif"]
@@ -81,6 +81,16 @@ class Wan22Config(BaseModel):
     convert_model_dtype: bool = True
 
 
+class ComfyApiV2Config(BaseModel):
+    endpoint: str
+    workflow_path: str
+    prompt_node_id: str
+    prompt_input_name: str = "text"
+    token_env: str
+    poll_interval_seconds: float = Field(default=2.0, gt=0)
+    timeout_seconds: float = Field(default=900.0, gt=0)
+
+
 class MotionCanvasConfig(BaseModel):
     project_dir: str
     manifest_name: str = "hottop-video-plan.json"
@@ -116,6 +126,7 @@ class VideoProductionConfig(BaseModel):
     text: TextConfig
     anti_polish: AntiPolishConfig = Field(default_factory=AntiPolishConfig)
     wan22: Wan22Config | None = None
+    comfy_api_v2: ComfyApiV2Config | None = None
     motion_canvas: MotionCanvasConfig | None = None
     moviepy: MoviePyConfig | None = None
     ffmpeg: FFmpegConfig | None = None
@@ -468,7 +479,11 @@ def build_video_production_plan(
         "Roughness is style-routed: surface polish may vary by hotspot, but continuity and directing precision may not.",
         "Voice, music and SFX are explicit production profiles; changing audio providers must not change creative semantics.",
         "When original_music_only is true, do not fetch or imitate copyrighted commercial soundtrack audio.",
-        "Wan2.2 execution is optional/local and requires operator-controlled model files and GPU resources.",
+        (
+            "Comfy API v2 execution is optional and operator-configured; only workflow JSON, generated prompts and explicit job metadata are sent. Credentials remain environment-only."
+            if config.generation_backend == "comfy-api-v2"
+            else "Wan2.2 execution is optional/local and requires operator-controlled model files and GPU resources."
+        ),
         "Do not auto-fetch copyrighted film footage, protected character assets or commercial soundtracks.",
     ]
     finalization_command = _finalization_command(config)
