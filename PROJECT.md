@@ -88,13 +88,25 @@ For hotspot participation, meme reach and brand-memory creative, optimize first 
 
 This supersedes the older production habit of automatically adding a URL CTA or treating static poster output as the default even when the hotspot and joke are inherently dynamic.
 
-### 7. Comparison is optional; truth is not
+### 7. Anti-Polish / Controlled Badness
+
+Hottop deliberately supports an inverse competition axis for motion creative: while most AI-video systems compete on photorealism, smoothness and expensive-looking polish, some ideas should compete on **Anti-Polish / Controlled Badness** instead. The durable formula is **low production feel + high comedy control**.
+
+Intentionally permit cheap-looking low-poly or rough 3D, simple materials, imperfect lighting, slightly stiff or awkward movement, blunt Foley, cheap-sounding MIDI/folk instrumentation, deadpan acting and absurd events treated completely seriously. These are controlled aesthetic choices, not permission for random failure.
+
+**Do not polish the badness away; make the badness precise.** Even the roughest-looking output must preserve **character continuity**, scene geography, cause/effect, **subtitle correctness**, dialogue intelligibility, **comedy timing**, product semantics, claim safety, rights safety and compatible encoding. The deliberate technical ugliness should make the joke more ownable, not make the artifact broken.
+
+The promoted product must remain native to the crude world. Do not suddenly switch into glossy blue-purple AI holograms, polished mascot teams, luxury product lighting, feature-card UI or a premium sci-fi end card unless the concept specifically demands that contrast. Prefer product benefits as dialogue, physical action or visible consequences inside the scene.
+
+This style is selectable rather than universal. Use it when a low-budget film/animation grammar, internet meme, absurd social phenomenon or campaign benefits from looking like a strange native artifact rather than a polished advertisement. Broad low-budget 3D grammar, archetypal animal roles, deadpan family relationships and crude animation language may be re-created through original staging; exact film frames, source footage, soundtrack and protected character designs remain off-limits by default.
+
+### 8. Comparison is optional; truth is not
 
 Research direct competitors, recognizable defaults, substitutes and old workflows. Select the clearest pain-point contrast, not automatically the most famous rival.
 
 A named competitor may appear only when the negative side is a supported factual limitation, accurate design/category tradeoff, a job it is not designed to solve, or clearly subjective satire. Never invent benchmarks, outages, prices, quality defects, safety failures or customer sentiment. When evidence is weak, use a generic category proxy or make the old assumption itself the antagonist.
 
-### 8. References teach grammar, not pixels
+### 9. References teach grammar, not pixels
 
 Hottop may research public advertising, cultural and visual examples when composition, reveal pacing, social distribution grammar, product photography or source-medium cues would improve the concept. The durable output of this research is an **abstract reference manifest**, not a copied image.
 
@@ -172,7 +184,8 @@ Revision controls such as `换方向`, `更有梗`, `更大胆`, `产品更明�
 12. **Write** — beats, captions, reveal order, punchlines and medium-matched prompts.
 13. **Review and select** — hard creative gate first, contextual review second; regenerate rather than force a winner if all fail.
 14. **Guardrail** — claims, copyright/likeness/trademark, misleading competitor framing.
-15. **Archive** — intent/provenance, evidence, reference manifests, rejected assumptions, selected bridge, format, reviews, prompts and outcome notes.
+15. **Plan motion when selected** — convert provider-neutral `hottop.render.v2` plus a repository video profile into `hottop.video-plan.v1`, preserving ordered shots, continuity, dialogue/SFX/BGM cues, generation/compositor/encoder routing and execution notes.
+16. **Archive** — intent/provenance, evidence, reference manifests, rejected assumptions, selected bridge, format, reviews, prompts and outcome notes.
 
 ## Persistent project memory protocol
 
@@ -232,6 +245,7 @@ After meaningful doctrine or architecture updates, reread the charter with fresh
 - No assumption that creativity means staying inside the current category's accepted competition axis.
 - No requirement to deploy a vector database, browser agent or GPU render stack before a measured use case exists.
 - No static mandatory intake questionnaire; the interaction must stop asking once the remaining uncertainty no longer justifies interruption.
+- No assumption that more polished or photorealistic output is always more effective; Anti-Polish is an intentional selectable strategy when roughness improves memorability or native meme grammar.
 
 ## Upstream integrations
 
@@ -251,6 +265,17 @@ Use Firecrawl as an optional hosted fallback and plain HTTP as the final no-Java
 
 Use Playwright CLI as the preferred optional visual-reference browser adapter for coding loops because it provides concise, scriptable visual inspection without making browser state a core dependency. Hottop defaults to an ephemeral named session and public HTTP(S) pages. Playwright MCP remains an optional escalation for stateful exploratory browser work, not the default path.
 
+### Config-driven video production
+
+Keep video production downstream of the provider-neutral creative contract rather than coupling Hottop to one model or editor: `hottop.render.v2 → VideoProductionConfig → hottop.video-plan.v1 → optional generation backend → compositor → encoder`.
+
+- **Wan2.2** (`Wan-Video/Wan2.2`, Apache-2.0) is the primary optional open-source local shot-generation candidate. Prefer the TI2V-5B path for the general local profile; model downloads and GPU execution are never a CI requirement and remain operator-controlled.
+- **Motion Canvas** (`motion-canvas/motion-canvas`, MIT) is the preferred deterministic compositor for shot timing, captions, simple intentionally crude motion graphics, dialogue/SFX/BGM timing and continuity.
+- **FFmpeg** is the final external compatibility encoder for H.264/AAC/yuv420p/fast-start and optional WebM/GIF. Licensing obligations depend on the actual FFmpeg build and enabled codecs.
+- **Remotion** is an optional adapter candidate only. Its current commercial license conditions depend on entity size, so Hottop must not silently enable it or make it a default dependency without an operator license review.
+
+The first committed production profile is `config/video/anti-polish-short.yml`. `hottop video-plan <render-v2.json> --config config/video/anti-polish-short.yml` must remain planning-only: it emits commands/manifests but does not silently download models, invoke paid APIs, require GPU, install Node packages or execute FFmpeg.
+
 ### Future semantic visual memory
 
 When a sufficiently large rights-aware reference corpus exists, evaluate pinned OpenCLIP inference for image/text embeddings and Qdrant/Qdrant MCP for semantic retrieval. Begin with local/read-only operation where practical, keep provenance and rights metadata beside embeddings, and require a retrieval-quality experiment before promoting this stack into the core workflow.
@@ -267,7 +292,7 @@ Keep rendering provider-neutral. ComfyUI is a candidate optional local/offline b
 - Prefer adapters/interfaces around upstream projects; do not fork huge third-party code without a concrete need.
 - Keep credentials, cookies and API keys out of Git and CI logs.
 - Respect site terms, access boundaries, rate limits and account safety.
-- Image output should reproduce the **broad medium/genre grammar** needed for recognition while remaining an original staging.
+- Image/video output should reproduce the **broad medium/genre grammar** needed for recognition while remaining an original staging.
 - Factual comparative claims require evidence records; otherwise use satire/metaphor/category tradeoff or a generic proxy.
 - Visual-reference assets are evidence for analysis, not automatic source material for generation.
 
@@ -293,19 +318,21 @@ A mature creative concept/package should be serializable with:
 - captions/copy/punchlines;
 - base creative review + contextual review + selection rationale;
 - alternates sufficient for lightweight revision controls;
-- master image-generation prompt;
+- master image/video-generation prompt;
 - negative prompt / exclusions;
 - risk flags;
 - factual-claim status (`satire`, `supported`, `needs_evidence`);
-- provider-neutral `hottop.render.v2` handoff.
+- provider-neutral `hottop.render.v2` handoff;
+- when motion/config-driven production is selected: `hottop.video-plan.v1` with ordered shots, continuity instructions, dialogue/Foley/SFX/BGM cues, backend commands/manifests, final encoding contract and execution notes.
 
 ## Decision log
 
+- **2026-08-24 — Anti-Polish / Controlled Badness becomes a first-class selectable video strategy.** The category default in AI video is to compete on smoother, more photorealistic and more expensive-looking output. Hottop explicitly deletes that constraint when roughness strengthens the cultural bridge: low production feel + high comedy control can be more memorable and feel less like an advertisement. This does not relax continuity, timing, subtitle, claim or rights standards; only the surface production grammar is intentionally crude.
 - **2026-08-24 — Social creative is ad-light by default; motion-native ideas stay motion-native.** Repeated production feedback showed that in-asset URLs/QR-style CTAs weakened meme distribution grammar and that dynamic film/animation/social jokes became slideshow-like when forced into static poster frames. Hottop now defaults to compact attribution without an in-asset destination for hotspot/meme/brand-memory work, and selects short video/GIF/animation when timing, dialogue, sound or character action carries the recognition. Conversion briefs may explicitly override this default.
 
 ## Reusable skills
 
-- `skills/brand-metaphor-creative/SKILL.md` — primary creative-thinking method: adaptive intent handling, category reframing, constraint deletion, bridge search, expression-form selection, project/platform routing, creative review gate and persistent project protocol for multi-session creative work.
+- `skills/brand-metaphor-creative/SKILL.md` — primary creative-thinking method: adaptive intent handling, category reframing, constraint deletion, bridge search, expression-form selection, project/platform routing, Anti-Polish/Controlled Badness motion strategy, creative review gate and persistent project protocol for multi-session creative work.
 - `skills/creative-reference-research/SKILL.md` — provenance-first visual-reference research: Playwright-assisted inspection, composition/reveal abstraction, rights modes and explicit non-copying handoff into creative strategy.
 - `skills/hottop-meme/SKILL.md` — hotspot acquisition, evidence-aware comparison handling, visual-medium routing and four-panel execution when four-panel is the selected form.
 
@@ -313,7 +340,7 @@ A mature creative concept/package should be serializable with:
 
 **Foundation v0.1**
 
-Close the foundation with arbitrary-promotion semantics, adaptive guided intake, platform/style/project-shape routing, evidence-aware comparison discovery, hotspot acquisition/enrichment, creative-doctrine persistence, reference-research contracts, bridge/format contracts, contextual review, provider-neutral renderer handoff, tests, CI and representative live archives.
+Close the foundation with arbitrary-promotion semantics, adaptive guided intake, platform/style/project-shape routing, evidence-aware comparison discovery, hotspot acquisition/enrichment, creative-doctrine persistence, reference-research contracts, bridge/format contracts, contextual review, provider-neutral renderer handoff, config-driven motion planning, tests, CI and representative live archives.
 
 ## Session recovery
 
