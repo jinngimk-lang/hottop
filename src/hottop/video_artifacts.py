@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import re
 from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
 
 VideoArtifactKind = Literal["ai-generated", "deterministic-non-generative", "operator-provided"]
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 class VideoShotArtifact(BaseModel):
@@ -16,9 +18,11 @@ class VideoShotArtifact(BaseModel):
     backend: str = Field(min_length=1)
     degraded_from: str | None = None
     degradation_reason: str | None = None
+    sha256: str | None = None
+    size_bytes: int | None = Field(default=None, gt=0)
 
     @model_validator(mode="after")
-    def validate_degradation_provenance(self) -> VideoShotArtifact:
+    def validate_provenance(self) -> VideoShotArtifact:
         if self.artifact_kind == "deterministic-non-generative":
             if not self.degraded_from:
                 raise ValueError("deterministic fallback artifacts require degraded_from")
@@ -30,6 +34,11 @@ class VideoShotArtifact(BaseModel):
                 if self.artifact_kind == "ai-generated"
                 else "operator-provided artifacts cannot carry deterministic degradation metadata"
             )
+
+        if (self.sha256 is None) != (self.size_bytes is None):
+            raise ValueError("artifact byte identity requires both sha256 and size_bytes")
+        if self.sha256 is not None and not _SHA256_RE.fullmatch(self.sha256):
+            raise ValueError("artifact sha256 must be a lowercase 64-character hex digest")
         return self
 
 
