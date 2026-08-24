@@ -123,6 +123,12 @@ def run_zero_cost_shot(
     quality_policy = _quality_policy(config)
 
     def execute(candidate: ZeroCostCandidateConfig) -> Path:
+        if reference_image is not None and candidate.profile != "ltx23":
+            raise ZeroGpuError(
+                f"zero-cost candidate does not support validated reference I2V: {candidate.id}",
+                code="zero_cost_reference_unsupported",
+                retryable=True,
+            )
         token = environment.get(candidate.token_env) if candidate.token_env else None
         if not token and not candidate.allow_anonymous:
             raise ZeroGpuError(
