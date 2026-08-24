@@ -16,6 +16,8 @@ from hottop.models import (
     VisualMedium,
 )
 
+from .video_reference import VideoReference
+
 
 class RenderPanel(BaseModel):
     index: int = Field(ge=1, le=4)
@@ -48,6 +50,7 @@ class CreativeRenderFrame(BaseModel):
     intent: str
     speaker: str | None = None
     delivery: str | None = None
+    reference: VideoReference | None = None
 
 
 class CreativeRenderRequest(BaseModel):
