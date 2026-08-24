@@ -3,7 +3,6 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-
 from hottop.video_quality import (
     VideoQualityError,
     VideoQualityPolicy,
