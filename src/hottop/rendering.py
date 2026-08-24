@@ -46,6 +46,8 @@ class CreativeRenderFrame(BaseModel):
     scene: str
     caption: str | None = None
     intent: str
+    speaker: str | None = None
+    delivery: str | None = None
 
 
 class CreativeRenderRequest(BaseModel):
