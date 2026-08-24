@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from hottop.video_execution import inspect_video_environment
-
 from hottop.video_production import load_video_production_config
 
 
