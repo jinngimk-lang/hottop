@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -36,6 +37,7 @@ class VideoExecutionStatus(BaseModel):
     )
     ready: bool
     wan22: BackendReadiness
+    comfy_api: BackendReadiness | None = None
     voice: BackendReadiness | None = None
     motion_canvas: BackendReadiness
     moviepy: BackendReadiness | None = None
@@ -97,6 +99,39 @@ def _wan22_readiness(
 
     return BackendReadiness(
         backend=config.generation_backend,
+        ready=not missing,
+        checks=checks,
+        missing=missing,
+    )
+
+
+def _comfy_api_readiness(
+    config: VideoProductionConfig,
+    project_root: Path,
+) -> BackendReadiness:
+    if config.generation_backend != "comfy-api-v2":
+        return BackendReadiness(backend="comfy-api-v2", ready=True, checks=["not selected"])
+
+    missing: list[str] = []
+    checks: list[str] = [f"python={sys.executable}"]
+    if not Path(sys.executable).is_file():
+        missing.append("python executable")
+
+    adapter = config.comfy_api_v2
+    if adapter is None:
+        missing.append("Comfy API v2 profile configuration")
+    else:
+        workflow = _resolve(project_root, adapter.workflow_path).resolve()
+        checks.append(f"endpoint={adapter.endpoint}")
+        checks.append(f"workflow={workflow}")
+        checks.append(f"token_env={adapter.token_env}")
+        if not workflow.is_file():
+            missing.append("Comfy API workflow JSON")
+        if not os.environ.get(adapter.token_env):
+            missing.append(f"{adapter.token_env} environment variable")
+
+    return BackendReadiness(
+        backend="comfy-api-v2",
         ready=not missing,
         checks=checks,
         missing=missing,
@@ -192,10 +227,11 @@ def inspect_video_environment(
     *,
     project_root: Path = Path("."),
 ) -> VideoExecutionStatus:
-    """Inspect local video dependencies without installing, downloading, or executing them."""
+    """Inspect video dependencies without installing, downloading, uploading, or executing them."""
 
     root = project_root.resolve()
     wan22 = _wan22_readiness(config, root)
+    comfy_api = _comfy_api_readiness(config, root)
     voice = _voice_readiness(config)
     motion_canvas = _motion_canvas_readiness(config, root)
     moviepy = _moviepy_readiness(config)
@@ -205,6 +241,10 @@ def inspect_video_environment(
     if not wan22.ready:
         actions.append(
             "Configure the operator-controlled Wan2.2 repository/model files; Hottop will not download them."
+        )
+    if not comfy_api.ready:
+        actions.append(
+            "Configure the operator-approved Comfy API v2 HTTPS endpoint, workflow JSON and token environment variable; Hottop will not create credentials or enable paid usage."
         )
     if not voice.ready:
         actions.append(
@@ -224,8 +264,16 @@ def inspect_video_environment(
         )
 
     return VideoExecutionStatus(
-        ready=wan22.ready and voice.ready and motion_canvas.ready and moviepy.ready and ffmpeg.ready,
+        ready=(
+            wan22.ready
+            and comfy_api.ready
+            and voice.ready
+            and motion_canvas.ready
+            and moviepy.ready
+            and ffmpeg.ready
+        ),
         wan22=wan22,
+        comfy_api=comfy_api,
         voice=voice,
         motion_canvas=motion_canvas,
         moviepy=moviepy,
@@ -241,7 +289,7 @@ def _write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def _runtime_generation_commands(
+def _wan22_runtime_generation_commands(
     plan: VideoProductionPlan,
     config: VideoProductionConfig,
     *,
@@ -284,6 +332,73 @@ def _runtime_generation_commands(
             )
         )
     return commands
+
+
+def _comfy_runtime_generation_commands(
+    plan: VideoProductionPlan,
+    config: VideoProductionConfig,
+    *,
+    project_root: Path,
+    shots_dir: Path,
+) -> list[ExternalCommandSpec]:
+    if config.generation_backend != "comfy-api-v2" or config.comfy_api_v2 is None:
+        return []
+    adapter = config.comfy_api_v2
+    workflow = _resolve(project_root, adapter.workflow_path).resolve()
+    commands: list[ExternalCommandSpec] = []
+    for shot in plan.shots:
+        commands.append(
+            ExternalCommandSpec(
+                program=sys.executable,
+                args=[
+                    "-m",
+                    "hottop.video_comfy_api",
+                    "--endpoint",
+                    adapter.endpoint,
+                    "--workflow",
+                    str(workflow),
+                    "--prompt-node-id",
+                    adapter.prompt_node_id,
+                    "--prompt-input-name",
+                    adapter.prompt_input_name,
+                    "--prompt",
+                    shot.generation_prompt,
+                    "--output",
+                    str((shots_dir / f"shot-{shot.index:03d}.mp4").resolve()),
+                    "--token-env",
+                    adapter.token_env,
+                    "--poll-interval-seconds",
+                    str(adapter.poll_interval_seconds),
+                    "--timeout-seconds",
+                    str(adapter.timeout_seconds),
+                ],
+                cwd=str(project_root.resolve()),
+                stage="generation",
+            )
+        )
+    return commands
+
+
+def _runtime_generation_commands(
+    plan: VideoProductionPlan,
+    config: VideoProductionConfig,
+    *,
+    project_root: Path,
+    shots_dir: Path,
+) -> list[ExternalCommandSpec]:
+    if config.generation_backend == "comfy-api-v2":
+        return _comfy_runtime_generation_commands(
+            plan,
+            config,
+            project_root=project_root,
+            shots_dir=shots_dir,
+        )
+    return _wan22_runtime_generation_commands(
+        plan,
+        config,
+        project_root=project_root,
+        shots_dir=shots_dir,
+    )
 
 
 def _runtime_audio_commands(
@@ -438,11 +553,13 @@ def _expected_stage_output(
     final_output: Path,
 ) -> Path | None:
     if command.stage == "generation":
-        try:
-            save_index = command.args.index("--save_file") + 1
-            return Path(command.args[save_index])
-        except (ValueError, IndexError):
-            return None
+        for flag in ("--save_file", "--output"):
+            try:
+                output_index = command.args.index(flag) + 1
+                return Path(command.args[output_index])
+            except (ValueError, IndexError):
+                continue
+        return None
     if command.stage == "audio":
         try:
             output_index = command.args.index("-w") + 1
@@ -482,7 +599,7 @@ def run_video_production(
     project_root: Path = Path("."),
     execute: bool = False,
 ) -> VideoRunResult:
-    """Materialize a config-driven video workspace and optionally execute trusted local stages."""
+    """Materialize a config-driven video workspace and optionally execute trusted configured stages."""
 
     root = project_root.resolve()
     workspace = output_dir.resolve()
