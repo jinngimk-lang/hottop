@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-24 22:22 +08:00
+Last updated: 2026-08-24 23:10 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 PR: #1 — open, draft, mergeable
@@ -23,7 +23,8 @@ PR: #1 — open, draft, mergeable
 - `src/hottop/video_quality.py` deterministically inspects generated MP4s with ffprobe/ffmpeg: video stream, terminal-frame decode, sampled grayscale frame delta and duplicate-frame ratio.
 - **Quality-gated failover is wired into the free router.** A bad/duplicate-heavy candidate output is deleted, converted to retryable `zero_cost_quality_rejected`, and the next configured free candidate may run. Only a quality-passing fresh artifact is accepted.
 - **All-free-routes exhaustion has an explicit non-generative degradation contract.** Deterministic reference-motion fallback is disabled by default, may run only when explicitly enabled and a rights-safe local reference exists, and is recorded as `artifact_kind=deterministic-non-generative`, `backend=deterministic-reference-motion`, `degraded_from=zero-cost-router`, `degradation_reason=zero_cost_routes_exhausted`. It is never reported as AI-generated footage.
-- **Zero-cost artifact provenance is now verified before composition.** The manifest must declare `planned_generation_backend=zero-cost-router`; AI-generated shot backends must be IDs from the currently configured cost-zero candidate set; deterministic fallback is accepted only when explicitly enabled and only with the canonical reference-motion backend/degradation metadata. A mismatched manifest fails closed even when the external generation command returned success.
+- **Zero-cost artifact provenance is verified before composition and bound to exact bytes.** The manifest must declare `planned_generation_backend=zero-cost-router`; AI-generated shot backends must be IDs from the currently configured cost-zero candidate set; deterministic fallback is accepted only when explicitly enabled and only with the canonical reference-motion backend/degradation metadata. Each accepted shot manifest also records SHA-256 + byte size, and validation recomputes both from the MP4 instead of trusting a pathname alone.
+- **MoviePy re-verifies generated shot bytes immediately before consuming them.** `verify_moviepy_shot_artifacts()` re-opens each `shot-XXX.artifact.json`, binds shot index + path, and recomputes SHA-256 + size so a generated file replaced after the earlier execution-stage check fails closed before composition.
 - `config/video/cinematic-zero-cost.yml` is the first production profile for this path: cinematic roughness 28, HF ZeroGPU candidate list, bounded quality gate, local `espeak` dialogue + synthetic music + procedural SFX, MoviePy composition and FFmpeg finalization. Public Space availability is not treated as guaranteed.
 - `docs/integrations/zero-cost-video-radar.md` records the admission policy for mature projects. Code license and model/weights license are always reviewed separately; stars/demos alone do not qualify a backend.
 - Current watchlist: Wan2.2 for operator-controlled local generation; FramePack for future low-VRAM/reference I2V isolation; FastVideo for future self-hosted acceleration; ViMax/Toonflow for planning/provider architecture ideas; OpenMontage architecture only because its code is AGPL; RIFE/Real-ESRGAN only after a measurable post-processing gap exists.
@@ -63,6 +64,7 @@ PR: #1 — open, draft, mergeable
 - `examples/video/inkclaw-cow-snake.render.json` — high-roughness original Anti-Polish story source; its derived `hottop.video-plan.v1` archive remains a snapshot rather than a second creative source of truth.
 - `examples/video/inkclaw-odyssey-witch-pigs.render.json` — lower-roughness cinematic mythic meme source: sailors code/eat in one original witch banquet hall, an unmistakably satirical magical obstruction turns them into pigs, an original returning-sailor hero uses InkClawAgent to break the curse, and `不用部署 / 开发零门槛 / Free Token 入门` appear as story consequences rather than glossy feature cards.
 - The Odyssey source explicitly excludes copied film frames, actor likenesses, official character designs, source footage and commercial soundtrack. The `某包 / Work巴迪?` prop is framed only as magical satire/metaphor, not as a factual defect claim.
+- `examples/video/hottop-zero-cost-reference-i2v.render.json` — representative rights-safe free-I2V source using the repository-generated `assets/generated-original/hottop-signal-orb.ppm` reference in every shot. The PPM is original text-authored pixel data with no third-party pixels; each frame carries `rights=generated-original`, motion continuity is required, destination CTA is disabled, and the source plans through `config/video/cinematic-zero-cost.yml` to `zero-cost-router`.
 
 ## Verification evidence
 
@@ -77,6 +79,8 @@ PR: #1 — open, draft, mergeable
 - Planned-backend artifact binding began with RED `5d639e5af90759154451770b99a3c4ff9c7d27e2`; CI run **1082** passed Ruff and produced exactly **1 failed / 325 passed**, proving a zero-cost execution could accept a manifest claiming another planned backend. GREEN `9232de8f34756e1647894274960108b3389cadac` bound the manifest to `zero-cost-router`; CI run **1084** passed.
 - Actual free-candidate binding began with RED `293ba4de9624fb9ccfbf9e91a4db42468b196440`; CI run **1086** passed Ruff and produced exactly **1 failed / 326 passed**, proving a manifest could claim an unconfigured provider. GREEN `afff51734b56895dcb35559d3e3c62ca3bad4600` requires AI artifact backends to belong to the configured cost-zero candidate IDs; CI run **1088** passed.
 - Deterministic-fallback provenance binding began with RED `ea63ccea36c89d97c802e4e96c1f97b897c65897`; CI run **1090** passed Ruff and produced exactly **2 failed / 327 passed**, proving deterministic artifacts were accepted when fallback was disabled and arbitrary deterministic backends were accepted. GREEN `406175a940491d1ed9b6a803145b1b56e2849be9` requires fallback to be explicitly enabled and binds `backend=deterministic-reference-motion`, `degraded_from=zero-cost-router`, and `degradation_reason=zero_cost_routes_exhausted`; CI run **1092** passed on Python 3.11 / 3.12.
+- Exact-byte provenance and immediate MoviePy consumption verification are now closed: shot manifests record/recompute SHA-256 + size, and exact head `25b8742f82bcd2a18fe7f43dc3ecd4228a8ca6eb` passed CI run **1114** after `verify_moviepy_shot_artifacts()` was wired directly into composition.
+- The representative reference-I2V archive contract reached a clean RED at `e38483a96ed45e3853ef940331e9880063759836`: CI run **1124** passed Ruff and produced exactly **1 failed / 332 passed** because the rights-safe source archive did not yet exist. GREEN `669f5357cf327976f759f1d05d33d3314ad99863` added only the repository-generated PPM reference plus its `hottop.render.v2` archive; CI run **1128** passed on Python 3.11 / 3.12.
 
 ## Current creative doctrine
 
@@ -93,17 +97,17 @@ PR: #1 — open, draft, mergeable
 ## In progress
 
 - Foundation v0.1 accumulated PR diff / production-contract closure review continues.
-- Reference propagation, full-plan reference preflight, explicit deterministic degradation, and backend-level artifact provenance are now closed for the normal zero-cost route.
-- The next concrete execution-integrity gap is **exact-byte artifact binding**: current manifests bind path/backend/kind but not a digest/size of the MP4 bytes consumed downstream. Any future attestation must verify the generated file itself rather than trusting a pathname alone.
+- Reference propagation, full-plan reference preflight, explicit deterministic degradation, backend-level artifact provenance, exact-byte shot binding, immediate MoviePy pre-consumption verification, and the representative generated-original reference-I2V archive are closed for the normal zero-cost route.
+- The next bounded integrity question is whether the optional Motion Canvas compositor can consume generated shot files after the earlier execution-stage provenance check without an equivalent immediate byte re-verification. If reproducible, close it RED-first without expanding Motion Canvas into the unattended default.
 - Higher-quality voice/music adapters remain useful but must not displace stricter zero-cost video consistency/runtime work or introduce hidden cloud cost.
 
 ## Next actions
 
-1. Add RED-first exact-byte provenance for zero-cost shot artifacts: persist a deterministic content digest/size after successful generation or deterministic fallback and verify it before composition. Do not weaken existing quality gates or accept stale-path identity as evidence.
-2. After byte binding is green, review whether composition needs a second verification immediately before consuming shot bytes so provenance cannot become stale between generation and compositor stages.
-3. Add a representative rights-safe reference-I2V production archive only when it can use an original/generated or user-cleared reference asset without committing protected pixels.
-4. Benchmark FramePack only when operator-controlled GPU/runtime is available; never invoke its automatic >30GB model download from unattended Hottop/CI. Keep FastVideo as a future acceleration candidate until a measurable self-hosted performance gap exists.
-5. Continue Foundation closure review and keep PR draft until exact-head CI and accumulated contract review are complete.
+1. Review the optional Motion Canvas consumption path for the same stale-byte substitution boundary already closed in MoviePy. Add a RED only if generated shot bytes can change after execution-stage verification and before Motion Canvas consumption; keep MoviePy the unattended default.
+2. Continue Foundation accumulated diff / production-contract closure review and repair only concrete regressions, dead assumptions, or evidence/safety/integrity gaps.
+3. Benchmark FramePack only when operator-controlled GPU/runtime is available; never invoke its automatic >30GB model download from unattended Hottop/CI. Keep FastVideo as a future acceleration candidate until a measurable self-hosted performance gap exists.
+4. Run a real free-route reference-I2V smoke only when a currently available public endpoint and its code/weights license gates are verified for the intended use; never consume paid credits or silently fall back to paid inference.
+5. Keep PR #1 draft until exact-head CI and accumulated Foundation contract review are complete.
 
 ## Constraints
 
