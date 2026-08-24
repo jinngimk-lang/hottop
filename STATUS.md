@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-24 23:10 +08:00
+Last updated: 2026-08-24 23:20 +08:00
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1
 PR: #1 — open, draft, mergeable
@@ -36,7 +36,7 @@ PR: #1 — open, draft, mergeable
 - `config/video/anti-polish-direct.yml`: unattended headless profile, `style_profile=anti-polish`, `roughness_score=78`, Wan2.2 optional generation → MoviePy → FFmpeg.
 - `config/video/cinematic-meme-direct.yml`: presentable film-meme profile, `style_profile=cinematic`, `roughness_score=28`, Wan2.2 optional generation → MoviePy → FFmpeg.
 - `config/video/cinematic-zero-cost.yml`: presentable free-only profile, `style_profile=cinematic`, `roughness_score=28`, bounded HF ZeroGPU route → quality gate → MoviePy → FFmpeg.
-- `config/video/anti-polish-short.yml` keeps Motion Canvas as an optional advanced vector-motion / interactive-preview path.
+- **The bundled `video/motion-canvas` project is planning/interactive-preview only.** Its `render` script prepares `src/generated-plan.ts` and explicitly does not spawn a renderer. `config/video/anti-polish-short.yml` therefore points explicit execution at a separate operator-provided `video/motion-canvas-executor` project. If that executor is absent, `video-doctor`/`video-run --execute` fail readiness before spawning npm. MoviePy remains the unattended compositor default.
 - `hottop video-plan <render-v2.json> --config ...` remains planning-only. `hottop video-run <render-v2.json> --config ... --output-dir ...` is dry-run by default; only explicit `--execute` may spawn trusted configured stages after readiness passes.
 - Execute mode requires fresh non-empty stage outputs and removes partial output from a failed external stage before raising. Stale/corrupt half-files cannot satisfy success.
 
@@ -79,8 +79,9 @@ PR: #1 — open, draft, mergeable
 - Planned-backend artifact binding began with RED `5d639e5af90759154451770b99a3c4ff9c7d27e2`; CI run **1082** passed Ruff and produced exactly **1 failed / 325 passed**, proving a zero-cost execution could accept a manifest claiming another planned backend. GREEN `9232de8f34756e1647894274960108b3389cadac` bound the manifest to `zero-cost-router`; CI run **1084** passed.
 - Actual free-candidate binding began with RED `293ba4de9624fb9ccfbf9e91a4db42468b196440`; CI run **1086** passed Ruff and produced exactly **1 failed / 326 passed**, proving a manifest could claim an unconfigured provider. GREEN `afff51734b56895dcb35559d3e3c62ca3bad4600` requires AI artifact backends to belong to the configured cost-zero candidate IDs; CI run **1088** passed.
 - Deterministic-fallback provenance binding began with RED `ea63ccea36c89d97c802e4e96c1f97b897c65897`; CI run **1090** passed Ruff and produced exactly **2 failed / 327 passed**, proving deterministic artifacts were accepted when fallback was disabled and arbitrary deterministic backends were accepted. GREEN `406175a940491d1ed9b6a803145b1b56e2849be9` requires fallback to be explicitly enabled and binds `backend=deterministic-reference-motion`, `degraded_from=zero-cost-router`, and `degradation_reason=zero_cost_routes_exhausted`; CI run **1092** passed on Python 3.11 / 3.12.
-- Exact-byte provenance and immediate MoviePy consumption verification are now closed: shot manifests record/recompute SHA-256 + size, and exact head `25b8742f82bcd2a18fe7f43dc3ecd4228a8ca6eb` passed CI run **1114** after `verify_moviepy_shot_artifacts()` was wired directly into composition.
+- Exact-byte provenance and immediate MoviePy consumption verification are closed: shot manifests record/recompute SHA-256 + size, and exact head `25b8742f82bcd2a18fe7f43dc3ecd4228a8ca6eb` passed CI run **1114** after `verify_moviepy_shot_artifacts()` was wired directly into composition.
 - The representative reference-I2V archive contract reached a clean RED at `e38483a96ed45e3853ef940331e9880063759836`: CI run **1124** passed Ruff and produced exactly **1 failed / 332 passed** because the rights-safe source archive did not yet exist. GREEN `669f5357cf327976f759f1d05d33d3314ad99863` added only the repository-generated PPM reference plus its `hottop.render.v2` archive; CI run **1128** passed on Python 3.11 / 3.12.
+- Motion Canvas execution-boundary review reached a clean RED at `f69a42f42bc57a603cc3697d2f19dfbfe862f282`: CI run **1132** passed Ruff and produced exactly **1 failed / 333 passed**, proving the bundled planning-only scaffold was reported `ready=True`. The GREEN separates the bundled scaffold from execution by pointing `anti-polish-short` at an operator-provided `video/motion-canvas-executor`; intermediate run **1135** exposed only the obsolete structured-command cwd assertion, and final exact head `5fa636e2cc7a858ee89b91aac1430e20b8ab8024` passed CI run **1138** on Python 3.11 / 3.12.
 
 ## Current creative doctrine
 
@@ -98,13 +99,13 @@ PR: #1 — open, draft, mergeable
 
 - Foundation v0.1 accumulated PR diff / production-contract closure review continues.
 - Reference propagation, full-plan reference preflight, explicit deterministic degradation, backend-level artifact provenance, exact-byte shot binding, immediate MoviePy pre-consumption verification, and the representative generated-original reference-I2V archive are closed for the normal zero-cost route.
-- The next bounded integrity question is whether the optional Motion Canvas compositor can consume generated shot files after the earlier execution-stage provenance check without an equivalent immediate byte re-verification. If reproducible, close it RED-first without expanding Motion Canvas into the unattended default.
+- The bundled Motion Canvas project is now explicitly planning/preview-only and cannot satisfy execution readiness by itself. A future operator-provided Motion Canvas executor must actually emit the composite MP4 and should receive the same immediate pre-consumption byte-verification scrutiny before it can become a trusted execution path.
 - Higher-quality voice/music adapters remain useful but must not displace stricter zero-cost video consistency/runtime work or introduce hidden cloud cost.
 
 ## Next actions
 
-1. Review the optional Motion Canvas consumption path for the same stale-byte substitution boundary already closed in MoviePy. Add a RED only if generated shot bytes can change after execution-stage verification and before Motion Canvas consumption; keep MoviePy the unattended default.
-2. Continue Foundation accumulated diff / production-contract closure review and repair only concrete regressions, dead assumptions, or evidence/safety/integrity gaps.
+1. Continue Foundation accumulated diff / production-contract closure review and repair only concrete regressions, dead assumptions, or evidence/safety/integrity gaps. MoviePy remains the unattended compositor default.
+2. If a real operator-provided Motion Canvas executor is introduced, require it to emit the expected composite artifact and add equivalent generated-shot byte verification at the consumption boundary before declaring that path trusted.
 3. Benchmark FramePack only when operator-controlled GPU/runtime is available; never invoke its automatic >30GB model download from unattended Hottop/CI. Keep FastVideo as a future acceleration candidate until a measurable self-hosted performance gap exists.
 4. Run a real free-route reference-I2V smoke only when a currently available public endpoint and its code/weights license gates are verified for the intended use; never consume paid credits or silently fall back to paid inference.
 5. Keep PR #1 draft until exact-head CI and accumulated Foundation contract review are complete.
