@@ -283,11 +283,9 @@ def _runtime_compositor_command(
             stage="compositor",
         )
     if config.compositor_backend == "motion-canvas" and config.motion_canvas is not None:
-        manifest_target = _resolve(project_root, config.motion_canvas.project_dir) / config.motion_canvas.manifest_name
-        _write_json(manifest_target, json.loads(plan_path.read_text(encoding="utf-8")))
         return ExternalCommandSpec(
             program="npm",
-            args=["run", "render", "--", "--plan", config.motion_canvas.manifest_name],
+            args=["run", "render", "--", "--plan", str(plan_path.resolve())],
             cwd=str(_resolve(project_root, config.motion_canvas.project_dir).resolve()),
             stage="compositor",
         )
