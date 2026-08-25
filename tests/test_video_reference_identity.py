@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from hottop.rendering import CreativeRenderFrame, CreativeRenderRequest
@@ -60,7 +62,7 @@ def test_reference_identity_rejects_same_subject_with_conflicting_lock():
 
 
 def test_video_plan_adds_identity_lock_to_generation_prompt():
-    config = load_video_production_config("config/video/cinematic-zero-cost.yml")
+    config = load_video_production_config(Path("config/video/cinematic-zero-cost.yml"))
     reference = VideoReference(
         image_path="assets/generated-original/hero.png",
         rights="generated-original",
