@@ -35,9 +35,23 @@ A future evaluator adapter must write into this contract rather than becoming th
 - Upstream usage documentation indicates pretrained model construction downloads weights on first use. The code license therefore does not by itself clear the downloaded model/backbone artifacts, and normal unattended Hottop execution must not introduce this hidden network/download step.
 - Decision: do not add DreamSim as a default dependency in this cycle. It remains an evaluator candidate only after exact weights/backbone licenses, revisions, download behavior, hardware cost and benchmark value are reviewed. A future operator-owned adapter can emit the provider-neutral continuity contract if admitted.
 
-### DINO-family embedding evaluators
+### DINOv3
 
-DINO/DINOv2-style embeddings remain plausible building blocks for reference/identity similarity, but the project must not infer weights rights from repository code rights. Exact selected checkpoint/model licenses must be reviewed independently before any adapter is admitted. No DINO dependency is added in this cycle.
+- Source: <https://github.com/facebookresearch/dinov3>.
+- Freshness check: upstream remains active in August 2026 and documents dense visual features suitable for similarity-style evaluation.
+- License check: code **and** released model weights are governed by the custom DINOv3 License, not Apache/MIT. Access to pretrained weights also requires accepting upstream terms and obtaining weight URLs; normal hub helpers can download weights from those URLs.
+- Decision: do not add DINOv3 to the guaranteed/default evaluator environment. It is technically attractive for dense reference/shot comparison, but license acceptance plus gated/hidden download behavior make it an operator-owned candidate only. Any future adapter must require an explicit local checkout + local weights path and record exact revision/weights provenance before it may emit Hottop continuity scores.
+
+### SigLIP 2
+
+- Source/model card: <https://huggingface.co/google/siglip2-so400m-patch14-384>.
+- License check: the reviewed Google SigLIP 2 SO400M model card declares Apache-2.0.
+- Runtime check: the reviewed checkpoint is roughly **4.54 GB**, and standard `from_pretrained(...)` usage downloads it from Hugging Face when not already local.
+- Decision: stronger license fit than DINOv3 for a future operator-local evaluator, but still too large and network-dependent for normal unattended/CI admission. Keep it on the evaluator shortlist; any future Hottop adapter must be local-path-only, pin the exact model revision and SHA-256, avoid implicit downloads, and demonstrate measurable discrimination on a checked-in continuity benchmark before becoming preferred.
+
+### DINO-family evaluators
+
+Older DINO/DINOv2-style embeddings remain plausible building blocks for reference/identity similarity, but the project must not infer weights rights from repository code rights. Exact selected checkpoint/model licenses must be reviewed independently before any adapter is admitted. No DINO-family dependency is added in this cycle.
 
 ## Durable implications
 
@@ -46,6 +60,7 @@ DINO/DINOv2-style embeddings remain plausible building blocks for reference/iden
 - Evaluator identity and revision are part of provenance; thresholds are explicit and fail closed.
 - Hottop remains evaluator-neutral. No model evaluator may silently download weights, use paid APIs, or weaken the guaranteed software3d / zero-cost baseline.
 - Code license, model/weights license, hidden network behavior, operator hardware burden and commercial restrictions remain separate admission gates.
+- A permissive evaluator checkpoint can still be unsuitable for unattended Hottop if its normal loading path implicitly downloads multi-gigabyte weights. Prefer explicit local-path-only operator adapters before considering any model-based evaluator for default use.
 
 ## Next evidence step
 
