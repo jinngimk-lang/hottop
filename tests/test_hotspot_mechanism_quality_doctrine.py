@@ -14,7 +14,7 @@ def test_project_requires_mechanism_mapping_not_hotspot_skin() -> None:
     assert "Borrow the mechanism, not the skin" in project
     assert "product must change the story outcome" in project
     assert "hotspot recognition → mapping → product consequence → punchline" in project
-    assert "every retained hotspot element must have a job" in project
+    assert "Every retained hotspot element must have a job" in project
 
 
 def test_creative_skill_routes_user_supplied_and_unspecified_hotspots_differently() -> None:
