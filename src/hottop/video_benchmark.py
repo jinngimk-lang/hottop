@@ -6,7 +6,7 @@ import typing
 
 import pydantic
 
-from .video_artifacts import VideoArtifactManifest
+from .video_artifacts import VideoArtifactManifest, VideoShotArtifact
 from .video_production import VideoProductionPlan
 
 Sha256 = typing.Annotated[str, pydantic.Field(pattern=r"^[0-9a-f]{64}$")]
@@ -99,6 +99,28 @@ def _subject_plan_bindings(
     return hashes_by_subject, references_by_subject
 
 
+def _verify_candidate_provenance(
+    evidence: ReferenceContinuityBenchmark,
+    artifacts: list[VideoShotArtifact],
+) -> None:
+    for artifact in artifacts:
+        requires_candidate_provenance = artifact.backend.startswith("lightx2v:")
+        if requires_candidate_provenance and (
+            artifact.candidate_id is None or artifact.candidate_revision is None
+        ):
+            raise ValueError("LightX2V continuity artifacts require candidate provenance")
+        if artifact.candidate_id is None:
+            continue
+        if artifact.candidate_id != evidence.candidate_id:
+            raise ValueError(
+                "continuity benchmark candidate id does not match generated artifact provenance"
+            )
+        if artifact.candidate_revision != evidence.candidate_revision:
+            raise ValueError(
+                "continuity benchmark candidate revision does not match generated artifact provenance"
+            )
+
+
 def verify_reference_continuity_artifacts(
     evidence: ReferenceContinuityBenchmark,
     manifest: VideoArtifactManifest,
@@ -110,6 +132,9 @@ def verify_reference_continuity_artifacts(
 
     manifest.verify_required_byte_identity()
     subject_hashes, planned_references = _subject_plan_bindings(manifest, plan)
+    artifacts_by_hash = {
+        artifact.sha256: artifact for artifact in manifest.shots if artifact.sha256 is not None
+    }
 
     for subject in evidence.subjects:
         reference_path = reference_paths.get(subject.subject_id)
@@ -146,6 +171,8 @@ def verify_reference_continuity_artifacts(
             raise ValueError(
                 f"benchmark coverage for subject {subject.subject_id} must include all subject-bearing plan shots"
             )
+        evaluated_artifacts = [artifacts_by_hash[shot_hash] for shot_hash in subject.shot_sha256s]
+        _verify_candidate_provenance(evidence, evaluated_artifacts)
 
 
 def evaluate_reference_continuity(
