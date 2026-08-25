@@ -30,43 +30,62 @@ jobs:
           sudo apt-get install -y ffmpeg espeak
           python -m pip install --upgrade pip
           pip install -e ".[dev,video]"
-      - name: Execute checked-in software3d story
+      - name: Execute checked-in anti-polish cow story
         run: |
           hottop video-run examples/video/inkclaw-cow-snake.render.json \
             --config config/video/anti-polish-software3d.yml \
-            --output-dir artifacts/production-smoke \
+            --output-dir artifacts/production-smoke/cow \
             --project-root . \
             --execute \
-            --output artifacts/production-smoke/run-result.json
-      - name: Verify final media and provenance
+            --output artifacts/production-smoke/cow/run-result.json
+      - name: Execute checked-in cinematic Odyssey story
         run: |
-          test -s artifacts/production-smoke/hottop-output.mp4
-          test "$(find artifacts/production-smoke/shots -name '*.artifact.json' -type f | wc -l)" -eq 5
-          ffprobe -v error \
-            -show_entries stream=codec_type,codec_name,pix_fmt \
-            -show_entries format=duration \
-            -of json \
-            artifacts/production-smoke/hottop-output.mp4 \
-            > artifacts/production-smoke/ffprobe.json
+          hottop video-run examples/video/inkclaw-odyssey-witch-pigs.render.json \
+            --config config/video/cinematic-software3d.yml \
+            --output-dir artifacts/production-smoke/odyssey \
+            --project-root . \
+            --execute \
+            --output artifacts/production-smoke/odyssey/run-result.json
+      - name: Verify both final media and provenance chains
+        run: |
+          for case in cow odyssey; do
+            test -s "artifacts/production-smoke/${case}/hottop-output.mp4"
+            test "$(find "artifacts/production-smoke/${case}/shots" -name '*.artifact.json' -type f | wc -l)" -eq 5
+            ffprobe -v error \
+              -show_entries stream=codec_type,codec_name,pix_fmt \
+              -show_entries format=duration \
+              -of json \
+              "artifacts/production-smoke/${case}/hottop-output.mp4" \
+              > "artifacts/production-smoke/${case}/ffprobe.json"
+          done
           python - <<'PY'
+          import hashlib
           import json
           from pathlib import Path
 
           root = Path("artifacts/production-smoke")
-          probe = json.loads((root / "ffprobe.json").read_text())
-          streams = probe["streams"]
-          video = next(item for item in streams if item["codec_type"] == "video")
-          audio = next(item for item in streams if item["codec_type"] == "audio")
-          assert video["codec_name"] == "h264"
-          assert video["pix_fmt"] == "yuv420p"
-          assert audio["codec_name"] == "aac"
-          assert float(probe["format"]["duration"]) > 0
+          for case in ("cow", "odyssey"):
+              case_root = root / case
+              probe = json.loads((case_root / "ffprobe.json").read_text())
+              streams = probe["streams"]
+              video = next(item for item in streams if item["codec_type"] == "video")
+              audio = next(item for item in streams if item["codec_type"] == "audio")
+              assert video["codec_name"] == "h264"
+              assert video["pix_fmt"] == "yuv420p"
+              assert audio["codec_name"] == "aac"
+              assert float(probe["format"]["duration"]) > 0
 
-          result = json.loads((root / "run-result.json").read_text())
-          assert result["executed"] is True
-          assert len(result["artifact_manifest_paths"]) == 5
-          for manifest in result["artifact_manifest_paths"]:
-              assert Path(manifest).is_file()
+              result = json.loads((case_root / "run-result.json").read_text())
+              assert result["executed"] is True
+              assert len(result["artifact_manifest_paths"]) == 5
+              for manifest in result["artifact_manifest_paths"]:
+                  assert Path(manifest).is_file()
+
+              output = case_root / "hottop-output.mp4"
+              (case_root / "sha256.txt").write_text(
+                  hashlib.sha256(output.read_bytes()).hexdigest() + "  hottop-output.mp4\n",
+                  encoding="utf-8",
+              )
           PY
       - name: Upload reproducible production evidence
         uses: actions/upload-artifact@v4
@@ -75,8 +94,15 @@ jobs:
           if-no-files-found: error
           retention-days: 7
           path: |
-            artifacts/production-smoke/hottop-output.mp4
-            artifacts/production-smoke/run-result.json
-            artifacts/production-smoke/hottop-video-plan.json
-            artifacts/production-smoke/ffprobe.json
-            artifacts/production-smoke/shots/*.artifact.json
+            artifacts/production-smoke/cow/hottop-output.mp4
+            artifacts/production-smoke/cow/run-result.json
+            artifacts/production-smoke/cow/hottop-video-plan.json
+            artifacts/production-smoke/cow/ffprobe.json
+            artifacts/production-smoke/cow/sha256.txt
+            artifacts/production-smoke/cow/shots/*.artifact.json
+            artifacts/production-smoke/odyssey/hottop-output.mp4
+            artifacts/production-smoke/odyssey/run-result.json
+            artifacts/production-smoke/odyssey/hottop-video-plan.json
+            artifacts/production-smoke/odyssey/ffprobe.json
+            artifacts/production-smoke/odyssey/sha256.txt
+            artifacts/production-smoke/odyssey/shots/*.artifact.json
