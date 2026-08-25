@@ -45,18 +45,30 @@ def test_reviewed_character_candidates_keep_execution_gates():
     assert h3["status"] == "blocked_by_weights_license_review"
 
 
-def test_qwen3_tts_is_permissive_benchmark_but_voice_clone_stays_rights_gated():
-    qwen = _registry()["candidates"]["qwen3_tts_0_6b_base"]
+def test_qwen3_customvoice_is_normal_dialogue_benchmark_and_base_stays_rights_gated():
+    candidates = _registry()["candidates"]
+    custom = candidates["qwen3_tts_0_6b_customvoice"]
 
-    assert qwen["code_license"] == "Apache-2.0"
-    assert qwen["weights_license"] == "Apache-2.0"
-    assert qwen["status"] == "high_priority_benchmark"
-    assert "natural_mandarin_dialogue" in qwen["target_gaps"]
-    assert "voice_clone_capability" in qwen["capabilities"]
-    boundary = qwen["runtime_boundary"].lower()
-    assert "rights-safe" in boundary
-    assert "without rights-cleared" in boundary
-    assert "must not silently download" in boundary
+    assert custom["code_license"] == "Apache-2.0"
+    assert custom["weights_license"] == "Apache-2.0"
+    assert custom["status"] == "benchmark_ready_operator_local"
+    assert "natural_mandarin_dialogue" in custom["target_gaps"]
+    assert "nine_preset_timbres" in custom["capabilities"]
+    assert "style_control_without_voice_cloning" in custom["target_gaps"]
+    custom_boundary = custom["runtime_boundary"].lower()
+    assert "already provisioned local model directory" in custom_boundary
+    assert "never downloads" in custom_boundary
+    assert "espeak" in custom_boundary
+
+    base = candidates["qwen3_tts_0_6b_base"]
+    assert base["code_license"] == "Apache-2.0"
+    assert base["weights_license"] == "Apache-2.0"
+    assert base["status"] == "rights_gated_voice_clone_benchmark"
+    assert "voice_clone_capability" in base["capabilities"]
+    base_boundary = base["runtime_boundary"].lower()
+    assert "reference voice audio" in base_boundary
+    assert "rights provenance" in base_boundary
+    assert "must not silently download" in base_boundary
 
 
 def test_wangp_remains_interop_only():
