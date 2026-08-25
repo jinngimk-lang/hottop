@@ -1,0 +1,156 @@
+{
+  "schema_version": "hottop.video-plan.v1",
+  "config_name": "anti-polish-direct",
+  "topic_id": "inkclaw-anti-polish-cow-snake",
+  "topic_title": "原创低成本3D牛家庭：开发遇蛇记",
+  "subject_name": "InkClawAgent",
+  "style_profile": "anti-polish",
+  "generation_backend": "wan22-ti2v-5b",
+  "compositor_backend": "moviepy",
+  "encoder_backend": "ffmpeg",
+  "width": 720,
+  "height": 1280,
+  "fps": 24,
+  "duration_seconds": 12.0,
+  "output_format": "mp4",
+  "in_asset_cta_policy": "no-destination",
+  "shots": [
+    {
+      "index": 1,
+      "start_seconds": 0.0,
+      "end_seconds": 2.4,
+      "duration_seconds": 2.4,
+      "scene": "Same dim rough-3D programmer workshop: the young cow types while a nuisance snake starts tangling setup cards and cables.",
+      "caption": "哎呀！又来绊我！",
+      "intent": "establish developer friction and the snake metaphor",
+      "continuity_instruction": "Establish one continuous location, lighting setup, character identity and object state; carry them into the next shot.",
+      "generation_prompt": "Original Anti-Polish rough 3D cow-family comedy in one continuous workshop; young cow coding as the same nuisance snake tangles setup cards and cables; low production feel, high comedy control; preserve character continuity.",
+      "negative_prompt": "protected source footage, exact film frame, copyrighted soundtrack, protected character design, actor likeness, proprietary UI, glossy AI ad, URL, QR code"
+    },
+    {
+      "index": 2,
+      "start_seconds": 2.4,
+      "end_seconds": 4.8,
+      "duration_seconds": 2.4,
+      "scene": "The same cow recoils from the same snake, knocks the chair back and calls toward the doorway while the cables remain tangled.",
+      "caption": "妈——！",
+      "intent": "escalate the obstruction through reaction and eyeline continuity",
+      "continuity_instruction": "Preserve the same characters, scene geography, lighting and object state from the prior shot; bridge the action with a follow transition rather than an unrelated still cut.",
+      "generation_prompt": "Continue the same original rough-3D workshop and same cow/snake designs; the cow recoils, chair kicks back and eyeline leads toward the doorway; deliberate awkward motion, precise comedy timing.",
+      "negative_prompt": "protected source footage, exact film frame, copyrighted soundtrack, protected character design, actor likeness, proprietary UI, glossy AI ad, URL, QR code"
+    },
+    {
+      "index": 3,
+      "start_seconds": 4.8,
+      "end_seconds": 7.2,
+      "duration_seconds": 2.4,
+      "scene": "The same mother cow enters the same doorway, observes the snake and laptop deadpan, then points one hoof at the computer.",
+      "caption": "傻孩子，用 InkClawAgent。",
+      "intent": "deliver the deadpan family-comedy reversal",
+      "continuity_instruction": "Preserve the same characters, scene geography, lighting and object state from the prior shot; bridge the action with a eyeline transition rather than an unrelated still cut.",
+      "generation_prompt": "Continue the same original low-budget 3D workshop; mother cow enters on the established eyeline, stays deadpan and points toward the laptop; cheap geometry and controlled timing.",
+      "negative_prompt": "protected source footage, exact film frame, copyrighted soundtrack, protected character design, actor likeness, proprietary UI, glossy AI ad, URL, QR code"
+    },
+    {
+      "index": 4,
+      "start_seconds": 7.2,
+      "end_seconds": 9.6,
+      "duration_seconds": 2.4,
+      "scene": "Match the pointing hoof into the same laptop. InkClawAgent stays native to the rough world as setup clutter collapses into 不用部署, 开发零门槛, Free Token 入门; Research, Write, Review and Code task markers move while the snake loosens.",
+      "caption": "啊？这么直接？",
+      "intent": "show product benefits as visible consequences of the joke",
+      "continuity_instruction": "Preserve the same characters, scene geography, lighting and object state from the prior shot; bridge the action with a match-action transition rather than an unrelated still cut.",
+      "generation_prompt": "Match the mother cow's pointing hoof into the same rough-world laptop; show 不用部署, 开发零门槛 and Free Token 入门 as crude in-scene consequences while Research, Write, Review and Code start moving and the same snake releases the cables.",
+      "negative_prompt": "protected source footage, exact film frame, copyrighted soundtrack, protected character design, actor likeness, proprietary UI, unlimited-free-token claim, glossy AI ad, URL, QR code"
+    },
+    {
+      "index": 5,
+      "start_seconds": 9.6,
+      "end_seconds": 12.0,
+      "duration_seconds": 2.4,
+      "scene": "Stay in the same workshop. Useful task markers continue, the same snake retreats, and the young cow kicks an empty Deploy box across foreground while the mother watches deadpan.",
+      "caption": "别被蛇绊住。",
+      "intent": "land the punchline as a native strange internet film clip",
+      "continuity_instruction": "Preserve the same characters, scene geography, lighting and object state from the prior shot; bridge the action with a foreground-occlusion transition rather than an unrelated still cut.",
+      "generation_prompt": "Finish in the same original rough-3D workshop; useful tasks continue, snake retreats and an empty Deploy box crosses foreground as occlusion; no glossy end card, no URL or QR code.",
+      "negative_prompt": "protected source footage, exact film frame, copyrighted soundtrack, protected character design, actor likeness, proprietary UI, glossy AI ad, URL, QR code"
+    }
+  ],
+  "audio_cues": [
+    {
+      "kind": "bgm",
+      "start_seconds": 0.0,
+      "duration_seconds": 12.0,
+      "text": "cheap xylophone, bass plucks, crude folk accents, light electronic drums"
+    },
+    {
+      "kind": "dialogue",
+      "start_seconds": 0.0,
+      "duration_seconds": 2.4,
+      "text": "哎呀！又来绊我！",
+      "duck_bgm_db": -8.0
+    },
+    {
+      "kind": "dialogue",
+      "start_seconds": 2.4,
+      "duration_seconds": 2.4,
+      "text": "妈——！",
+      "duck_bgm_db": -8.0
+    },
+    {
+      "kind": "dialogue",
+      "start_seconds": 4.8,
+      "duration_seconds": 2.4,
+      "text": "傻孩子，用 InkClawAgent。",
+      "duck_bgm_db": -8.0
+    },
+    {
+      "kind": "dialogue",
+      "start_seconds": 7.2,
+      "duration_seconds": 2.4,
+      "text": "啊？这么直接？",
+      "duck_bgm_db": -8.0
+    },
+    {
+      "kind": "dialogue",
+      "start_seconds": 9.6,
+      "duration_seconds": 2.4,
+      "text": "别被蛇绊住。",
+      "duck_bgm_db": -8.0
+    }
+  ],
+  "generation_commands": [],
+  "generation_command_specs": [
+    {"program": "python", "args": ["generate.py", "--prompt", "shot 1 from canonical render"], "cwd": "integrations/Wan2.2", "stage": "generation"},
+    {"program": "python", "args": ["generate.py", "--prompt", "shot 2 from canonical render"], "cwd": "integrations/Wan2.2", "stage": "generation"},
+    {"program": "python", "args": ["generate.py", "--prompt", "shot 3 from canonical render"], "cwd": "integrations/Wan2.2", "stage": "generation"},
+    {"program": "python", "args": ["generate.py", "--prompt", "shot 4 from canonical render"], "cwd": "integrations/Wan2.2", "stage": "generation"},
+    {"program": "python", "args": ["generate.py", "--prompt", "shot 5 from canonical render"], "cwd": "integrations/Wan2.2", "stage": "generation"}
+  ],
+  "compositor_manifest": {
+    "backend": "moviepy",
+    "shot_dir": "shots",
+    "composite_name": "hottop-composite.mp4",
+    "width": 720,
+    "height": 1280,
+    "fps": 24
+  },
+  "compositor_command_spec": {
+    "program": "python",
+    "args": ["-m", "hottop.video_moviepy", "--plan", "hottop-video-plan.json", "--shots-dir", "shots", "--output", "hottop-composite.mp4"],
+    "cwd": ".",
+    "stage": "compositor"
+  },
+  "finalization_command": ["ffmpeg", "-i", "hottop-composite.mp4", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-movflags", "+faststart", "hottop-output.mp4"],
+  "finalization_command_spec": {
+    "program": "ffmpeg",
+    "args": ["-i", "hottop-composite.mp4", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-movflags", "+faststart", "hottop-output.mp4"],
+    "stage": "finalization"
+  },
+  "execution_notes": [
+    "Representative derived archive; regenerate from examples/video/inkclaw-cow-snake.render.json plus config/video/anti-polish-direct.yml when planner behavior changes rather than treating this file as canonical creative source.",
+    "Preserve character continuity, scene geography, cause/effect, subtitle correctness, dialogue intelligibility and comedy timing even when production looks intentionally rough.",
+    "Wan2.2 model files, GPU execution, MoviePy and FFmpeg remain operator-controlled; never auto-install or download them.",
+    "Use original staging, original music/Foley and no protected source footage, soundtrack or character design."
+  ]
+}

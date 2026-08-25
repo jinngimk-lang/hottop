@@ -1,0 +1,127 @@
+{
+  "schema_version": "hottop.creative-run.v1",
+  "created_at": "2026-08-24T09:20:00+08:00",
+  "promotion": {
+    "subject_name": "InkClawAgent",
+    "subject_type": "tool",
+    "category": "AI intelligent document and task platform",
+    "known_repo_strengths": [
+      "multi-agent collaboration",
+      "brainstorming and long-form creation",
+      "review-edit-revise workflow",
+      "document review",
+      "coding assistance"
+    ],
+    "user_supplied_claims": [
+      {
+        "claim": "不用部署",
+        "provenance": "user-provided in creative request",
+        "claim_status": "user-provided"
+      },
+      {
+        "claim": "开发零门槛",
+        "provenance": "user-provided in creative request",
+        "claim_status": "user-provided"
+      },
+      {
+        "claim": "Free Token 入门",
+        "provenance": "user-provided as 'free token'; wording intentionally avoids unlimited/permanent-free implication",
+        "claim_status": "user-provided"
+      }
+    ]
+  },
+  "hotspot": {
+    "name": "Aura Farming battles",
+    "observed_at": "2026-08-24T09:20:00+08:00",
+    "source_url": "https://www.euronews.com/culture/2026/08/22/what-is-aura-farming-tiktoks-strange-viral-battles-hit-the-streets",
+    "source_note": "Street/social battles where participants compete through poses, gestures and recognizable meme performance to project charisma and style.",
+    "rights_mode": "analysis-only"
+  },
+  "creative_directive": {
+    "campaign_goal": "hotspot-participation",
+    "platform": "generic-social",
+    "style": "funny-meme",
+    "creative_ambition": "breakout",
+    "product_visibility": "balanced",
+    "project_shape": "software-b2b",
+    "direction_lane": "bridge-led-metaphor",
+    "preferred_expression_form": "product-as-prop",
+    "visual_medium": "documentary-social",
+    "humor_expected": true,
+    "distribution_treatment": "9:16 short video",
+    "in_asset_cta_policy": "no URL or QR; product attribution only at the payoff"
+  },
+  "strategy": {
+    "category_default": "Trying an AI-agent workflow often feels like a developer project before useful work begins: setup, environments, keys, deployment and billing decisions.",
+    "deleted_constraint": "Remove the requirement to become the deployment engineer before starting the actual task.",
+    "new_competition_axis": "time-to-first-use and creative/workflow output instead of setup ceremony",
+    "bridge_type": "language-symbol",
+    "bridge": "Turn the current Aura Farming battle format into a developer setup battle: one side farms aura by stacking setup rituals; InkClawAgent wins by bringing only the task and immediately working."
+  },
+  "concept": {
+    "title": "2026 Agent 开发 Aura Farming 大赛",
+    "layout": "continuous 9:16 social short: one original anonymous street-battle location, camera and character continuity instead of poster panels or slideshow cuts",
+    "opening": {
+      "visual": "camera follows an anonymous developer entering the battle overloaded with boxes/cards labeled Docker, 环境变量, API Key, Deploy, 依赖, Token 账单",
+      "caption": "先把开发环境叠满",
+      "sound": "crowd murmur, shoe scrape, box thuds, comic bass plucks"
+    },
+    "escalation": {
+      "visual": "the setup stack becomes an absurd aura performance; the developer keeps posing while the actual task remains untouched",
+      "caption": "AURA 12",
+      "sound": "cheap sports-broadcast stings and exaggerated stacking impacts"
+    },
+    "reversal": {
+      "visual": "camera pans in the same space to a relaxed anonymous creator opening InkClawAgent; Research, Write, Review and Code task lights begin moving immediately",
+      "caption": "打开 → 直接干活",
+      "value_labels": ["不用部署", "开发零门槛", "Free Token 入门", "多 Agent 协作"],
+      "sound": "one clean trigger hit followed by four light agent pop sounds"
+    },
+    "dialogue": {
+      "judge": "你怎么什么都没带？",
+      "inkclawagent": "我带需求就够了。"
+    },
+    "payoff": {
+      "visual": "the overloaded competitor is still arranging setup props while the creator is already working; the score flips as a joke, not a factual benchmark",
+      "caption": "AURA 999",
+      "end_card": "InkClawAgent · 打开，直接干活"
+    },
+    "product_explainer": "InkClawAgent = 打开就用的多 Agent 工作台",
+    "use_cases": "长文创作 · 文档审阅 · Review/改写 · Coding Assist",
+    "cta": null
+  },
+  "creative_review": {
+    "instant_comprehension": "high: setup ceremony versus immediate useful work reads through action before the text finishes",
+    "natural_linkage": "high: aura farming maps directly to performative setup ceremony versus useful work",
+    "product_centrality": "high: the joke depends on InkClawAgent removing setup friction",
+    "surprise": "high: developer tooling ceremony becomes an aura battle",
+    "ownability": "medium-high: strengthened by specific no-deploy/low-barrier/free-token/multi-agent product claims",
+    "evidence_safety": "use user-provided product claims without adding unlimited/permanent-free or superiority claims; aura score is unmistakable subjective satire",
+    "original_execution": "use anonymous original characters and original staging; do not reproduce real viral participants or protected meme frames"
+  },
+  "render_notes": {
+    "aspect_ratio": "9:16",
+    "visual_style": "internet-native documentary comedy with intentionally scrappy low-budget broadcast energy, original anonymous characters and one continuous physical location",
+    "motion_rule": "use camera follow, pan, reaction timing, foreground occlusion and action continuity; do not present still-image slides with hard cuts pretending to be video",
+    "audio_rule": "environment bed + character dialogue + prop impacts + comic music; music ducks under dialogue and payoff sound effects",
+    "text_priority": [
+      "先把开发环境叠满",
+      "打开 → 直接干活",
+      "不用部署",
+      "开发零门槛",
+      "Free Token 入门",
+      "多 Agent 协作",
+      "InkClawAgent · 打开，直接干活"
+    ],
+    "distribution_rule": "meme first, attribution second; no in-asset URL, QR code or '立即体验' CTA unless a later conversion brief explicitly requires it",
+    "avoid": [
+      "real influencer likenesses",
+      "TikTok/RedNote proprietary UI recreation",
+      "protected meme screenshots",
+      "slideshow-like still-frame cuts",
+      "URL or QR code inside the social asset",
+      "claims of unlimited or permanent free tokens",
+      "unsupported faster/better/cheaper claims"
+    ]
+  }
+}

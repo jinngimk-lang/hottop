@@ -1,0 +1,62 @@
+{
+  "schema_version": "hottop.render.v2",
+  "topic_id": "inkclaw-anti-polish-cow-snake",
+  "topic_title": "原创低成本3D牛家庭：开发遇蛇记",
+  "subject_name": "InkClawAgent",
+  "expression_form": "faux-film-still",
+  "visual_medium": "animation-low-poly",
+  "genre_treatment": "original intentionally cheap low-budget 3D absurd family comedy; deadpan acting, crude materials, awkward but readable motion",
+  "distribution_mode": "motion",
+  "in_asset_cta_policy": "no-destination",
+  "motion_continuity_required": true,
+  "category_default": "Trying an AI-agent workflow starts with setup, dependencies, keys and deployment ceremony before useful work.",
+  "deleted_constraint": "Remove the requirement to become the deployment engineer before starting the actual task.",
+  "new_competition_axis": "time to useful work and product-native collaboration rather than setup ceremony",
+  "bridge_type": "role",
+  "bridge": "A nuisance snake literally embodies sticky workflow friction; the mother cow resolves the absurd family crisis by pointing to InkClawAgent.",
+  "frames": [
+    {
+      "index": 1,
+      "scene": "In one dim, messy rural-industrial programmer workshop, an original orange-brown rough 3D cow with short dark horns and an oversized muted-gray muzzle types at an old laptop while environment setup cards and cables pile up. A black-green nuisance snake tagged only as satirical generic workflow clutter begins sliding from under the desk and wrapping around the cables. Preserve this exact cow, snake, workshop, lighting and prop layout across all later shots.",
+      "caption": "哎呀！又来绊我！",
+      "intent": "establish developer friction and the absurd snake metaphor inside one continuous low-budget 3D film world"
+    },
+    {
+      "index": 2,
+      "scene": "Without changing location or character design, follow the same cow as it recoils from the same snake, knocks the chair back, points toward the doorway and calls for help. The snake keeps physically tangling the same dependency cards and cables instead of becoming a separate graphic overlay.",
+      "caption": "妈——！",
+      "intent": "escalate the obstruction through character reaction and eyeline continuity"
+    },
+    {
+      "index": 3,
+      "scene": "Follow the cow's eyeline to the same workshop doorway as a larger original mother cow from the same rough 3D family enters slowly under the same warm practical light. She looks once at the same snake and laptop, stays completely deadpan, and points one hoof toward the computer.",
+      "caption": "傻孩子，用 InkClawAgent。",
+      "intent": "deliver the deadpan family-comedy reversal through a continuous entrance, not an advertisement cutaway"
+    },
+    {
+      "index": 4,
+      "scene": "Match the mother cow's pointing hoof into the same laptop. InkClawAgent appears as a deliberately plain, rough-world work surface rather than glossy sci-fi UI. The tangled setup cards collapse into three crude readable benefits inside the scene: 不用部署, 开发零门槛, Free Token 入门. Simple task markers Research, Write, Review and Code begin moving while the same snake loosens and slips off the cables. The young cow stares at the result in disbelief.",
+      "caption": "啊？这么直接？",
+      "intent": "make product benefits visible consequences of the joke while keeping the promoted product native to the intentionally cheap world"
+    },
+    {
+      "index": 5,
+      "scene": "Stay in the same workshop. The young cow resumes useful work while rough Research, Write, Review and Code task markers continue. The same snake retreats across the foreground. The mother cow calmly watches as the young cow kicks one empty Deploy cardboard box out of frame, using the flying box as foreground occlusion for the ending. No URL, QR code, app-store badge or glossy end card.",
+      "caption": "别被蛇绊住。",
+      "intent": "land the punchline and compact product memory through action, then end like a strange native internet film clip"
+    }
+  ],
+  "master_prompt": "Original Anti-Polish / Controlled Badness short film. One continuous rural-industrial programmer workshop, same original rough 3D cow family and same nuisance snake in every shot. Intentionally cheap geometry, basic fur/materials, stiff physical comedy, blunt staging, warm practical bulb lighting, slightly clumsy camera movement, deadpan absurdity treated seriously. Low production feel, high comedy control. Product value must happen through dialogue, physical consequence and task motion rather than feature-card advertising.",
+  "negative_prompt": "protected source footage, exact film frame, official poster, copyrighted soundtrack, exact protected character design, actor likeness, proprietary UI, copied trade dress, glossy AI ad, blue-purple hologram, premium mascot team, polished sci-fi end card, unrelated slideshow stills, URL, QR code, unlimited-free-token claim",
+  "punchlines": [
+    "别被蛇绊住。",
+    "打开，直接干活。"
+  ],
+  "risk_flags": [
+    "Original staging only; use broad low-budget 3D comedy grammar rather than protected source footage or exact character design.",
+    "Use original music and Foley only; do not copy a film soundtrack.",
+    "Free Token 入门 is user-provided wording and must not imply unlimited or permanent free tokens.",
+    "Snake labels are metaphor/satire; do not invent factual defects about a named competitor."
+  ],
+  "claim_status": "satire"
+}

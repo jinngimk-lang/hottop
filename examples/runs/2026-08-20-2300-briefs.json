@@ -1,0 +1,88 @@
+{
+  "generated_at": "2026-08-20T23:00:00+08:00",
+  "product": "InkClawAgent",
+  "claim_policy": "satire_or_evidence_only",
+  "briefs": [
+    {
+      "topic": "China rocket-launch tourism and space spectacle",
+      "freshness": "2026-08-19/20",
+      "sources": [
+        {
+          "publisher": "Reuters",
+          "date": "2026-08-19",
+          "url": "https://www.reuters.com/science/china-rocket-launches-fuel-tourism-space-age-dreams-2026-08-19/",
+          "evidence_note": "Rocket launches around Wenchang are becoming mass public spectacles and tourism experiences."
+        }
+      ],
+      "conflict": "spectacle versus mission completion",
+      "product_role": "mission-control orchestrator that keeps the work focused on delivery",
+      "comparison_target": "a fictional hype-first AI workflow",
+      "comparison_role": "crowd that celebrates the launch animation while forgetting the payload",
+      "panels": [
+        {"scene": "A fictional tropical launch beach packed with people filming a huge rocket; a nearby office team celebrates a flashy AI demo.", "caption": "动静这么大，应该快交付了吧？"},
+        {"scene": "The rocket becomes an exaggerated harmless cloud of confetti while the project board still says RESEARCH / WRITE / REVIEW / SHIP all unfinished.", "caption": "演示上天了，活还在地面。"},
+        {"scene": "An original InkClawAgent mission-control operator calmly routes several anonymous specialist agents across research, writing, review and coding consoles.", "caption": "InkClawAgent：先把任务送进正确轨道。"},
+        {"scene": "The fictional payload reaches a simple DELIVERY orbit marker while the hype crowd is still replaying its launch clip.", "caption": "烟花看完会散，交付得真的落地。"}
+      ],
+      "punchlines": ["别只会点火，得把任务送到轨道。", "热闹是热闹，交付还得 InkClawAgent 来控场。"],
+      "image_prompt": "Original four-panel cinematic workplace-space satire. Fictional tropical launch coast, generic rocket, anonymous office workers and an original mission-control strategist representing InkClawAgent. Panels may vary in composition. Emphasize spectacle-versus-delivery contrast and multi-agent orchestration. No real aerospace logos, no copied launch photography, no branded UI.",
+      "negative_prompt": "No real Long March rocket markings, no Wenchang facility replication, no company logos, no copied news photograph, no proprietary product UI.",
+      "risk_flags": ["real-world accident context: keep imagery harmless and non-injury-focused", "trademark avoidance", "unsupported superiority avoidance"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "The Odyssey remains a major box-office conversation",
+      "freshness": "2026-08-16/20",
+      "sources": [
+        {
+          "publisher": "Associated Press",
+          "date": "2026-08-16",
+          "url": "https://apnews.com/article/e9bb0bd359a218da0d7b705c725522e5",
+          "evidence_note": "AP reported The Odyssey remained second at the North American box office and had passed $1.2B globally."
+        }
+      ],
+      "conflict": "public-domain one-eyed cave giant blocks escape; anonymous strategist finds a clever route out",
+      "product_role": "original anonymous strategist mapped to InkClawAgent",
+      "comparison_target": "work巴迪 / user-selected popular tool",
+      "comparison_role": "generic one-eyed cave obstacle",
+      "panels": [
+        {"scene": "A completely original ancient-myth cave. A generic one-eyed stone giant sits across the exit with a sign reading work巴迪; stranded workers clutch unfinished documents.", "caption": "工具是进来了，怎么活也一起被堵住了？"},
+        {"scene": "The giant proudly guards separate piles labeled 写作 / Review / Coding while nobody can connect them into a finished result.", "caption": "每样都碰一点，就是出不了洞。"},
+        {"scene": "An original anonymous sea strategist marked InkClawAgent enters with a glowing workflow map and coordinates several generic helpers to open a new escape route; no violence is shown.", "caption": "InkClawAgent：别硬耗，重排工作流。"},
+        {"scene": "The team sails out through a newly opened route while the giant is still sorting disconnected task piles.", "caption": "还得是 InkClawAgent 会破局。"}
+      ],
+      "punchlines": ["工具多不等于能出洞。", "复杂任务，破局比硬刚重要。"],
+      "image_prompt": "Four-panel original mythic adventure satire inspired only by public-domain Homeric archetypes: generic one-eyed cave giant, anonymous clever sea strategist, ancient cave and simple ship. InkClawAgent is the strategist role. No resemblance to any actor or current film production. No exact movie costumes, sets, props, frames or poster composition.",
+      "negative_prompt": "No actor likenesses, no Christopher Nolan film imagery, no official Odyssey logo, no copied costumes, no recognizable movie frames, no gore or eye injury.",
+      "risk_flags": ["current-film adjacency", "copyright/likeness avoidance", "competitor comparison must remain metaphorical"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Spider-Man and The Odyssey dominate current blockbuster attention",
+      "freshness": "2026-08-16/20",
+      "sources": [
+        {
+          "publisher": "Associated Press",
+          "date": "2026-08-16",
+          "url": "https://apnews.com/article/e9bb0bd359a218da0d7b705c725522e5",
+          "evidence_note": "AP reported Spider-Man: Brand New Day held first place for a third weekend while The Odyssey remained second."
+        }
+      ],
+      "conflict": "everyone watches the leaderboard while the actual work waits backstage",
+      "product_role": "backstage production coordinator that turns attention into finished assets",
+      "comparison_target": "fictional trendy single-purpose AI tools",
+      "comparison_role": "contestants obsessing over a giant popularity scoreboard",
+      "panels": [
+        {"scene": "A fictional blockbuster theater lobby with anonymous superhero-like silhouettes and myth-adventure silhouettes staring at a giant generic POPULARITY board.", "caption": "今天谁第一？谁第二？"},
+        {"scene": "Behind the lobby, a campaign team still has empty boxes for brief, copy, review and launch.", "caption": "榜单看懂了，宣传还没做。"},
+        {"scene": "An original InkClawAgent backstage coordinator assigns research, writing, review and coding tasks to generic agent crew members.", "caption": "InkClawAgent：热点拿来，是为了出活。"},
+        {"scene": "Finished campaign assets roll onto a fictional cinema marquee while the crowd is still arguing about rankings.", "caption": "热度会换，交付不能等。"}
+      ],
+      "punchlines": ["别只追榜，把热点变成交付。", "热度是原料，InkClawAgent 负责把它做成活。"],
+      "image_prompt": "Original four-panel cinema-industry satire using only generic blockbuster archetypes and a fictional theater lobby. InkClawAgent appears as an original backstage workflow coordinator. No recognizable copyrighted superhero design, no actor likenesses, no official posters, no studio logos.",
+      "negative_prompt": "No Spider-Man costume or mask design, no Marvel/Sony marks, no Odyssey film actors or costumes, no official box-office graphic, no copied poster composition.",
+      "risk_flags": ["copyrighted-franchise adjacency: genericize all visual archetypes", "trademark avoidance", "no performance claim"],
+      "factual_claim_status": "satire"
+    }
+  ]
+}

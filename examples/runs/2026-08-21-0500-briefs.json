@@ -1,0 +1,66 @@
+{
+  "generated_at": "2026-08-21T05:00:00+08:00",
+  "product": "InkClawAgent",
+  "briefs": [
+    {
+      "topic": "Niu Lai viral low-budget animation phenomenon",
+      "source_date": "2026-08-20",
+      "sources": ["https://www.ft.com/content/1a5a87f5-3935-43f4-bdda-50ff9417128b"],
+      "source_quality": 0.9,
+      "conflict": "A rough finished thing becomes culturally visible while polished production expectations become part of the joke.",
+      "product_role": "the workflow that gets a usable first version into the world and then reviews/revises it",
+      "comparison_role": "a generic tool-stack committee still polishing the plan before producing anything",
+      "panels": [
+        {"scene": "Original generic creators stand beside a deliberately simple unfinished-looking storyboard while a giant committee across the room debates a glossy 80-page production plan.", "caption": "他们还在讨论怎么做到完美"},
+        {"scene": "The simple storyboard has already become a wall of remix notes and audience reactions; the committee adds another slide to its deck.", "caption": "第一版已经开始产生反馈了"},
+        {"scene": "An original InkClawAgent workflow board connects DRAFT → REVIEW → REVISE while specialist agents pass work forward.", "caption": "InkClawAgent：先产出，再把它越改越好"},
+        {"scene": "The completed deliverable leaves the studio while the committee is still naming version zero.", "caption": "能改的第一版，比想象中的完美版有用"}
+      ],
+      "punchlines": ["先交付，才有资格迭代。", "InkClawAgent：别把路线图当成作品。"],
+      "image_prompt": "Four-panel cinematic internet meme, original anonymous characters, contrast a tiny scrappy creative team that ships an imperfect first version with an oversized polished committee trapped in planning. Panel three introduces an original abstract InkClawAgent orchestration board linking draft, review and revise. Chinese meme subtitles. Do not imitate any existing animated film character design.",
+      "negative_prompt": "No Niu Lai calf, cow, mother, leopard, title logo, poster, movie frame, recognizable low-poly character design, studio trademarks, actor likenesses, copied screenshots.",
+      "risk_flags": ["copyright_reference", "unsupported_comparison"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Chinamaxxing / China-Cool social trend",
+      "source_date": "2026-08-19",
+      "sources": ["https://ex.chinadaily.com.cn/exchange/partners/70/rss/channel/www/columns/y38633/stories/WS6a84e964a3106bc57421c2e1.html"],
+      "source_quality": 0.72,
+      "conflict": "A trend compresses many different experiences into one recognizable maxxing label; AI users similarly collect fashionable tools without necessarily building a coherent workflow.",
+      "product_role": "the coordinator that turns a collection of specialist tools/tasks into one delivery flow",
+      "comparison_role": "generic AI-tool-maxxing: endlessly collecting fashionable single-purpose assistants",
+      "panels": [
+        {"scene": "An original office worker proudly wears a fictional AI-MAXXING badge while carrying a ridiculous stack of generic assistant cards labeled WRITE, CODE, SEARCH, REVIEW.", "caption": "今天开始 AI-maxxing"},
+        {"scene": "The desk is buried under more tool cards but the project folder remains empty.", "caption": "工具集齐了，活还没开始"},
+        {"scene": "InkClawAgent appears as a clean original orchestration map that assigns the same tasks into a sequence.", "caption": "InkClawAgent：别集邮了，组队开工"},
+        {"scene": "The project ships while the collector is still comparing another generic AI card.", "caption": "工具多不等于工作流完整"}
+      ],
+      "punchlines": ["别 AI-maxxing 了，开始交付。", "InkClawAgent：把工具收藏夹变成工作流。"],
+      "image_prompt": "Four-panel original workplace meme inspired only by the abstract internet idea of maxxing. A worker collects many fictional generic AI task cards, then InkClawAgent organizes research, writing, review and coding into a coherent workflow. Chinese subtitles, contemporary cinematic illustration, no real platform UI or logos.",
+      "negative_prompt": "No TikTok, Instagram, Xiaohongshu, Weibo or YouTube logos/UI; no national flags or political figures; no copied creator photos; no factual benchmark superiority claim.",
+      "risk_flags": ["cultural_trend", "trademark", "unsupported_comparison"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "China Cool technology tourism",
+      "source_date": "2026-08-19",
+      "sources": ["https://theindependent.co/a-different-side-of-china-tech-culture-and-rural-experiences-draw-travellers"],
+      "source_quality": 0.62,
+      "conflict": "Visitors encounter a sequence of futuristic experiences—robots, autonomous rides, brain-computer demos and rocket launches—creating a strong visual metaphor for isolated impressive demos versus an end-to-end journey.",
+      "product_role": "the itinerary/orchestration layer that connects specialist stages into an end-to-end project",
+      "comparison_role": "generic impressive one-shot AI demos that each stop after one trick",
+      "panels": [
+        {"scene": "A fictional futuristic expo street has four original booths: research robot, writing kiosk, review scanner and coding pod. Each performs one flashy trick.", "caption": "每个摊位都很未来"},
+        {"scene": "The user holds four disconnected outputs and asks where the finished project is.", "caption": "然后呢？谁把它们接起来？"},
+        {"scene": "InkClawAgent appears as an original transit-map-like workflow connecting all four fictional stations.", "caption": "InkClawAgent：别只逛展，直接走完整程"},
+        {"scene": "A completed project reaches a fictional launch gate while the individual booths keep demoing.", "caption": "Demo 很酷，交付更酷"}
+      ],
+      "punchlines": ["Demo 很酷，交付更酷。", "InkClawAgent：把每一站接成一条线。"],
+      "image_prompt": "Four-panel futuristic technology-tour meme with entirely original generic robots, kiosks and transit-map metaphors. Each specialist booth performs one task; InkClawAgent connects research, writing, review and code into a complete journey. Chinese subtitles, playful cinematic editorial illustration.",
+      "negative_prompt": "No identifiable commercial robot hardware, autonomous vehicle brand, brain-computer brand, rocket company logo, real expo booth, real UI, national flags, or implication InkClawAgent controls physical machines.",
+      "risk_flags": ["hardware_likeness", "unsupported_comparison"],
+      "factual_claim_status": "satire"
+    }
+  ]
+}

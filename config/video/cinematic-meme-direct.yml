@@ -1,0 +1,71 @@
+schema_version: hottop.video-config.v1
+name: cinematic-meme-direct
+style_profile: cinematic
+roughness_score: 28
+generation_backend: wan22-ti2v-5b
+compositor_backend: moviepy
+encoder_backend: ffmpeg
+width: 720
+height: 1280
+fps: 24
+duration_seconds: 14.0
+output_format: mp4
+shot_policy:
+  min_shot_seconds: 1.2
+  max_shot_seconds: 3.5
+  transition_bias:
+    - follow
+    - eyeline
+    - match-action
+    - foreground-occlusion
+    - motivated-pan
+audio:
+  bgm_style: original mythic dark comedy score, restrained low strings, frame drums, plucked folk accents
+  dialogue_duck_db: -10
+  foley_style: cinematic mythic Foley with restrained comic accents and clear physical sync
+  voice_backend: espeak
+  voice_profile: natural-mandarin-cinematic
+  voice_language: zh
+  voice_rate_wpm: 145
+  music_backend: synthetic
+  music_profile: mythic-dark-comedy-original
+  sfx_backend: procedural
+  sfx_profile: cinematic-mythic-foley
+  original_music_only: true
+text:
+  subtitle_mode: dialogue-first
+  max_end_card_seconds: 0.7
+  allow_url: false
+  allow_qr: false
+anti_polish:
+  enabled: false
+  rough_3d: false
+  low_poly_bias: false
+  awkward_motion: false
+  deadpan_acting: true
+  cheap_instrumentation: false
+  forbid_glossy_ai_ad_defaults: true
+  precision_must_remain:
+    - character continuity
+    - scene geography
+    - cause and effect
+    - facial consistency
+    - subtitle correctness
+    - dialogue intelligibility
+    - comedy timing
+    - product semantics
+    - rights safety
+wan22:
+  task: ti2v-5B
+  size: 720*1280
+  model_dir: ./models/Wan2.2-TI2V-5B
+  offload_model: true
+  convert_model_dtype: true
+moviepy:
+  shot_dir: shots
+  composite_name: hottop-composite.mp4
+ffmpeg:
+  video_codec: libx264
+  audio_codec: aac
+  pixel_format: yuv420p
+  movflags: +faststart

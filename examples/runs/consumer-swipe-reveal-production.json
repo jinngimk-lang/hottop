@@ -1,0 +1,182 @@
+{
+  "schema_version": "hottop.production-archive.v1",
+  "intent": {
+    "request": "给云朵拉面做小红书出圈有梗广告，最后再揭示产品",
+    "promotion_target": {"value": "云朵拉面", "source": "inferred", "confidence": 0.78},
+    "campaign_goal": {"value": "hotspot-participation", "source": "explicit", "confidence": 1.0},
+    "platform": {"value": "xiaohongshu", "source": "inferred", "confidence": 0.98},
+    "style": {"value": "funny-meme", "source": "inferred", "confidence": 0.9},
+    "creative_ambition": {"value": "breakout", "source": "inferred", "confidence": 0.92},
+    "product_visibility": {"value": "metaphor-first", "source": "inferred", "confidence": 0.93},
+    "audience": {"value": null, "source": "defaulted", "confidence": 0.0},
+    "hotspot_preference": {"value": "auto", "source": "defaulted", "confidence": 0.0},
+    "constraints": ["original assets only", "no unsupported superiority claims"]
+  },
+  "enrichment": {
+    "schema_version": "hottop.creative-enrichment.v1",
+    "candidate": {
+      "id": "archive:consumer:ribbon-action",
+      "title": "Synthetic ribbon-action social cue",
+      "url": "https://example.com/hottop/ribbon-action",
+      "source": "fixture:consumer-social",
+      "source_rank": 1,
+      "source_quality": 0.6,
+      "summary": "A deterministic fixture representing a social visual cue where a long ribbon-like object extends across frames before its identity is revealed.",
+      "tags": ["consumer", "food", "social", "reveal"],
+      "metrics": {"source_rank_score": 1.0},
+      "evidence": [
+        {
+          "url": "https://example.com/hottop/ribbon-action",
+          "source": "fixture:consumer-social",
+          "source_quality": 0.6,
+          "note": "Synthetic archive evidence used only to exercise the deterministic production contract; it is not a factual trend claim."
+        }
+      ]
+    },
+    "enrichment": {
+      "provider": "fixture",
+      "markdown": "# Ribbon-action cue\nA long glossy strand enters frame before the product category is visible. Each subsequent frame adds a material clue. The final frame resolves the strand as the promoted food itself. The reusable grammar is tease → material clue → product reveal, not any source composition or protected asset.",
+      "failures": []
+    }
+  },
+  "orchestration_input": {
+    "intent": {
+      "request": "给云朵拉面做小红书出圈有梗广告，最后再揭示产品",
+      "promotion_target": {"value": "云朵拉面", "source": "inferred", "confidence": 0.78},
+      "campaign_goal": {"value": "hotspot-participation", "source": "explicit", "confidence": 1.0},
+      "platform": {"value": "xiaohongshu", "source": "inferred", "confidence": 0.98},
+      "style": {"value": "funny-meme", "source": "inferred", "confidence": 0.9},
+      "creative_ambition": {"value": "breakout", "source": "inferred", "confidence": 0.92},
+      "product_visibility": {"value": "metaphor-first", "source": "inferred", "confidence": 0.93},
+      "audience": {"value": null, "source": "defaulted", "confidence": 0.0},
+      "hotspot_preference": {"value": "auto", "source": "defaulted", "confidence": 0.0},
+      "constraints": ["original assets only", "no unsupported superiority claims"]
+    },
+    "promotion_context": {
+      "subject_name": "云朵拉面",
+      "subject_type": "product",
+      "category": "food consumer",
+      "primary_job": "make a memorable quick meal",
+      "primary_pain_point": "food launch ads look interchangeable",
+      "primary_differentiator": "long elastic ribbon-like noodles",
+      "semantic_terms": ["long", "elastic", "ribbon", "glossy", "slippery"]
+    },
+    "options": [
+      {
+        "label": "noodle-is-the-reveal",
+        "concept": {
+          "topic": {
+            "id": "archive:consumer:ribbon-action",
+            "title": "Synthetic ribbon-action social cue",
+            "url": "https://example.com/hottop/ribbon-action",
+            "source": "fixture:consumer-social",
+            "source_rank": 1,
+            "source_quality": 0.6,
+            "summary": "A deterministic fixture representing reveal pacing rather than a factual trend claim.",
+            "tags": ["consumer", "food", "social", "reveal"],
+            "metrics": {"source_rank_score": 1.0},
+            "evidence": [
+              {
+                "url": "https://example.com/hottop/ribbon-action",
+                "source": "fixture:consumer-social",
+                "source_quality": 0.6,
+                "note": "Synthetic contract evidence only."
+              }
+            ]
+          },
+          "promotion": {
+            "subject_name": "云朵拉面",
+            "subject_type": "product",
+            "category": "food consumer",
+            "primary_job": "make a memorable quick meal",
+            "primary_pain_point": "food launch ads look interchangeable",
+            "primary_differentiator": "long elastic ribbon-like noodles",
+            "semantic_terms": ["long", "elastic", "ribbon", "glossy", "slippery"]
+          },
+          "strategy": {
+            "category_default": "food ads reveal the finished bowl immediately",
+            "deleted_constraint": "the viewer must see the full product in frame one",
+            "new_competition_axis": "curiosity created by the product's own physical behavior",
+            "bridge_type": "shape-material",
+            "bridge": "the noodle's long elastic ribbon form becomes the mysterious object that physically connects the carousel frames",
+            "expression_form": "swipe-reveal"
+          },
+          "comparison_target": null,
+          "beats": [
+            {
+              "scene": "A minimal original social cover: one glossy ribbon-like strand enters from outside frame, with no bowl, logo, character, or product category visible.",
+              "caption": "这是什么，先别急。",
+              "intent": "create a one-second visual question without revealing the answer"
+            },
+            {
+              "scene": "The strand stretches across the next frame; tiny flour texture and elastic food behavior become visible while the bowl remains off-screen.",
+              "caption": "再拉一点。",
+              "intent": "add a sensory material clue and escalate the visual-wordplay"
+            },
+            {
+              "scene": "The same strand lands naturally into an original unbranded bowl; steam and noodle texture resolve the mystery as the promoted product category.",
+              "caption": "原来，梗一直在面里。",
+              "intent": "reveal the product as the action itself and deliver the punchline"
+            }
+          ],
+          "visual_medium": "commercial-product",
+          "genre_treatment": "original premium food photography with playful Xiaohongshu carousel pacing, strong negative space, tactile noodle texture, and no borrowed campaign composition",
+          "punchlines": ["原来，梗一直在面里。"],
+          "image_prompt": "Original three-frame premium food carousel. A long glossy elastic noodle ribbon is the continuous visual action: frame one shows only the mysterious strand against generous negative space; frame two adds flour texture and elasticity; frame three resolves it into an original unbranded steaming noodle bowl. Commercial product photography, tactile sensory detail, playful mobile-social pacing, anonymous/no people needed, entirely original staging and geometry.",
+          "negative_prompt": "No protected characters, no actor likenesses, no copied ad layout, no real brand logo, no distinctive packaging trade dress, no proprietary UI, no source pixels, no fake factual claim.",
+          "risk_flags": ["synthetic trend fixture: do not present as current public evidence"],
+          "claim_status": "satire"
+        },
+        "review": {
+          "name": "noodle-is-the-reveal",
+          "instant_comprehension": 0.9,
+          "natural_linkage": 0.97,
+          "product_centrality": 0.98,
+          "surprise": 0.91,
+          "ownability": 0.96,
+          "evidence_safety": 0.99,
+          "original_execution": 0.97
+        },
+        "context_review": {
+          "name": "noodle-is-the-reveal",
+          "platform_fit": 0.96,
+          "style_fit": 0.94,
+          "campaign_goal_fit": 0.92,
+          "ambition_fit": 0.94,
+          "project_shape_fit": 0.98,
+          "hotspot_native_fit": 0.86,
+          "humor_or_delight": 0.91,
+          "humor_expected": true
+        }
+      }
+    ],
+    "references": [
+      {
+        "source_url": "https://example.com/hottop/swipe-reveal-grammar",
+        "source_title": "Synthetic swipe-reveal grammar fixture",
+        "source_type": "synthetic-fixture",
+        "observed_at": "2026-08-21T08:20:00Z",
+        "visual_medium": "commercial-product",
+        "expression_form": "swipe-reveal",
+        "bridge_type": "shape-material",
+        "composition_grammar": [
+          "one dominant continuous object crossing frame boundaries",
+          "negative space keeps the visual question legible on mobile",
+          "product texture becomes clearer one clue at a time"
+        ],
+        "reveal_pattern": "tease → material clue → full product resolution",
+        "text_grammar": "one short mobile caption per frame; copy never explains the visual before the reveal",
+        "why_effective": "The reveal works because the product's own physical property carries the sequence rather than an unrelated mascot or borrowed character.",
+        "what_not_to_copy": [
+          "any third-party campaign layout",
+          "logos or packaging trade dress",
+          "protected characters or recognizable people",
+          "source pixels or exact framing"
+        ],
+        "rights_mode": "analysis-only",
+        "artifact_hash": null,
+        "provenance_note": "Synthetic reference manifest included to exercise the grammar-only handoff. It does not authorize or imply copying any external visual source."
+      }
+    ]
+  }
+}

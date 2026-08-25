@@ -1,0 +1,10 @@
+services:
+  crawl4ai:
+    image: unclecode/crawl4ai:0.9.2
+    container_name: hottop-crawl4ai
+    ports:
+      - "127.0.0.1:11235:11235"
+    shm_size: 1gb
+    environment:
+      CRAWL4AI_API_TOKEN: ${CRAWL4AI_API_TOKEN:?set CRAWL4AI_API_TOKEN before starting Crawl4AI}
+    restart: unless-stopped

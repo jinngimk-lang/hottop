@@ -1,0 +1,75 @@
+{
+  "schema_version": "hottop.render.v2",
+  "topic_id": "odyssey-witch-pigs",
+  "topic_title": "mythic witch banquet turns coding crew into pigs",
+  "subject_name": "InkClawAgent",
+  "comparison_target": "某包 / Work巴迪?",
+  "comparison_evidence": [],
+  "expression_form": "faux-film-still",
+  "visual_medium": "live-action-cinematic",
+  "genre_treatment": "original mythic Mediterranean cinematic comedy with controlled imperfection and deadpan absurdity",
+  "distribution_mode": "motion",
+  "in_asset_cta_policy": "no-destination",
+  "motion_continuity_required": true,
+  "category_default": "starting useful agent work requires a setup and deployment ceremony",
+  "deleted_constraint": "remove the deployment ceremony before useful work can start",
+  "new_competition_axis": "time from idea to useful work",
+  "bridge_type": "role",
+  "bridge": "an obviously magical transformation curse turns setup friction into a mythic obstacle that InkClawAgent breaks inside the story",
+  "frames": [
+    {
+      "index": 1,
+      "scene": "Inside one original candlelit mythic island banquet hall, a consistent group of weathered anonymous sailors eat from rough clay bowls while coding on battered laptops at the same long wooden table. An original dark-haired witch host watches from the background. Keep the cast, table, room geography and practical firelight stable for every following shot.",
+      "caption": "就差最后一点了……",
+      "intent": "establish the coding feast and relaxed false security",
+      "speaker": "crew",
+      "delivery": "tired but relieved, conversational Mandarin, understated"
+    },
+    {
+      "index": 2,
+      "scene": "Without changing location, the original witch moves into the same foreground and calmly raises one hand over the meal. A small deliberately fictional satirical prop tag near her bowl reads '某包 / Work巴迪?' rather than making a factual product claim. Purple-brown practical-looking magic crawls across the table; the same sailors transform into expressive pigs while their laptops and half-written code stay in place. The transformation is absurd mythic satire, not a claim about any real product.",
+      "caption": "先把环境、依赖、部署、Token 配好再说。",
+      "intent": "turn setup ceremony into an absurd transformation curse",
+      "speaker": "witch",
+      "delivery": "calm, ominous, deadpan Mandarin; no shouting"
+    },
+    {
+      "index": 3,
+      "scene": "Camera follows the transformed pig crew around the same table instead of cutting to a new scene. One pig stares at its laptop, another paws uselessly at the keyboard, bowls are overturned, and the witch remains composed in the background. Preserve every pig as the transformed counterpart of a sailor from the prior shot.",
+      "caption": "不是，怎么写着写着成人了？",
+      "intent": "reaction beat and meme escalation before the rescue",
+      "speaker": "crew",
+      "delivery": "confused, offended, fast conversational Mandarin"
+    },
+    {
+      "index": 4,
+      "scene": "The hall door opens naturally in the existing background and an original anonymous returning sailor hero enters through warm exterior light, with no resemblance to any real actor or protected film character design. He crosses into the same table space, opens a battered laptop showing only the text InkClawAgent, and the curse begins reversing through the crew as work starts. No glossy hologram, no futuristic feature cards, no commercial end-card interruption.",
+      "caption": "不用。打开 InkClawAgent，直接干活。",
+      "intent": "deadpan hero arrival, product-as-rescue action and punchline",
+      "speaker": "hero",
+      "delivery": "grounded, confident, low-key Mandarin; calm heroic timing"
+    },
+    {
+      "index": 5,
+      "scene": "In the same hall and continuous camera geography, the crew is human again and resumes useful work immediately while the witch's magical clutter collapses into harmless smoke. Let three benefits appear as crude practical story props scratched or stamped onto the tabletop beside the working laptops: '不用部署', '开发零门槛', 'Free Token 入门'. They are consequences of the rescue, not glossy feature cards. The crew laughs and keeps working; product attribution stays compact and no URL or QR code appears.",
+      "caption": "早说啊！",
+      "intent": "restore the crew, land the benefits as story consequences and exit on a meme beat",
+      "speaker": "crew",
+      "delivery": "relieved group reaction, amused conversational Mandarin"
+    }
+  ],
+  "master_prompt": "Original mythic Mediterranean cinematic meme, candlelit practical interiors, weathered anonymous sailors, original witch archetype, original returning sailor hero, believable live-action faces and costumes, consistent cast and room, tactile clay bowls and old wooden table, dramatic practical firelight, natural camera blocking, cinematic depth, absurd events treated seriously, restrained intentional imperfection, high directing control.",
+  "negative_prompt": "copied film frame, actor likeness, celebrity face, official character design, source footage, official poster composition, copyrighted soundtrack, proprietary UI, glossy blue-purple AI advertisement, luxury sci-fi hologram, feature-card end screen, URL, QR code, unrelated slideshow cut, inconsistent faces, random costume changes",
+  "punchlines": [
+    "早说啊！",
+    "先把活干完，再谈史诗。"
+  ],
+  "risk_flags": [
+    "original staging, cast, costumes and camera blocking only; do not reproduce a protected film scene",
+    "the '某包 / Work巴迪?' prop is unmistakable magical satire/metaphor and must not be framed as a factual defect claim",
+    "InkClawAgent benefit wording is user-provided and must not be expanded into permanent or unlimited-free claims",
+    "use original music and generated Foley; do not imitate or fetch a commercial film soundtrack"
+  ],
+  "claim_status": "satire",
+  "provider": null
+}

@@ -1,0 +1,64 @@
+schema_version: hottop.video-config.v1
+name: anti-polish-short
+style_profile: anti-polish
+generation_backend: wan22-ti2v-5b
+compositor_backend: motion-canvas
+encoder_backend: ffmpeg
+width: 720
+height: 1280
+fps: 24
+duration_seconds: 12.0
+output_format: mp4
+shot_policy:
+  min_shot_seconds: 1.0
+  max_shot_seconds: 3.0
+  transition_bias:
+    - follow
+    - eyeline
+    - match-action
+    - foreground-occlusion
+    - whip-pan
+audio:
+  bgm_style: cheap xylophone, bass plucks, crude folk accents, light electronic drums
+  dialogue_duck_db: -8
+  foley_style: blunt comedic Foley, slightly exaggerated and intentionally cheap
+text:
+  subtitle_mode: dialogue-first
+  max_end_card_seconds: 0.8
+  allow_url: false
+  allow_qr: false
+anti_polish:
+  enabled: true
+  rough_3d: true
+  low_poly_bias: true
+  awkward_motion: true
+  deadpan_acting: true
+  cheap_instrumentation: true
+  forbid_glossy_ai_ad_defaults: true
+  precision_must_remain:
+    - character continuity
+    - scene geography
+    - cause and effect
+    - subtitle correctness
+    - dialogue intelligibility
+    - comedy timing
+    - product semantics
+    - rights safety
+wan22:
+  task: ti2v-5B
+  size: 720*1280
+  model_dir: ./models/Wan2.2-TI2V-5B
+  offload_model: true
+  convert_model_dtype: true
+motion_canvas:
+  # The bundled ./video/motion-canvas project is a planning/interactive-preview scaffold only.
+  # Explicit video-run --execute must point at a separate operator-provided project whose render
+  # script actually emits the expected composite MP4; Hottop never treats the planning scaffold
+  # as an executable compositor.
+  project_dir: ./video/motion-canvas-executor
+  manifest_name: hottop-video-plan.json
+ffmpeg:
+  video_codec: libx264
+  audio_codec: aac
+  pixel_format: yuv420p
+  movflags: +faststart

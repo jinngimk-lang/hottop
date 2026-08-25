@@ -1,0 +1,64 @@
+{
+  "schema_version": "hottop.render.v2",
+  "topic_id": "generated-original-signal-orb",
+  "topic_title": "one original signal orb turns a waiting workflow into motion",
+  "subject_name": "Hottop",
+  "comparison_target": null,
+  "comparison_evidence": [],
+  "expression_form": "product-as-prop",
+  "visual_medium": "animation-3d",
+  "genre_treatment": "original restrained cinematic 3D motion study with a simple generated signal object, deep navy workshop space and warm practical glow",
+  "distribution_mode": "motion",
+  "in_asset_cta_policy": "no-destination",
+  "motion_continuity_required": true,
+  "category_default": "each shot can invent a new hero object independently",
+  "deleted_constraint": "remove per-shot identity reinvention by anchoring the same rights-safe reference object",
+  "new_competition_axis": "continuity and useful motion per unit of free generation capacity",
+  "bridge_type": "action-motion",
+  "bridge": "the same warm signal orb becomes the moving handoff that wakes an otherwise waiting workflow",
+  "frames": [
+    {
+      "index": 1,
+      "scene": "Use the exact same original warm amber signal orb from the local generated reference as the hero object. It hovers at the left side of one dark navy abstract workshop, surrounded by three simple inactive geometric nodes. Camera begins low and close, with a slow lateral move and visible foreground parallax. Preserve the orb's round silhouette, amber core and navy surroundings for every following shot.",
+      "caption": "信号来了。",
+      "intent": "establish one stable original reference identity and a waiting system",
+      "reference": {
+        "image_path": "assets/generated-original/hottop-signal-orb.ppm",
+        "rights": "generated-original"
+      }
+    },
+    {
+      "index": 2,
+      "scene": "Continue inside the same abstract workshop without changing the hero identity. The same amber orb travels briskly from left to right between the same geometric nodes while a near foreground rail sweeps across frame to create strong parallax. Nodes illuminate only after the orb physically passes them. Keep the orb shape, core color, scale logic, camera direction and scene geography consistent with the prior shot.",
+      "caption": "不是换一个，是接着走。",
+      "intent": "demonstrate reference-anchored continuity through meaningful movement",
+      "reference": {
+        "image_path": "assets/generated-original/hottop-signal-orb.ppm",
+        "rights": "generated-original"
+      }
+    },
+    {
+      "index": 3,
+      "scene": "The same camera move eases forward as the identical amber orb reaches the final node in the same workshop. A clean signal path now connects all three nodes behind it, showing the workflow awake as a visible consequence. End on the orb still present in frame with compact Hottop attribution only; no URL, QR code, app-store badge or glossy feature-card end screen.",
+      "caption": "同一个信号，走完整条链。",
+      "intent": "land the continuity payoff and light product attribution",
+      "reference": {
+        "image_path": "assets/generated-original/hottop-signal-orb.ppm",
+        "rights": "generated-original"
+      }
+    }
+  ],
+  "master_prompt": "Original cinematic 3D motion study built around one generated-original amber signal orb. Preserve the same orb identity, round silhouette, warm amber core, navy workshop geography and left-to-right action across every shot. Use continuous camera direction, real parallax, foreground occlusion and visible environmental response. Keep staging abstract and fully original; the reference asset is generated specifically for this repository and contains no third-party pixels.",
+  "negative_prompt": "third-party logo, celebrity, actor likeness, protected character, copied film frame, source footage, proprietary UI, commercial soundtrack, URL, QR code, slideshow, hard unrelated cut, new orb design, identity drift, random color change, static camera, duplicate frames, glossy blue-purple feature-card advertisement",
+  "punchlines": [
+    "不是换一个，是接着走。",
+    "同一个信号，走完整条链。"
+  ],
+  "risk_flags": [
+    "reference pixels are repository-generated original PPM data; do not substitute third-party imagery",
+    "keep Hottop attribution compact and omit destination CTA unless a future conversion brief explicitly requests one",
+    "this archive proves the rights-safe reference contract and planning path; public free GPU availability is not guaranteed"
+  ],
+  "claim_status": "satire",
+  "provider": null
+}

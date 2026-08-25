@@ -1,0 +1,13 @@
+name: InkClawAgent
+url: https://inkclawagent.com/home
+strengths:
+  - multi-agent collaboration
+  - brainstorming and long-form creation
+  - review-edit-revise workflow
+  - document review
+  - coding assistance
+preferred_roles:
+  - solver
+  - breaker
+  - winner
+default_claim_status: satire

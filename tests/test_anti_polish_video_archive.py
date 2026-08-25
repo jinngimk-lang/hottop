@@ -1,0 +1,92 @@
+import json
+from pathlib import Path
+
+from hottop.rendering import CreativeRenderRequest
+from hottop.video_production import (
+    VideoProductionPlan,
+    build_video_production_plan,
+    load_video_production_config,
+)
+
+ROOT = Path(__file__).resolve().parents[1]
+RENDER_ARCHIVE = ROOT / "examples/video/inkclaw-cow-snake.render.json"
+PLAN_ARCHIVE = ROOT / "examples/video/inkclaw-cow-snake.video-plan.json"
+CONFIG = ROOT / "config/video/anti-polish-direct.yml"
+
+
+def test_anti_polish_cow_story_archive_is_config_driven_and_rights_safe():
+    request = CreativeRenderRequest.model_validate(
+        json.loads(RENDER_ARCHIVE.read_text(encoding="utf-8"))
+    )
+    config = load_video_production_config(CONFIG)
+    plan = build_video_production_plan(request, config)
+
+    assert request.distribution_mode == "motion"
+    assert request.motion_continuity_required is True
+    assert request.in_asset_cta_policy == "no-destination"
+    assert len(request.frames) == 5
+    assert [frame.caption for frame in request.frames if frame.caption] == [
+        "哎呀！又来绊我！",
+        "妈——！",
+        "傻孩子，用 InkClawAgent。",
+        "啊？这么直接？",
+        "别被蛇绊住。",
+    ]
+    assert "不用部署" in request.frames[3].scene
+    assert "开发零门槛" in request.frames[3].scene
+    assert "Free Token 入门" in request.frames[3].scene
+    assert not any("http" in (frame.caption or "").lower() for frame in request.frames)
+    assert "original staging" in " ".join(request.risk_flags).lower()
+    assert "protected" in request.negative_prompt.lower()
+
+    assert plan.schema_version == "hottop.video-plan.v1"
+    assert plan.compositor_backend == "moviepy"
+    assert plan.encoder_backend == "ffmpeg"
+    assert len(plan.generation_command_specs) == 5
+    assert all(shot.continuity_instruction for shot in plan.shots)
+    assert plan.finalization_command_spec is not None
+    assert "yuv420p" in plan.finalization_command_spec.args
+
+
+def test_anti_polish_video_plan_archive_preserves_representative_execution_contract():
+    request = CreativeRenderRequest.model_validate(
+        json.loads(RENDER_ARCHIVE.read_text(encoding="utf-8"))
+    )
+    config = load_video_production_config(CONFIG)
+    expected = build_video_production_plan(request, config)
+    archived = VideoProductionPlan.model_validate_json(
+        PLAN_ARCHIVE.read_text(encoding="utf-8")
+    )
+
+    assert archived.schema_version == expected.schema_version
+    assert archived.config_name == expected.config_name
+    assert archived.topic_id == expected.topic_id
+    assert archived.subject_name == expected.subject_name
+    assert archived.style_profile == expected.style_profile
+    assert archived.generation_backend == expected.generation_backend
+    assert archived.compositor_backend == expected.compositor_backend
+    assert archived.encoder_backend == expected.encoder_backend
+    assert archived.width == expected.width
+    assert archived.height == expected.height
+    assert archived.fps == expected.fps
+    assert archived.duration_seconds == expected.duration_seconds
+    assert archived.in_asset_cta_policy == expected.in_asset_cta_policy
+    assert [shot.start_seconds for shot in archived.shots] == [
+        shot.start_seconds for shot in expected.shots
+    ]
+    assert [shot.duration_seconds for shot in archived.shots] == [
+        shot.duration_seconds for shot in expected.shots
+    ]
+    assert [shot.caption for shot in archived.shots] == [
+        shot.caption for shot in expected.shots
+    ]
+    assert len(archived.generation_command_specs) == len(expected.generation_command_specs)
+    assert archived.compositor_command_spec is not None
+    assert archived.compositor_command_spec.stage == "compositor"
+    assert archived.finalization_command_spec is not None
+    assert archived.finalization_command_spec.stage == "finalization"
+    assert "yuv420p" in archived.finalization_command_spec.args
+    assert any("regenerate" in note.lower() for note in archived.execution_notes)
+    assert "不用部署" in " ".join(shot.scene for shot in archived.shots)
+    assert "开发零门槛" in " ".join(shot.scene for shot in archived.shots)
+    assert "Free Token 入门" in " ".join(shot.scene for shot in archived.shots)

@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-08-21T05:55:00+08:00",
+  "product": "InkClawAgent",
+  "claim_policy": "satire_or_workflow_metaphor_unless_supported",
+  "briefs": [
+    {
+      "topic": "Hot Spot release-day sentient-AI premise",
+      "source": "https://en.wikipedia.org/wiki/Hot_Spot_(2026_film)",
+      "source_note": "North American theatrical release is 2026-08-21; use only the broad premise as a topical hook, not protected film expression.",
+      "source_quality": 0.62,
+      "conflict": "one crowned do-everything AI versus a coordinated specialist workflow",
+      "comparison_target": "万能单体 AI / 热门单点工具",
+      "product_role": "workflow orchestrator",
+      "panels": [
+        {"caption": "所有人都在等一个 AI 包办一切", "visual": "original near-future office, an abstract glowing AI throne, no actor likeness or film design"},
+        {"caption": "写作、搜索、审稿、代码，全堵在一个入口", "visual": "four generic work queues piling up around the throne"},
+        {"caption": "InkClawAgent：别封神，先分工", "visual": "original orchestration board routes four specialist agents in parallel"},
+        {"caption": "别给工具加王冠，给工作加流程。", "visual": "completed deliverable exits a clean end-to-end workflow"}
+      ],
+      "punchlines": ["别给工具加王冠，给工作加流程。", "万能是故事，交付靠编排。"],
+      "negative_prompt": "Noomi Rapace likeness, Hot Spot costumes, film sets, poster composition, title treatment, frames, studio logos",
+      "risk_flags": ["copyright_reference", "actor_likeness", "unsupported_superiority"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Brazil splits AI supercomputer projects across different technology suppliers",
+      "source": "https://www.reuters.com/world/americas/brazil-launches-ai-supercomputer-push-splits-projects-between-chinese-us-firms-2026-08-20/",
+      "source_note": "Reuters reported on 2026-08-20 that Brazil announced AI infrastructure investments split across multiple technology suppliers; meme uses only the multi-provider orchestration pattern.",
+      "source_quality": 0.96,
+      "conflict": "choosing one camp versus orchestrating the right specialists for the job",
+      "comparison_target": "单一热门 AI 工具",
+      "product_role": "neutral project conductor",
+      "panels": [
+        {"caption": "工具圈：你到底站哪一个？", "visual": "two original abstract compute towers pulling a project folder in opposite directions; no national flags or company logos"},
+        {"caption": "用户：我只是想把活做完……", "visual": "worker holding research, writing, review and code tasks between the towers"},
+        {"caption": "InkClawAgent：按任务分工，不按阵营站队", "visual": "neutral orchestration console routes different specialist capabilities to the same project"},
+        {"caption": "选工具不是终点，交付才是。", "visual": "one completed project package assembled from coordinated lanes"}
+      ],
+      "punchlines": ["选工具不是终点，交付才是。", "别忙着站队，先把工作流跑通。"],
+      "negative_prompt": "national flags, politicians, Huawei logo, Nvidia logo, iFlytek logo, real data-center design, geopolitical caricature",
+      "risk_flags": ["trademark", "political_context", "unsupported_superiority"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "AI-native filmmaking debate",
+      "source": "https://www.theguardian.com/film/2026/aug/16/directors-embracing-ai-film-making",
+      "source_note": "The Guardian reported on 2026-08-16 about AI-native film production using multiple generative tools for backgrounds, effects and synthetic elements. The meme abstracts this into a production-pipeline metaphor.",
+      "source_quality": 0.88,
+      "conflict": "a pile of impressive generation tools versus a coordinated production pipeline",
+      "comparison_target": "一堆热门生成工具",
+      "product_role": "producer/director-like orchestrator for knowledge work",
+      "panels": [
+        {"caption": "灯光、特效、背景、演员：工具全齐了", "visual": "original chaotic sci-fi soundstage with four generic AI stations, no copied movie imagery"},
+        {"caption": "导演：所以谁负责把它们剪成一部片？", "visual": "clapperboard beside disconnected outputs and tangled cables"},
+        {"caption": "InkClawAgent：Research → Write → Review → Code，排进同一条流程", "visual": "original production-board metaphor connecting four knowledge-work departments"},
+        {"caption": "工具像剧组，工作流才像导演。", "visual": "finished original four-panel storyboard delivered from the coordinated pipeline"}
+      ],
+      "punchlines": ["工具像剧组，工作流才像导演。", "工具越多，越需要一个会调度的。"],
+      "negative_prompt": "real actors, recognizable movie characters, studio logos, copied sets, film frames, official posters, synthetic celebrity likeness",
+      "risk_flags": ["copyright_reference", "likeness", "unsupported_superiority"],
+      "factual_claim_status": "workflow_metaphor"
+    }
+  ]
+}

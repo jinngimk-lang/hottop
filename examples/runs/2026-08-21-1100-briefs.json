@@ -1,0 +1,96 @@
+{
+  "generated_at": "2026-08-21T11:00:00+08:00",
+  "promotion_context": {
+    "name": "InkClawAgent",
+    "subject_type": "tool",
+    "category": "agentic workflow/orchestration software",
+    "job_to_be_done": "turn multi-step knowledge work into a finished deliverable",
+    "pain_point": "many capable tools or agents still leave coordination and handoff work to the user",
+    "differentiator": "orchestrating research, writing, review and execution as one workflow",
+    "note": "This is only the current example subject. The project now supports arbitrary brands/products/services/features/campaigns/people/ideas/keywords/tools."
+  },
+  "claim_policy": "satire_or_evidence_only",
+  "briefs": [
+    {
+      "topic": "Humanoid robots move from spectacle toward useful work",
+      "freshness": "2026-08-19/21",
+      "sources": [
+        {
+          "publisher": "Reuters",
+          "date": "2026-08-19",
+          "url": "https://www.reuters.com/world/asia-pacific/china-robot-makers-flock-beijing-show-seek-path-mass-adoption-2026-08-19/",
+          "evidence_note": "Reuters reported robot makers at the World Robot Conference emphasizing logistics, manufacturing and household work rather than only demonstrations."
+        },
+        {
+          "publisher": "Reuters",
+          "date": "2026-08-18",
+          "url": "https://www.reuters.com/world/asia-pacific/beyond-marathons-backflips-chinas-robots-face-commercial-test-2026-08-18/",
+          "evidence_note": "Reuters framed the commercial test as moving beyond marathons/backflips toward customer value and productivity."
+        }
+      ],
+      "comparison_target": "a fictional demo-first collection of specialist tools",
+      "comparison_selection_reason": "The hotspot already contains a clean spectacle-vs-useful-work conflict. A fictional category proxy avoids inventing a defect about a named software competitor.",
+      "conflict": "crowd-pleasing single tricks versus coordinated useful work",
+      "visual_medium": "photorealistic technology documentary",
+      "genre_treatment": "real robotics expo shifting into a practical project room; fictional unbranded robots only",
+      "panels": [
+        {"scene": "At a realistic robot expo, several fictional robots each perform one impressive trick while a project manager holds an unfinished deliverable checklist.", "caption": "都会一招，确实很帅。"},
+        {"scene": "The applause ends; separate boxes marked 搜 / 写 / 审 / 执行 still sit disconnected on a workbench.", "caption": "然后呢？谁把活串起来？"},
+        {"scene": "An original InkClawAgent control-room metaphor connects the specialist stations into one visible sequence.", "caption": "InkClawAgent：别只看单项，开始协作。"},
+        {"scene": "The deliverable exits the workflow as a completed package while the demo stage is already preparing another stunt.", "caption": "会一招叫能力，能交付才叫结果。"}
+      ],
+      "risk_flags": ["fictional robots only", "no Unitree/UBTECH/etc. product-design replica", "workflow metaphor only", "no benchmark superiority claim"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Niu Lai becomes a viral low-budget animation phenomenon",
+      "freshness": "2026-08-20/21",
+      "sources": [
+        {
+          "publisher": "Financial Times",
+          "date": "2026-08-20",
+          "url": "https://www.ft.com/content/1a5a87f5-3935-43f4-bdda-50ff9417128b",
+          "evidence_note": "FT reported the deliberately rough-looking low-budget Chinese animated film becoming a viral sensation and meme/remix source."
+        }
+      ],
+      "comparison_target": "a fictional perfection-before-shipping workflow",
+      "comparison_selection_reason": "The trend's strongest transferable contrast is not a named rival but rough shipped work versus endless polish before feedback.",
+      "conflict": "imperfect first version that enters culture versus perfect plan that never ships",
+      "visual_medium": "original deliberately rough low-poly 3D animation",
+      "genre_treatment": "awkward handmade 3D comedy, intentionally simple materials and staging, without copying the film's characters",
+      "panels": [
+        {"scene": "A rough original low-poly creator proudly uploads VERSION 1 while another team renders an ornate roadmap labeled FINAL V27.", "caption": "一个先发了，一个还在磨。"},
+        {"scene": "VERSION 1 starts receiving comment bubbles and useful feedback; FINAL V27 remains at 96% planning.", "caption": "有东西出来，才有东西能改。"},
+        {"scene": "InkClawAgent turns the work into DRAFT → REVIEW → REVISE → SHIP cards.", "caption": "InkClawAgent：先跑起来，再迭代。"},
+        {"scene": "The revised output ships while the perfection team renames its roadmap FINAL_V28_REAL_FINAL.", "caption": "先交付，才有资格迭代。"}
+      ],
+      "risk_flags": ["do not use Niu Lai characters/title/poster/frames", "animation-medium match only", "workflow metaphor only"],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "The Odyssey remains a major summer box-office conversation",
+      "freshness": "2026-08-16/21",
+      "sources": [
+        {
+          "publisher": "Associated Press",
+          "date": "2026-08-16",
+          "url": "https://apnews.com/article/e9bb0bd359a218da0d7b705c725522e5",
+          "evidence_note": "AP reported The Odyssey remained second at the North American box office and had passed $1.2 billion globally."
+        }
+      ],
+      "comparison_target": "user-selected competitor or incumbent workflow",
+      "comparison_selection_reason": "Use a real named competitor only after category/alternative research. Otherwise the cyclops can remain a fictional proxy for the pain point.",
+      "conflict": "one-eyed cave obstacle versus clever escape",
+      "visual_medium": "highly photorealistic epic live-action",
+      "genre_treatment": "original practical-feeling mythic cave, tactile costumes and warm torch/sunlight; public-domain Homeric archetypes only",
+      "panels": [
+        {"scene": "An original enormous one-eyed cave guardian blocks the exit while workers carry unfinished tasks.", "caption": "问题不是没工具，是出口被堵了。"},
+        {"scene": "The guardian separates several useful task piles but no path connects them to the shore.", "caption": "每样都能做一点，结果还是出不了洞。"},
+        {"scene": "An original anonymous seafaring strategist representing InkClawAgent reroutes the group through a coordinated escape plan; no actor likeness and no copied film costume.", "caption": "InkClawAgent：别硬耗，换条能出去的路。"},
+        {"scene": "The group reaches an original ship and open sea while the giant remains with disconnected piles.", "caption": "真破局，还得看 InkClawAgent。"}
+      ],
+      "risk_flags": ["public-domain myth only", "no current-film actor likeness", "no official set/costume/poster/frame", "named competitor requires category evidence"],
+      "factual_claim_status": "satire"
+    }
+  ]
+}

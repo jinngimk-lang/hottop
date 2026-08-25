@@ -1,0 +1,167 @@
+{
+  "generated_at": "2026-08-21T11:56:00+08:00",
+  "promotion": {
+    "subject_name": "InkClawAgent",
+    "subject_type": "tool",
+    "note": "Current example promotion for the scheduled live batch; the project is generalized and does not assume InkClawAgent permanently."
+  },
+  "claim_policy": "satire_or_evidence_only",
+  "briefs": [
+    {
+      "topic": "UK cinemas restrict camera-enabled smart glasses over piracy concerns",
+      "freshness": "2026-08-20/21",
+      "sources": [
+        {
+          "publisher": "Reuters",
+          "date": "2026-08-20",
+          "url": "https://www.reuters.com/business/media-telecom/uk-cinemas-restricting-meta-ai-other-smart-glasses-over-piracy-concerns-2026-08-20/",
+          "evidence_note": "UK cinema operators are introducing or considering restrictions on camera-enabled smart glasses because of privacy and film-piracy concerns."
+        },
+        {
+          "publisher": "The Guardian",
+          "date": "2026-08-20",
+          "url": "https://www.theguardian.com/technology/2026/aug/20/piracy-fears-prompt-calls-for-ban-on-meta-smart-glasses-in-uk-cinemas",
+          "evidence_note": "UK venues are weighing smart-glasses restrictions while also acknowledging accessibility benefits."
+        }
+      ],
+      "visual_medium": "photorealistic contemporary cinema/editorial",
+      "genre_treatment": "real-world multiplex entrance with slightly absurd security-check comedy; no copied cinema branding, product design or film imagery",
+      "conflict": "having more sensing hardware does not automatically mean it belongs in every context",
+      "product_role": "an original workflow coordinator that chooses the right tool for the right job instead of forcing one interface everywhere",
+      "comparison_target": "generic one-tool-for-everything workflow",
+      "comparison_role": "a visitor trying to wear one magical pair of glasses through every door",
+      "panels": [
+        {
+          "scene": "At a fictional cinema entrance, a customer proudly arrives wearing exaggerated generic camera glasses while a sign says DIFFERENT ROOMS, DIFFERENT RULES.",
+          "caption": "一个工具，真想走遍所有场景？"
+        },
+        {
+          "scene": "The same glasses wearer reaches several doors marked RESEARCH / WRITE / REVIEW / LAUNCH and keeps bouncing off mismatched access rules.",
+          "caption": "什么都想包，反而处处要绕。"
+        },
+        {
+          "scene": "An original InkClawAgent coordinator assigns anonymous specialist tools to each door and keeps one shared project board.",
+          "caption": "InkClawAgent：场景不同，就别硬塞一个工具。"
+        },
+        {
+          "scene": "The project exits through a bright DELIVERY door while the generic all-purpose-glasses character is still arguing with a turnstile.",
+          "caption": "会选工具，比只会加功能更重要。"
+        }
+      ],
+      "punchlines": [
+        "不是所有门，都该拿同一把钥匙开。",
+        "工具越多，越需要一个会编排的。"
+      ],
+      "image_prompt": "Four-panel photorealistic editorial-comedy meme set in an original modern cinema and project workspace. Generic camera glasses only, no Meta/Ray-Ban design, no cinema-chain branding. InkClawAgent appears as an original human-like workflow coordinator, not as a copied software UI. Strong practical workplace humor, realistic lighting and candid-news-photo texture.",
+      "negative_prompt": "No Meta logo, no Ray-Ban frame replication, no copied cinema branding, no film stills, no actor likenesses, no piracy instructions, no claim that a named product is defective or unsafe.",
+      "risk_flags": [
+        "real named smart-glasses brands are source context only; comparison remains a generic workflow metaphor",
+        "privacy/piracy topic: do not depict methods for covert recording",
+        "trademark and trade-dress avoidance"
+      ],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Hangzhou pilots robot traffic officers",
+      "freshness": "2026-08-20/21",
+      "sources": [
+        {
+          "publisher": "Reuters",
+          "date": "2026-08-20",
+          "url": "https://www.reuters.com/technology/china-puts-robocops-traffic-duty-minus-arrest-powers-2026-08-20/",
+          "evidence_note": "Hangzhou is piloting wheeled robotic traffic officers for repetitive traffic tasks under centralized monitoring."
+        }
+      ],
+      "visual_medium": "photorealistic contemporary street/editorial",
+      "genre_treatment": "busy urban intersection, original unbranded robots, realistic control-room cutaway",
+      "conflict": "many specialists can each manage one lane, but the user still needs an end-to-end route",
+      "product_role": "traffic-control-style orchestrator for a multi-step knowledge-work route",
+      "comparison_target": "generic collection of disconnected specialist tools",
+      "comparison_role": "separate lane officers that never coordinate the full trip",
+      "panels": [
+        {
+          "scene": "Four original unbranded traffic robots each guard one lane labeled 搜索 / 写作 / Review / Coding.",
+          "caption": "每条路都有人管。"
+        },
+        {
+          "scene": "A confused office worker stands in the middle holding four partial outputs while every robot points in a different direction.",
+          "caption": "但项目到底往哪走？"
+        },
+        {
+          "scene": "InkClawAgent appears in a fictional city-control room and connects the four lanes into one green route toward DELIVERY.",
+          "caption": "InkClawAgent：别只管路口，先把路线串起来。"
+        },
+        {
+          "scene": "The worker reaches a clean DELIVERY destination while the specialist robots continue doing their individual jobs.",
+          "caption": "单项会干，整局还得会调度。"
+        }
+      ],
+      "punchlines": [
+        "每个路口都聪明，不等于你能到终点。",
+        "专业分工很多，总路线得有人负责。"
+      ],
+      "image_prompt": "Photorealistic four-panel urban editorial satire with original generic wheeled service robots and a fictional traffic-control room. Realistic Chinese-style modern city atmosphere without copying Hangzhou locations, police uniforms, insignia or SUPCON robot design. InkClawAgent represented as an original coordinator connecting four workflow lanes.",
+      "negative_prompt": "No real police insignia, no SUPCON branding or T2 robot replication, no identifiable Hangzhou intersection, no company logos, no claim InkClawAgent controls physical robots.",
+      "risk_flags": [
+        "physical-robot context is metaphor only",
+        "avoid police insignia and identifiable robot industrial design",
+        "unsupported superiority avoidance"
+      ],
+      "factual_claim_status": "satire"
+    },
+    {
+      "topic": "Cloudflare launches an agent-first browser built for machine needs",
+      "freshness": "2026-08-06/21",
+      "sources": [
+        {
+          "publisher": "Cloudflare",
+          "date": "2026-08-06",
+          "url": "https://blog.cloudflare.com/kitesurf/",
+          "evidence_note": "Cloudflare describes Kitesurf as a browser designed specifically around agent needs rather than human-browser features."
+        },
+        {
+          "publisher": "TechCrunch",
+          "date": "2026-08-07",
+          "url": "https://techcrunch.com/2026/08/07/cloudflare-launches-kitesurf-a-browser-built-for-ai-agents/",
+          "evidence_note": "TechCrunch reported that Kitesurf strips away human-browser features and focuses on agent context, cost, scalability and task execution."
+        }
+      ],
+      "visual_medium": "realistic contemporary tech with light cinematic comedy",
+      "genre_treatment": "split-screen human-browser clutter versus machine-workflow control room; all UI must be fictional",
+      "conflict": "a tool can be well-designed for one actor or layer while the whole job still needs orchestration across multiple capabilities",
+      "product_role": "higher-level project conductor coordinating browsing, research, writing and review",
+      "comparison_target": "generic browser-only automation",
+      "comparison_role": "a very efficient driver who only owns one segment of the route",
+      "panels": [
+        {
+          "scene": "A fictional agent browser proudly sheds tabs, themes and extensions while racing through a web tunnel.",
+          "caption": "浏览器终于开始为 Agent 长脑子了。"
+        },
+        {
+          "scene": "It reaches the end of the tunnel and finds three more stations: WRITE / REVIEW / DECIDE.",
+          "caption": "然后呢？浏览完还得继续干活。"
+        },
+        {
+          "scene": "InkClawAgent connects the browser station to research, writing and review specialists on a single project rail map.",
+          "caption": "InkClawAgent：浏览器是能力，不是整个项目。"
+        },
+        {
+          "scene": "A finished DELIVERED package arrives while the browser engine remains productively busy on its own stage.",
+          "caption": "单层做得快，整条链还得有人串。"
+        }
+      ],
+      "punchlines": [
+        "浏览器负责上网，工作流负责把事做完。",
+        "能力越专业，编排越重要。"
+      ],
+      "image_prompt": "Four-panel realistic modern technology satire. A fully fictional agent browser visualized as a streamlined machine tunnel, followed by an original project orchestration room. InkClawAgent coordinates browsing, research, writing and review as separate stages. No Cloudflare UI, Kitesurf logo, Chrome UI, browser screenshots or proprietary dashboards.",
+      "negative_prompt": "No Cloudflare logo, no Kitesurf branding, no copied dashboard, no Chrome trade dress, no factual claim that InkClawAgent outperforms Kitesurf or Cloudflare infrastructure.",
+      "risk_flags": [
+        "Cloudflare/Kitesurf is a hotspot reference, not a direct competitor claim",
+        "do not turn vendor efficiency claims into InkClawAgent comparison claims",
+        "proprietary UI avoidance"
+      ],
+      "factual_claim_status": "satire"
+    }
+  ]
+}

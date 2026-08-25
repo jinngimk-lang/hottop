@@ -1,0 +1,88 @@
+{
+  "schema": "hottop.live-creative.v1",
+  "generated_at": "2026-08-21T12:57:00+08:00",
+  "promotion_subject": "InkClawAgent",
+  "briefs": [
+    {
+      "topic": "Robotics industry waits for a ChatGPT moment",
+      "published_date": "2026-08-20",
+      "source": "Reuters",
+      "source_url": "https://www.reuters.com/world/asia-pacific/robots-poised-chatgpt-moment-unitree-ceo-says-2026-08-20/",
+      "evidence": "Reuters reports industry expectations of a breakthrough in embodied intelligence while noting broad practical capability may still be years away and current humanoids remain less efficient than human labor.",
+      "category_default": "Wait for the next model or capability breakthrough before redesigning the workflow.",
+      "deleted_constraint": "A project does not need to wait for one universally capable agent before useful orchestration can begin.",
+      "new_competition_axis": "How well currently available capabilities are coordinated into completed work.",
+      "bridge_type": "role/function",
+      "bridge": "A robotics expo keeps unveiling spectacular specialists while an ordinary project deadline quietly walks past them; InkClawAgent acts as the stage manager who turns available specialists into a relay rather than claiming a new robotics breakthrough.",
+      "expression_form": "four-panel",
+      "beats": [
+        "A futuristic expo audience stares at a covered pedestal labelled THE NEXT BIG BREAKTHROUGH.",
+        "Around it, separate original robots demonstrate one isolated skill each while a project folder marked TODAY remains untouched.",
+        "InkClawAgent rolls in a simple relay board: SEARCH -> WRITE -> REVIEW -> REVISE, assigning today's available tools to stations.",
+        "The project leaves through the DELIVERY gate while the covered breakthrough pedestal is still counting down."
+      ],
+      "punchline": "奇点可以等，截止日期不会。",
+      "visual_medium": "photorealistic technology documentary with light cinematic polish",
+      "claim_status": "satire",
+      "risk_flags": [
+        "Do not depict or copy Unitree robot designs, logos or trade dress.",
+        "Do not imply InkClawAgent controls physical robots or has robotics capabilities.",
+        "Do not claim superiority over Unitree; Reuters story is only the cultural/news bridge."
+      ]
+    },
+    {
+      "topic": "BirdTok and Gen Z craving something real",
+      "published_date": "2026-08-15",
+      "source": "The Guardian",
+      "source_url": "https://www.theguardian.com/environment/2026/aug/15/gen-z-flocks-to-birdtok-as-birding-takes-flight-its-a-craving-for-something-real",
+      "evidence": "The Guardian reports growing young interest in birding videos and birdsong-identification apps, describing it as a gentler connection to the outside world amid a noisy online environment.",
+      "category_default": "More AI output, more feeds and more content are assumed to equal more value.",
+      "deleted_constraint": "The answer to information overload does not have to be even more generated material.",
+      "new_competition_axis": "Signal, calm and useful completion instead of output volume.",
+      "bridge_type": "emotion/language",
+      "bridge": "A chaotic digital aviary has dozens of artificial birds shouting notifications; one real bird call cuts through the noise, and InkClawAgent converts the useful signal into one completed brief instead of adding another bird to the chorus.",
+      "expression_form": "four-panel",
+      "beats": [
+        "A phone-sized aviary is packed with anonymous neon notification birds all shouting at once.",
+        "The user adds yet another AI bird; the chorus becomes louder but the blank deliverable stays blank.",
+        "A quiet real-world bird call arrives as one clean signal; InkClawAgent catches only the relevant note and routes it through research, writing and review.",
+        "The screen now shows one finished deliverable while the noisy aviary is muted in the background."
+      ],
+      "punchline": "不是再多一只鸟，是听见真正有用的那一声。",
+      "visual_medium": "social-native realism blended with an original playful visual metaphor",
+      "claim_status": "satire",
+      "risk_flags": [
+        "Do not copy TikTok UI, logos, creator likenesses or specific BirdTok videos.",
+        "Do not present the Guardian's cultural observation as a universal causal fact.",
+        "Keep all people anonymous and all bird/notification graphics original."
+      ]
+    },
+    {
+      "topic": "New vocabulary for intrusive digital friction such as popovers",
+      "published_date": "2026-08-18",
+      "source": "The Guardian",
+      "source_url": "https://www.theguardian.com/technology/2026/aug/18/dickovers-baggravation-botiquette-18-new-words-tech-hellscape",
+      "evidence": "A Guardian culture/technology piece highlights newly coined humorous terms for familiar digital irritants, including modal/popover layers that obscure the content a user came to see.",
+      "category_default": "Every tool wants another tab, dialog, login and interface layer.",
+      "deleted_constraint": "Useful work does not need the user to manually traverse every interface layer.",
+      "new_competition_axis": "How much interface friction disappears between intent and result.",
+      "bridge_type": "shape/action",
+      "bridge": "A dungeon door is not guarded by a monster but by an absurd stack of original floating dialogs; instead of building a prettier dialog, InkClawAgent turns the user's intent into a route around the whole stack.",
+      "expression_form": "split-old-vs-new",
+      "beats": [
+        "OLD: a user faces a corridor blocked by generic cookie, login, notification, upgrade and tutorial cards.",
+        "OLD: every card promises convenience but adds another click; the actual document is visible far behind them.",
+        "NEW: InkClawAgent draws a clean route from intent to researched/reviewed deliverable, bypassing the interface maze rather than adding a better pop-up.",
+        "Final frame contrasts MORE INTERFACE with LESS FRICTION."
+      ],
+      "punchline": "别做更漂亮的弹窗，先问为什么还要弹窗。",
+      "visual_medium": "original internet-native graphic metaphor with polished product-ad composition",
+      "claim_status": "satire",
+      "risk_flags": [
+        "Use generic original UI cards only; do not reproduce proprietary interfaces.",
+        "Do not claim InkClawAgent literally bypasses authentication, permissions or required user controls.",
+        "Frame this as category-reframing satire, not a security/access capability claim."
+      ]
+    }
+  ]
+}

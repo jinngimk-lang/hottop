@@ -1,0 +1,87 @@
+agent_reach:
+  repo: Panniantong/Agent-Reach
+  commit: 93ae1d18c37b707dec053c7c4f9d91cd8ef8943d
+  license: MIT
+  integration: optional_cli
+  notes: "Install outside the repository; default Hottop installer only runs Agent-Reach check-only mode."
+
+crawl4ai:
+  repo: unclecode/crawl4ai
+  commit: 7e801521428ee12509994d39151006f64055ebe3
+  version: 0.9.2
+  license: Apache-2.0
+  integration: optional_http_mcp
+  notes: "Run as a hardened local service; use CRAWL4AI_API_TOKEN when exposed."
+
+dailyhot_api:
+  repo: imsyy/DailyHotApi
+  commit: 36c77e3bd891c11642d314cfb229bf31646704de
+  license: MIT
+  integration: json_http
+
+newsnow:
+  repo: ourongxing/newsnow
+  commit: 2173126f804bec0201769f59d933add6c4632d17
+  license: MIT
+  integration: json_http
+
+rsshub:
+  repo: DIYgod/RSSHub
+  commit: 7a3200fdb5ba010d1944057c8281ad0cf513f374
+  license: AGPL-3.0
+  integration: external_rss_service
+  notes: "Consume feeds over HTTP; do not vendor RSSHub into Hottop."
+
+trendradar:
+  repo: sansan0/TrendRadar
+  commit: 8ee26026ba6c11dec41a95fb3895a7162876caa1
+  license: GPL-3.0
+  integration: optional_external_monitor
+  notes: "Useful monitoring/reference layer; consume RSS/JSON output rather than coupling core logic to it."
+
+firecrawl:
+  repo: firecrawl/firecrawl
+  commit: c76f4fd20044b4d60e289559bb029422ae1e6540
+  license: AGPL-3.0
+  integration: optional_external_api_mcp
+  notes: "Optional search/scrape fallback; hosted use needs FIRECRAWL_API_KEY or a self-hosted endpoint."
+
+wan22:
+  repo: Wan-Video/Wan2.2
+  commit: 42bf4cfaa384bc21833865abc2f9e6c0e67233dc
+  license: Apache-2.0
+  integration: optional_local_video_generation
+  default_enabled: false
+  notes: "Primary open-source shot-generation candidate for config-driven motion. Prefer TI2V-5B for the general local path; model files and GPU execution remain operator-controlled."
+
+moviepy:
+  repo: Zulko/moviepy
+  version: 2.2.0
+  license: MIT
+  integration: optional_headless_video_compositor
+  default_enabled: false
+  notes: "Default deterministic headless compositor when a video profile selects it. Install via Hottop's optional video extra; no browser/UI is required. It assembles generated shots, captions and original synthetic audio before FFmpeg compatibility finalization."
+
+motion_canvas:
+  repo: motion-canvas/motion-canvas
+  commit: 7b91435c301d530351dcf5ebb91dd139c002e405
+  license: MIT
+  integration: optional_advanced_motion_compositor
+  default_enabled: false
+  notes: "Optional advanced vector-motion, interactive preview and special-effects compositor. Keep it available for authored motion work, but do not require it for the unattended headless video-run path."
+
+ffmpeg:
+  repo: FFmpeg/FFmpeg
+  commit: 1019f8f036602a8464185baa4857654337eeca14
+  license: build-dependent-LGPL-GPL
+  integration: external_encoder
+  default_enabled: false
+  notes: "Final compatibility encoder for H.264/AAC/yuv420p/fast-start and optional WebM/GIF. License obligations depend on the actual FFmpeg build and enabled codecs."
+
+remotion:
+  repo: remotion-dev/remotion
+  commit: 05075f384a0a28e193876c1fd43ab9fba5ef10f9
+  license: Remotion-License
+  integration: optional_video_adapter_candidate
+  default_enabled: false
+  notes: "Not a default dependency. Commercial eligibility depends on the current Remotion license and entity size; require operator license review before enabling."

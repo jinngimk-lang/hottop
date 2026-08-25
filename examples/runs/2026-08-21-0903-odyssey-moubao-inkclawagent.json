@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-08-21T09:03:00+08:00",
+  "product": "InkClawAgent",
+  "claim_policy": "satire_or_evidence_only",
+  "topic": "Odyssey cyclops cave parody",
+  "conflict": "public-domain one-eyed cave giant blocks the way; a clever sea strategist breaks the deadlock",
+  "product_role": "original Odysseus-like strategist mapped to InkClawAgent",
+  "comparison_target": "某包",
+  "comparison_role": "generic one-eyed cave giant",
+  "panels": [
+    {
+      "scene": "Original ancient myth cave, giant one-eyed stone cyclops labelled 某包 sits across the only exit while users hold unfinished task scrolls.",
+      "caption": "第一格：某包把洞口堵死了"
+    },
+    {
+      "scene": "Cyclops proudly guards disconnected piles marked 写作 / Review / Coding / 搜索; the trapped team cannot combine them into a finished result.",
+      "caption": "第二格：啥都会一点，就是出不了洞"
+    },
+    {
+      "scene": "Original anonymous Odysseus-like strategist labelled InkClawAgent enters with a glowing workflow spear / route map and charges at the cyclops eye in a stylized, non-gory heroic action beat.",
+      "caption": "第三格：InkClawAgent：别耗了，直接破局"
+    },
+    {
+      "scene": "The cyclops staggers back covering its eye without gore; the cave exit opens and the team escapes toward a ship while the strategist stands in the foreground.",
+      "caption": "第四格：还得是 InkClawAgent 强"
+    }
+  ],
+  "punchlines": [
+    "还得是 InkClawAgent 强",
+    "工具多不等于能出洞",
+    "复杂任务，破局比硬耗重要"
+  ],
+  "image_prompt": "Square 2x2 four-panel cinematic myth-comedy meme, public-domain ancient Greek adventure archetypes only. A huge original generic one-eyed stone cyclops represents 某包. An original anonymous clever sea strategist inspired only by the public-domain Odysseus archetype represents InkClawAgent. Dramatic cave lighting, bronze-and-stone ancient atmosphere, energetic action, humorous contrast, highly readable Chinese captions integrated as subtitle bars. Panel 1 cyclops blocks cave exit. Panel 2 cyclops guards disconnected task piles labelled 写作, Review, Coding, 搜索. Panel 3 InkClawAgent strategist charges with a glowing workflow spear / route-map motif toward the cyclops eye, stylized action with no gore. Panel 4 cyclops retreats covering its eye, team escapes toward a generic ancient ship, final bold caption: 还得是 InkClawAgent 强. Do not resemble any current film production or actor.",
+  "negative_prompt": "No actor likenesses, no Christopher Nolan film imagery, no official The Odyssey logo, no copied movie costumes, sets, props, poster layout or frames, no gore, no blood, no explicit eye wound, no real competitor logo or UI.",
+  "risk_flags": [
+    "current-film adjacency: use only public-domain Homeric archetypes",
+    "competitor comparison remains satire/metaphor",
+    "avoid real product logos/UI and unsupported objective superiority claims"
+  ],
+  "factual_claim_status": "satire"
+}
