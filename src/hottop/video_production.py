@@ -17,6 +17,7 @@ GenerationBackend = Literal[
     "comfy-api-v2",
     "zero-cost-router",
     "software3d",
+    "lightx2v-operator",
     "external",
 ]
 CompositorBackend = Literal["motion-canvas", "moviepy", "external"]
@@ -87,6 +88,21 @@ class Wan22Config(BaseModel):
     model_dir: str
     offload_model: bool = True
     convert_model_dtype: bool = True
+
+
+class LightX2VGenerationConfig(BaseModel):
+    root: str = Field(min_length=1)
+    model_path: str = Field(min_length=1)
+    config_json: str = Field(min_length=1)
+    model_cls: Literal["wan2.2_moe", "wan2.2_moe_distill"]
+    task: Literal["t2v", "i2v"]
+    seed: int = 42
+    code_license: Literal["Apache-2.0"] = "Apache-2.0"
+    weights_license: Literal["Apache-2.0"] = "Apache-2.0"
+    cost_per_unit: Literal[0] = 0
+    operator_managed: Literal[True] = True
+    auto_install: Literal[False] = False
+    auto_download_models: Literal[False] = False
 
 
 class ExternalGenerationConfig(BaseModel):
@@ -186,6 +202,7 @@ class VideoProductionConfig(BaseModel):
     text: TextConfig
     anti_polish: AntiPolishConfig = Field(default_factory=AntiPolishConfig)
     wan22: Wan22Config | None = None
+    lightx2v: LightX2VGenerationConfig | None = None
     external_generation: ExternalGenerationConfig | None = None
     comfy_api_v2: ComfyApiV2Config | None = None
     zero_cost: ZeroCostConfig | None = None
@@ -197,6 +214,8 @@ class VideoProductionConfig(BaseModel):
     def validate_selected_generation_backend(self) -> VideoProductionConfig:
         if self.generation_backend == "zero-cost-router" and self.zero_cost is None:
             raise ValueError("zero-cost-router requires zero_cost configuration")
+        if self.generation_backend == "lightx2v-operator" and self.lightx2v is None:
+            raise ValueError("lightx2v-operator requires lightx2v configuration")
         if self.generation_backend == "external" and self.external_generation is None:
             raise ValueError("external generation requires external_generation configuration")
         return self
@@ -359,6 +378,68 @@ def _wan22_command_spec(
 
 def _wan22_command(config: VideoProductionConfig, prompt: str) -> str | None:
     spec = _wan22_command_spec(config, prompt)
+    if spec is None:
+        return None
+    return " ".join(shlex.quote(value) for value in [spec.program, *spec.args])
+
+
+def _lightx2v_command_spec(
+    config: VideoProductionConfig,
+    prompt: str,
+    negative_prompt: str,
+    shot_index: int,
+    reference: VideoReference | None,
+) -> ExternalCommandSpec | None:
+    adapter = config.lightx2v
+    if config.generation_backend != "lightx2v-operator" or adapter is None:
+        return None
+    args = [
+        "-m",
+        "hottop.video_lightx2v",
+        "--root",
+        adapter.root,
+        "--model-path",
+        adapter.model_path,
+        "--config-json",
+        adapter.config_json,
+        "--model-cls",
+        adapter.model_cls,
+        "--task",
+        adapter.task,
+        "--seed",
+        str(adapter.seed),
+        "--prompt",
+        prompt,
+        "--negative-prompt",
+        negative_prompt,
+        "--output",
+        f"shots/shot-{shot_index:03d}.mp4",
+    ]
+    if reference is not None:
+        args.extend(
+            [
+                "--reference-image",
+                reference.image_path,
+                "--reference-rights",
+                reference.rights,
+            ]
+        )
+    return ExternalCommandSpec(
+        program="python",
+        args=args,
+        cwd=".",
+        stage="generation",
+    )
+
+
+def _lightx2v_command(
+    config: VideoProductionConfig,
+    prompt: str,
+    negative_prompt: str,
+    shot_index: int,
+    reference: VideoReference | None,
+) -> str | None:
+    spec = _lightx2v_command_spec(config, prompt, negative_prompt, shot_index, reference)
     if spec is None:
         return None
     return " ".join(shlex.quote(value) for value in [spec.program, *spec.args])
@@ -597,6 +678,7 @@ def build_video_production_plan(
         end = round(min(position * duration, config.duration_seconds), 3)
         shot_duration = round(end - start, 3)
         prompt = _generation_prompt(render_request, config, frame.scene, frame.reference)
+        negative_prompt = _negative_prompt(render_request, config)
         shots.append(
             VideoShot(
                 index=position,
@@ -608,12 +690,13 @@ def build_video_production_plan(
                 intent=frame.intent,
                 continuity_instruction=_continuity_instruction(config, position),
                 generation_prompt=prompt,
-                negative_prompt=_negative_prompt(render_request, config),
+                negative_prompt=negative_prompt,
                 reference=frame.reference,
             )
         )
         command = (
             _software3d_command(config, shot_duration, position)
+            or _lightx2v_command(config, prompt, negative_prompt, position, frame.reference)
             or _external_command(config, prompt, shot_duration, position)
             or _wan22_command(config, prompt)
         )
@@ -621,6 +704,13 @@ def build_video_production_plan(
             commands.append(command)
         command_spec = (
             _software3d_command_spec(config, shot_duration, position)
+            or _lightx2v_command_spec(
+                config,
+                prompt,
+                negative_prompt,
+                position,
+                frame.reference,
+            )
             or _external_command_spec(config, prompt, shot_duration, position)
             or _wan22_command_spec(config, prompt)
         )
@@ -664,6 +754,11 @@ def build_video_production_plan(
         generation_note = (
             "Software3D is a deterministic zero-cost local fallback using real 3D geometry and perspective; "
             "it requires no model download, no GPU and no paid service."
+        )
+    elif config.generation_backend == "lightx2v-operator":
+        generation_note = (
+            "LightX2V is operator-managed and runs reviewed Apache-2.0 Wan2.2 weights in network-offline "
+            "mode; Hottop does not install LightX2V, download models, or enable paid fallback."
         )
     elif config.generation_backend == "external" and config.external_generation is not None:
         generation_note = (
