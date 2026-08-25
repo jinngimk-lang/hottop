@@ -51,6 +51,26 @@ Find the strongest natural bridge between the subject and the hotspot. Search ac
 
 The bridge must make the product feel inevitable in the idea. If the link only works after a paragraph of explanation, reject it.
 
+## Cultural mechanism mapping
+
+**Borrow the mechanism, not the skin.** A strong hotspot reference is not a recognizable costume, character type, location, prop, catchphrase, or color palette pasted around a product. It preserves the part of the source idea that makes people understand the joke: its causal/relationship mechanism, recognition cue, native performance grammar and reversal logic.
+
+If the user supplies a hotspot, scene, news item, meme, image, phrase or cultural point, analyze that supplied hotspot first. Fresh public research should verify the current/factual context when recency matters, but do not silently replace the user's chosen source merely because another trend is larger. If the user does not supply a hotspot, run the mandatory fresh discovery pass and select the strongest current candidate before mechanism analysis.
+
+For the selected hotspot, extract at least:
+
+1. **recognition hook** — what people instantly remember or repeat;
+2. **causal/relationship mechanism** — who wants what, what blocks/transforms them, what escalates, what reverses, and how the source normally resolves;
+3. **native visual grammar** — cinematic, crude 3D, documentary/social-native, animation-native, faux interface, handheld, product-photography, etc.;
+4. **native dialogue/language rhythm** — sentence shape, role relationship, pauses, escalation, deadpan/seriousness, reveal timing and caption grammar;
+5. **native audio grammar** for motion — voice delivery, music energy/texture, silence, Foley/SFX and timing cues that are part of recognition rather than post-production decoration.
+
+Then assign the promoted subject a **functional job inside that mechanism**. A product can be the obstacle-breaker, antidote, route, key, rule deletion, transformation, tool, rescue action, material, consequence or reveal. Every retained hotspot element must have a job in the causal chain; decorative references that do not affect understanding should be removed.
+
+The **product must change the story outcome** through a real product truth or defensible metaphor. If the product can be swapped for almost any brand without changing the scene logic, the concept is generic and must be rejected or rebuilt. Prefer the audience decoding order **hotspot recognition → mapping → product consequence → punchline** rather than ad-first exposition.
+
+Reusable mechanism families may include transformation/rescue, obstruction/breakout, chase/escape, ritual interruption, mistaken identity, impossible queue, boss fight, looping failure, family/deadpan advice or other structures discovered in current culture. These are analysis primitives, never permanent templates: the selected hotspot decides which mechanism and medium are legitimate on that request.
+
 ## 4. Explore beyond the first obvious idea
 
 Before locking a concept, internally explore at least three distinct directions when the brief allows it:
@@ -115,6 +135,14 @@ For config-driven video production inside Hottop, preserve the provider-neutral 
 For unattended generation, treat **`ZERO_COST_MODE=true` as the preferred default policy**. Route only the highest-value short generative shots through configured free or operator-owned capacity; keep UI/product recordings, captions, simple motion, audio, compositing and final encoding deterministic whenever possible. The `zero-cost-router` may use verified Hugging Face ZeroGPU candidates with optional environment-only authentication, bounded attempts and a deterministic **quality gate**. If a candidate returns a bad/duplicate-heavy/non-decodable artifact, delete it and try the next configured free candidate. If free capacity is exhausted, wait, fail or degrade explicitly—there is **no paid fallback**, no automatic credits/overage, no credit-card enrollment, and no automatic model/GPU provisioning.
 
 Treat code license and model/weights license as separate gates. Keep FramePack, FastVideo, Wan2.2, LTX, ViMax, Toonflow, RIFE, Real-ESRGAN and later stronger projects behind isolated adapters until exact source, rights, zero-cost behavior, runtime security and measurable value are verified. OpenMontage may teach production architecture only; do not copy its AGPL code into Hottop. A popular repository or impressive demo is not enough to change the production default.
+
+### Image-first quality recovery
+
+Use **Image-first quality recovery** only when a selected motion concept is strong but the available **direct video** route does not meet the chosen profile's visual, identity or style-consistency bar and an existing rights-safe reference path can improve it. This is a quality routing decision, not a universal image-first template and not a new backend.
+
+First generate or select one or more high-quality, rights-safe keyframes/reference images that already pass the current creative review, hotspot-native style, product-role logic and subject-identity requirements. Bind provenance, hashes and stable subject/role/identity-lock metadata, then feed those accepted references into the repository's existing **reference-conditioned I2V** route when the chosen backend supports it. If direct video already meets or exceeds the quality bar, keep the direct route instead.
+
+The resulting motion asset is **not a slideshow**: a still image, pan/zoom, unrelated hard-cut still sequence or nominal MP4 does not satisfy the video requirement. Reference-conditioned output must still contain meaningful motion/action, preserve scene/subject continuity, carry the hotspot's native timing, and pass the same audio, artifact, motion, codec and final-quality gates as any other video. If the I2V result is worse than the accepted keyframe or fails continuity, reject/retry/reroute rather than lowering the standard.
 
 Audio is part of the creative contract, not a last-minute attachment. When motion is selected:
 
@@ -215,6 +243,6 @@ The target is not merely persistence. Each recovery should make the project **mo
 
 ## Output contract
 
-Return or archive: promotion context; interaction intent/provenance; category default; deleted constraint; new competition axis; hotspot; bridge type + bridge sentence; comparison target + evidence mode; selected format; platform/style/project-shape treatment; distribution treatment; reveal/narrative beats; visual medium; copy/punchline; image/video prompt; when motion is selected, style profile + `roughness_score`, role-aware dialogue (`speaker`, `delivery`), voice/music/SFX profiles and timing cues; exclusions; risk flags; claim status; provider-neutral `hottop.render.v2`; and `hottop.video-plan.v1` when a config-driven motion plan is requested.
+Return or archive: promotion context; interaction intent/provenance; category default; deleted constraint; new competition axis; hotspot; hotspot recognition cue; causal/relationship mechanism; native visual grammar; native dialogue/language rhythm; native audio grammar when motion is selected; bridge type + bridge sentence; product role inside the mechanism + story-outcome change; comparison target + evidence mode; selected format; platform/style/project-shape treatment; distribution treatment; reveal/narrative beats; visual medium; copy/punchline; image/video prompt; when motion is selected, style profile + `roughness_score`, role-aware dialogue (`speaker`, `delivery`), voice/music/SFX profiles and timing cues; image-first/reference-conditioned I2V plan when used; exclusions; risk flags; claim status; provider-neutral `hottop.render.v2`; and `hottop.video-plan.v1` when a config-driven motion plan is requested.
 
 When working inside `hottop`, read `PROJECT.md` and `STATUS.md` first. Use `hottop-meme` for hotspot acquisition, evidence handling, and four-panel-specific execution when that format is selected.
