@@ -1,8 +1,9 @@
 import math
+import struct
+import zlib
 from pathlib import Path
 
 import pytest
-from PIL import Image, ImageChops, ImageStat
 
 from hottop.video_software3d import project_point, render_scene_frame
 from hottop.video_software3d_production import build_story_scene
@@ -82,8 +83,55 @@ def test_software3d_motion_changes_scene_scale_with_style_routed_dolly(
         assert abs(end.camera.position.z - start.camera.position.z) >= minimum_dolly
 
 
+def _read_rgb_png(path: Path) -> tuple[int, int, bytes]:
+    """Read Hottop's deterministic RGB8/filter-0 PNG without adding Pillow to CI."""
+
+    payload = path.read_bytes()
+    assert payload.startswith(b"\x89PNG\r\n\x1a\n")
+    offset = 8
+    width = height = None
+    compressed = bytearray()
+    while offset < len(payload):
+        length = struct.unpack(">I", payload[offset : offset + 4])[0]
+        kind = payload[offset + 4 : offset + 8]
+        data = payload[offset + 8 : offset + 8 + length]
+        offset += 12 + length
+        if kind == b"IHDR":
+            width, height, bit_depth, color_type, compression, filtering, interlace = struct.unpack(
+                ">IIBBBBB", data
+            )
+            assert (bit_depth, color_type, compression, filtering, interlace) == (8, 2, 0, 0, 0)
+        elif kind == b"IDAT":
+            compressed.extend(data)
+        elif kind == b"IEND":
+            break
+
+    assert width is not None and height is not None
+    raw = zlib.decompress(bytes(compressed))
+    row_bytes = width * 3
+    pixels = bytearray()
+    for row_index in range(height):
+        row_start = row_index * (row_bytes + 1)
+        assert raw[row_start] == 0
+        pixels.extend(raw[row_start + 1 : row_start + 1 + row_bytes])
+    return width, height, bytes(pixels)
+
+
+def _sample_grayscale(path: Path, *, width: int = 96, height: int = 54) -> list[int]:
+    source_width, source_height, pixels = _read_rgb_png(path)
+    sampled: list[int] = []
+    for target_y in range(height):
+        source_y = min(source_height - 1, target_y * source_height // height)
+        for target_x in range(width):
+            source_x = min(source_width - 1, target_x * source_width // width)
+            offset = (source_y * source_width + source_x) * 3
+            red, green, blue = pixels[offset : offset + 3]
+            sampled.append(round(0.299 * red + 0.587 * green + 0.114 * blue))
+    return sampled
+
+
 def _sample_scene_motion(*, story_profile: str, shot_index: int, output_dir: Path) -> tuple[float, float]:
-    sampled: list[Image.Image] = []
+    sampled: list[list[int]] = []
     for sample_index in range(9):
         progress = sample_index / 8
         scene = build_story_scene(
@@ -95,13 +143,11 @@ def _sample_scene_motion(*, story_profile: str, shot_index: int, output_dir: Pat
         )
         path = output_dir / f"{story_profile}-{shot_index}-{sample_index}.png"
         render_scene_frame(scene, path)
-        with Image.open(path) as image:
-            sampled.append(image.convert("L").resize((96, 54)))
+        sampled.append(_sample_grayscale(path))
 
     deltas: list[float] = []
     for previous, current in zip(sampled, sampled[1:], strict=False):
-        difference = ImageChops.difference(previous, current)
-        deltas.append(ImageStat.Stat(difference).mean[0])
+        deltas.append(sum(abs(before - after) for before, after in zip(previous, current, strict=True)) / len(previous))
     mean_delta = sum(deltas) / len(deltas)
     duplicate_ratio = sum(delta <= 1.0 for delta in deltas) / len(deltas)
     return mean_delta, duplicate_ratio
