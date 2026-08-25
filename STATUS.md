@@ -1,7 +1,7 @@
 # Hottop Status
 
 Last updated: 2026-08-25
-Active workstream: **Production v0.2 — close real output-quality gaps before stronger generated routes**
+Active workstream: **Production v0.2 — improve real output quality before stronger generated routes**
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
@@ -9,29 +9,48 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current main state
 
-Current recovered `main`: `ff996554e868d1ff67bce7d1d0ffeb53846ec319` (`Sync post-provenance Production status (#36)`). Main CI run **1464** passed on Python 3.11 and 3.12.
+Recovered `main` before the active PR: `f393b76032fb5f666375e1cd488adca7c00f9073` (`Fix CJK caption font routing (#37)`).
 
-Latest merged runtime production baseline before the active subtitle fix remains production-smoke **58** on the post-#33 runtime tree. Direct inspection of that uploaded artifact uncovered a real defect that codec/provenance checks had missed: **Mandarin captions in both cow and Odyssey final MP4s rendered as tofu boxes** because MoviePy fell back to a non-CJK Pillow font.
+PR #37 is merged and fully post-merge verified:
 
-Active PR **#37 — Fix CJK caption font routing** closes that defect:
+- implementation CI **1467** GREEN on Python 3.11/3.12;
+- production-smoke **60** GREEN and downloaded artifact manually verified CJK glyphs;
+- final PR exact-head CI **1469** + production-smoke **62** GREEN;
+- post-merge main CI **1470** + production-smoke **63** GREEN.
 
-- CI **1465** RED: `_resolve_caption_font` did not exist;
-- implementation resolves `HOTTOP_CAPTION_FONT` first, then known local CJK font paths, and fails closed for CJK captions when no local font exists;
-- normal `video-run` does not install or vendor fonts;
-- production-smoke explicitly installs `fonts-noto-cjk`, validates the CJK glyph masks and passes the local font to MoviePy;
-- CI **1467** GREEN on Python 3.11/3.12;
-- production-smoke **60** GREEN for both full cow and Odyssey pipelines;
-- downloaded production-smoke 60 artifact was manually inspected: Chinese captions now render as real glyphs in both final MP4s, not replacement boxes.
+Mandarin/CJK captions now fail closed when no real local CJK-capable font is available; normal `video-run` does not auto-install fonts.
 
-This makes subtitle readability a real delivery gate rather than assuming H.264/AAC success implies readable text.
+## Software3d story-routing closure
 
-## Newly discovered software3d semantic gap
+Artifact-level inspection of production-smoke 60 found a second real defect: Odyssey carried Odyssey captions/timing but rendered the cow/workroom software3d world. Root cause was shot mode resolving `cwd/hottop-video-plan.json`; `video-run` launches software3d from project root, so the workspace plan was absent and the old resolver silently fell back to cow.
 
-The same production-smoke 60 visual inspection exposed the next higher-value Production v0.2 defect: **the Odyssey case carries Odyssey captions/story timing, but its rendered visual world is still the same cow/workroom software3d scene grammar used by the cow story.**
+Active PR **#38 — Fail closed on software3d story routing** fixes that production bug without GPU/model/network dependencies:
 
-The guaranteed software3d baseline is therefore real moving 3D + audio + verified media, but it is not yet honestly multi-story visual production: story-specific visual semantics are being under-consumed by the deterministic renderer. This must be fixed before treating cow + Odyssey as two independent visual production proofs.
+- CI **1471** RED: no public fail-closed `story_profile_for_topic` contract;
+- supported topic/profile mapping is explicit for the checked-in cow and Odyssey stories;
+- unknown/blank software3d topics now fail instead of silently becoming cow;
+- shot mode resolves story identity from the output workspace's `hottop-video-plan.json`, independent of current working directory;
+- direct library fixtures may explicitly pass a supported `story_profile`;
+- CI **1475** exposed one legacy provenance fixture that had omitted all story semantics; it was corrected to explicitly declare cow rather than weakening the production boundary;
+- exact-head CI **1477** GREEN on Python 3.11/3.12;
+- production-smoke **66** GREEN for both full cow and Odyssey pipelines;
+- downloaded smoke-66 artifact was manually inspected: cow remains the cow/workroom world, while Odyssey now renders a materially distinct banquet-hall ensemble/witch/transformation world with no `young-cow-body` visual reuse.
 
-Next software3d acceptance should require the renderer to consume deterministic story/scene semantics strongly enough that distinct checked-in stories produce materially distinct world/character/prop staging while preserving the zero-cost/no-GPU guarantee. Do not hide this gap behind different subtitles.
+This upgrades software3d from “two caption variants over one visual template” to two honest deterministic visual production proofs.
+
+## Guaranteed zero-cost baseline
+
+The software3d baseline now demonstrates, with real uploaded artifacts:
+
+- story-specific moving 3D geometry for cow and Odyssey;
+- Mandarin dialogue + readable CJK subtitles;
+- original synthetic music + procedural Foley/SFX;
+- MoviePy composition + FFmpeg H.264/AAC/yuv420p finalization;
+- byte-bound per-shot provenance and pre-composition re-verification;
+- final media verification;
+- no GPU, model download, credentials or paid service.
+
+Deterministic fallback remains a guaranteed capability, not the cinematic quality ceiling.
 
 ## Completed continuity/provenance integrity
 
@@ -42,8 +61,6 @@ Production v0.2 reference-continuity evidence fails closed on:
 3. complete coverage of every subject-bearing plan shot for each evaluated subject;
 4. generated-artifact candidate/source provenance for LightX2V continuity evidence;
 5. explicit evaluator identity/revision and thresholds.
-
-PR #33 added generator-attribution binding after TDD RED/GREEN cycles, and post-merge main CI **1456** + production-smoke **58** passed. PR #35 made the generator-provenance doctrine canonical while preserving established creative/fresh-generation/reference/Anti-Polish/platform-native contracts; PR #36 then synchronized the execution snapshot.
 
 For LightX2V, `candidate_revision` means **actual local generator source revision**: git HEAD for a real checkout, otherwise `source-sha256:<sha256(lightx2v/infer.py)>` for packaged/non-git local code. A reviewed registry pin is not substituted for code actually executed.
 
@@ -86,13 +103,12 @@ Durable rule remains: **code license != model/weights/data license**. Popularity
 
 ## Immediate next actions
 
-1. Finish/merge PR #37 only after its exact-head CI + production-smoke remain green with the doctrine/status updates; preserve the manually verified CJK glyph result.
-2. Immediately TDD the newly observed software3d semantic failure: prove the Odyssey and cow plans currently collapse to the same visual world, then make deterministic scene/character/prop staging consume story-specific semantics without adding GPU/model/network dependencies.
-3. Re-run full cow + Odyssey production-smoke after the semantic fix and visually verify the two outputs are materially distinct, not merely caption variants.
-4. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime + rights-safe assets are actually present, execute the real multi-shot identity benchmark before making an identity-preservation claim.
-5. Prefer SigLIP 2 Base 256 for the first model-based evaluator experiment only after explicit local weights are supplied; pin exact revision/hash, use no implicit download, and require same-subject vs identity-drift control separation.
-6. Continue Mandarin dialogue quality benchmarking through reviewed operator-owned local Qwen3-TTS/CosyVoice routes when local runtimes/models are supplied; eSpeak remains the guaranteed fallback.
-7. Continue targeted ecosystem scans against measured gaps and integrate only candidates that clear source/license/weights-license/cost/hardware/security/reversibility/value gates.
+1. Finish PR #38 exact-head doctrine/status CI, merge only with the already-green CI 1477 + production-smoke 66 evidence, then verify post-merge main CI/smoke.
+2. Continue output-quality inspection of the guaranteed baseline rather than trusting workflow success alone; prioritize visible/story/audio defects over additional provider abstraction.
+3. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime + rights-safe assets are actually present, execute the real multi-shot identity benchmark before making an identity-preservation claim.
+4. Prefer SigLIP 2 Base 256 for the first model-based evaluator experiment only after explicit local weights are supplied; pin exact revision/hash, use no implicit download, and require same-subject vs identity-drift control separation.
+5. Continue Mandarin dialogue quality benchmarking through reviewed operator-owned local Qwen3-TTS/CosyVoice routes when local runtimes/models are supplied; eSpeak remains the guaranteed fallback.
+6. Continue targeted ecosystem scans against measured gaps and integrate only candidates that clear source/license/weights-license/cost/hardware/security/reversibility/value gates.
 
 ## Recovery order
 
