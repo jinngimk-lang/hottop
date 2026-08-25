@@ -7,7 +7,6 @@ from pydantic import ValidationError
 
 from hottop.models import Evidence, ProductProfile, TrendCandidate
 
-
 NOW = datetime(2026, 8, 25, 9, 30, tzinfo=UTC)
 
 
