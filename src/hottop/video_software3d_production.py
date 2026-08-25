@@ -270,7 +270,8 @@ def render_story_shot_video(
     if duration_seconds <= 0 or fps <= 0:
         raise ValueError("duration_seconds and fps must be positive")
 
-    story_profile = _story_profile_from_workspace_plan()
+    workspace_plan = output.resolve().parent.parent / "hottop-video-plan.json"
+    story_profile = _story_profile_from_workspace_plan(workspace_plan)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.unlink(missing_ok=True)
     manifest_path = output.resolve().with_suffix(".artifact.json")
