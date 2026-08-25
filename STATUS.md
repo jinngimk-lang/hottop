@@ -1,90 +1,68 @@
 # Hottop Status
 
 Last updated: 2026-08-25
-Active branch: `feat/hottop-foundation`
-Milestone: Foundation v0.1 closure
-PR: #1 — open, draft, mergeable at last fetch
+Active branch: `main`
+Completed milestone: **Foundation v0.1**
+Current milestone: **Production v0.2 — repeatable real video output**
 
-> This file is the short-lived execution snapshot. `PROJECT.md` is the durable doctrine. For exact CI/head state, re-fetch the current PR/branch rather than trusting an embedded historical run number.
+> This file is the short-lived execution snapshot. `PROJECT.md` is the durable doctrine. Re-fetch GitHub state before exact CI/head claims.
 
-## Current state
+## Foundation v0.1 — COMPLETE
 
-Hottop is a cross-category, evidence-aware hot-topic brand creative engine. The foundation now covers adaptive intent, promotion semantics, comparison/trend research, category reframing, semantic bridge search, flexible creative formats/media, hard Creative Review + contextual ranking, provider-neutral `hottop.render.v2`, config-driven `hottop.video-plan.v1`, and dry-run-first production execution.
+PR #1, **Build Hottop brand creative engine foundation**, was squash-merged into `main` as `ee0ffb388745d7ed1f890d278cfbb17cccea167c` after the verified PR head passed Ruff + the full pytest suite on Python 3.11 and 3.12. The resulting `main` push then passed CI again.
 
-The stale four-panel/InkClaw-only README has been replaced with the current architecture and operating contract.
+Foundation v0.1 established Hottop as a cross-category, evidence-aware hot-topic brand creative engine with:
 
-## Motion production contract
+- adaptive natural-language intent and promotion semantics;
+- trend/comparison research, enrichment, evidence discipline and semantic bridge search;
+- category-default / constraint-deletion reframing;
+- flexible creative formats/media plus hard Creative Review and contextual ranking;
+- provider-neutral `hottop.render.v2` and config-driven `hottop.video-plan.v1`;
+- dry-run-first trusted video execution;
+- MoviePy headless composition + FFmpeg compatibility/final-media verification;
+- first-class dialogue, original synthetic music and procedural SFX/Foley;
+- zero-cost, operator WanGP, local Wan2.2 and explicit Comfy API generation boundaries;
+- rights-safe reference I2V, cross-shot identity locks, generated-video quality gates and byte-bound artifact provenance;
+- Anti-Polish / Controlled Badness as a selectable style strategy rather than a universal look.
+
+## Closed security / integrity findings
+
+The Foundation closure review found and repaired concrete production-boundary issues before merge:
+
+- **ZeroGPU bearer-token / SSRF boundary:** remote SSE output URLs are confined to the configured Space origin and output-download redirects are disabled, so the Hugging Face bearer token cannot be redirected to an attacker-controlled host.
+- **Comfy output SSRF boundary:** remote endpoints require HTTPS; loopback HTTP must parse as a real loopback host rather than merely share a string prefix; remote outputs require HTTPS; local HTTP outputs must remain same-loopback-origin; output downloads carry no API token and do not follow redirects.
+- **WanGP reference binding:** rights-safe references use the explicit `__HOTTOP_REFERENCE_IMAGE__` exported-Settings placeholder, are locally preflighted, and must match every shot before GPU execution.
+- **WanGP generated output:** returned footage must pass the shared ffprobe/ffmpeg motion/duplicate/decodability gate before composition; rejected output is deleted.
+- **Cross-shot identity:** repeated `subject_id` references must carry consistent identity anchors before production commands are emitted.
+
+## Durable motion contract
 
 Default unattended path:
 
 `hottop.render.v2 → hottop.video-plan.v1 → generation → audio → MoviePy → FFmpeg`
 
-- MoviePy is the default headless compositor; Motion Canvas is planning/interactive-preview unless an operator supplies a real executor.
-- FFmpeg performs compatibility finalization and final media verification.
-- Audio is first-class: role-aware dialogue, original synthetic music and procedural SFX/Foley are preserved in the plan and mixed before finalization.
-- `video-run` is dry-run by default. Only explicit `--execute` may spawn trusted configured stages after readiness passes.
-- Fresh-output checks, failure cleanup, final media verification and `shell=False` structured commands are enforced.
+`video-run` remains dry-run by default. Only explicit `--execute` may spawn trusted configured stages after readiness passes. External model downloads, GPU provisioning, optional package installation, credentials, cloud uploads and paid services remain operator-controlled.
 
-## Generation routes
+References teach grammar, not pixels. Protected frames, likenesses, official character designs, copied UI/layouts, source footage and copyrighted soundtracks remain excluded by default. Surface roughness never relaxes continuity, directing, subtitle/dialogue correctness, comedy timing, product semantics, claim safety, rights safety or encoding integrity.
 
-### Zero-cost router
+## Production v0.2 goal
 
-- Only configured `cost_per_unit: 0` candidates are eligible; paid fallback is forbidden.
-- Rights-safe reference I2V carries explicit `generated-original` or `user-provided-rights-cleared` metadata.
-- Local reference preflight happens before upload/free GPU use.
-- Generated video is quality-gated for decodability, motion and duplicate-frame ratio; rejected artifacts are deleted before failover.
-- Optional deterministic reference-motion degradation is explicit and provenance-labelled, never misreported as AI-generated.
-- Accepted shot artifacts are bound to configured backend identity plus SHA-256/byte size and re-verified immediately before MoviePy consumption.
-- ZeroGPU output downloads are restricted to the configured Space origin and download redirects are disabled, so a remote SSE result cannot redirect a Hugging Face bearer token to an attacker-controlled host.
+The next milestone moves from architecture completeness to **repeatable production evidence**. The flagship acceptance target is a real, playable vertical product short generated from a checked-in Hottop render source and production profile, with the same original character remaining recognizable across shots and the product benefit emerging through story rather than banner-ad UI.
 
-### Operator WanGP
+Priority order:
 
-- WanGP is operator-managed; Hottop does not install it or download models automatically.
-- Reference I2V uses the fixed `__HOTTOP_REFERENCE_IMAGE__` Settings placeholder rather than guessing provider-specific fields.
-- Reference files and rights metadata are checked locally before session creation.
-- Cross-shot `subject_id` / identity-lock semantics are validated before production-plan commands are emitted.
-- Identity anchors are injected into generation prompts so every backend receives the same subject semantics.
-- Dry-run fail-closes when a shot has a reference but exported Settings lack the placeholder, or when Settings contain the placeholder but a shot has no reference.
-- WanGP output passes the shared ffprobe/ffmpeg generated-video quality gate before being returned; rejected output is deleted.
+1. Produce a representative config-to-MP4 run with real generated/pseudo-3D shot assets rather than a slideshow/vector placeholder.
+2. Preserve subject identity through reference-conditioned generation and reject identity/quality failures before composition.
+3. Keep one continuous story geography, dialogue, original BGM/SFX and natural shot transitions through the full pipeline.
+4. Archive the exact render source, production config, artifact provenance and final-media verification evidence needed to reproduce the run.
+5. Turn the successful run into the baseline for repeated hotspot/product production instead of adding more provider abstractions first.
 
-### Other routes
-
-- Wan2.2 remains an optional operator-controlled local route; model downloads/GPU provisioning are never automatic.
-- `comfy-api-v2` remains an explicit optional remote/self-hosted route with environment-only credentials and explicit execution.
-- Comfy remote endpoints require HTTPS; plain HTTP is accepted only for structurally validated loopback endpoints. Remote job output URLs must use HTTPS, while local HTTP output is allowed only from the same loopback origin. Output downloads do not carry the API bearer token and do not follow redirects.
-
-## Style / creative direction
-
-- Anti-Polish / Controlled Badness remains a selectable differentiation strategy: **low production feel + high comedy control**.
-- `roughness_score` routes surface polish; it is not a universal product look.
-- Roughness never relaxes character continuity, scene geography, cause/effect, subtitle correctness, dialogue intelligibility, comedy timing, product semantics, claim safety, rights safety or encoding integrity.
-- Social/hotspot work remains ad-light by default: no in-asset URL/QR/hard CTA unless conversion intent explicitly requires it.
-- References teach grammar, not pixels; protected frames, likenesses, official character designs, copied UI/layouts, source footage and copyrighted soundtracks are excluded by default.
-
-## Representative sources
+Representative sources already available:
 
 - `examples/video/inkclaw-cow-snake.render.json` — high-roughness original Anti-Polish story.
 - `examples/video/inkclaw-odyssey-witch-pigs.render.json` — lower-roughness cinematic mythic meme.
-- `examples/video/hottop-zero-cost-reference-i2v.render.json` — generated-original rights-safe reference-I2V example.
+- `examples/video/hottop-zero-cost-reference-i2v.render.json` — repository-generated rights-safe reference-I2V example.
 
-## Current verification
+## Immediate next action
 
-Recent closure work was introduced RED-first and then brought GREEN on both Python 3.11 and 3.12, including:
-
-- cross-shot reference identity consistency and prompt identity anchors;
-- WanGP reference placeholder binding + rights/file preflight;
-- WanGP generated-video quality gate;
-- `video-run` WanGP placeholder/reference dry-run fail-closed checks;
-- ZeroGPU cross-origin bearer-token/SSRF confinement;
-- Comfy endpoint parsing and remote-output SSRF confinement;
-- README architecture synchronization.
-
-The latest security implementation head was GREEN on both supported Python versions before this documentation-only synchronization. Always re-fetch the current head's CI before making a completion or merge claim.
-
-## Remaining closure actions
-
-1. Verify this final synchronized head on Python 3.11 / 3.12 with Ruff + full pytest.
-2. Re-fetch PR #1 mergeability, comments/review threads and current head after the verification run. Branch-protection details are not readable through the current GitHub integration, so do not infer them.
-3. Synchronize the PR summary and mark PR #1 ready for review if no blocking finding appears.
-4. Treat the final merge as the remaining irreversible repository action: use the verified expected-head SHA and do not merge a moved head accidentally.
-5. After merge, verify `main` contains the merged head and record the next milestone rather than continuing Foundation indefinitely.
+Start Production v0.2 from current `main`, use the existing InkClaw cow/snake story as the first flagship production case, and prioritize **actual consistent moving imagery** over additional orchestration surface area.
