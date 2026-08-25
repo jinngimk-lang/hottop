@@ -79,6 +79,24 @@ def test_video_run_materializes_software3d_generation_into_workspace(tmp_path: P
         assert command.cwd == str(tmp_path.resolve())
 
 
+def test_odyssey_runtime_commands_carry_explicit_story_profile(tmp_path: Path):
+    request = _request().model_copy(update={"topic_id": "odyssey-witch-pigs"})
+
+    result = run_video_production(
+        request,
+        _config(),
+        output_dir=tmp_path / "run",
+        project_root=tmp_path,
+        execute=False,
+    )
+
+    generation = [command for command in result.runtime_commands if command.stage == "generation"]
+    assert len(generation) == 5
+    for command in generation:
+        profile_index = command.args.index("--story-profile") + 1
+        assert command.args[profile_index] == "odyssey-witch-pigs"
+
+
 def test_software3d_readiness_requires_ffmpeg_for_shot_encoding(monkeypatch, tmp_path: Path):
     monkeypatch.setattr("hottop.video_execution.shutil.which", lambda _name: None)
 
