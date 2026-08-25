@@ -1,7 +1,7 @@
 # Hottop Status
 
 Last updated: 2026-08-26
-Active workstream: **Production v0.2 — inspect real output quality; obtain generated identity evidence when operator runtime exists**
+Active workstream: **Production v0.2 — inspect real output quality; benchmark operator-local generated/TTS routes when provisioned**
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
@@ -9,69 +9,30 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current main state
 
-Current runtime `main`: `e835fd74f211f33cb7cc5ef71abea64a683c6a2c` (`Preserve role-aware cow dialogue`, squash merge of PR #55).
+Current code `main`: `910e8fa1ed8c29385632854410906101a73e6fd9` (`Route role-aware dialogue to operator-local Qwen3 TTS`, squash merge of PR #57).
 
-Latest verified evidence:
+Latest verified pre-merge evidence for that exact change:
 
-- PR #55 RED exact head `a7f430b21ac134625409222293c05429fd2f3d01`: CI **1545** passed Ruff and failed pytest on the new cow role-aware dialogue contract because the canonical cow render had no `speaker` / `delivery` metadata;
-- PR #55 GREEN exact head `0cefc04c9b9c6d9ebf7018d904dc7be04306f95e`: CI **1546** passed on Python 3.11/3.12;
-- PR production-smoke **108** passed the real cow + Odyssey config → moving shots → Mandarin dialogue/music/SFX → MoviePy → FFmpeg → final media/provenance path;
-- downloaded #108 smoke evidence confirms the cow plan now preserves `young-cow → young-cow → mother-cow → young-cow → mother-cow` plus nonblank delivery on all five dialogue cues;
-- post-merge main CI **1547** passed;
-- post-merge production-smoke **109** passed both checked-in stories, final-media/provenance verification and evidence upload.
+- PR #57 initial RED `94023c05abe0557aef21bda804c3cfa3a43c7d59`: CI **1550** passed Ruff and failed pytest because normal `video-run` did not accept/route `qwen3-customvoice`;
+- first GREEN `7ffde866e16fdda3a877f54a5a162f102e90ba7c`: CI **1552** passed after typed local Qwen routing, role→speaker mapping, `delivery→--instruct` and Qwen `--output` fresh-output handling were connected;
+- freshness review then found official Qwen inference code discards `instruct` on the **0.6B** CustomVoice checkpoint;
+- capability RED `5981adba9a089b01b306df1911112f7ff4d26305`: CI **1553** failed pytest with Ruff green on the new requirement that Production reject 0.6B delivery control and admit an otherwise complete 1.7B checkpoint;
+- final PR head `8a1aeb7bd0015f40a8b90595009cc5871452993c`: CI **1555** passed on Python 3.11/3.12 and production-smoke **113** passed the real cow + Odyssey guaranteed software3d path;
+- PR #57 was squash-merged as `910e8fa1ed8c29385632854410906101a73e6fd9`.
 
-## Real artifact-level closures from this production cycle
+Post-merge/documentation CI must be re-fetched before claiming a newer exact-head result.
 
-### Role-aware dialogue metadata
+## Real artifact-level closures
 
-The flagship cow source previously emitted five audible Mandarin dialogue cues but all had `character=null`, unlike Odyssey. The canonical cow render now explicitly carries `speaker` and `delivery` per frame, and the generated `hottop.video-plan.v1` retains those roles through the production path. This closes source-data parity with the existing first-class-audio contract without adding a provider, model, credential, paid service or runtime dependency.
+### Guaranteed zero-cost software3d baseline
 
-The guaranteed eSpeak fallback remains intentionally simple; richer role differentiation is reserved for reviewed operator-local Qwen3-TTS/CosyVoice routes when runtimes/models are supplied.
-
-### Perceptible deterministic motion
-
-Direct artifact inspection showed that a playable MP4 can still read as nearly static. The guaranteed software3d baseline now has deterministic pixel-motion and camera-motion contracts. Cow uses deliberate Anti-Polish pan/dolly movement; Odyssey uses controlled cinematic pan/crane/dolly/zoom motion. The motion gate is style-routed and does not redefine random failure as roughness.
-
-### Mobile-first vertical framing and subject readability
-
-Production-smoke artifact inspection exposed two distinct 9:16 framing defects:
-
-1. **Placement:** narrative subjects sat too low. PR #52 moved the portrait projection principal point to 42% of frame height while preserving landscape projection and subtitle-safe lower space.
-2. **Readable scale:** after placement passed, Odyssey key characters remained materially smaller than the cow flagship. PR #53 keeps landscape focal behavior unchanged and raises only Odyssey portrait focal scale from `0.98` to `1.10`; the backend-specific test requires the designated primary Odyssey character to occupy at least 14% of the 360×640 portrait frame at midpoint.
-
-Durable rule: mobile-first framing inspects both **where the subject sits** and **whether the principal subject is large enough to decode on a phone**. Numeric scale thresholds remain style/backend/story specific rather than universal.
-
-Decision record: `docs/decisions/2026-08-26-mobile-subject-readability.md`.
-
-### Final audio presence and duration
-
-Final output verification rejects silent AAC and truncated audio. AAC must carry measurable signal and cover the full final video duration within a conservative **0.25 s** codec/container skew tolerance. Production evidence has confirmed both ten-second checked-in outputs carry full-duration audible tracks.
-
-### Cinematic Odyssey visual separation
-
-Direct artifact inspection found the lower-roughness Odyssey software3d baseline darker/flatter than the deliberate Anti-Polish cow scene. The Odyssey-only palette correction raised sampled mean grayscale luminance from roughly **29.5–32.4** to **45.9–48.3**, improving subject/environment separation without changing the cow baseline, provider routing or media contracts.
-
-This is a deterministic style-routing baseline improvement, not a claim that software3d is the cinematic quality ceiling.
-
-### CJK/Mandarin subtitle readability and layout
-
-- **Glyph coverage:** CJK font resolution fails closed rather than silently rendering tofu boxes. Normal `video-run` does not auto-install fonts; CI explicitly provisions reviewed Noto CJK fonts.
-- **Vertical safe area:** MoviePy bottom-anchors captions from actual rendered `TextClip.h`, with a safe lower margin and clamping for unusually tall captions.
-- Latest artifact inspection rechecked the apparent bottom-edge risk and found roughly 38–57 px bottom margin on sampled subtitle pixels, so no unsupported subtitle repositioning change was made.
-
-### Deterministic software3d story identity
-
-The deterministic baseline is story-explicit: cow and Odyssey route to distinct story worlds from the workspace plan, and missing/unknown topics fail closed instead of silently falling back to a historical template merely to emit a playable MP4.
-
-## Guaranteed zero-cost baseline
-
-The checked-in software3d route now has reproducible production proof for:
+The checked-in software3d route has reproducible production proof for:
 
 - distinct story-specific moving 3D worlds for cow and Odyssey;
 - perceptible, style-routed camera/pixel motion rather than slideshow-like output;
-- mobile-first portrait placement **and principal-subject readability**;
+- mobile-first portrait placement and principal-subject readability;
 - deliberate Anti-Polish cow vs brighter lower-roughness Odyssey presentation;
-- role-aware dialogue metadata (`speaker` + `delivery`) preserved into the video plan;
+- role-aware dialogue metadata (`speaker` + `delivery`) preserved into `hottop.video-plan.v1`;
 - Mandarin dialogue + readable, safe-area-bounded CJK subtitles;
 - original synthetic music + procedural Foley/SFX;
 - final AAC that is codec-valid, audibly active and duration-covering;
@@ -82,9 +43,54 @@ The checked-in software3d route now has reproducible production proof for:
 
 This is the guaranteed fallback/evidence baseline, not the cinematic quality ceiling.
 
+### Qwen3-TTS role-aware Production routing
+
+PR #57 connects the existing operator-local/offline Qwen3 CustomVoice adapter to normal `video-run` without replacing eSpeak:
+
+- `VideoProductionConfig.audio.voice_backend` can explicitly select `qwen3-customvoice`;
+- config carries an operator-local model path, preset-speaker map, language/device/dtype/attention settings;
+- dialogue `character` maps to a configured preset speaker and `AudioCue.delivery` maps to `--instruct`;
+- Qwen dialogue output uses the same fresh-output execution contract as eSpeak;
+- readiness reuses the local Qwen environment inspector and never installs packages or downloads models;
+- HF offline mode + `local_files_only=True` remain enforced in the adapter;
+- eSpeak remains the guaranteed zero-cost/offline fallback.
+
+**Capability correction:** the CustomVoice API signature alone is not enough to prove delivery control. Current official 0.6B (`tts_model_size=0b6`) discards `instruct`; current 1.7B (`1b7`) supports it. The role-aware Production route therefore fails closed on 0.6B rather than silently dropping `delivery`. Standalone 0.6B synthesis may remain available only when no instruction is requested.
+
+**Rights boundary:** repository/model metadata currently say Apache-2.0, but preset-speaker output/commercial publication rights are treated as a separate operator gate. Hottop does not infer speaker/timbre clearance from software/model licensing alone.
+
+Research record: `docs/research/2026-08-26-qwen3-customvoice-routing.md`.
+
+### Perceptible deterministic motion
+
+Playable MP4 alone is insufficient. The software3d baseline has deterministic pixel-motion and camera-motion contracts: cow uses deliberate Anti-Polish pan/dolly movement; Odyssey uses controlled cinematic pan/crane/dolly/zoom motion. The motion gate is style-routed and does not redefine random failure as roughness.
+
+### Mobile-first framing and subject readability
+
+Production evidence closed two independent 9:16 defects:
+
+1. narrative subjects were too low; portrait projection moved the principal point to 42% of frame height while preserving lower subtitle-safe space;
+2. Odyssey key characters remained too small after placement passed; Odyssey-only portrait focal scale was raised while landscape behavior stayed unchanged.
+
+Durable rule: mobile-first framing measures both placement and readable subject scale using style/backend/story-specific evidence rather than a universal magic number.
+
+Decision record: `docs/decisions/2026-08-26-mobile-subject-readability.md`.
+
+### Final audio / subtitle / media integrity
+
+- final AAC must contain measurable signal and cover final video duration within 0.25 s codec/container skew tolerance;
+- CJK font resolution fails closed instead of rendering tofu; normal execution does not auto-install fonts;
+- captions are bottom-anchored from actual rendered height with safe-area clamping;
+- final MP4 is re-verified for expected video/audio codecs, pixel format and duration after FFmpeg;
+- failed/partial/zero-byte outputs are cleaned up rather than left as apparently consumable artifacts.
+
+### Deterministic story identity
+
+Software3d story routing is explicit and fail-closed. Cow and Odyssey resolve distinct world/character/prop staging; missing/unknown story topics are rejected rather than silently rendering the cow template.
+
 ## Generated/reference-conditioned identity gap
 
-The remaining identity gap still requires **real generated-output evidence** from an operator-owned reference-conditioned route. This execution environment does not contain a provisioned LightX2V/Wan2.2 or compliant WanGP model/runtime/assets. Normal unattended Hottop must not auto-download multi-GB models, provision GPU, consume credits or weaken that boundary.
+The remaining identity claim still requires **real generated-output evidence** from an operator-owned reference-conditioned route. This execution environment does not contain a provisioned LightX2V/Wan2.2 or compliant WanGP model/runtime/assets. Normal unattended Hottop must not auto-download multi-GB models, provision GPU, consume credits or weaken that boundary.
 
 A production identity-preservation claim requires at least two generated byte-bound plan shots for the same rights-safe evaluated subject, exact reference + stable `subject_id`, generated-video quality gates, actual generator source provenance, independently verifiable model/checkpoint provenance when available, complete subject-bearing shot coverage and explicit evaluator identity/revision + fail-closed thresholds.
 
@@ -92,23 +98,23 @@ Generator source revision, model/checkpoint revision, evaluator revision and out
 
 ## Current ecosystem radar
 
-Research record: `docs/research/2026-08-25-reference-continuity-evaluator-radar.md`.
-
-- **LightX2V** remains the primary Apache-2.0 operator inference framework. The tested Hottop integration pin remains `926299962ed32a142411e45468a289623432b4e4`. Targeted freshness checks on 2026-08-26 found recent upstream work concentrated on platform/model expansion rather than a material improvement to Hottop's tested Wan2.2 local CLI path, so no unbenchmarked repin was admitted.
+- **LightX2V** remains the primary Apache-2.0 operator inference framework for the tested Wan2.2/local path. No fresh upstream delta has yet shown a measured reason to repin the tested Hottop route without a benchmark.
 - **SigLIP 2 Base 256** remains the preferred first operator-local continuity evaluator experiment only after explicit local weights + revision/hash are supplied; no implicit download.
-- **Qwen3-TTS CustomVoice / CosyVoice** remain operator-owned Mandarin quality candidates. A fresh CosyVoice hosted-demo issue does not change the reviewed local adapter boundary; no current evidence justifies changing the guaranteed eSpeak fallback or auto-provisioning models.
-- DINOv3, DreamSim and WanGP remain gated by their respective weights/license/runtime boundaries.
+- **Qwen3-TTS CustomVoice** is now integrated as a non-default local route, but actual quality evidence still requires an operator-provisioned instruct-capable checkpoint/runtime. Current upstream source establishes the 0.6B vs 1.7B instruct capability split.
+- **CosyVoice3** remains an operator-owned comparison candidate; no current evidence justifies replacing eSpeak or the newly integrated Qwen route without a same-dialogue benchmark.
+- DINOv3, DreamSim, WanGP and other candidates remain gated by their model/license/runtime boundaries.
 
-Durable rule: code license != model/weights/data license; popularity/freshness alone is not admission evidence.
+Durable rule: code license != model/weights/data/output-rights clearance; popularity/freshness alone is not admission evidence.
 
 ## Immediate next actions
 
-1. Continue **direct artifact inspection** of the now motion-, framing-, role-metadata- and final-media-gated software3d outputs. Quantify the next visible/audible deterministic gap before changing code.
-2. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime + rights-safe assets exist, execute the real multi-shot identity benchmark before claiming identity preservation.
-3. Prefer SigLIP 2 Base 256 for the first local evaluator benchmark only with explicit local weights + exact revision/hash and same-subject vs identity-drift controls.
-4. Continue Mandarin dialogue quality benchmarking through reviewed local Qwen3-TTS/CosyVoice routes when runtimes/models are supplied; eSpeak remains the guaranteed fallback.
-5. Continue targeted ecosystem scans against measured gaps and integrate only candidates clearing source/license/weights-license/cost/hardware/security/reversibility/value gates.
-6. For fresh creative output, continue current-hotspot research + mechanism mapping + generation preflight rather than treating cow/Odyssey as defaults.
+1. Re-fetch exact post-merge/documentation CI and production-smoke; repair any regression before opening new work.
+2. Continue **direct artifact inspection** of the guaranteed software3d outputs and quantify the next visible/audible deterministic gap before changing code.
+3. When an operator-provisioned Qwen3-TTS 1.7B CustomVoice runtime exists, run a same-dialogue eSpeak vs Qwen benchmark using the checked-in cow roles/deliveries; do not claim quality improvement before real audio evidence.
+4. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime + rights-safe assets exist, execute the real multi-shot identity benchmark before claiming identity preservation.
+5. Prefer SigLIP 2 Base 256 for the first local evaluator benchmark only with explicit local weights + exact revision/hash and same-subject vs identity-drift controls.
+6. Continue targeted ecosystem scans against measured gaps and integrate only candidates clearing source/license/weights-license/cost/hardware/security/reversibility/value gates.
+7. For fresh creative output, continue current-hotspot research + mechanism mapping + generation preflight rather than treating cow/Odyssey as defaults.
 
 ## Recovery order
 
