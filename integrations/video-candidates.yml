@@ -63,6 +63,31 @@ candidates:
       Keep download/conversion/execution operator-owned; prefer safetensors conversion or a
       reviewed isolated runtime before production use.
 
+  qwen3_tts_0_6b_base:
+    repo: QwenLM/Qwen3-TTS
+    commit: 022e286b98fbec7e1e916cb940cdf532cd9f488e
+    weights: Qwen/Qwen3-TTS-12Hz-0.6B-Base
+    code_license: Apache-2.0
+    weights_license: Apache-2.0
+    status: high_priority_benchmark
+    target_gaps:
+      - natural_mandarin_dialogue
+      - multilingual_tts
+      - expressive_local_voice
+      - streaming_tts
+    capabilities:
+      - chinese_and_9_other_languages
+      - safetensors_weights
+      - 0_6b_base_model
+      - voice_clone_capability
+      - streaming_tts_family
+    integration_strategy: operator_owned_local_tts_adapter
+    runtime_boundary: >-
+      Prefer preset, designed, or otherwise rights-safe voices for unattended production.
+      Do not clone or imitate a real person's voice without rights-cleared source audio and
+      explicit intended-use authority. Model provisioning stays operator-controlled; Hottop
+      must not silently download the multi-gigabyte model during normal video-run or CI.
+
   wangp:
     repo: deepbeepmeep/Wan2GP
     commit: f76ef2bb848a7d6bfc94779d493b2a9f149cd683
