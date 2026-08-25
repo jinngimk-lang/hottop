@@ -21,6 +21,7 @@ _DEFAULT_CJK_FONT_CANDIDATES = (
     Path("C:/Windows/Fonts/msyh.ttc"),
     Path("C:/Windows/Fonts/simhei.ttf"),
 )
+_DIALOGUE_DURATION_TOLERANCE_SECONDS = 0.25
 
 
 class MoviePyTimelineShot(BaseModel):
@@ -338,6 +339,23 @@ def _apply_dialogue_ducking(
     return ducked * gains.reshape((-1,) + (1,) * (ducked.ndim - 1))
 
 
+def _validate_dialogue_track_duration(
+    *,
+    actual_duration_seconds: float,
+    track: MoviePyTimelineDialogueTrack,
+) -> None:
+    """Fail closed instead of silently truncating materially overlong dialogue."""
+
+    if track.duration_seconds is None:
+        return
+    if actual_duration_seconds - track.duration_seconds > _DIALOGUE_DURATION_TOLERANCE_SECONDS:
+        raise RuntimeError(
+            "dialogue audio exceeds its planned window: "
+            f"{track.source} is {actual_duration_seconds:.3f}s for "
+            f"{track.duration_seconds:.3f}s"
+        )
+
+
 def _procedural_sfx_array(
     duration_seconds: float,
     cues: list[MoviePyTimelineSfxCue],
@@ -467,6 +485,10 @@ def render_moviepy_timeline(
         for track in timeline.dialogue_tracks:
             voice = AudioFileClip(track.source)
             opened_audio.append(voice)
+            _validate_dialogue_track_duration(
+                actual_duration_seconds=voice.duration,
+                track=track,
+            )
             if track.duration_seconds is not None and voice.duration > track.duration_seconds:
                 voice = voice.subclipped(0, track.duration_seconds)
             voice = voice.with_start(track.start_seconds)
