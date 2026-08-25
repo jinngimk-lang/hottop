@@ -1,0 +1,93 @@
+name: software3d-production-smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "src/hottop/video_*.py"
+      - "config/video/anti-polish-software3d.yml"
+      - "examples/video/inkclaw-cow-snake.render.json"
+      - "pyproject.toml"
+      - ".github/workflows/software3d-production-smoke.yml"
+      - "tests/test_software3d_production_smoke_contract.py"
+
+jobs:
+  production-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[video]"
+      - name: Prepare free local media tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak
+      - name: Verify production readiness
+        run: |
+          mkdir -p artifacts/software3d-smoke
+          hottop video-doctor \
+            --config config/video/anti-polish-software3d.yml \
+            --project-root . \
+            --output artifacts/software3d-smoke/doctor.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          status = json.loads(Path("artifacts/software3d-smoke/doctor.json").read_text())
+          assert status["ready"] is True, status
+          assert status["software3d"]["ready"] is True
+          assert status["voice"]["ready"] is True
+          assert status["moviepy"]["ready"] is True
+          assert status["ffmpeg"]["ready"] is True
+          PY
+      - name: Execute full config-to-MP4 pipeline
+        run: |
+          hottop video-run \
+            examples/video/inkclaw-cow-snake.render.json \
+            --config config/video/anti-polish-software3d.yml \
+            --project-root . \
+            --output-dir artifacts/software3d-smoke/run \
+            --execute \
+            --output artifacts/software3d-smoke/run-result.json
+      - name: Verify final media
+        run: |
+          FINAL=artifacts/software3d-smoke/run/hottop-output.mp4
+          test -s "$FINAL"
+          ffprobe -v error \
+            -show_entries stream=codec_type,codec_name,pix_fmt,width,height,sample_rate,channels \
+            -show_entries format=duration,format_name \
+            -of json "$FINAL" > artifacts/software3d-smoke/ffprobe.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          probe = json.loads(Path("artifacts/software3d-smoke/ffprobe.json").read_text())
+          streams = probe["streams"]
+          video = next(stream for stream in streams if stream.get("codec_type") == "video")
+          audio = next(stream for stream in streams if stream.get("codec_type") == "audio")
+          duration = float(probe["format"]["duration"])
+          assert video["codec_name"] == "h264", video
+          assert video["pix_fmt"] == "yuv420p", video
+          assert (video["width"], video["height"]) == (360, 640), video
+          assert audio["codec_name"] == "aac", audio
+          assert 9.0 <= duration <= 11.0, duration
+          PY
+      - name: Archive reproducible production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: software3d-production-smoke
+          path: |
+            artifacts/software3d-smoke/doctor.json
+            artifacts/software3d-smoke/run-result.json
+            artifacts/software3d-smoke/ffprobe.json
+            artifacts/software3d-smoke/run/hottop-video-plan.json
+            artifacts/software3d-smoke/run/shots/*.artifact.json
+            artifacts/software3d-smoke/run/hottop-output.mp4
+          if-no-files-found: warn
+          retention-days: 7
