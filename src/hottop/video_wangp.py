@@ -13,6 +13,10 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
+from .video_reference import ReferenceRights
+
+REFERENCE_PLACEHOLDER = "__HOTTOP_REFERENCE_IMAGE__"
+
 
 class WanGPError(RuntimeError):
     """Raised when an operator-managed WanGP generation cannot be used safely."""
@@ -40,12 +44,43 @@ def load_wangp_settings(path: Path) -> dict[str, Any]:
     return payload
 
 
+def _replace_reference_placeholder(value: Any, replacement: str) -> tuple[Any, int]:
+    if isinstance(value, dict):
+        replaced: dict[Any, Any] = {}
+        count = 0
+        for key, item in value.items():
+            next_item, next_count = _replace_reference_placeholder(item, replacement)
+            replaced[key] = next_item
+            count += next_count
+        return replaced, count
+    if isinstance(value, list):
+        replaced_items: list[Any] = []
+        count = 0
+        for item in value:
+            next_item, next_count = _replace_reference_placeholder(item, replacement)
+            replaced_items.append(next_item)
+            count += next_count
+        return replaced_items, count
+    if value == REFERENCE_PLACEHOLDER:
+        return replacement, 1
+    return value, 0
+
+
+def _count_reference_placeholders(value: Any) -> int:
+    if isinstance(value, dict):
+        return sum(_count_reference_placeholders(item) for item in value.values())
+    if isinstance(value, list):
+        return sum(_count_reference_placeholders(item) for item in value)
+    return int(value == REFERENCE_PLACEHOLDER)
+
+
 def prepare_wangp_settings(
     template: dict[str, Any],
     *,
     prompt: str,
     duration_seconds: float,
     fps: int,
+    reference_image: Path | None = None,
 ) -> dict[str, Any]:
     """Create one WanGP task from an operator-exported settings template."""
 
@@ -58,6 +93,22 @@ def prepare_wangp_settings(
         raise WanGPError("WanGP shot FPS must be greater than zero")
 
     settings = copy.deepcopy(template)
+    placeholder_count = _count_reference_placeholders(settings)
+    if reference_image is None:
+        if placeholder_count:
+            raise WanGPError(
+                "WanGP exported settings contain a Hottop reference placeholder but this shot has no reference image"
+            )
+    else:
+        settings, replaced = _replace_reference_placeholder(
+            settings,
+            str(reference_image.resolve()),
+        )
+        if replaced == 0:
+            raise WanGPError(
+                "WanGP reference image was supplied but exported settings contain no Hottop reference placeholder"
+            )
+
     settings["prompt"] = prompt
     settings["duration_seconds"] = duration_seconds
     settings["video_length"] = f"{duration_seconds:g}s"
@@ -133,9 +184,20 @@ def run_wangp_shot(
     duration_seconds: float,
     fps: int,
     output: Path,
+    reference_image: Path | None = None,
+    reference_rights: ReferenceRights | None = None,
     session_factory: Callable[..., Any] = _create_wangp_session,
 ) -> Path:
     """Run one operator-managed WanGP shot without allowing model auto-provisioning."""
+
+    if reference_image is not None:
+        reference_image = reference_image.resolve()
+        if reference_rights not in {"generated-original", "user-provided-rights-cleared"}:
+            raise WanGPError("WanGP reference image requires explicit rights-safe metadata")
+        if not reference_image.is_file():
+            raise WanGPError(f"WanGP reference image is missing: {reference_image}")
+    elif reference_rights is not None:
+        raise WanGPError("WanGP reference rights were supplied without a reference image")
 
     template = load_wangp_settings(config.settings_path)
     settings = prepare_wangp_settings(
@@ -143,6 +205,7 @@ def run_wangp_shot(
         prompt=prompt,
         duration_seconds=duration_seconds,
         fps=fps,
+        reference_image=reference_image,
     )
     root = config.root.resolve()
     output = output.resolve()
@@ -187,6 +250,11 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--output", required=True)
     parser.add_argument("--profile", type=int, default=4)
     parser.add_argument("--attention", default="sdpa")
+    parser.add_argument("--reference-image")
+    parser.add_argument(
+        "--reference-rights",
+        choices=["generated-original", "user-provided-rights-cleared"],
+    )
     return parser.parse_args()
 
 
@@ -205,6 +273,8 @@ def main() -> None:
             duration_seconds=args.duration_seconds,
             fps=args.fps,
             output=Path(args.output),
+            reference_image=Path(args.reference_image) if args.reference_image else None,
+            reference_rights=args.reference_rights,
         )
     except WanGPError as exc:
         raise SystemExit(str(exc)) from exc
