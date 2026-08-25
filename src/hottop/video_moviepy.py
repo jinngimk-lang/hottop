@@ -12,6 +12,15 @@ from pydantic import BaseModel, Field
 from .video_production import VideoProductionPlan
 
 
+DEFAULT_CAPTION_FONT_CANDIDATES = (
+    Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"),
+    Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"),
+    Path("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc"),
+    Path("/System/Library/Fonts/PingFang.ttc"),
+    Path("C:/Windows/Fonts/msyh.ttc"),
+)
+
+
 class MoviePyTimelineShot(BaseModel):
     index: int = Field(ge=1)
     source: str
@@ -52,6 +61,25 @@ class MoviePyTimeline(BaseModel):
     bgm_description: str
     generate_synthetic_bgm: bool = True
     generate_procedural_sfx: bool = True
+
+
+def select_caption_font(
+    texts: list[str],
+    *,
+    candidates: list[Path] | tuple[Path, ...] | None = None,
+) -> str | None:
+    """Return a local Unicode-capable font path when captions contain non-ASCII text."""
+
+    needs_unicode = any(any(ord(character) > 127 for character in text) for text in texts)
+    if not needs_unicode:
+        return None
+    for candidate in candidates or DEFAULT_CAPTION_FONT_CANDIDATES:
+        path = Path(candidate)
+        if path.is_file():
+            return str(path)
+    raise RuntimeError(
+        "Unicode captions require a compatible CJK font; install Noto Sans CJK or configure an operator-provided compatible font."
+    )
 
 
 def build_moviepy_timeline(
@@ -263,6 +291,7 @@ def render_moviepy_timeline(
     if missing_dialogue:
         raise FileNotFoundError("Missing dialogue audio tracks: " + ", ".join(missing_dialogue))
 
+    caption_font = select_caption_font([caption.text for caption in timeline.captions])
     clips = []
     opened_video = []
     opened_audio = []
@@ -286,6 +315,7 @@ def render_moviepy_timeline(
         for caption in timeline.captions:
             text = TextClip(
                 text=caption.text,
+                font=caption_font,
                 font_size=max(38, timeline.width // 14),
                 color="white",
                 stroke_color="black",
