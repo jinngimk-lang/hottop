@@ -56,8 +56,12 @@ def test_video_run_software3d_outputs_follow_moviepy_manifest_convention(tmp_pat
 
     generation = [command for command in result.runtime_commands if command.stage == "generation"]
     assert len(generation) == 5
+    expected_manifests: list[str] = []
     for index, command in enumerate(generation, start=1):
         output = Path(command.args[command.args.index("--output") + 1])
         assert output == (tmp_path / "run" / "shots" / f"shot-{index:03d}.mp4").resolve()
         expected_manifest = output.with_suffix(".artifact.json")
         assert expected_manifest.name == f"shot-{index:03d}.artifact.json"
+        expected_manifests.append(str(expected_manifest.resolve()))
+
+    assert result.artifact_manifest_paths == expected_manifests
