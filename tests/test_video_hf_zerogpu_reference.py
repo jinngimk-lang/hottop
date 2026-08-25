@@ -68,7 +68,12 @@ def test_execute_hf_zerogpu_uploads_rights_cleared_reference_before_generation(t
         [
             FakeResponse(json_data=["/tmp/gradio/reference.png"]),
             FakeResponse(json_data={"event_id": "evt-i2v"}),
-            FakeResponse(text='event: complete\ndata: ["https://cdn.example/i2v.mp4"]\n\n'),
+            FakeResponse(
+                text=(
+                    'event: complete\ndata: '
+                    '["https://example.hf.space/gradio_api/file=i2v.mp4"]\n\n'
+                )
+            ),
             FakeResponse(content=b"video-bytes"),
         ]
     )
@@ -97,3 +102,9 @@ def test_execute_hf_zerogpu_uploads_rights_cleared_reference_before_generation(t
     image_input = generation_call[2]["json"]["data"][0]
     assert image_input["path"] == "/tmp/gradio/reference.png"
     assert image_input["meta"]["_type"] == "gradio.FileData"
+    download_call = client.calls[-1]
+    assert download_call[0:2] == (
+        "GET",
+        "https://example.hf.space/gradio_api/file=i2v.mp4",
+    )
+    assert download_call[2]["follow_redirects"] is False
