@@ -9,18 +9,24 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current main state
 
-Current runtime `main`: `d902c78433f329e41ebc8d79fe8b5f74d7c41c52` (`prod: improve Odyssey mobile subject scale`, squash merge of PR #53).
+Current runtime `main`: `e835fd74f211f33cb7cc5ef71abea64a683c6a2c` (`Preserve role-aware cow dialogue`, squash merge of PR #55).
 
-Verified evidence:
+Latest verified evidence:
 
-- RED CI **1539**: Ruff passed; pytest isolated the subject-scale contract at exactly **1 failed / 458 passed**, with Odyssey shot-4 hero measuring `0.128614250658297` of portrait frame height vs the `>=0.14` test contract;
-- GREEN exact-head `ac2cc7ca56bab490833d08db1ab91f7895a4f535` CI **1540** passed on Python 3.11 and 3.12;
-- PR production-smoke **106** passed the real cow + Odyssey config → moving shots → Mandarin dialogue/music/SFX → MoviePy → FFmpeg → final media/provenance path;
-- direct inspection of the #106 Odyssey MP4 confirmed visibly larger key characters without subtitle clipping or broken scene geography;
-- post-merge main CI **1541** passed;
-- post-merge production-smoke **107** passed both checked-in stories, final-media/provenance verification and evidence upload.
+- PR #55 RED exact head `a7f430b21ac134625409222293c05429fd2f3d01`: CI **1545** passed Ruff and failed pytest on the new cow role-aware dialogue contract because the canonical cow render had no `speaker` / `delivery` metadata;
+- PR #55 GREEN exact head `0cefc04c9b9c6d9ebf7018d904dc7be04306f95e`: CI **1546** passed on Python 3.11/3.12;
+- PR production-smoke **108** passed the real cow + Odyssey config → moving shots → Mandarin dialogue/music/SFX → MoviePy → FFmpeg → final media/provenance path;
+- downloaded #108 smoke evidence confirms the cow plan now preserves `young-cow → young-cow → mother-cow → young-cow → mother-cow` plus nonblank delivery on all five dialogue cues;
+- post-merge main CI **1547** passed;
+- post-merge production-smoke **109** passed both checked-in stories, final-media/provenance verification and evidence upload.
 
 ## Real artifact-level closures from this production cycle
+
+### Role-aware dialogue metadata
+
+The flagship cow source previously emitted five audible Mandarin dialogue cues but all had `character=null`, unlike Odyssey. The canonical cow render now explicitly carries `speaker` and `delivery` per frame, and the generated `hottop.video-plan.v1` retains those roles through the production path. This closes source-data parity with the existing first-class-audio contract without adding a provider, model, credential, paid service or runtime dependency.
+
+The guaranteed eSpeak fallback remains intentionally simple; richer role differentiation is reserved for reviewed operator-local Qwen3-TTS/CosyVoice routes when runtimes/models are supplied.
 
 ### Perceptible deterministic motion
 
@@ -30,21 +36,16 @@ Direct artifact inspection showed that a playable MP4 can still read as nearly s
 
 Production-smoke artifact inspection exposed two distinct 9:16 framing defects:
 
-1. **Placement:** narrative subjects sat too low, leaving a persistent empty upper region. PR #52 moved the portrait projection principal point to 42% of frame height while preserving landscape projection and subtitle-safe lower space.
-2. **Readable scale:** after placement passed, production-smoke #105 still showed the Odyssey key characters substantially smaller than the cow flagship. Cow read at roughly 21% of portrait frame height at midpoint; Odyssey key people were typically around 12–15%. PR #53 keeps landscape focal behavior unchanged and raises only Odyssey portrait focal scale from `0.98` to `1.10`. The backend-specific test requires the designated primary Odyssey character to occupy at least 14% of the 360×640 portrait frame at midpoint.
+1. **Placement:** narrative subjects sat too low. PR #52 moved the portrait projection principal point to 42% of frame height while preserving landscape projection and subtitle-safe lower space.
+2. **Readable scale:** after placement passed, Odyssey key characters remained materially smaller than the cow flagship. PR #53 keeps landscape focal behavior unchanged and raises only Odyssey portrait focal scale from `0.98` to `1.10`; the backend-specific test requires the designated primary Odyssey character to occupy at least 14% of the 360×640 portrait frame at midpoint.
 
-Durable rule: mobile-first framing must inspect both **where the subject sits** and **whether the principal subject is large enough to decode on a phone**. Numeric scale thresholds remain style/backend/story specific rather than universal.
+Durable rule: mobile-first framing inspects both **where the subject sits** and **whether the principal subject is large enough to decode on a phone**. Numeric scale thresholds remain style/backend/story specific rather than universal.
 
 Decision record: `docs/decisions/2026-08-26-mobile-subject-readability.md`.
 
 ### Final audio presence and duration
 
-Final output verification rejects two false-positive classes that codec-only inspection could miss:
-
-1. **Silent AAC:** final AAC must contain measurable audible signal.
-2. **Truncated audio:** AAC must cover the full final video duration within a conservative **0.25 s** codec/container skew tolerance.
-
-Production evidence confirmed both cow and Odyssey ten-second outputs carry roughly 10.008 s AAC and no long >=0.5 s silence interval at the checked threshold.
+Final output verification rejects silent AAC and truncated audio. AAC must carry measurable signal and cover the full final video duration within a conservative **0.25 s** codec/container skew tolerance. Production evidence has confirmed both ten-second checked-in outputs carry full-duration audible tracks.
 
 ### Cinematic Odyssey visual separation
 
@@ -56,6 +57,7 @@ This is a deterministic style-routing baseline improvement, not a claim that sof
 
 - **Glyph coverage:** CJK font resolution fails closed rather than silently rendering tofu boxes. Normal `video-run` does not auto-install fonts; CI explicitly provisions reviewed Noto CJK fonts.
 - **Vertical safe area:** MoviePy bottom-anchors captions from actual rendered `TextClip.h`, with a safe lower margin and clamping for unusually tall captions.
+- Latest artifact inspection rechecked the apparent bottom-edge risk and found roughly 38–57 px bottom margin on sampled subtitle pixels, so no unsupported subtitle repositioning change was made.
 
 ### Deterministic software3d story identity
 
@@ -69,6 +71,7 @@ The checked-in software3d route now has reproducible production proof for:
 - perceptible, style-routed camera/pixel motion rather than slideshow-like output;
 - mobile-first portrait placement **and principal-subject readability**;
 - deliberate Anti-Polish cow vs brighter lower-roughness Odyssey presentation;
+- role-aware dialogue metadata (`speaker` + `delivery`) preserved into the video plan;
 - Mandarin dialogue + readable, safe-area-bounded CJK subtitles;
 - original synthetic music + procedural Foley/SFX;
 - final AAC that is codec-valid, audibly active and duration-covering;
@@ -91,16 +94,16 @@ Generator source revision, model/checkpoint revision, evaluator revision and out
 
 Research record: `docs/research/2026-08-25-reference-continuity-evaluator-radar.md`.
 
-- **LightX2V** remains the primary Apache-2.0 operator inference framework. The tested Hottop integration pin remains `926299962ed32a142411e45468a289623432b4e4`. Fresh public activity remains concentrated around InfiniteTalk maintenance and requests for newer models such as MiniMax H3; no observed change materially improves Hottop's tested Wan2.2 local CLI contract enough to justify an unbenchmarked repin.
+- **LightX2V** remains the primary Apache-2.0 operator inference framework. The tested Hottop integration pin remains `926299962ed32a142411e45468a289623432b4e4`. Targeted freshness checks on 2026-08-26 found recent upstream work concentrated on platform/model expansion rather than a material improvement to Hottop's tested Wan2.2 local CLI path, so no unbenchmarked repin was admitted.
 - **SigLIP 2 Base 256** remains the preferred first operator-local continuity evaluator experiment only after explicit local weights + revision/hash are supplied; no implicit download.
-- **Qwen3-TTS CustomVoice / CosyVoice** remain operator-owned Mandarin quality candidates. No current evidence justifies changing the guaranteed eSpeak fallback or auto-provisioning models.
+- **Qwen3-TTS CustomVoice / CosyVoice** remain operator-owned Mandarin quality candidates. A fresh CosyVoice hosted-demo issue does not change the reviewed local adapter boundary; no current evidence justifies changing the guaranteed eSpeak fallback or auto-provisioning models.
 - DINOv3, DreamSim and WanGP remain gated by their respective weights/license/runtime boundaries.
 
 Durable rule: code license != model/weights/data license; popularity/freshness alone is not admission evidence.
 
 ## Immediate next actions
 
-1. Continue **direct artifact inspection** of the now motion-, placement-, and subject-scale-gated software3d outputs. Quantify the next visible deterministic gap before changing code.
+1. Continue **direct artifact inspection** of the now motion-, framing-, role-metadata- and final-media-gated software3d outputs. Quantify the next visible/audible deterministic gap before changing code.
 2. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime + rights-safe assets exist, execute the real multi-shot identity benchmark before claiming identity preservation.
 3. Prefer SigLIP 2 Base 256 for the first local evaluator benchmark only with explicit local weights + exact revision/hash and same-subject vs identity-drift controls.
 4. Continue Mandarin dialogue quality benchmarking through reviewed local Qwen3-TTS/CosyVoice routes when runtimes/models are supplied; eSpeak remains the guaranteed fallback.
