@@ -8,7 +8,7 @@ Input-side locks are necessary but are not evidence of output-side visual contin
 
 ## Admission decision
 
-This cycle admits the **benchmark contract**, not a new evaluator dependency. `hottop.reference-continuity-benchmark.v1` records exact candidate/revision, evaluator/revision, reference SHA-256, generated-shot SHA-256 values, reference-adherence score, cross-shot-identity score, and fail-closed thresholds. The artifact verifier additionally recomputes the actual reference bytes and reuses `VideoArtifactManifest` byte verification for generated shots before scores can be trusted.
+This cycle admits the **benchmark contract**, not a new evaluator dependency. `hottop.reference-continuity-benchmark.v1` records exact candidate/revision, evaluator/revision, reference SHA-256, generated-shot SHA-256 values, reference-adherence score, cross-shot-identity score, and fail-closed thresholds. The artifact verifier recomputes the actual reference bytes, reuses `VideoArtifactManifest` byte verification for generated shots, and requires the real `hottop.video-plan.v1` so each subject's evidence is restricted to shot hashes from plan shots carrying that same `reference.subject_id`.
 
 A future evaluator adapter must write into this contract rather than becoming the contract itself.
 
@@ -44,10 +44,11 @@ A future evaluator adapter must write into this contract rather than becoming th
 
 ### SigLIP 2
 
-- Source/model card: <https://huggingface.co/google/siglip2-so400m-patch14-384>.
-- License check: the reviewed Google SigLIP 2 SO400M model card declares Apache-2.0.
-- Runtime check: the reviewed checkpoint is roughly **4.54 GB**, and standard `from_pretrained(...)` usage downloads it from Hugging Face when not already local.
-- Decision: stronger license fit than DINOv3 for a future operator-local evaluator, but still too large and network-dependent for normal unattended/CI admission. Keep it on the evaluator shortlist; any future Hottop adapter must be local-path-only, pin the exact model revision and SHA-256, avoid implicit downloads, and demonstrate measurable discrimination on a checked-in continuity benchmark before becoming preferred.
+- Reviewed official model cards declare Apache-2.0.
+- `google/siglip2-so400m-*` remains a high-capacity option, but reviewed checkpoints are multi-GB and standard `from_pretrained(...)` usage downloads from Hugging Face when not already local.
+- A materially lighter official candidate is `google/siglip2-base-patch16-256`: its repository is about **1.54 GB** and the main safetensors file is about **1.5 GB** (SHA-256 `6125cacc01fa93bdc98a0c5101cefcd69b2ed1f8ab4f38d86f4ad5984f5dc863` at the reviewed revision). This is substantially easier to admit for an operator-local benchmark than the SO400M route, while keeping the same Apache-2.0 model-card posture.
+- Standard Transformers usage still performs implicit network download when the model is absent, so neither Base nor SO400M may enter unattended Hottop/CI through `from_pretrained(...)` model IDs.
+- Decision: promote **SigLIP 2 Base 256** to the preferred evaluator experiment candidate ahead of SO400M for the first operator-local benchmark. Any adapter must accept an explicit local model path, pin exact revision/file hash, perform no download, and demonstrate useful separation between same-subject and identity-drift controls before becoming a preferred production evaluator.
 
 ### DINO-family evaluators
 
@@ -56,7 +57,7 @@ Older DINO/DINOv2-style embeddings remain plausible building blocks for referenc
 ## Durable implications
 
 - Structural `subject_id` / prompt identity locks are **input constraints**, not proof of generated visual identity.
-- Visual-continuity evidence must bind to exact reference and shot bytes, not filenames or manually copied hashes.
+- Visual-continuity evidence must bind to exact reference and shot bytes **and to the subject-bearing shots in the production plan**, not filenames, global manifest membership or manually copied hashes.
 - Evaluator identity and revision are part of provenance; thresholds are explicit and fail closed.
 - Hottop remains evaluator-neutral. No model evaluator may silently download weights, use paid APIs, or weaken the guaranteed software3d / zero-cost baseline.
 - Code license, model/weights license, hidden network behavior, operator hardware burden and commercial restrictions remain separate admission gates.
@@ -64,4 +65,4 @@ Older DINO/DINOv2-style embeddings remain plausible building blocks for referenc
 
 ## Next evidence step
 
-When an operator-controlled LightX2V/Wan2.2 or WanGP reference-conditioned run is available, generate at least two byte-bound shots for the same rights-safe subject, run an admitted/reviewed evaluator or documented operator review, serialize the continuity benchmark with exact revisions and hashes, and require the configured thresholds before promoting that route as identity-preserving.
+When an operator-controlled LightX2V/Wan2.2 or compliant WanGP reference-conditioned run is available, generate at least two byte-bound shots for the same rights-safe subject, run an admitted/reviewed evaluator or documented operator review, serialize the continuity benchmark with exact revisions and hashes, and require the configured thresholds before promoting that route as identity-preserving. For the first model-based evaluator experiment, prefer the reviewed SigLIP 2 Base 256 local-path route over a larger SO400M checkpoint unless benchmark evidence shows the larger model is necessary.
