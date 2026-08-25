@@ -16,7 +16,14 @@ Ecosystem maintenance is part of the product, not an occasional research task. E
 
 Priority areas include video T2V/I2V/S2V, identity and character consistency, animation/restylization, low-VRAM inference, temporal extension, frame interpolation, upscaling, TTS/voice, original music/audio generation, Foley, ComfyUI/workflow orchestration, deterministic editing/encoding, and quality evaluation.
 
-The watchlist is open-ended. Current examples include Wan2.2, WanGP, FramePack, LTX/LTX-2, HunyuanVideo, FastVideo, ViMax, Toonflow, ComfyUI, Diffusers, RIFE, Real-ESRGAN, InfiniteTalk, and stronger candidates discovered later.
+The watchlist is open-ended. Current examples include Wan2.2, WanGP, FramePack, LTX/LTX-2, HunyuanVideo, FastVideo, ViMax, Toonflow, ComfyUI, Diffusers, RIFE, Real-ESRGAN, InfiniteTalk, SCAIL-2, and stronger candidates discovered later.
+
+### Current material findings
+
+- **SCAIL-2 (`zai-org/SCAIL-2`)** — official Apache-2.0 implementation for controlled character animation with end-to-end in-context conditioning. As of August 2026 it has multi-reference inference, ComfyUI integration, animal-driving/character-replacement support, and newly released training code. This is a strong fit for Hottop's identity-continuity gap, but the 14B-class checkpoint and preprocessing stack remain operator-owned; Hottop should integrate through an isolated adapter or Comfy workflow rather than downloading the model automatically.
+- **WanGP (`DeepBeepMeep/Wan2GP`)** — remains a high-value low-VRAM operator backend. The August 2026 line has moved beyond the originally reviewed stack and now exposes newer LTX 2.5 / upsampling paths in addition to Wan/Hunyuan/LTX families. This reinforces the adapter-first policy: Hottop should track capability/profile metadata rather than bind its core plan schema to a specific WanGP model release.
+
+These notes are not permission to execute a model. Code and model/weights licenses, model-card terms, hardware, and current runtime safety must still be checked at integration time.
 
 ## Integration gate
 
