@@ -10,6 +10,7 @@ on:
       - "pyproject.toml"
       - ".github/workflows/software3d-production-smoke.yml"
       - "tests/test_software3d_production_smoke_contract.py"
+      - "tests/test_video_caption_font.py"
 
 jobs:
   production-smoke:
@@ -26,7 +27,7 @@ jobs:
       - name: Prepare free local media tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg espeak
+          sudo apt-get install -y ffmpeg espeak fonts-noto-cjk
       - name: Verify production readiness
         run: |
           mkdir -p artifacts/software3d-smoke
@@ -37,6 +38,7 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
+          from hottop.video_moviepy import select_caption_font
 
           status = json.loads(Path("artifacts/software3d-smoke/doctor.json").read_text())
           assert status["ready"] is True, status
@@ -44,6 +46,8 @@ jobs:
           assert status["voice"]["ready"] is True
           assert status["moviepy"]["ready"] is True
           assert status["ffmpeg"]["ready"] is True
+          font = select_caption_font(["中文字幕必须可读"])
+          assert font is not None and Path(font).is_file(), font
           PY
       - name: Execute full config-to-MP4 pipeline
         run: |
