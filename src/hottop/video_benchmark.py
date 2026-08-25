@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import typing
-
 import pydantic
+import typing
 
 
 Sha256 = typing.Annotated[str, pydantic.Field(pattern=r"^[0-9a-f]{64}$")]
