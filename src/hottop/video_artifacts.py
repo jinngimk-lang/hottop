@@ -33,6 +33,8 @@ class VideoShotArtifact(BaseModel):
     path: str = Field(min_length=1)
     artifact_kind: VideoArtifactKind
     backend: str = Field(min_length=1)
+    candidate_id: str | None = None
+    candidate_revision: str | None = None
     degraded_from: str | None = None
     degradation_reason: str | None = None
     sha256: str | None = None
@@ -54,6 +56,14 @@ class VideoShotArtifact(BaseModel):
             raise ValueError(
                 f"{labels[self.artifact_kind]} artifacts cannot carry deterministic degradation metadata"
             )
+
+        if (self.candidate_id is None) != (self.candidate_revision is None):
+            raise ValueError("candidate provenance requires both candidate_id and candidate_revision")
+        if self.candidate_id is not None:
+            self.candidate_id = self.candidate_id.strip()
+            self.candidate_revision = self.candidate_revision.strip() if self.candidate_revision else ""
+            if not self.candidate_id or not self.candidate_revision:
+                raise ValueError("candidate provenance must not be blank")
 
         if (self.sha256 is None) != (self.size_bytes is None):
             raise ValueError("artifact byte identity requires both sha256 and size_bytes")
