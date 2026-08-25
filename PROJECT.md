@@ -294,6 +294,20 @@ Context recovery order:
 
 Do not ask the user to repeat stable project direction that the repository can recover.
 
+### Chat generation source of truth
+
+When the user asks in a ChatGPT conversation to create or revise a Hottop-related image, meme, storyboard, video, prompt package or production asset, the **current GitHub repository is the project source of truth**, not stale chat memory.
+
+Before generation, recover the minimum relevant current state from the repository:
+
+1. current `PROJECT.md` and `STATUS.md`;
+2. the relevant checked-in reusable skill(s);
+3. the relevant current example/render source, style/config profile, creative directive, rights/provenance rule and production constraint;
+4. current `main` / active PR state when it changes the generation contract;
+5. fresh hotspot/public evidence when the request depends on current culture or facts.
+
+A new explicit user instruction in the current conversation may evolve the project, but durable changes must be reconciled back into the repository. Do not generate from an old remembered style/config when the repository has a newer one.
+
 ### Living updates
 
 A **material direction change** must be challenged against current doctrine/evidence and classified as durable or experiment-specific. If durable, **update the charter** (`PROJECT.md`) and the relevant skill/spec in the same workstream, explicitly state what stale assumption it supersedes when useful, then update `STATUS.md` so the next recovery immediately sees the new state.
@@ -306,7 +320,7 @@ Do not silently stack contradictory instructions. After meaningful doctrine/arch
 - Continue safe work autonomously; routine design/implementation choices are not approval gates.
 - Keep `PROJECT.md`, `STATUS.md`, relevant specs/plans and reusable skills current.
 - Prefer narrow adapters/interfaces around upstream projects over vendoring large third-party repositories.
-- Installing a new skill/MCP/plugin is allowed when it is needed, permission scope is understood, it materially helps the current goal, and it does not cross the paid/secret/destructive/legal boundaries above.
+- **Existing-skill first:** inspect already available reusable skills/MCPs/plugins before adding anything. If an existing capability covers the task, use it rather than relearning, reinstalling or introducing a duplicate alternative. Add a new skill/MCP/plugin only for a concrete uncovered capability gap, after permission scope, license, security, cost and reversibility are understood.
 - Keep credentials, cookies and API keys out of Git and CI logs.
 - Respect site terms, access boundaries, rate limits and account safety.
 - Image/video output matches broad genre/medium grammar while remaining original staging.
@@ -349,6 +363,7 @@ A mature creative package should serialize:
 
 ## Decision log
 
+- **2026-08-25 — GitHub becomes the Chat generation source of truth; existing capability wins over duplicate installation.** Hottop-related image/video generation in Chat must first recover the latest repository doctrine, status, relevant skills, examples/configs and constraints. Existing suitable skills/MCPs/plugins are reused; new capabilities are added only for real gaps after admission checks.
 - **2026-08-25 — Autonomous operation + continuous ecosystem radar become canonical.** Routine reversible repository decisions, integrations, tests, CI work, PR lifecycle and durable project-memory updates proceed without repetitive approval. Every production cycle also performs targeted freshness checks for materially stronger open-source/GitHub/model/runtime options; candidates that pass source/license/cost/hardware/security/value gates are integrated rather than merely reported. High-risk destructive, secret, paid, legal and sensitive-publication actions remain explicit stop boundaries.
 - **2026-08-25 — Software 3D becomes the guaranteed zero-cost motion baseline, not the quality ceiling.** Hottop can now generate real low-poly 3D geometry/animation and MP4 shots without Blender/GPU/model downloads, with byte-bound provenance before composition. This secures repeatable Anti-Polish production while cinematic styles continue to seek stronger reference-conditioned open models.
 - **2026-08-24 — Zero-cost hybrid video becomes the unattended generation default.** `ZERO_COST_MODE=true` means free shared GPU or operator-owned compute for high-value shots, deterministic MoviePy/FFmpeg/audio for the rest, bounded retries, quality gates and no paid fallback.
@@ -361,7 +376,7 @@ A mature creative package should serialize:
 - `skills/brand-metaphor-creative/SKILL.md` — primary creative method: intent, category reframing, constraint deletion, bridge search, format/medium routing, Controlled Badness and review gates.
 - `skills/creative-reference-research/SKILL.md` — provenance-first visual-reference research and grammar-only handoff.
 - `skills/hottop-meme/SKILL.md` — hotspot acquisition, evidence-aware comparison, medium routing and four-panel execution when four-panel is selected.
-- External/operator skills, MCPs and plugins may be added when the autonomous admission rule above says they materially improve a concrete task.
+- External/operator skills, MCPs and plugins may be added only when the existing-skill-first rule finds a concrete capability gap and the autonomous admission rule says the addition materially improves that task.
 
 ## Current milestone
 
