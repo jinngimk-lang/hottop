@@ -1,0 +1,214 @@
+from __future__ import annotations
+
+import argparse
+import copy
+import importlib
+import json
+import os
+import shutil
+import sys
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any, Literal
+
+from pydantic import BaseModel, Field
+
+
+class WanGPError(RuntimeError):
+    """Raised when an operator-managed WanGP generation cannot be used safely."""
+
+
+class WanGPAdapterConfig(BaseModel):
+    root: Path
+    settings_path: Path
+    profile: int = Field(default=4, ge=1, le=5)
+    attention: str = Field(default="sdpa", min_length=1)
+    require_local_model: Literal[True] = True
+    auto_download_models: Literal[False] = False
+
+
+def load_wangp_settings(path: Path) -> dict[str, Any]:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise WanGPError(f"WanGP settings are not readable JSON: {path}") from exc
+    if not isinstance(payload, dict):
+        raise WanGPError("WanGP settings must contain one JSON object")
+    model_type = str(payload.get("model_type") or "").strip()
+    if not model_type:
+        raise WanGPError("WanGP settings must declare model_type")
+    return payload
+
+
+def prepare_wangp_settings(
+    template: dict[str, Any],
+    *,
+    prompt: str,
+    duration_seconds: float,
+    fps: int,
+) -> dict[str, Any]:
+    """Create one WanGP task from an operator-exported settings template."""
+
+    model_type = str(template.get("model_type") or "").strip()
+    if not model_type:
+        raise WanGPError("WanGP settings must declare model_type")
+    if duration_seconds <= 0:
+        raise WanGPError("WanGP shot duration must be greater than zero")
+    if fps <= 0:
+        raise WanGPError("WanGP shot FPS must be greater than zero")
+
+    settings = copy.deepcopy(template)
+    settings["prompt"] = prompt
+    settings["duration_seconds"] = duration_seconds
+    settings["video_length"] = f"{duration_seconds:g}s"
+    settings["force_fps"] = fps
+    return settings
+
+
+def _create_wangp_session(
+    *,
+    root: Path,
+    output_dir: Path,
+    cli_args: list[str],
+) -> Any:
+    root = root.resolve()
+    api_path = root / "shared" / "api.py"
+    entrypoint = root / "wgp.py"
+    if not api_path.is_file() or not entrypoint.is_file():
+        raise WanGPError(
+            "WanGP operator installation is incomplete; expected wgp.py and shared/api.py "
+            f"under {root}"
+        )
+
+    existing = sys.modules.get("shared.api")
+    if existing is not None:
+        loaded_from = Path(str(getattr(existing, "__file__", ""))).resolve()
+        if loaded_from != api_path:
+            raise WanGPError(
+                f"shared.api is already loaded from {loaded_from}, expected {api_path}"
+            )
+
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    module = importlib.import_module("shared.api")
+    loaded_from = Path(str(getattr(module, "__file__", ""))).resolve()
+    if loaded_from != api_path:
+        raise WanGPError(f"WanGP API loaded from {loaded_from}, expected {api_path}")
+
+    return module.init(
+        root=root,
+        output_dir=output_dir,
+        cli_args=cli_args,
+        console_output=True,
+    )
+
+
+def _generated_video_path(result: Any, *, root: Path, output_dir: Path) -> Path:
+    if not bool(getattr(result, "success", False)):
+        errors = getattr(result, "errors", ()) or ()
+        detail = "; ".join(str(error) for error in errors) or "WanGP generation failed"
+        raise WanGPError(detail)
+
+    generated_files = getattr(result, "generated_files", ()) or ()
+    candidates: list[Path] = []
+    for raw in generated_files:
+        candidate = Path(str(raw))
+        possible = [candidate]
+        if not candidate.is_absolute():
+            possible.extend([output_dir / candidate, root / candidate])
+        for path in possible:
+            if path.suffix.lower() in {".mp4", ".webm", ".mov", ".mkv"}:
+                candidates.append(path)
+
+    for candidate in candidates:
+        if candidate.is_file() and candidate.stat().st_size > 0:
+            return candidate.resolve()
+    raise WanGPError("WanGP completed without a readable generated video file")
+
+
+def run_wangp_shot(
+    config: WanGPAdapterConfig,
+    *,
+    prompt: str,
+    duration_seconds: float,
+    fps: int,
+    output: Path,
+    session_factory: Callable[..., Any] = _create_wangp_session,
+) -> Path:
+    """Run one operator-managed WanGP shot without allowing model auto-provisioning."""
+
+    template = load_wangp_settings(config.settings_path)
+    settings = prepare_wangp_settings(
+        template,
+        prompt=prompt,
+        duration_seconds=duration_seconds,
+        fps=fps,
+    )
+    root = config.root.resolve()
+    output = output.resolve()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    cli_args = ["--profile", str(config.profile), "--attention", config.attention]
+    session = session_factory(root=root, output_dir=output.parent, cli_args=cli_args)
+
+    model_type = str(settings["model_type"])
+    availability = session.get_model_availability(model_type)
+    if not isinstance(availability, dict) or not bool(availability.get("available", False)):
+        status = availability.get("status") if isinstance(availability, dict) else "unknown"
+        raise WanGPError(
+            f"WanGP model {model_type!r} is not available locally (status={status}); "
+            "Hottop will not submit the task because that could trigger model provisioning"
+        )
+
+    result = session.submit_task(settings).result()
+    source = _generated_video_path(result, root=root, output_dir=output.parent)
+    if source == output:
+        return output
+
+    partial = output.with_suffix(output.suffix + ".part")
+    partial.unlink(missing_ok=True)
+    try:
+        shutil.copyfile(source, partial)
+        if partial.stat().st_size <= 0:
+            raise WanGPError("WanGP copied output is empty")
+        os.replace(partial, output)
+    except Exception:
+        partial.unlink(missing_ok=True)
+        raise
+    return output
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Generate one shot using operator-managed WanGP")
+    parser.add_argument("--root", required=True)
+    parser.add_argument("--settings", required=True)
+    parser.add_argument("--prompt", required=True)
+    parser.add_argument("--duration-seconds", required=True, type=float)
+    parser.add_argument("--fps", required=True, type=int)
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--profile", type=int, default=4)
+    parser.add_argument("--attention", default="sdpa")
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = _parse_args()
+    config = WanGPAdapterConfig(
+        root=Path(args.root),
+        settings_path=Path(args.settings),
+        profile=args.profile,
+        attention=args.attention,
+    )
+    try:
+        run_wangp_shot(
+            config,
+            prompt=args.prompt,
+            duration_seconds=args.duration_seconds,
+            fps=args.fps,
+            output=Path(args.output),
+        )
+    except WanGPError as exc:
+        raise SystemExit(str(exc)) from exc
+
+
+if __name__ == "__main__":
+    main()
