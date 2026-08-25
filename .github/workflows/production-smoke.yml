@@ -162,3 +162,4 @@ jobs:
             artifacts/production-smoke/odyssey/hottop-video-plan.json
             artifacts/production-smoke/odyssey/ffprobe.json
             artifacts/production-smoke/odyssey/sha256.txt
+            artifacts/production-smoke/odyssey/shots/*.artifact.json
