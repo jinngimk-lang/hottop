@@ -215,6 +215,13 @@ def _resolve_caption_font(
     )
 
 
+def _caption_bottom_y(*, frame_height: int, text_height: int) -> int:
+    """Bottom-anchor a rendered caption while preserving a visible vertical safe margin."""
+
+    margin = max(24, round(frame_height * 0.06))
+    return max(0, frame_height - text_height - margin)
+
+
 def _synthetic_bgm_array(
     duration_seconds: float,
     description: str = "",
@@ -346,10 +353,14 @@ def render_moviepy_timeline(
                 size=(int(timeline.width * 0.88), None),
                 text_align="center",
             )
+            caption_y = _caption_bottom_y(
+                frame_height=timeline.height,
+                text_height=text.h,
+            )
             text = (
                 text.with_start(caption.start_seconds)
                 .with_duration(caption.duration_seconds)
-                .with_position(("center", int(timeline.height * 0.78)))
+                .with_position(("center", caption_y))
             )
             layers.append(text)
 
