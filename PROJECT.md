@@ -237,6 +237,18 @@ Do not silently accumulate contradictory instructions. Supersede stale rules exp
 
 After meaningful doctrine or architecture updates, reread the charter with fresh eyes and check for contradictions, stale assumptions, duplicated rules, missing recovery steps and overly narrow examples. The goal is a project that becomes **more precise and more interesting as it learns**, not a longer document that preserves every historical thought.
 
+### Autonomous owner mode and continuous ecosystem intelligence
+
+Hottop is operated as a persistent autonomous project within the user's standing repository authorization. For **safe, reversible, evidence-backed repository work**, do not pause merely to ask for routine approval. Continue design, implementation, tests, CI repair, documentation, refactoring, provider evaluation, benchmarks and PR integration while useful work remains possible in the current run. Only stop for destructive/irreversible actions, credential or secret handling, paid actions/credit consumption, legal commitments, KYC/identity steps, sensitive external publication, or another boundary that cannot be made safely reversible.
+
+A missing Skill, MCP, plugin or external tool is not by itself a blocker. When a concrete Hottop gap would materially benefit from one, discover and use/install/connect it when this can be done without paid actions, credential disclosure, broad privilege expansion, silent legal-term acceptance or unsafe host modification. Prefer existing built-in/connected tools first; require a clear rollback path and measurable project value rather than installing tools for novelty.
+
+**Continuous ecosystem intelligence is a project invariant.** The persistent loop performs a lightweight targeted upstream check each hourly run against the current production gap, and a broader scan at least every few hours or sooner when a material release, license, security or runtime event is likely. Sources should prioritize official GitHub repositories/releases, model cards, licenses, papers and official docs, with trustworthy current technical reporting used for discovery/corroboration.
+
+For each candidate, independently check exact source/freshness, code license, model/weights license, commercial/geographic restrictions, hardware/runtime requirements, install/runtime security, zero-cost compatibility, maintenance, headless/API maturity and concrete measurable value. If a candidate materially improves a current Hottop gap, do not merely report it: integrate through the smallest isolated adapter/config/algorithm that preserves stable Hottop contracts, or port only compatible ideas/tests when code cannot be copied. Add an acceptance test or benchmark so replacements are evidence-based. Do not vendor large third-party projects, AGPL/incompatible implementations or model weights merely because they are popular.
+
+Durable findings from this radar must update `PROJECT.md` and the relevant Skill/spec in the same workstream. Transient scan notes and short-lived release details belong in `STATUS.md` or an archive, not as permanent charter noise.
+
 ## Non-goals
 
 - No permanent InkClawAgent, AI-tool, mascot or character requirement.
@@ -274,17 +286,19 @@ Keep video production downstream of the provider-neutral creative contract rathe
 
 For unattended generation, **`ZERO_COST_MODE=true` is the preferred default policy**. Hottop may spend free shared GPU capacity only on high-value generative shots, while product/UI footage, captions, camera moves, audio, compositing and final encoding remain deterministic whenever possible. `zero-cost-router` may use verified public/free Hugging Face ZeroGPU candidates with optional environment-only authentication, bounded attempts and an artifact **quality gate**. A rejected video is deleted and the next configured free candidate may run. Exhausting free capacity must wait, fail, or degrade to a clearly deterministic path: there is **no paid fallback**, no automatic credits/overage, no credit-card enrollment, and no automatic GPU/model provisioning.
 
-Code license and model/weights license are separate execution gates. The zero-cost watchlist currently includes FramePack, FastVideo, Wan2.2, LTX, ViMax, Toonflow, RIFE, Real-ESRGAN and other materially stronger candidates discovered later; a permissive repository license is not enough to enable a checkpoint or hosted endpoint. OpenMontage is studied for production architecture only because its code is AGPL-3.0. New backends enter through isolated adapters after source, license, cost, runtime security and measurable-quality checks.
+Code license and model/weights license are separate execution gates. The zero-cost watchlist currently includes FramePack, FastVideo, Wan2.2, WanGP/operator integrations, LTX/LTX-2, HunyuanVideo, ViMax, Toonflow, SCAIL/character-animation work, ID-preserving video research, RIFE, Real-ESRGAN and other materially stronger candidates discovered later; a permissive repository license is not enough to enable a checkpoint or hosted endpoint. OpenMontage is studied for production architecture only because its code is AGPL-3.0. New backends enter through isolated adapters after source, license, cost, runtime security and measurable-quality checks.
 
-- **Wan2.2** (`Wan-Video/Wan2.2`, Apache-2.0) is the primary optional open-source local shot-generation candidate. Prefer the TI2V-5B path for the general local profile; model downloads and GPU execution are never a CI requirement and remain operator-controlled.
+- **Wan2.2** (`Wan-Video/Wan2.2`, Apache-2.0 code) is the primary optional open-source local shot-generation family. Prefer TI2V-5B for the general local path when hardware permits. The official family also exposes S2V-14B and Animate-14B capabilities relevant to speech-driven motion and character animation/replacement; these remain operator-controlled candidates until exact checkpoint/license/runtime evidence is recorded. Model downloads and GPU execution are never a CI requirement.
+- **WanGP / Wan2GP** (`DeepBeepMeep/Wan2GP`) is **operator-only**, not vendored into Hottop. Its Community License allows internal/company use and commercial use of generated outputs but restricts selling/white-labeling/embedding WanGP itself or offering paid WanGP API/SaaS/OEM access without a separate license. Hottop therefore integrates only through the existing external/operator adapter. Its headless, low-VRAM, SCAIL-2/character-animation, LongCat, audio/TTS and motion tooling are valuable upstream capabilities to benchmark through exported settings, not code to absorb into Hottop.
+- **ID-V2V** (`Eyeline-Labs/ID-V2V`, Apache-2.0 code) is a research candidate for identity-preserving video restylization/character consistency. Treat the repository license, checkpoints/base-model dependencies and intended-use/runtime constraints as separate gates; do not make it a production default until a rights-safe same-case benchmark proves material identity improvement over existing reference-I2V routes.
 - **MoviePy** is the default deterministic **headless** compositor for unattended config-driven assembly: ordered shots, captions, dialogue timing, original generated music, procedural SFX/Foley and final audio mix.
 - **Motion Canvas** (`motion-canvas/motion-canvas`, MIT) remains an optional advanced vector-motion / interactive-preview compositor when a project needs richer custom motion graphics instead of the default unattended path.
 - **FFmpeg** is the final external compatibility encoder for H.264/AAC/yuv420p/fast-start and optional WebM/GIF. Licensing obligations depend on the actual FFmpeg build and enabled codecs.
 - **Remotion** is an optional adapter candidate only. Its current commercial license conditions depend on entity size, so Hottop must not silently enable it or make it a default dependency without an operator license review.
 
-Audio is a first-class production contract, not an afterthought. `VideoProductionConfig.audio` selects **voice**, **music** and **SFX/Foley** backends/profiles; `hottop.video-plan.v1` preserves role-aware dialogue cues (`speaker`, `delivery`, voice profile), BGM style and SFX timing. The free local executable baseline is `espeak` for Mandarin dialogue plus Hottop-generated original synthetic music and deterministic procedural Foley/SFX. These are replaceable adapters, not creative semantics. Future cloud TTS/music providers may replace the baseline only through explicit adapters, and paid calls/credentials remain operator-controlled. When `original_music_only` is true, do not fetch or imitate copyrighted commercial soundtrack audio.
+Audio is a first-class production contract, not an afterthought. `VideoProductionConfig.audio` selects **voice**, **music** and **SFX/Foley** backends/profiles; `hottop.video-plan.v1` preserves role-aware dialogue cues (`speaker`, `delivery`, voice profile), BGM style and SFX timing. The free local executable baseline is `espeak` for Mandarin dialogue plus Hottop-generated original synthetic music and deterministic procedural Foley/SFX. These are replaceable adapters, not creative semantics. Future local/open TTS or audio-generation candidates may replace the baseline only when exact code/weights licenses and runtime practicality are safe; cloud providers remain explicit adapters and paid calls/credentials stay operator-controlled. When `original_music_only` is true, do not fetch or imitate copyrighted commercial soundtrack audio.
 
-Production quality is profile-routed. `roughness_score` controls intentional surface polish without relaxing continuity. `config/video/anti-polish-direct.yml` is the high-roughness headless profile; `config/video/cinematic-meme-direct.yml` is the lower-roughness cinematic meme profile for film-like hotspots that still need absurdity but must remain presentable; `config/video/cinematic-zero-cost.yml` is the free-only cinematic profile using the bounded quality-gated router. `config/video/anti-polish-short.yml` remains the Motion Canvas planning/advanced-motion profile.
+Production quality is profile-routed. `roughness_score` controls intentional surface polish without relaxing continuity. `config/video/anti-polish-direct.yml` is the high-roughness headless profile; `config/video/cinematic-meme-direct.yml` is the lower-roughness cinematic meme profile for film-like hotspots that still need absurdity but must remain presentable; `config/video/cinematic-zero-cost.yml` is the free-only cinematic profile using the bounded quality-gated router; `config/video/anti-polish-zero-cost.yml` is the free-only high-roughness production profile. `config/video/anti-polish-short.yml` remains the Motion Canvas planning/advanced-motion profile.
 
 `hottop video-plan <render-v2.json> --config <profile.yml>` remains planning-only. `hottop video-run <render-v2.json> --config <profile.yml>` materializes a workspace and is also dry-run by default; only explicit `--execute` may spawn configured local generation/audio/compositor/finalization stages. Neither command may silently download models, invoke paid APIs, require GPU provisioning, install packages or fetch protected source assets.
 
@@ -299,9 +313,12 @@ Keep rendering provider-neutral. ComfyUI is a candidate optional local/offline o
 ## Repository operating rules
 
 - Work on feature branches and merge through PRs.
+- For safe, reversible repository work, proceed autonomously and continue while useful work remains; routine approval is not a stopping condition.
 - Keep `PROJECT.md`, `STATUS.md`, relevant specs/plans and reusable skills current so work survives context loss.
 - On recovery, follow the persistent project memory protocol rather than relying on fuzzy conversation memory.
+- Run continuous upstream/ecosystem checks and integrate measurable improvements through isolated, license-aware adapters or compatible algorithms/tests.
 - Prefer adapters/interfaces around upstream projects; do not fork huge third-party code without a concrete need.
+- Discover missing Skills/MCP/plugins when they solve a concrete gap, but do not install them if doing so requires paid actions, secrets, broad privilege expansion or silent legal-term acceptance.
 - Keep credentials, cookies and API keys out of Git and CI logs.
 - Respect site terms, access boundaries, rate limits and account safety.
 - Image/video output should reproduce the **broad medium/genre grammar** needed for recognition while remaining an original staging.
@@ -339,6 +356,8 @@ A mature creative concept/package should be serializable with:
 
 ## Decision log
 
+- **2026-08-25 — Autonomous owner mode + continuous ecosystem intelligence become canonical.** Routine safe/reversible repository decisions no longer wait for repeated approval. Hottop must continuously inspect relevant GitHub/open-source/model/news changes, verify source + code license + weights license + runtime/security/zero-cost practicality, and integrate materially better capabilities through isolated adapters/algorithms with acceptance evidence. Missing Skills/MCP/plugins may be discovered and used when they solve a concrete gap without paid/secret/privilege/legal expansion. Durable improvements update this charter in the same workstream.
+- **2026-08-25 — Production v0.2 prioritizes repeatable real video evidence over more orchestration surface.** Foundation v0.1 is complete. The acceptance target is a checked-in render/config source that reproducibly yields a playable vertical short with genuinely moving imagery, stable subject identity, continuous geography, first-class dialogue/music/SFX, artifact provenance and final H.264/AAC verification. Deterministic software 3D/2.5D is a valid zero-cost production route when it produces real perspective/motion rather than slideshow substitution.
 - **2026-08-24 — Zero-cost hybrid video becomes the unattended generation default.** `ZERO_COST_MODE=true` now means free shared GPU or operator-owned compute for high-value shots, deterministic MoviePy/FFmpeg/audio work for the rest, bounded retries, mandatory generated-video quality gates, and **no paid fallback**. Hugging Face ZeroGPU is an optional free transport rather than a guaranteed service; rejected or unavailable remote generations cannot trigger billing. Mature projects such as FramePack and FastVideo are tracked as isolated candidates only after code/weights license, runtime security and measurable value review.
 - **2026-08-24 — Video roughness becomes style-routed and audio becomes first-class.** Anti-Polish remains a differentiated strategy, not a universal look. `roughness_score` now makes intentional polish explicit so cinematic film memes can remain convincing while low-budget absurdity can still be selected deliberately. Voice, original music and SFX/Foley are now part of the video production contract and execution order rather than ad-hoc post-production. The local baseline is free/offline-friendly; cloud providers remain replaceable explicit adapters rather than hidden paid dependencies.
 - **2026-08-24 — Anti-Polish / Controlled Badness becomes a first-class selectable video strategy.** The category default in AI video is to compete on smoother, more photorealistic and more expensive-looking output. Hottop explicitly deletes that constraint when roughness strengthens the cultural bridge: low production feel + high comedy control can be more memorable and feel less like an advertisement. This does not relax continuity, timing, subtitle, claim or rights standards; only the surface production grammar is intentionally crude.
@@ -352,17 +371,18 @@ A mature creative concept/package should be serializable with:
 
 ## Current milestone
 
-**Foundation v0.1**
+**Production v0.2 — repeatable real video output**
 
-Close the foundation with arbitrary-promotion semantics, adaptive guided intake, platform/style/project-shape routing, evidence-aware comparison discovery, hotspot acquisition/enrichment, creative-doctrine persistence, reference-research contracts, bridge/format contracts, contextual review, provider-neutral renderer handoff, config-driven motion planning/execution, first-class audio profiles, tests, CI and representative live archives.
+Move from architecture completeness to production evidence. The flagship target is a real, playable vertical product short generated from checked-in Hottop render/config sources with genuinely moving imagery, stable original-character identity across shots, continuous story geography, role-aware dialogue, original BGM/SFX, natural transitions, artifact provenance and final-media verification. Prioritize completing and archiving a representative config-to-MP4 run before adding more provider abstractions.
 
 ## Session recovery
 
 When resuming:
 
-1. Read `PROJECT.md`.
-2. Read `STATUS.md`.
-3. Read `skills/brand-metaphor-creative/SKILL.md`; read `skills/creative-reference-research/SKILL.md` when visual-reference research is relevant; read `skills/hottop-meme/SKILL.md` when hotspot/four-panel execution applies.
-4. Read the newest relevant spec/plan or decision record for the active milestone.
-5. Inspect open PRs / failing CI.
-6. Continue from `Next actions` in `STATUS.md` without asking for routine approval.
+1. Inspect current `main`, active production branch/PR and exact CI.
+2. Read `PROJECT.md`.
+3. Read `STATUS.md`.
+4. Read `skills/brand-metaphor-creative/SKILL.md`; read `skills/creative-reference-research/SKILL.md` when visual-reference research is relevant; read `skills/hottop-meme/SKILL.md` when hotspot/four-panel execution applies.
+5. Read the newest relevant spec/plan or decision record for the active milestone.
+6. Do a targeted ecosystem check for the current production gap; perform a broader scan when the freshness cadence or a material event warrants it.
+7. Continue the highest-value safe action without asking for routine approval; if more useful work remains possible in the same run, keep going.
