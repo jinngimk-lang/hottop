@@ -258,7 +258,7 @@ def test_reference_continuity_rejects_cross_subject_shot_hash_reassignment(tmp_p
             {"hero": hero_reference, "rival": rival_reference},
             plan=plan,
         )
-    except (TypeError, ValueError) as exc:
-        assert "subject" in str(exc).lower() or "plan" in str(exc).lower()
+    except ValueError as exc:
+        assert "subject" in str(exc).lower()
     else:
         raise AssertionError("continuity evidence must not reassign another subject's shot bytes")
