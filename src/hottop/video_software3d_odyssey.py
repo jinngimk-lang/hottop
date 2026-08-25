@@ -171,7 +171,9 @@ def build_odyssey_story_scene(*, shot_index: int, progress: float, width: int, h
     if shot_index < 1 or shot_index > 5:
         raise ValueError("software 3d Odyssey story expects shot_index 1..5")
     progress = min(1.0, max(0.0, progress))
-    camera_x = 0.04 * math.sin((shot_index - 1 + progress) * 0.9)
+    base_camera_x = 0.04 * math.sin((shot_index - 1) * 0.9)
+    direction = 1.0 if shot_index in {1, 4, 5} else -1.0
+    camera_x = base_camera_x + direction * (progress - 0.5) * 0.42
     camera = Camera3D(
         width=width,
         height=height,
