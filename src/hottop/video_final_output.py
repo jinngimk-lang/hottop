@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 from .video_production import FFmpegConfig
 
 AUDIO_ACTIVITY_FLOOR_DB = -60.0
+AUDIO_DURATION_TOLERANCE_SECONDS = 0.25
 _MAX_VOLUME_RE = re.compile(r"max_volume:\s*(?P<value>-inf|[-+]?\d+(?:\.\d+)?)\s*dB", re.IGNORECASE)
 
 
@@ -79,6 +80,18 @@ def _inspect_audio_activity(
     return max_volume_db, None
 
 
+def _stream_duration(stream: dict[str, Any] | None) -> float | None:
+    if stream is None:
+        return None
+    try:
+        duration = float(stream.get("duration"))
+    except (TypeError, ValueError):
+        return None
+    if duration <= 0:
+        return None
+    return duration
+
+
 def inspect_final_video_output(
     path: Path,
     config: FFmpegConfig,
@@ -94,7 +107,7 @@ def inspect_final_video_output(
             "-v",
             "error",
             "-show_entries",
-            "format=duration:stream=codec_type,codec_name,pix_fmt",
+            "format=duration:stream=codec_type,codec_name,pix_fmt,duration",
             "-of",
             "json",
             str(path),
@@ -153,6 +166,12 @@ def inspect_final_video_output(
 
     audio_max_volume_db: float | None = None
     if audio is not None and audio_codec == expected_audio_codec:
+        audio_duration = _stream_duration(audio)
+        if audio_duration is None:
+            reasons.append("audio duration missing")
+        elif duration > 0 and audio_duration + AUDIO_DURATION_TOLERANCE_SECONDS < duration:
+            reasons.append("audio duration does not cover final video")
+
         audio_max_volume_db, audio_reason = _inspect_audio_activity(path, runner=runner)
         if audio_reason is not None:
             reasons.append(audio_reason)
