@@ -5,7 +5,7 @@ import mimetypes
 import time
 from pathlib import Path
 from typing import Any, Literal
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 import httpx
 from pydantic import BaseModel, Field, model_validator
@@ -184,6 +184,21 @@ def _find_url(value: Any) -> str | None:
     return None
 
 
+def _url_origin(value: str) -> tuple[str, str, int] | None:
+    try:
+        parsed = urlsplit(value)
+        port = parsed.port
+    except ValueError:
+        return None
+    scheme = parsed.scheme.lower()
+    host = (parsed.hostname or "").lower()
+    if scheme not in {"http", "https"} or not host:
+        return None
+    if port is None:
+        port = 443 if scheme == "https" else 80
+    return scheme, host, port
+
+
 def _completed_output(text: str) -> tuple[str, str | None]:
     events = _parse_sse(text)
     for event_name, data in reversed(events):
@@ -298,7 +313,19 @@ def execute_hf_zerogpu(
             )
 
         resolved_url = urljoin(candidate.space_url.rstrip("/") + "/", output_url)
-        response = http.get(resolved_url, headers=_headers(request.token))
+        candidate_origin = _url_origin(candidate.space_url)
+        output_origin = _url_origin(resolved_url)
+        if candidate_origin is None or output_origin != candidate_origin:
+            raise ZeroGpuError(
+                "Hugging Face ZeroGPU returned a cross-origin output URL; refusing external download",
+                code="hf_zerogpu_cross_origin_output",
+                retryable=False,
+            )
+        response = http.get(
+            resolved_url,
+            headers=_headers(request.token),
+            follow_redirects=False,
+        )
         _raise_for_http(response, operation="download")
         content = bytes(getattr(response, "content", b"") or b"")
         if not content:
