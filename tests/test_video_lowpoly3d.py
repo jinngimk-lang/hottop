@@ -4,10 +4,10 @@ import shutil
 from pathlib import Path
 
 import pytest
+from hottop.video_lowpoly3d import project_point, render_lowpoly_frame, render_lowpoly_shot
 
 from hottop.rendering import CreativeRenderFrame, CreativeRenderRequest
 from hottop.video_execution import inspect_video_environment, run_video_production
-from hottop.video_lowpoly3d import project_point, render_lowpoly_frame, render_lowpoly_shot
 from hottop.video_production import VideoProductionConfig, build_video_production_plan
 from hottop.video_quality import VideoQualityPolicy, inspect_video_quality
 
