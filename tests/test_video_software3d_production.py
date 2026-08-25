@@ -32,6 +32,18 @@ def _render_source(tmp_path: Path) -> Path:
     return path
 
 
+def _write_workspace_plan(root: Path, topic_id: str = "inkclaw-anti-polish-cow-snake") -> None:
+    (root / "hottop-video-plan.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "hottop.video-plan.v1",
+                "topic_id": topic_id,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
 def test_story_scene_keeps_hero_identity_across_shots():
     first = build_story_scene(shot_index=1, progress=0.2, width=160, height=90)
     last = build_story_scene(shot_index=5, progress=0.8, width=160, height=90)
@@ -68,6 +80,7 @@ def test_render_story_frame_sequence_writes_real_png_frames(tmp_path: Path):
 
 
 def test_render_story_shot_video_encodes_real_frame_sequence_and_cleans_workspace(tmp_path: Path):
+    _write_workspace_plan(tmp_path)
     output = tmp_path / "shots" / "shot-001.mp4"
     calls: list[list[str]] = []
 
