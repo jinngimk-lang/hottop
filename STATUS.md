@@ -1,59 +1,58 @@
 # Hottop Status
 
 Last updated: 2026-08-25
-Active branch: `main`
+Active branch: `prod/autonomous-radar-governance`
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable real video output**
 
-> This file is the short-lived execution snapshot. `PROJECT.md` is the durable doctrine. Re-fetch GitHub state before exact CI/head claims.
+> This file is the short-lived execution snapshot. `PROJECT.md` is durable doctrine. Re-fetch GitHub state before exact CI/head claims.
 
-## Foundation v0.1 — COMPLETE
+## Current production state
 
-PR #1, **Build Hottop brand creative engine foundation**, was squash-merged into `main` as `ee0ffb388745d7ed1f890d278cfbb17cccea167c` after the verified PR head passed Ruff + the full pytest suite on Python 3.11 and 3.12. The resulting `main` push then passed CI again.
+Foundation PR #1 is merged. Production v0.2 is active and the repository now has a real zero-cost deterministic motion baseline plus optional free/operator-owned generative routes.
 
-Foundation v0.1 established Hottop as a cross-category, evidence-aware hot-topic brand creative engine with adaptive intake, evidence-aware trend/comparison research, category reframing, bridge search, flexible formats/media, provider-neutral render/video contracts, dry-run-first trusted execution, first-class audio, zero-cost/operator video backends, reference identity locks, quality gates, artifact provenance and selectable Anti-Polish / Controlled Badness.
+Closed in the current production pass:
+
+- `software3d` is integrated into normal `video-run` execution. It renders actual 3D geometry/projection/animation, encodes per-shot MP4 through FFmpeg, and does not require Blender, a GPU or a model download.
+- Software3d shots emit convention-bound `.artifact.json` sidecars with SHA-256 + byte size; MoviePy verifies byte identity before composition.
+- A full software3d profile carries role-aware dialogue, original synthetic music and procedural SFX/Foley through the standard audio/composition/finalization path.
+- ZeroGPU, WanGP and Comfy external boundaries remain quality/provenance gated and fail closed rather than silently using paid fallback.
+- Cross-shot identity locks and rights-safe reference inputs are validated before generation.
+- A local rights-safe CosyVoice3 adapter exists as a Mandarin/multilingual quality upgrade; model/runtime provisioning remains operator-owned and reference voice audio requires explicit rights provenance.
+- Qwen3-TTS 0.6B Base is recorded as a high-priority Apache-2.0 local benchmark candidate; voice-clone capability remains rights-gated.
+- The reviewed candidate registry now tracks materially relevant zero-cost/operator candidates including SCAIL-2, LongCat-Video-Avatar, WanGP, MiniMax H3 and Qwen3-TTS with code-vs-weights license separation and runtime gates.
+
+## Current governance change
+
+Branch `prod/autonomous-radar-governance` updates `PROJECT.md` so repository truth matches the operating mandate:
+
+- routine reversible research/design/code/tests/docs/CI/PR decisions proceed autonomously rather than waiting for repetitive approval;
+- durable direction changes are written back into `PROJECT.md` and relevant skills/specs in the same workstream;
+- every production cycle performs a targeted ecosystem freshness check for current Hottop gaps;
+- candidates that pass source, code+weights license, cost, hardware, security, measured-value and rollback gates are integrated through a small adapter/config/test/benchmark instead of being left as research notes;
+- only destructive/irreversible, secret/credential, paid, legal or sensitive-publication boundaries stop for explicit operator action;
+- `PROJECT.md` now correctly records Production v0.2 as the current milestone rather than the completed Foundation milestone.
+
+The hourly automation has been synchronized to the same Production + Ecosystem Radar policy. Interactive work continues immediately between scheduled runs; the hourly task is persistence/recovery, not a reason to stop current work.
 
 ## Durable motion contract
 
-Default unattended path:
+`hottop.render.v2 → hottop.video-plan.v1 → generation → audio → MoviePy → FFmpeg → final media verification`
 
-`hottop.render.v2 → hottop.video-plan.v1 → generation → audio → MoviePy → FFmpeg`
+Default unattended target is zero-cost. Free GPU exhaustion may wait, bounded-retry, fail, or use an explicitly deterministic path; it must never turn into paid credits or a hidden paid provider. `video-run` is dry-run by default and only explicit `--execute` may spawn trusted stages after readiness passes.
 
-`video-run` remains dry-run by default. Only explicit `--execute` may spawn trusted configured stages after readiness passes. External model downloads, GPU provisioning, optional package installation, credentials, cloud uploads and paid services remain operator-controlled.
+Surface roughness is style-routed. Anti-Polish may deliberately look cheap; continuity, geography, subtitles, dialogue intelligibility, comedy timing, product semantics, evidence/claim safety, rights safety and final-media integrity are never optional.
 
-References teach grammar, not pixels. Protected frames, likenesses, official character designs, copied UI/layouts, source footage and copyrighted soundtracks remain excluded by default. Surface roughness never relaxes continuity, directing, subtitle/dialogue correctness, comedy timing, product semantics, claim safety, rights safety or encoding integrity.
+## Current ecosystem priorities
 
-## Production v0.2 progress
+1. **Identity / reference-conditioned cinematic video:** benchmark only candidates whose code and weights terms permit the intended use. SCAIL-2 and LongCat remain high-interest; H3 remains license-gated/operator-approved rather than an unattended default.
+2. **Low-cost local execution:** continue using WanGP as operator interop rather than vendoring it; track upstream capability changes without binding Hottop core schema to a model release.
+3. **Mandarin dialogue quality:** benchmark CosyVoice3/Qwen3-TTS or a materially stronger safe local runtime against eSpeak for intelligibility, prosody, runtime cost and integration complexity.
+4. **Production evidence:** prefer actual config→moving shots→audio→composite→verified MP4 evidence over accumulating additional unbenchmarked provider abstractions.
 
-The milestone is now moving from provider architecture to **repeatable production evidence**.
+## Immediate next actions
 
-Completed in the current production pass:
-
-- Added `config/video/anti-polish-zero-cost.yml` as the free-only flagship production profile.
-- Added a dependency-free `src/hottop/video_software3d.py` software renderer using actual 3D vertices, yaw transforms, perspective projection, depth-sorted faces and deterministic PNG output. The identity signature is geometry-based and remains stable while a character moves or rotates.
-- Added `src/hottop/video_software3d_production.py`, which consumes the checked-in five-shot `examples/video/inkclaw-cow-snake.render.json` structure and produces one continuous low-poly 3D workshop sequence with stable young-cow geometry, mother-cow entrance, animated snake, laptop, task blocks and the final kicked Deploy box.
-- Added tests for perspective depth, real frame change under 3D motion, transform-stable identity, duplicate identity rejection, cross-shot hero identity and multi-frame story motion. The implementation pass at `ea2f566295f09a06d1cca36ffe1216fd5d3169a5` passed Ruff + the full pytest suite on Python 3.11 and 3.12.
-- Rendered a local 10.0-second production-evidence MP4 from the same software-3D approach: H.264, 360×640, yuv420p, AAC, SHA-256 `c9162bfbe6a881e89df1a2677f3dd6fb69a3d88b35dc4ee3df5324d0ae5f9b20`. The artifact is intentionally not committed as a binary fixture; repository code/tests remain the reproducible source.
-
-This software-3D path is a **zero-cost deterministic fallback**, not the quality ceiling. It exists so Hottop can still produce genuine 3D motion when free GPU routes are unavailable and so generated-model outputs have a deterministic continuity baseline to beat.
-
-## Ecosystem / autonomy policy
-
-`docs/operations/autonomous-ecosystem-radar.md` now records the durable autonomous-owner and continuous-upstream-radar policy. Routine reversible repository decisions proceed without waiting for ordinary approval. The loop continuously checks current upstreams relevant to the active gap and integrates only source-verifiable, license-compatible, zero-cost-safe, testable and reversible improvements.
-
-Fresh August 2026 findings include official `zai-org/SCAIL-2` as a strong multi-reference / character-animation candidate for the identity-continuity gap and continued rapid WanGP evolution (including newer LTX 2.5 / upsampling paths). These remain operator-owned model stacks until exact model-license/runtime gates are satisfied; Hottop should integrate them through adapters rather than automatic model downloads.
-
-## Closed security / integrity boundaries
-
-- ZeroGPU output URLs are confined to the configured Space origin and redirects are disabled, preventing bearer-token exfiltration and remote download steering.
-- Comfy remote endpoints/outputs require safe parsed URL semantics; loopback HTTP is restricted to real loopback origins; output downloads carry no API token and do not follow redirects.
-- WanGP references use an explicit exported-Settings placeholder, are locally rights-preflighted, and returned footage must pass the shared video-quality gate.
-- Repeated `subject_id` references must carry consistent identity anchors before production commands are emitted.
-
-## Next production actions
-
-1. Wire the software-3D production path into the normal config/workspace execution surface rather than leaving it as a standalone production CLI.
-2. Run the existing MoviePy dialogue/music/SFX stage over the software-3D shot sequence so the deterministic baseline proves the entire render → motion → audio → finalization contract.
-3. Add a rights-safe multi-reference/last-frame continuity benchmark for free GPU or operator-owned backends; SCAIL-2 is now a high-priority candidate, with WanGP remaining the practical low-VRAM operator integration.
-4. Archive reproducible final-media/provenance evidence for a polished enough cinematic profile as well as the Anti-Polish baseline.
-5. Prefer actual production improvements over adding provider abstractions without a measured gap.
+1. Verify the autonomy/radar branch on exact-head CI, open a focused PR, and merge when green/no review blocker.
+2. Continue Production v0.2 immediately after merge: run/strengthen the full software3d config→MP4 baseline and archive reproducible final-media/provenance evidence.
+3. Wire the best reviewed local TTS path into the standard video audio backend only when it preserves explicit voice-rights and no-auto-download boundaries; benchmark it against the current fallback.
+4. Continue targeted upstream scans while implementing; integrate only material improvements that clear the admission gate.
