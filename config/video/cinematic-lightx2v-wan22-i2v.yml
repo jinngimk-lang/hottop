@@ -1,0 +1,78 @@
+schema_version: hottop.video-config.v1
+name: cinematic-lightx2v-wan22-i2v
+style_profile: cinematic
+roughness_score: 24
+generation_backend: lightx2v-operator
+compositor_backend: moviepy
+encoder_backend: ffmpeg
+width: 720
+height: 1280
+fps: 24
+duration_seconds: 10.0
+output_format: mp4
+shot_policy:
+  min_shot_seconds: 1.2
+  max_shot_seconds: 3.0
+  transition_bias:
+    - follow
+    - eyeline
+    - match-action
+    - foreground-occlusion
+    - motivated-pan
+audio:
+  bgm_style: original cinematic meme score with restrained dramatic pulse
+  dialogue_duck_db: -10
+  foley_style: cinematic physical Foley with clean sync and restrained comic accents
+  voice_backend: espeak
+  voice_profile: natural-mandarin-cinematic
+  voice_language: zh
+  voice_rate_wpm: 145
+  music_backend: synthetic
+  music_profile: cinematic-meme-original
+  sfx_backend: procedural
+  sfx_profile: cinematic-physical-foley
+  original_music_only: true
+text:
+  subtitle_mode: dialogue-first
+  max_end_card_seconds: 0.7
+  allow_url: false
+  allow_qr: false
+anti_polish:
+  enabled: false
+  rough_3d: false
+  low_poly_bias: false
+  awkward_motion: false
+  deadpan_acting: true
+  cheap_instrumentation: false
+  forbid_glossy_ai_ad_defaults: true
+  precision_must_remain:
+    - character continuity
+    - scene geography
+    - cause and effect
+    - facial consistency
+    - subtitle correctness
+    - dialogue intelligibility
+    - comedy timing
+    - product semantics
+    - rights safety
+lightx2v:
+  root: integrations/LightX2V
+  model_path: models/Wan2.2-I2V-A14B
+  config_json: integrations/LightX2V/configs/wan22/wan_moe_i2v.json
+  model_cls: wan2.2_moe
+  task: i2v
+  seed: 42
+  code_license: Apache-2.0
+  weights_license: Apache-2.0
+  cost_per_unit: 0
+  operator_managed: true
+  auto_install: false
+  auto_download_models: false
+moviepy:
+  shot_dir: shots
+  composite_name: hottop-composite.mp4
+ffmpeg:
+  video_codec: libx264
+  audio_codec: aac
+  pixel_format: yuv420p
+  movflags: +faststart
