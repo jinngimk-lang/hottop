@@ -21,7 +21,6 @@ def test_software3d_shot_writes_byte_bound_provenance_manifest(tmp_path: Path):
     render_story_shot_video(
         shot_index=1,
         output=output,
-        artifact_manifest=manifest,
         duration_seconds=0.5,
         width=160,
         height=90,
@@ -41,7 +40,7 @@ def test_software3d_shot_writes_byte_bound_provenance_manifest(tmp_path: Path):
     assert shot["size_bytes"] == len(payload)
 
 
-def test_video_run_materializes_software3d_artifact_contract_for_every_shot(tmp_path: Path):
+def test_video_run_software3d_outputs_follow_moviepy_manifest_convention(tmp_path: Path):
     render = CreativeRenderRequest.model_validate(
         json.loads(Path("examples/video/inkclaw-cow-snake.render.json").read_text(encoding="utf-8"))
     )
@@ -57,9 +56,8 @@ def test_video_run_materializes_software3d_artifact_contract_for_every_shot(tmp_
 
     generation = [command for command in result.runtime_commands if command.stage == "generation"]
     assert len(generation) == 5
-    assert len(result.artifact_manifest_paths) == 5
     for index, command in enumerate(generation, start=1):
-        assert "--artifact-manifest" in command.args
-        manifest = Path(command.args[command.args.index("--artifact-manifest") + 1])
-        assert manifest == (tmp_path / "run" / "shots" / f"shot-{index:03d}.artifact.json").resolve()
-        assert str(manifest) in result.artifact_manifest_paths
+        output = Path(command.args[command.args.index("--output") + 1])
+        assert output == (tmp_path / "run" / "shots" / f"shot-{index:03d}.mp4").resolve()
+        expected_manifest = output.with_suffix(".artifact.json")
+        assert expected_manifest.name == f"shot-{index:03d}.artifact.json"
