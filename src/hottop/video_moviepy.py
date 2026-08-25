@@ -356,6 +356,19 @@ def _validate_dialogue_track_duration(
         )
 
 
+def _effective_dialogue_duck_track(
+    track: MoviePyTimelineDialogueTrack,
+    *,
+    actual_duration_seconds: float,
+) -> MoviePyTimelineDialogueTrack:
+    """Bind BGM attenuation to validated audible voice length, not the whole planned shot."""
+
+    duration = actual_duration_seconds
+    if track.duration_seconds is not None:
+        duration = min(duration, track.duration_seconds)
+    return track.model_copy(update={"duration_seconds": duration})
+
+
 def _procedural_sfx_array(
     duration_seconds: float,
     cues: list[MoviePyTimelineSfxCue],
@@ -464,6 +477,25 @@ def render_moviepy_timeline(
         if composite.audio is not None:
             audio_layers.append(composite.audio)
 
+        prepared_dialogue = []
+        effective_duck_tracks = []
+        for track in timeline.dialogue_tracks:
+            voice = AudioFileClip(track.source)
+            opened_audio.append(voice)
+            _validate_dialogue_track_duration(
+                actual_duration_seconds=voice.duration,
+                track=track,
+            )
+            effective_duck_tracks.append(
+                _effective_dialogue_duck_track(
+                    track,
+                    actual_duration_seconds=voice.duration,
+                )
+            )
+            if track.duration_seconds is not None and voice.duration > track.duration_seconds:
+                voice = voice.subclipped(0, track.duration_seconds)
+            prepared_dialogue.append((track, voice))
+
         if timeline.generate_synthetic_bgm:
             audio_array, sample_rate = _synthetic_bgm_array(
                 duration,
@@ -472,7 +504,7 @@ def render_moviepy_timeline(
             audio_array = _apply_dialogue_ducking(
                 audio_array,
                 sample_rate=sample_rate,
-                dialogue_tracks=timeline.dialogue_tracks,
+                dialogue_tracks=effective_duck_tracks,
             )
             bgm = AudioArrayClip(audio_array, fps=sample_rate).with_duration(duration)
             audio_layers.append(bgm)
@@ -482,15 +514,7 @@ def render_moviepy_timeline(
             sfx = AudioArrayClip(sfx_array, fps=sample_rate).with_duration(duration)
             audio_layers.append(sfx)
 
-        for track in timeline.dialogue_tracks:
-            voice = AudioFileClip(track.source)
-            opened_audio.append(voice)
-            _validate_dialogue_track_duration(
-                actual_duration_seconds=voice.duration,
-                track=track,
-            )
-            if track.duration_seconds is not None and voice.duration > track.duration_seconds:
-                voice = voice.subclipped(0, track.duration_seconds)
+        for track, voice in prepared_dialogue:
             voice = voice.with_start(track.start_seconds)
             audio_layers.append(voice)
 
