@@ -27,7 +27,7 @@ def _odyssey_request() -> CreativeRenderRequest:
         category_default="manual serial workflow",
         deleted_constraint="one person manually performs every stage",
         new_competition_axis="time to coordinated useful work",
-        bridge_type="transformation",
+        bridge_type="action-motion",
         bridge="manual repetitive work literally turns the crew into pigs until multi-agent delegation breaks the spell",
         frames=[
             CreativeRenderFrame(
