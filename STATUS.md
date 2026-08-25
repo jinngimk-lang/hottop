@@ -1,7 +1,7 @@
 # Hottop Status
 
-Last updated: 2026-08-25
-Active workstream: **Production v0.2 — inspect and improve real output quality; obtain generated identity evidence when operator runtime exists**
+Last updated: 2026-08-26
+Active workstream: **Production v0.2 — inspect real output quality; obtain generated identity evidence when operator runtime exists**
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
@@ -9,58 +9,60 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current main state
 
-Current verified runtime `main`: `4602b70cf0fa76c3e1bb5011a0281bffd7adb68c` (`Improve cinematic Odyssey lighting (#49)`).
+Current runtime `main`: `68005f70d27eb06b493572057d893f1a05a6f250` (`prod: improve software3d vertical framing`, squash merge of PR #52).
 
-Post-merge verification:
+Latest verified evidence before merge:
 
-- main CI **1510** passed on Python 3.11 and 3.12;
-- main production-smoke **87** passed both complete cow and Odyssey config → moving shots → Mandarin dialogue/music/SFX → MoviePy → FFmpeg → final media/provenance paths;
-- PR #49 exact-head CI **1509** and production-smoke **86** were green before merge;
-- PR #48 exact-head CI **1506** and production-smoke **84** were green before merge; post-merge CI **1507** and production-smoke **85** also passed.
+- PR #52 exact-head `15c5863e075847e37ed4ed63d2e91095ade5e3d5` CI **1535** passed;
+- PR #52 production-smoke **104** passed the real config → moving shots → Mandarin dialogue/music/SFX → MoviePy → FFmpeg → final media/provenance path;
+- RED CI **1531** isolated the mobile framing gap at exactly two failures before the renderer-level fix.
+
+Post-merge main CI/production-smoke should be re-fetched before claiming the merge commit green.
 
 ## Real artifact-level closures from this production cycle
 
+### Perceptible deterministic motion
+
+Direct artifact inspection showed that a playable MP4 can still read as nearly static. The guaranteed software3d baseline now has deterministic pixel-motion and camera-motion contracts. Cow uses deliberate Anti-Polish pan/dolly movement; Odyssey uses controlled cinematic pan/crane/dolly/zoom motion. The motion gate is style-routed and does not redefine random failure as roughness.
+
+### Mobile-first vertical framing
+
+Production-smoke artifact inspection then exposed a cross-style 9:16 framing defect: narrative subjects remained too low in the frame, leaving a persistent empty upper region. RED evidence measured the shot-1 midpoint narrative-subject top at **36.95%** of frame height for cow and **42.09%** for Odyssey, missing the mobile-first `<=35%` contract.
+
+PR #52 keeps landscape projection centered but moves the guaranteed software3d portrait projection principal point to **42% of frame height**. This renderer-level correction preserves story geometry, pan/dolly/crane motion and subtitle-safe lower space. Exact-head CI **1535** and production-smoke **104** passed before merge.
+
 ### Final audio presence and duration
 
-Final output verification now rejects two false-positive classes that codec-only inspection could miss:
+Final output verification rejects two false-positive classes that codec-only inspection could miss:
 
-1. **Silent AAC:** final AAC must contain measurable audible signal; an encoded silent track does not satisfy the audio contract.
-2. **Truncated audio:** the AAC stream must cover the full final video duration within a conservative **0.25 s** codec/container skew tolerance. A short audible blip cannot make a ten-second video pass.
+1. **Silent AAC:** final AAC must contain measurable audible signal.
+2. **Truncated audio:** AAC must cover the full final video duration within a conservative **0.25 s** codec/container skew tolerance.
 
-Direct production-smoke 84 inspection confirmed the normal baseline is not being rejected accidentally: both cow and Odyssey final videos are 10 s with ~10.008 s AAC streams, and a `-50 dB / 0.5 s` silence scan found no long silent interval.
+Production evidence confirmed both cow and Odyssey ten-second outputs carry roughly 10.008 s AAC and no long >=0.5 s silence interval at the checked threshold.
 
 ### Cinematic Odyssey visual separation
 
-Direct production-smoke 84 frame inspection found a style-routing defect that CI/media verification could not see: the lower-roughness Odyssey software3d baseline was darker/flatter than the deliberate Anti-Polish cow scene, weakening subject/environment separation.
-
-PR #49 fixed only the Odyssey story palette. It did not change the cow baseline, provider routing, generation policy or media contracts.
-
-Evidence:
-
-- CI **1508 RED** established a deterministic style-routing contract: Odyssey background and hall-wall luminance must exceed the Anti-Polish cow scene by a measurable margin;
-- exact-head CI **1509 GREEN** + production-smoke **86 GREEN**;
-- direct smoke 86 artifact inspection at 1/3/5/7/9 s showed sampled Odyssey mean grayscale luminance rise from roughly **29.5–32.4** in smoke 84 to **45.9–48.3**, with visibly clearer subject/environment separation and captions still readable;
-- post-merge main CI **1510 GREEN** + production-smoke **87 GREEN**.
+Direct artifact inspection found the lower-roughness Odyssey software3d baseline darker/flatter than the deliberate Anti-Polish cow scene. The Odyssey-only palette correction raised sampled mean grayscale luminance from roughly **29.5–32.4** to **45.9–48.3**, improving subject/environment separation without changing the cow baseline, provider routing or media contracts.
 
 This is a deterministic style-routing baseline improvement, not a claim that software3d is the cinematic quality ceiling.
 
 ### CJK/Mandarin subtitle readability and layout
 
-Earlier artifact inspection closed two independent subtitle defects:
-
 - **Glyph coverage:** CJK font resolution fails closed rather than silently rendering tofu boxes. Normal `video-run` does not auto-install fonts; CI explicitly provisions reviewed Noto CJK fonts.
-- **Vertical safe area:** MoviePy bottom-anchors captions from actual rendered `TextClip.h`, with a safe lower margin and clamping for unusually tall captions, so long Mandarin subtitles remain fully visible.
+- **Vertical safe area:** MoviePy bottom-anchors captions from actual rendered `TextClip.h`, with a safe lower margin and clamping for unusually tall captions.
 
 ### Deterministic software3d story identity
 
-The deterministic baseline is story-explicit: cow and Odyssey route to distinct story worlds from the workspace plan, and missing/unknown topics fail closed instead of silently falling back to a historical cow template merely to emit a playable MP4.
+The deterministic baseline is story-explicit: cow and Odyssey route to distinct story worlds from the workspace plan, and missing/unknown topics fail closed instead of silently falling back to a historical template merely to emit a playable MP4.
 
 ## Guaranteed zero-cost baseline
 
 The checked-in software3d route now has reproducible production proof for:
 
 - distinct story-specific moving 3D worlds for cow and Odyssey;
-- style-routed presentation: deliberate Anti-Polish cow vs brighter lower-roughness Odyssey baseline;
+- perceptible, style-routed camera/pixel motion rather than slideshow-like output;
+- mobile-first portrait framing with narrative action moved out of the lower subtitle region;
+- deliberate Anti-Polish cow vs brighter lower-roughness Odyssey presentation;
 - Mandarin dialogue + readable, safe-area-bounded CJK subtitles;
 - original synthetic music + procedural Foley/SFX;
 - final AAC that is codec-valid, audibly active and duration-covering;
@@ -75,15 +77,7 @@ This is the guaranteed fallback/evidence baseline, not the cinematic quality cei
 
 The remaining identity gap still requires **real generated-output evidence** from an operator-owned reference-conditioned route. This execution environment does not contain a provisioned LightX2V/Wan2.2 or compliant WanGP model/runtime/assets. Normal unattended Hottop must not auto-download multi-GB models, provision GPU, consume credits or weaken that boundary.
 
-A production identity-preservation claim requires:
-
-- at least two generated, byte-bound plan shots for the same rights-safe evaluated subject;
-- exact planned local reference + stable `subject_id`;
-- generated-video quality gates;
-- generator candidate + actual local source revision bound to those bytes;
-- independently verifiable model/checkpoint provenance when available;
-- continuity evidence covering every subject-bearing plan shot for the evaluated subject;
-- explicit evaluator identity/revision + fail-closed thresholds.
+A production identity-preservation claim requires at least two generated byte-bound plan shots for the same rights-safe evaluated subject, exact reference + stable `subject_id`, generated-video quality gates, actual generator source provenance, independently verifiable model/checkpoint provenance when available, complete subject-bearing shot coverage and explicit evaluator identity/revision + fail-closed thresholds.
 
 Generator source revision, model/checkpoint revision, evaluator revision and output artifact bytes remain separate provenance dimensions.
 
@@ -91,21 +85,22 @@ Generator source revision, model/checkpoint revision, evaluator revision and out
 
 Research record: `docs/research/2026-08-25-reference-continuity-evaluator-radar.md`.
 
-- **LightX2V** remains the primary Apache-2.0 operator inference framework. The tested Hottop integration pin remains `926299962ed32a142411e45468a289623432b4e4`. A fresh check on 2026-08-25 observed upstream `main` still at `5dc5d6372654406761474719647763ac7b4bd018` (`fix(swiftvr): convert BF16 images before NumPy export (#1429)`); this does not materially improve Hottop's tested Wan2.2 CLI path, so there is no evidence-backed reason to repin.
+- **LightX2V** remains the primary Apache-2.0 operator inference framework. The tested Hottop integration pin remains `926299962ed32a142411e45468a289623432b4e4`. Fresh upstream activity includes InfiniteTalk cancellation handling and requests around newer models such as MiniMax H3, but no observed change materially improves Hottop's tested Wan2.2 local CLI contract enough to justify an unbenchmarked repin.
 - **SigLIP 2 Base 256** remains the preferred first operator-local continuity evaluator experiment only after explicit local weights + revision/hash are supplied; no implicit download.
-- **Qwen3-TTS CustomVoice / CosyVoice** remain operator-owned Mandarin quality candidates. `cosyvoice.cpp` v0.1.1 is a lightweight runtime candidate but still requires matching GGML/ICU/runtime assets and has reported prebuilt CUDA noise caveats; there is no evidence-backed reason to replace the current admission posture or auto-install it.
+- **Qwen3-TTS CustomVoice / CosyVoice** remain operator-owned Mandarin quality candidates. Qwen3-TTS upstream remains active, including open Apple-Silicon/MPS work, but no evidence currently justifies changing the guaranteed eSpeak fallback or auto-provisioning models.
 - DINOv3, DreamSim and WanGP remain gated by their respective weights/license/runtime boundaries.
 
 Durable rule: code license != model/weights/data license; popularity/freshness alone is not admission evidence.
 
 ## Immediate next actions
 
-1. Continue **direct artifact inspection** of guaranteed software3d outputs. Quantify the next visible deterministic gap before changing code; current Odyssey frames suggest composition/framing occupancy is a stronger candidate than further palette adjustment.
-2. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime + rights-safe assets actually exist, execute the real multi-shot identity benchmark before claiming identity preservation.
-3. Prefer SigLIP 2 Base 256 for the first local evaluator benchmark only with explicit local weights + exact revision/hash and same-subject vs identity-drift controls.
-4. Continue Mandarin dialogue quality benchmarking through reviewed local Qwen3-TTS/CosyVoice routes when runtimes/models are supplied; eSpeak remains the guaranteed fallback.
-5. Continue targeted ecosystem scans against measured gaps and integrate only candidates clearing source/license/weights-license/cost/hardware/security/reversibility/value gates.
-6. For fresh creative output, continue current-hotspot research + mechanism mapping + generation preflight rather than treating cow/Odyssey as defaults.
+1. Re-fetch post-merge `main` CI and production-smoke for `68005f70…`; repair immediately if either fails.
+2. Continue **direct artifact inspection** of the now motion- and framing-gated software3d outputs. Quantify the next visible deterministic gap before changing code.
+3. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime + rights-safe assets exist, execute the real multi-shot identity benchmark before claiming identity preservation.
+4. Prefer SigLIP 2 Base 256 for the first local evaluator benchmark only with explicit local weights + exact revision/hash and same-subject vs identity-drift controls.
+5. Continue Mandarin dialogue quality benchmarking through reviewed local Qwen3-TTS/CosyVoice routes when runtimes/models are supplied; eSpeak remains the guaranteed fallback.
+6. Continue targeted ecosystem scans against measured gaps and integrate only candidates clearing source/license/weights-license/cost/hardware/security/reversibility/value gates.
+7. For fresh creative output, continue current-hotspot research + mechanism mapping + generation preflight rather than treating cow/Odyssey as defaults.
 
 ## Recovery order
 
