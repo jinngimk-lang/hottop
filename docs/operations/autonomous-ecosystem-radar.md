@@ -1,52 +1,103 @@
 # Autonomous Ecosystem Radar
 
-This document is a durable operating policy for Hottop and is subordinate only to `PROJECT.md` when the two conflict. It exists to make the project's autonomy and ecosystem-maintenance rules recoverable across sessions.
+This document is the detailed operating policy for Hottop's autonomous maintenance and is subordinate only to `PROJECT.md` when the two conflict. It exists so ecosystem research becomes production improvement rather than a pile of links.
 
 ## Autonomous decision rule
 
-For normal, reversible work inside `jinngimk-lang/hottop`, the operator delegates routine engineering and creative decisions to the Hottop owner loop. Do not stop for ordinary approval when the repository, evidence, tests, and current project charter are sufficient to choose a safe path.
+For normal, reversible work inside `jinngimk-lang/hottop`, routine engineering, creative and integration decisions are delegated to the Hottop owner loop. Do not stop for ordinary approval when repository truth, current evidence, tests and the charter are sufficient to choose a safe path.
 
-Continue useful work within the same run while the environment and permissions allow it. Pause only for destructive or irreversible actions, credentials or secrets, paid actions or credit consumption, new legal commitments or terms, KYC or identity steps, sensitive external publication, or other actions whose consequence cannot be safely inferred from the existing authorization.
+Continue useful work within the same interactive run while environment and permissions allow it; a scheduled-loop boundary is not a stopping condition. The hourly loop is a recovery/persistence mechanism, not the only time work may advance.
 
-Missing tools, skills, plugins, or MCP integrations may be discovered and installed/connected when they address a concrete Hottop gap, have a clear rollback path, do not require paid actions or new legal acceptance, do not broaden access unnecessarily, and pass a source/security/license check.
+Pause only for destructive or irreversible actions, credentials/secrets, paid actions or credit consumption, new legal commitments/terms, KYC/identity steps, sensitive external publication, or another action whose consequences cannot be safely contained by existing authorization.
+
+Missing tools, skills, plugins or MCP integrations may be discovered and installed/connected when they solve a concrete Hottop gap, have a clear rollback path, do not require paid actions/new legal acceptance, do not unnecessarily broaden access, and pass source/security/license review. Never install something merely because it is available.
 
 ## Continuous ecosystem intelligence
 
-Ecosystem maintenance is part of the product, not an occasional research task. Every autonomous run should perform a lightweight targeted check of upstream projects directly relevant to the current production gap. At least every few hours, or sooner when a material release/security/license/runtime event is likely, perform a broader scan of official GitHub repositories, releases, model cards, papers, official docs, and trustworthy technical news.
+Ecosystem maintenance is part of the product. Every autonomous production cycle should perform a **targeted freshness check** of upstreams relevant to the current bottleneck. A broader scan is useful when a material release, security issue, license change or architecture shift is likely; do not mechanically rescan the same ecosystem when nothing changed.
 
-Priority areas include video T2V/I2V/S2V, identity and character consistency, animation/restylization, low-VRAM inference, temporal extension, frame interpolation, upscaling, TTS/voice, original music/audio generation, Foley, ComfyUI/workflow orchestration, deterministic editing/encoding, and quality evaluation.
+Priority areas:
 
-The watchlist is open-ended. Current examples include Wan2.2, WanGP, FramePack, LTX/LTX-2, HunyuanVideo, FastVideo, ViMax, Toonflow, ComfyUI, Diffusers, RIFE, Real-ESRGAN, InfiniteTalk, SCAIL-2, Fun-CosyVoice3, MiniMax H3, and stronger candidates discovered later.
+- T2V/I2V/S2V and multi-reference character/identity consistency;
+- animation/restylization and temporal extension;
+- low-VRAM, CPU or operator-owned local inference;
+- verified free shared-GPU execution;
+- keyframe/reference image generation;
+- interpolation, temporal restoration and upscaling;
+- Mandarin/multilingual expressive TTS and safe voice design;
+- original music/audio generation and Foley;
+- ComfyUI/workflow/headless orchestration;
+- deterministic editing/encoding and media QA;
+- security, licenses, breaking APIs and runtime changes.
 
-### Current material findings
+The watchlist is open-ended. Current examples include Wan2.2/WanGP, FramePack, FastVideo, LTX, MiniMax H3, SCAIL-2, LongCat, HunyuanVideo, ComfyUI/Diffusers, RIFE, Real-ESRGAN, InfiniteTalk, Fun-CosyVoice/CosyVoice3, Qwen3-TTS and stronger candidates discovered later.
 
-- **SCAIL-2 (`zai-org/SCAIL-2`)** — official Apache-2.0 implementation for controlled character animation with end-to-end in-context conditioning. As of August 2026 it has multi-reference inference, ComfyUI integration, animal-driving/character-replacement support, and newly released training code. This is a strong fit for Hottop's identity-continuity gap, but the 14B-class checkpoint and preprocessing stack remain operator-owned; Hottop should integrate through an isolated adapter or Comfy workflow rather than downloading the model automatically.
-- **WanGP (`DeepBeepMeep/Wan2GP`)** — remains a high-value low-VRAM operator backend. The August 2026 line has moved beyond the originally reviewed stack and now exposes newer LTX 2.5 / upsampling paths in addition to Wan/Hunyuan/LTX families. This reinforces the adapter-first policy: Hottop should track capability/profile metadata rather than bind its core plan schema to a specific WanGP model release.
-- **MiniMax H3 (`MiniMaxAI/MiniMax-H3`)** — technically attractive for Hottop because the official model supports multimodal video generation including reference-conditioned and synchronized-audio/video paths. It is **not** a default unattended backend: the weights use the MiniMax H3 Community License Agreement rather than a permissive OSS license, the agreement has territory/application and additional commercial/distribution conditions, and use itself can trigger acceptance of those terms. H3 therefore remains an explicit `license-gated/operator-approved` candidate; Hottop must never auto-download, auto-accept, or silently route production to H3.
-- **Fun-CosyVoice 3 (`FunAudioLLM/Fun-CosyVoice3-0.5B-2512`)** — strong free/local TTS candidate for replacing eSpeak when higher Mandarin/multilingual prosody is required. The current official Hugging Face model is marked Apache-2.0, supports nine languages, and is roughly 9.75 GB. High-quality zero-shot speaker conditioning uses reference audio, so Hottop must treat voice references like image references: local file only, explicit `generated-original` or `user-provided-rights-cleared` provenance, no arbitrary URL voice scraping, and no silent voice cloning. The model/repository stay operator-owned; Hottop should preflight a local model path before importing the upstream runtime so upstream auto-download behavior cannot surprise the operator.
-- **Fish Speech and similar voice stacks** — remain secondary candidates when current model-weight terms are research/non-commercial or otherwise less compatible with Hottop's general brand-production goal. A permissive code repository does not override restrictive checkpoint terms.
+## Admission gate
 
-These notes are not permission to execute a model. Code and model/weights licenses, model-card terms, hardware, and current runtime safety must still be checked at integration time.
+Popularity is not an admission criterion. Before adoption, verify:
 
-## Integration gate
+1. exact upstream repository/source and tested revision;
+2. code license separately from model/checkpoint/weights license;
+3. commercial, geographic, redistribution and usage restrictions;
+4. true zero-cost or operator-owned feasibility and absence of hidden paid fallback;
+5. hardware/runtime requirements for a defined production profile;
+6. install/runtime/network behavior, credential handling and security isolation;
+7. headless/API maturity and bounded failure behavior;
+8. a concrete measured Hottop gap it improves;
+9. reversible adapter/config/test boundaries and a rollback path;
+10. a benchmark, acceptance test or production case capable of proving the improvement.
 
-Do not integrate a project because it is popular. Before adoption, verify:
+A permissive repository license does not automatically authorize its weights or hosted endpoint. Use of a model whose terms themselves create a new legal acceptance is operator-controlled even when technically free.
 
-- exact upstream repository/source and maintenance freshness;
-- code license separately from model/weights license;
-- commercial, geographic, and redistribution restrictions;
-- hardware/runtime requirements and actual zero-cost feasibility;
-- install/runtime security and credential boundaries;
-- headless/API maturity and failure behavior;
-- measurable value against a current Hottop gap;
-- isolation, rollback, and testability.
+For incompatible code licenses such as AGPL in a non-AGPL core, learn from architecture and behavior but do not copy implementation into Hottop. Reimplement the useful behavior cleanly if it is worth keeping.
 
-When a candidate is materially better, integrate the smallest compatible adapter, config, algorithm, or test. Do not vendor large third-party repositories by default. For incompatible licenses such as AGPL in a non-AGPL core, learn from architecture and behavior without copying code.
+## Integration rule: research must close the loop
 
-Every material integration should have a benchmark, acceptance test, or production-evidence criterion so later replacements are evidence-based.
+When a candidate materially clears the admission gate, **do not stop at a research note**. Integrate the smallest useful unit:
+
+- a machine-readable registry entry with exact provenance/license/runtime status;
+- a provider/CLI/API adapter;
+- a production profile or workflow contract;
+- a selectively ported permissive algorithm/file when narrow reuse is cleaner than an adapter;
+- acceptance/benchmark tests;
+- representative production evidence.
+
+Prefer narrow interfaces to vendoring entire upstream repositories. Never auto-install unreviewed code or silently download multi-gigabyte models in CI or normal `video-run`. Operator-owned model stacks remain explicit dependencies outside the core repository unless later evidence justifies a different packaging strategy.
+
+If the candidate does **not** clear the gate, record the reason precisely (`weights_license_review`, `hardware_blocked`, `gui_only`, `no_measured_gain`, etc.) so the loop does not repeatedly rediscover the same blocker without new evidence.
+
+## Current material findings
+
+- **SCAIL-2 (`zai-org/SCAIL-2`)** — Apache-2.0 code implementation for controlled character animation with multi-reference/in-context conditioning and relevant character-replacement/animal-animation capabilities. It is a strong identity-continuity benchmark candidate; checkpoint/runtime size and exact weights terms remain execution gates. Prefer an isolated adapter or reviewed Comfy workflow rather than automatic provisioning.
+- **WanGP (`DeepBeepMeep/Wan2GP`)** — high-value low-VRAM operator backend whose supported model set evolves quickly. Keep Hottop bound to its stable headless/API/Settings boundary and capability metadata, not a specific model release. WanGP's own distribution/commercial terms remain separate from every model it runs.
+- **MiniMax H3 (`MiniMaxAI/MiniMax-H3`)** — technically attractive for reference-conditioned and synchronized audio/video generation, but the weights/usage terms are not a permissive drop-in OSS default. Keep it `license-gated/operator-approved`; never auto-download or silently route unattended production to it.
+- **LongCat Video / Avatar** — relevant to character/avatar consistency and synchronized performance; keep exact checkpoint/license/runtime status in the candidate registry before production enablement.
+- **Fun-CosyVoice / CosyVoice3** — strong local Mandarin/multilingual TTS family. Hottop already has a rights-gated local CosyVoice3 adapter. Reference voice audio is treated like image references: local file, explicit rights provenance, no arbitrary URL scraping and no silent voice cloning/model download.
+- **Qwen3-TTS 0.6B Base** — high-priority permissive local TTS benchmark recorded in the registry. Open voice-cloning capability does not relax voice rights; unattended use should favor designed/preset/otherwise rights-safe voices or explicit rights-cleared reference audio.
+- **software3d** — Hottop's own deterministic low-poly 3D renderer is now the guaranteed zero-cost motion baseline. External candidates should beat it on a defined visual/identity/production metric rather than merely exist.
+
+These notes are not permission to execute a model. Re-check exact current repository/model-card/license/runtime facts at integration time because upstream state can change.
+
+## Benchmark discipline
+
+Compare candidates against the **current working route**, not an imagined ideal. Depending on the gap, measure:
+
+- identity/reference retention across shots;
+- actual frame motion vs duplicate/static output;
+- prompt/action adherence;
+- scene/action continuity;
+- readable product semantics;
+- visual quality at the selected `roughness_score`;
+- Mandarin dialogue intelligibility/prosody;
+- synchronized audio/video quality;
+- VRAM/RAM/runtime and setup burden;
+- output decodability/codec compliance;
+- license/rights operational burden.
+
+A model that is prettier but destroys identity, requires paid credits, silently downloads large checkpoints, or has incompatible rights is not an upgrade for the unattended route.
 
 ## Charter synchronization
 
-When this radar produces a durable new direction, architecture, safety boundary, integration strategy, style rule, or proven production pattern, update `PROJECT.md` and the relevant reusable skill/spec in the same workstream. `STATUS.md` records transient branch/CI/next-action state; the charter records durable doctrine.
+When the radar yields a durable direction, architecture, safety boundary, integration strategy, style rule or proven production pattern, update `PROJECT.md` and the relevant reusable skill/spec **in the same workstream**. `STATUS.md` records transient branch/CI/next action; the charter records durable doctrine.
 
-If `PROJECT.md` is later edited, fold this policy into its Repository Operating Rules / Decision Log and keep this document as the detailed operating reference.
+Periodically audit `PROJECT.md` for stale milestones, duplicated doctrine or old assumptions that conflict with newly accepted evidence. Supersede them explicitly rather than stacking contradictory text.
