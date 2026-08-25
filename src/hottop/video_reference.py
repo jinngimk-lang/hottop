@@ -13,9 +13,9 @@ class VideoReference(BaseModel):
 
     image_path: str = Field(min_length=1)
     rights: ReferenceRights
-    subject_id: str | None = None
-    role: str | None = None
-    identity_lock: list[str] = Field(default_factory=list)
+    subject_id: str | None = Field(default=None, exclude_if=lambda value: value is None)
+    role: str | None = Field(default=None, exclude_if=lambda value: value is None)
+    identity_lock: list[str] = Field(default_factory=list, exclude_if=lambda value: not value)
 
     @field_validator("image_path")
     @classmethod
