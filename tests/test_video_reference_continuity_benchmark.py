@@ -66,6 +66,8 @@ def test_reference_continuity_gate_rejects_identity_drift():
 def test_reference_continuity_benchmark_verifies_reference_and_shot_bytes(tmp_path):
     benchmark = importlib.import_module("hottop.video_benchmark")
     artifacts = importlib.import_module("hottop.video_artifacts")
+    production = importlib.import_module("hottop.video_production")
+    reference = importlib.import_module("hottop.video_reference")
 
     reference_path = tmp_path / "reference.ppm"
     shot_one = tmp_path / "shot-001.mp4"
@@ -98,6 +100,41 @@ def test_reference_continuity_benchmark_verifies_reference_and_shot_bytes(tmp_pa
             ),
         ],
     )
+    plan = production.VideoProductionPlan(
+        config_name="reference-profile",
+        topic_id="topic",
+        topic_title="topic",
+        subject_name="product",
+        style_profile="cinematic",
+        generation_backend="lightx2v-operator",
+        compositor_backend="moviepy",
+        encoder_backend="ffmpeg",
+        width=720,
+        height=1280,
+        fps=24,
+        duration_seconds=4.0,
+        output_format="mp4",
+        in_asset_cta_policy="none",
+        shots=[
+            production.VideoShot(
+                index=index,
+                start_seconds=float((index - 1) * 2),
+                end_seconds=float(index * 2),
+                duration_seconds=2,
+                scene=f"hero scene {index}",
+                intent="show hero",
+                continuity_instruction="preserve hero",
+                generation_prompt="hero",
+                negative_prompt="drift",
+                reference=reference.VideoReference(
+                    image_path=str(reference_path),
+                    rights="generated-original",
+                    subject_id="hero",
+                ),
+            )
+            for index in (1, 2)
+        ],
+    )
     evidence = benchmark.ReferenceContinuityBenchmark(
         candidate_id="lightx2v-wan22-i2v",
         candidate_revision="revision",
@@ -120,6 +157,7 @@ def test_reference_continuity_benchmark_verifies_reference_and_shot_bytes(tmp_pa
         evidence,
         manifest,
         {"hero": reference_path},
+        plan=plan,
     )
 
     shot_two.write_bytes(b"tampered-shot-two")
@@ -128,6 +166,7 @@ def test_reference_continuity_benchmark_verifies_reference_and_shot_bytes(tmp_pa
             evidence,
             manifest,
             {"hero": reference_path},
+            plan=plan,
         )
     except ValueError as exc:
         assert "artifact content mismatch" in str(exc)
