@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -15,6 +16,8 @@ from pydantic import BaseModel, Field
 from .video_artifacts import VideoArtifactManifest, VideoShotArtifact
 from .video_quality import VideoQualityPolicy, VideoQualityReport, inspect_video_quality
 from .video_reference import ReferenceRights
+
+_GIT_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 
 
 class LightX2VError(RuntimeError):
@@ -130,6 +133,67 @@ def _byte_identity(path: Path) -> tuple[str, int]:
     return digest.hexdigest(), size_bytes
 
 
+def _resolve_git_dir(root: Path) -> Path | None:
+    marker = root / ".git"
+    if marker.is_dir():
+        return marker
+    if not marker.is_file():
+        return None
+    try:
+        value = marker.read_text(encoding="utf-8").strip()
+    except OSError:
+        return None
+    if not value.startswith("gitdir:"):
+        return None
+    target = Path(value.removeprefix("gitdir:").strip())
+    return target.resolve() if target.is_absolute() else (root / target).resolve()
+
+
+def _read_git_revision(root: Path) -> str | None:
+    git_dir = _resolve_git_dir(root)
+    if git_dir is None:
+        return None
+    try:
+        head = (git_dir / "HEAD").read_text(encoding="utf-8").strip()
+    except OSError:
+        return None
+    if _GIT_SHA_RE.fullmatch(head):
+        return head
+    if not head.startswith("ref:"):
+        return None
+    ref_name = head.removeprefix("ref:").strip()
+    try:
+        revision = (git_dir / ref_name).read_text(encoding="utf-8").strip()
+    except OSError:
+        revision = ""
+    if _GIT_SHA_RE.fullmatch(revision):
+        return revision
+    try:
+        packed_refs = (git_dir / "packed-refs").read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return None
+    for line in packed_refs:
+        if not line or line.startswith(("#", "^")):
+            continue
+        parts = line.split(" ", 1)
+        if len(parts) == 2 and parts[1] == ref_name and _GIT_SHA_RE.fullmatch(parts[0]):
+            return parts[0]
+    return None
+
+
+def _local_source_revision(root: Path) -> str:
+    git_revision = _read_git_revision(root)
+    if git_revision is not None:
+        return git_revision
+    entrypoint = root / "lightx2v" / "infer.py"
+    digest, _ = _byte_identity(entrypoint)
+    return f"source-sha256:{digest}"
+
+
+def _candidate_id(config: LightX2VAdapterConfig) -> str:
+    return f"lightx2v-wan22-{config.task}"
+
+
 def _write_artifact_manifest(
     *,
     config: LightX2VAdapterConfig,
@@ -146,6 +210,8 @@ def _write_artifact_manifest(
                 path=str(output.resolve()),
                 artifact_kind="ai-generated",
                 backend=f"lightx2v:{config.model_cls}",
+                candidate_id=_candidate_id(config),
+                candidate_revision=_local_source_revision(config.root.resolve()),
                 sha256=sha256,
                 size_bytes=size_bytes,
             )
