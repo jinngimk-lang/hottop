@@ -10,6 +10,8 @@ Input-side locks are necessary but are not evidence of output-side visual contin
 
 This cycle admits the **benchmark contract**, not a new evaluator dependency. `hottop.reference-continuity-benchmark.v1` records exact candidate/revision, evaluator/revision, reference SHA-256, generated-shot SHA-256 values, reference-adherence score, cross-shot-identity score, and fail-closed thresholds. The artifact verifier recomputes the actual reference bytes, reuses `VideoArtifactManifest` byte verification for generated shots, and requires the real `hottop.video-plan.v1` so each subject's evidence is restricted to shot hashes from plan shots carrying that same `reference.subject_id`.
 
+An evaluated subject must cover **all** byte-bound plan shots carrying that subject ID. A subset is not acceptable because it permits cherry-picking the best-looking shots while omitting identity-drift failures. This completeness rule is scoped to subjects explicitly included in the benchmark; it does not implicitly expand benchmark scope to single-shot/background subjects that are not being evaluated for cross-shot continuity.
+
 A future evaluator adapter must write into this contract rather than becoming the contract itself.
 
 ## Targeted upstream review
@@ -19,6 +21,7 @@ A future evaluator adapter must write into this contract rather than becoming th
 - Source: <https://github.com/ModelTC/LightX2V>
 - Code license checked: Apache-2.0 at <https://github.com/ModelTC/LightX2V/blob/main/LICENSE>.
 - Hottop status: already integrated only as an operator-owned local route with explicit checkout/model/config preflight, no auto-provisioning, shared quality gates and artifact provenance.
+- Freshness: the reviewed upstream remains actively maintained in August 2026; recent public work is concentrated on platform/distributed inference optimization rather than a new identity-evaluator contract.
 - Decision: keep as the high-priority Wan2.2 inference candidate. Do not infer model/weights permissions from the framework's Apache-2.0 code license; exact checkpoint terms remain a separate gate.
 
 ### WanGP / Wan2GP
@@ -26,6 +29,7 @@ A future evaluator adapter must write into this contract rather than becoming th
 - Source: <https://github.com/deepbeepmeep/Wan2GP>
 - Current project license checked: `WanGP Community License 2.0` at <https://github.com/deepbeepmeep/Wan2GP/blob/main/LICENSE.txt>.
 - The license permits broad private/internal/company production use, including private headless/API use, but restricts monetized embedding, paid API/SaaS/hosted/white-label access without a separate commercial license. Third-party models/weights remain separately licensed.
+- Freshness: upstream August 2026 releases continue to improve H3 sliding-window/reference continuity and LTX 2.5 visual quality. These are materially relevant for later operator benchmarks, but they do not change the community-license boundary and do not justify vendoring or automatic model/runtime provisioning.
 - Decision: preserve Hottop's narrow operator-owned interoperability adapter. Do not vendor WanGP code into Hottop and do not make it an unattended/public paid backend. Its reference/continuation capabilities remain useful for operator benchmarks when the operator has a compliant local installation and separately reviewed model weights.
 
 ### DreamSim
@@ -58,6 +62,8 @@ Older DINO/DINOv2-style embeddings remain plausible building blocks for referenc
 
 - Structural `subject_id` / prompt identity locks are **input constraints**, not proof of generated visual identity.
 - Visual-continuity evidence must bind to exact reference and shot bytes **and to the subject-bearing shots in the production plan**, not filenames, global manifest membership or manually copied hashes.
+- For every subject that is actually evaluated, continuity evidence must cover the full set of that subject's plan shots; partial cherry-picked coverage fails closed.
+- Benchmark scope remains explicit: completeness within an evaluated subject does not mean every incidental/single-shot plan subject must become a continuity target.
 - Evaluator identity and revision are part of provenance; thresholds are explicit and fail closed.
 - Hottop remains evaluator-neutral. No model evaluator may silently download weights, use paid APIs, or weaken the guaranteed software3d / zero-cost baseline.
 - Code license, model/weights license, hidden network behavior, operator hardware burden and commercial restrictions remain separate admission gates.
@@ -65,4 +71,4 @@ Older DINO/DINOv2-style embeddings remain plausible building blocks for referenc
 
 ## Next evidence step
 
-When an operator-controlled LightX2V/Wan2.2 or compliant WanGP reference-conditioned run is available, generate at least two byte-bound shots for the same rights-safe subject, run an admitted/reviewed evaluator or documented operator review, serialize the continuity benchmark with exact revisions and hashes, and require the configured thresholds before promoting that route as identity-preserving. For the first model-based evaluator experiment, prefer the reviewed SigLIP 2 Base 256 local-path route over a larger SO400M checkpoint unless benchmark evidence shows the larger model is necessary.
+When an operator-controlled LightX2V/Wan2.2 or compliant WanGP reference-conditioned run is available, generate at least two byte-bound shots for the same rights-safe evaluated subject, run an admitted/reviewed evaluator or documented operator review, serialize the continuity benchmark with exact revisions and hashes covering **all** of that evaluated subject's plan shots, and require the configured thresholds before promoting that route as identity-preserving. For the first model-based evaluator experiment, prefer the reviewed SigLIP 2 Base 256 local-path route over a larger SO400M checkpoint unless benchmark evidence shows the larger model is necessary.
