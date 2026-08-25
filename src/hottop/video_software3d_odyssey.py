@@ -174,11 +174,12 @@ def build_odyssey_story_scene(*, shot_index: int, progress: float, width: int, h
     base_camera_x = 0.04 * math.sin((shot_index - 1) * 0.9)
     direction = 1.0 if shot_index in {1, 4, 5} else -1.0
     camera_x = base_camera_x + direction * (progress - 0.5) * 0.42
+    camera_z = (progress - 0.5) * 0.30
     camera = Camera3D(
         width=width,
         height=height,
         focal_length=width * 0.98,
-        position=Vec3(camera_x, 0.18, 0),
+        position=Vec3(camera_x, 0.18, camera_z),
     )
     meshes = _hall_geometry(progress)
 
