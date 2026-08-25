@@ -24,7 +24,10 @@ SUBJECT_PREFIXES = {
 }
 
 
-def _projected_subject_bounds(story_profile: str, shot_index: int) -> tuple[float, float]:
+def _projected_subject_bounds(
+    story_profile: str,
+    shot_index: int,
+) -> tuple[float, float]:
     height = 640
     scene = build_story_scene(
         shot_index=shot_index,
