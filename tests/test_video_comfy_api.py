@@ -2,9 +2,10 @@ import json
 from pathlib import Path
 
 import httpx
+import pytest
 
 from hottop.rendering import CreativeRenderFrame, CreativeRenderRequest
-from hottop.video_comfy_api import ComfyJobRequest, execute_comfy_job
+from hottop.video_comfy_api import ComfyApiError, ComfyJobRequest, execute_comfy_job
 from hottop.video_execution import inspect_video_environment, run_video_production
 from hottop.video_production import VideoProductionConfig
 
@@ -90,6 +91,22 @@ def _config(tmp_path: Path) -> VideoProductionConfig:
     )
 
 
+def _workflow(tmp_path: Path) -> Path:
+    workflow = tmp_path / "workflow.json"
+    workflow.write_text(
+        json.dumps(
+            {
+                "6": {
+                    "class_type": "CLIPTextEncode",
+                    "inputs": {"text": "old text"},
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    return workflow
+
+
 def test_comfy_video_run_dry_run_references_token_env_not_secret(monkeypatch, tmp_path):
     config = _config(tmp_path)
     monkeypatch.setenv("COMFY_API_TOKEN", "super-secret-token")
@@ -130,18 +147,7 @@ def test_comfy_readiness_fails_closed_without_token(monkeypatch, tmp_path):
 
 
 def test_comfy_api_v2_executes_api_workflow_and_downloads_video(tmp_path):
-    workflow = tmp_path / "workflow.json"
-    workflow.write_text(
-        json.dumps(
-            {
-                "6": {
-                    "class_type": "CLIPTextEncode",
-                    "inputs": {"text": "old text"},
-                }
-            }
-        ),
-        encoding="utf-8",
-    )
+    workflow = _workflow(tmp_path)
     output = tmp_path / "shot.mp4"
     seen: dict[str, object] = {}
 
@@ -205,6 +211,7 @@ def test_comfy_api_v2_executes_api_workflow_and_downloads_video(tmp_path):
                 },
             )
         if request.url.host == "files.example.test":
+            assert request.headers.get("authorization") is None
             return httpx.Response(200, content=b"MP4DATA")
         raise AssertionError(f"unexpected request: {request.method} {request.url}")
 
@@ -229,3 +236,93 @@ def test_comfy_api_v2_executes_api_workflow_and_downloads_video(tmp_path):
     payload = seen["payload"]
     assert isinstance(payload, dict)
     assert payload["workflow"]["6"]["inputs"]["text"] == "new cinematic prompt"
+
+
+def test_comfy_remote_endpoint_rejects_plain_http_output_before_download(tmp_path):
+    workflow = _workflow(tmp_path)
+    requested_urls: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requested_urls.append(str(request.url))
+        if request.url.path == "/api/v2/jobs" and request.method == "POST":
+            return httpx.Response(201, json={"id": "job-ssrf", "status": "queued"})
+        if request.url.path == "/api/v2/jobs/job-ssrf" and request.method == "GET":
+            return httpx.Response(
+                200,
+                json={
+                    "id": "job-ssrf",
+                    "status": "succeeded",
+                    "outputs": [
+                        {
+                            "type": "video",
+                            "content_type": "video/mp4",
+                            "url": "http://169.254.169.254/latest/meta-data/",
+                        }
+                    ],
+                },
+            )
+        raise AssertionError(f"unsafe output URL must not be requested: {request.url}")
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    request = ComfyJobRequest(
+        endpoint="https://cloud.example.test",
+        workflow_path=workflow,
+        prompt_node_id="6",
+        prompt_input_name="text",
+        prompt="new cinematic prompt",
+        output=tmp_path / "shot.mp4",
+        token="token-value",
+        poll_interval_seconds=0.01,
+        timeout_seconds=2,
+    )
+
+    with pytest.raises(ComfyApiError, match="HTTPS"):
+        execute_comfy_job(request, client=client)
+
+    assert all("169.254.169.254" not in url for url in requested_urls)
+    assert not request.output.exists()
+
+
+def test_comfy_localhost_endpoint_allows_same_origin_http_output(tmp_path):
+    workflow = _workflow(tmp_path)
+    output = tmp_path / "shot.mp4"
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/api/v2/jobs" and request.method == "POST":
+            return httpx.Response(201, json={"id": "job-local", "status": "queued"})
+        if request.url.path == "/api/v2/jobs/job-local" and request.method == "GET":
+            return httpx.Response(
+                200,
+                json={
+                    "id": "job-local",
+                    "status": "succeeded",
+                    "outputs": [
+                        {
+                            "type": "video",
+                            "content_type": "video/mp4",
+                            "url": "http://127.0.0.1:8188/view/result.mp4",
+                        }
+                    ],
+                },
+            )
+        if request.url.path == "/view/result.mp4":
+            return httpx.Response(200, content=b"LOCALMP4")
+        raise AssertionError(f"unexpected request: {request.method} {request.url}")
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    execute_comfy_job(
+        ComfyJobRequest(
+            endpoint="http://127.0.0.1:8188",
+            workflow_path=workflow,
+            prompt_node_id="6",
+            prompt_input_name="text",
+            prompt="local prompt",
+            output=output,
+            token="local-token",
+            poll_interval_seconds=0.01,
+            timeout_seconds=2,
+        ),
+        client=client,
+    )
+
+    assert output.read_bytes() == b"LOCALMP4"
