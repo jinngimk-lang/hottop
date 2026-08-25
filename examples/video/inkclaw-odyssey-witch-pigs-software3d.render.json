@@ -1,0 +1,83 @@
+{
+  "schema_version": "hottop.render.v2",
+  "topic_id": "odyssey-witch-pigs-v1",
+  "topic_title": "original mythic witch banquet turns manual coding crew into pigs",
+  "subject_name": "InkClawAgent",
+  "comparison_target": "generic setup-heavy assistant workflow",
+  "comparison_evidence": [],
+  "expression_form": "faux-film-still",
+  "visual_medium": "animation-low-poly",
+  "genre_treatment": "original low-budget mythic 3D comedy with cinematic blocking and controlled roughness",
+  "distribution_mode": "motion",
+  "in_asset_cta_policy": "no-destination",
+  "motion_continuity_required": true,
+  "category_default": "one person manually performs research, writing, review and coding in a serial workflow",
+  "deleted_constraint": "one person must manually carry every workflow stage",
+  "new_competition_axis": "time to coordinated useful work",
+  "bridge_type": "action-motion",
+  "bridge": "manual repetitive coding literally turns the crew into pigs until multi-agent delegation breaks the spell",
+  "frames": [
+    {
+      "index": 1,
+      "scene": "Inside one original mythic island banquet hall, three anonymous sailors sit at the same long wooden table eating from rough bowls while manually coding on crude laptops. An anonymous witch host watches from the same background. Establish this table, doorway, cast positions and practical low-budget lighting as the continuous geography for every following shot.",
+      "caption": "这活得干多久？",
+      "intent": "establish manual serial work inside the feast",
+      "speaker": "crew",
+      "delivery": "tired, conversational Mandarin, understated"
+    },
+    {
+      "index": 2,
+      "scene": "Without changing room geography, the anonymous witch raises a crude cup over the same table. The same three sailors transform into blocky pigs while their laptops remain open and their hooves keep trying to type. Treat the transformation as absurd public-domain myth satire, not a factual claim about any real company or product.",
+      "caption": "手动流程？那你们慢慢干。",
+      "intent": "transform repetitive manual work into the curse",
+      "speaker": "witch",
+      "delivery": "calm, dry, ominous Mandarin"
+    },
+    {
+      "index": 3,
+      "scene": "The same pigs keep pecking at the same laptops around the same banquet table. The same anonymous returning sailor hero enters through the established doorway, pauses, and looks at the pig-coders while the witch remains in place.",
+      "caption": "怎么全成同事了？",
+      "intent": "hero reaction beat before the rescue",
+      "speaker": "hero",
+      "delivery": "deadpan Mandarin, mildly confused"
+    },
+    {
+      "index": 4,
+      "scene": "The hero stays in the same hall and opens one battered laptop marked only with the text InkClawAgent. Four deliberately crude agent blocks labeled Research, Write, Review and Code split the task visibly around the laptop. No glossy hologram, no sci-fi feature cards and no scene reset.",
+      "caption": "算了，InkClawAgent。",
+      "intent": "product becomes the coordinating rescue action",
+      "speaker": "hero",
+      "delivery": "quiet confident Mandarin, no sales-announcer tone"
+    },
+    {
+      "index": 5,
+      "scene": "The four crude agent blocks finish their handoffs in the same hall and a simple completed-work object appears beside the laptops. The pigs finally stop typing and stare at the completed result. Keep the witch, table and doorway spatially stable.",
+      "caption": "那我变猪的意义是？",
+      "intent": "show multi-agent delegation as the visible story consequence",
+      "speaker": "pig",
+      "delivery": "confused offended Mandarin, comic pause before the answer"
+    },
+    {
+      "index": 6,
+      "scene": "The same hero gives the same pig crew a completely serious look while the finished work remains visible and the witch awkwardly holds her cup. End inside the story world with no URL, QR code or glossy advertisement card.",
+      "caption": "剧情需要。",
+      "intent": "deadpan final punchline and compact product payoff",
+      "speaker": "hero",
+      "delivery": "flat deadpan Mandarin with precise final timing"
+    }
+  ],
+  "master_prompt": "Original public-domain mythic voyage grammar, anonymous sailors and witch archetype, original returning sailor hero, crude low-poly 3D geometry, one continuous banquet hall, old wooden table, battered laptops, simple practical lighting, deliberately modest production value, absurd events treated seriously, consistent character roles and room geography, high directing control.",
+  "negative_prompt": "actor likeness, celebrity face, copied movie frame, official costume, official production design, protected character design, official poster composition, source footage, copyrighted soundtrack, proprietary UI, glossy blue-purple AI advertisement, luxury sci-fi hologram, feature-card end screen, URL, QR code, unrelated slideshow cut",
+  "punchlines": [
+    "剧情需要。",
+    "多 Agent 协作，先把活干完。"
+  ],
+  "risk_flags": [
+    "public-domain myth motifs only; original cast, geometry, staging and camera geography",
+    "do not reproduce any contemporary film frame, actor likeness, official costume or production design",
+    "product value is shown through multi-agent delegation inside the plot rather than unsupported competitor claims",
+    "use original synthetic music and procedural Foley only; do not imitate a commercial film soundtrack"
+  ],
+  "claim_status": "satire",
+  "provider": null
+}
