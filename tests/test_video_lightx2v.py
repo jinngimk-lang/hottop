@@ -5,7 +5,6 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-
 from hottop.video_lightx2v import (
     LightX2VAdapterConfig,
     LightX2VError,
