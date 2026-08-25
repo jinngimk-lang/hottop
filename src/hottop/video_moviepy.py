@@ -222,6 +222,44 @@ def _caption_bottom_y(*, frame_height: int, text_height: int) -> int:
     return max(0, frame_height - text_height - margin)
 
 
+def _fit_caption_text_clip(
+    text_clip_factory,
+    *,
+    text: str,
+    font: str | None,
+    frame_width: int,
+    frame_height: int,
+):
+    """Fit a full mobile caption without letting long copy dominate the subject area."""
+
+    font_size = max(38, frame_width // 14)
+    minimum_font_size = max(28, frame_width // 24)
+    maximum_text_height = max(72, round(frame_height * 0.18))
+
+    while True:
+        clip = text_clip_factory(
+            text=text,
+            font=font,
+            font_size=font_size,
+            color="white",
+            stroke_color="black",
+            stroke_width=3,
+            method="caption",
+            size=(int(frame_width * 0.88), None),
+            text_align="center",
+        )
+        if clip.h <= maximum_text_height or font_size <= minimum_font_size:
+            return clip
+
+        scale = maximum_text_height / clip.h
+        next_font_size = max(
+            minimum_font_size,
+            min(font_size - 2, math.floor(font_size * scale)),
+        )
+        clip.close()
+        font_size = next_font_size
+
+
 def _synthetic_bgm_array(
     duration_seconds: float,
     description: str = "",
@@ -342,16 +380,12 @@ def render_moviepy_timeline(
 
         layers = [base]
         for caption in timeline.captions:
-            text = TextClip(
+            text = _fit_caption_text_clip(
+                TextClip,
                 text=caption.text,
                 font=caption_font,
-                font_size=max(38, timeline.width // 14),
-                color="white",
-                stroke_color="black",
-                stroke_width=3,
-                method="caption",
-                size=(int(timeline.width * 0.88), None),
-                text_align="center",
+                frame_width=timeline.width,
+                frame_height=timeline.height,
             )
             caption_y = _caption_bottom_y(
                 frame_height=timeline.height,
