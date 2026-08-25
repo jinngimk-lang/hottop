@@ -1,3 +1,4 @@
+# ruff: noqa: I001
 from hottop.video_software3d import project_point
 from hottop.video_software3d_production import build_story_scene
 
