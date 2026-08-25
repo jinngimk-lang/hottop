@@ -1,5 +1,7 @@
 from pathlib import Path
+from types import SimpleNamespace
 
+import hottop.video_software3d_production as production
 from hottop.rendering import CreativeRenderFrame, CreativeRenderRequest
 from hottop.video_execution import inspect_video_environment, run_video_production
 from hottop.video_production import VideoProductionConfig
@@ -77,6 +79,41 @@ def test_video_run_materializes_software3d_generation_into_workspace(tmp_path: P
         assert output.is_absolute()
         assert output == (tmp_path / "run" / "shots" / f"shot-{index:03d}.mp4").resolve()
         assert command.cwd == str(tmp_path.resolve())
+
+
+def test_odyssey_runtime_output_routes_renderer_to_workspace_story(monkeypatch, tmp_path: Path):
+    request = _request().model_copy(update={"topic_id": "odyssey-witch-pigs"})
+    result = run_video_production(
+        request,
+        _config(),
+        output_dir=tmp_path / "run",
+        project_root=tmp_path,
+        execute=False,
+    )
+    generation = [command for command in result.runtime_commands if command.stage == "generation"]
+    output_index = generation[0].args.index("--output") + 1
+    output = Path(generation[0].args[output_index])
+    captured = []
+    monkeypatch.setattr(production, "render_scene_frame", lambda scene, _path: captured.append(scene))
+
+    def fake_runner(args, **_kwargs):
+        Path(args[-1]).write_bytes(b"fake-mp4")
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    production.render_story_shot_video(
+        shot_index=1,
+        output=output,
+        duration_seconds=1.0,
+        width=180,
+        height=320,
+        fps=2,
+        runner=fake_runner,
+    )
+
+    names = {mesh.name for mesh in captured[0].meshes}
+    assert "witch-body" in names
+    assert any(name.startswith("sailor-") for name in names)
+    assert "young-cow-body" not in names
 
 
 def test_software3d_readiness_requires_ffmpeg_for_shot_encoding(monkeypatch, tmp_path: Path):
