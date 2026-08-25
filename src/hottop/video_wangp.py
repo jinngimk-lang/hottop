@@ -13,6 +13,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
+from .video_quality import VideoQualityPolicy, VideoQualityReport, inspect_video_quality
 from .video_reference import ReferenceRights
 
 REFERENCE_PLACEHOLDER = "__HOTTOP_REFERENCE_IMAGE__"
@@ -29,6 +30,7 @@ class WanGPAdapterConfig(BaseModel):
     attention: str = Field(default="sdpa", min_length=1)
     require_local_model: Literal[True] = True
     auto_download_models: Literal[False] = False
+    quality_policy: VideoQualityPolicy = Field(default_factory=VideoQualityPolicy)
 
 
 def load_wangp_settings(path: Path) -> dict[str, Any]:
@@ -177,6 +179,23 @@ def _generated_video_path(result: Any, *, root: Path, output_dir: Path) -> Path:
     raise WanGPError("WanGP completed without a readable generated video file")
 
 
+def _verify_wangp_quality(
+    output: Path,
+    policy: VideoQualityPolicy,
+    inspector: Callable[[Path, VideoQualityPolicy], VideoQualityReport],
+) -> None:
+    try:
+        report = inspector(output, policy)
+    except Exception as exc:
+        output.unlink(missing_ok=True)
+        raise WanGPError(f"WanGP generated video quality inspection failed: {exc}") from exc
+    if report.pass_:
+        return
+    output.unlink(missing_ok=True)
+    reason = "; ".join(report.reasons) or "quality policy rejected the generated video"
+    raise WanGPError(f"WanGP generated video rejected by quality gate: {reason}")
+
+
 def run_wangp_shot(
     config: WanGPAdapterConfig,
     *,
@@ -187,6 +206,9 @@ def run_wangp_shot(
     reference_image: Path | None = None,
     reference_rights: ReferenceRights | None = None,
     session_factory: Callable[..., Any] = _create_wangp_session,
+    quality_inspector: Callable[
+        [Path, VideoQualityPolicy], VideoQualityReport
+    ] = inspect_video_quality,
 ) -> Path:
     """Run one operator-managed WanGP shot without allowing model auto-provisioning."""
 
@@ -224,19 +246,19 @@ def run_wangp_shot(
 
     result = session.submit_task(settings).result()
     source = _generated_video_path(result, root=root, output_dir=output.parent)
-    if source == output:
-        return output
-
-    partial = output.with_suffix(output.suffix + ".part")
-    partial.unlink(missing_ok=True)
-    try:
-        shutil.copyfile(source, partial)
-        if partial.stat().st_size <= 0:
-            raise WanGPError("WanGP copied output is empty")
-        os.replace(partial, output)
-    except Exception:
+    if source != output:
+        partial = output.with_suffix(output.suffix + ".part")
         partial.unlink(missing_ok=True)
-        raise
+        try:
+            shutil.copyfile(source, partial)
+            if partial.stat().st_size <= 0:
+                raise WanGPError("WanGP copied output is empty")
+            os.replace(partial, output)
+        except Exception:
+            partial.unlink(missing_ok=True)
+            raise
+
+    _verify_wangp_quality(output, config.quality_policy, quality_inspector)
     return output
 
 
