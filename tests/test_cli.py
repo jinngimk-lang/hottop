@@ -8,7 +8,7 @@ from hottop.models import TrendCandidate
 runner = CliRunner()
 
 
-def test_brief_command_emits_structured_four_panel_json(tmp_path):
+def test_legacy_brief_command_fails_closed_without_hotspot_mechanism_analysis(tmp_path):
     candidate_path = tmp_path / "candidate.json"
     candidate_path.write_text(
         json.dumps(
@@ -40,10 +40,8 @@ def test_brief_command_emits_structured_four_panel_json(tmp_path):
         ],
     )
 
-    assert result.exit_code == 0, result.stdout
-    payload = json.loads(result.stdout)
-    assert len(payload["panels"]) == 4
-    assert payload["role_map"]["promoted_product"] == "InkClawAgent"
+    assert result.exit_code != 0
+    assert "mechanism_mapping is required" in str(result.exception)
 
 
 def test_rank_command_orders_candidates_by_score(tmp_path):
@@ -100,7 +98,7 @@ def test_doctor_command_is_nonfatal_without_optional_integrations(monkeypatch):
     assert payload["firecrawl"]["api_version"] == "v2"
 
 
-def test_render_command_exports_provider_neutral_handoff(tmp_path):
+def test_legacy_render_command_fails_closed_without_hotspot_mechanism_analysis(tmp_path):
     candidate_path = tmp_path / "candidate.json"
     candidate_path.write_text(
         json.dumps(
@@ -129,15 +127,11 @@ def test_render_command_exports_provider_neutral_handoff(tmp_path):
         ],
     )
 
-    assert result.exit_code == 0, result.stdout
-    payload = json.loads(result.stdout)
-    assert payload["schema_version"] == "hottop.render.v1"
-    assert len(payload["panels"]) == 4
-    assert payload["product_name"] == "InkClawAgent"
-    assert payload["provider"] is None
+    assert result.exit_code != 0
+    assert "mechanism_mapping is required" in str(result.exception)
 
 
-def test_batch_command_can_fan_in_repeatable_source_specs(monkeypatch, tmp_path):
+def test_batch_command_fans_in_sources_but_does_not_invent_creative_briefs(monkeypatch, tmp_path):
     product_path = tmp_path / "product.yml"
     product_path.write_text("name: InkClawAgent\n", encoding="utf-8")
     calls: list[tuple[str, str, int]] = []
@@ -176,10 +170,11 @@ def test_batch_command_can_fan_in_repeatable_source_specs(monkeypatch, tmp_path)
     payload = json.loads(result.stdout)
     assert calls == [("dailyhot", "zhihu", 7), ("newsnow", "tech", 7)]
     assert payload["input_count"] == 2
-    assert len(payload["briefs"]) == 2
+    assert payload["briefs"] == []
+    assert set(payload["mechanism_required_ids"]) == {"dailyhot:zhihu", "newsnow:tech"}
 
 
-def test_batch_command_loads_stored_yaml_config(monkeypatch, tmp_path):
+def test_batch_command_loads_stored_yaml_config_without_template_briefing(monkeypatch, tmp_path):
     product_path = tmp_path / "product.yml"
     product_path.write_text("name: InkClawAgent\n", encoding="utf-8")
     config_path = tmp_path / "batch.yml"
@@ -227,5 +222,5 @@ comparison_target: work巴迪
     assert result.exit_code == 0, result.stdout
     payload = json.loads(result.stdout)
     assert calls == [("dailyhot", "zhihu", 4), ("newsnow", "tech", 9)]
-    assert len(payload["briefs"]) == 1
-    assert payload["briefs"][0]["role_map"]["comparison_target"] == "work巴迪"
+    assert payload["briefs"] == []
+    assert len(payload["mechanism_required_ids"]) == 1
