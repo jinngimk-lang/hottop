@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from hottop.rendering import CreativeRenderFrame, CreativeRenderRequest
 from hottop.video_production import VideoProductionConfig, build_video_production_plan
-from hottop.video_software3d_production import build_story_scene
+from hottop.video_software3d_production import (
+    ODYSSEY_PRESET,
+    build_story_scene,
+    resolve_story_preset_for_output,
+)
 
 
 def _odyssey_request() -> CreativeRenderRequest:
@@ -15,7 +19,7 @@ def _odyssey_request() -> CreativeRenderRequest:
         ("The hero deadpans while everyone remains in the same room.", "剧情需要。", "hero"),
     ]
     return CreativeRenderRequest(
-        topic_id="odyssey-witch-pigs-software3d",
+        topic_id=ODYSSEY_PRESET,
         topic_title="original mythic witch pigs workflow meme",
         subject_name="InkClawAgent",
         expression_form="faux-film-still",
@@ -64,7 +68,6 @@ def _odyssey_config() -> VideoProductionConfig:
             "shot_policy": {"min_shot_seconds": 1, "max_shot_seconds": 2},
             "audio": {"bgm_style": "original cheap mythic comedy", "foley_style": "blunt transformation Foley"},
             "text": {},
-            "software3d": {"preset": "odyssey-witch-pigs-v1"},
             "moviepy": {"shot_dir": "shots", "composite_name": "composite.mp4"},
             "ffmpeg": {
                 "video_codec": "libx264",
@@ -76,25 +79,25 @@ def _odyssey_config() -> VideoProductionConfig:
     )
 
 
-def test_software3d_plan_routes_selected_story_preset_to_every_shot():
+def test_software3d_resolves_story_preset_from_render_topic_in_materialized_plan(tmp_path):
     plan = build_video_production_plan(_odyssey_request(), _odyssey_config())
+    plan_path = tmp_path / "hottop-video-plan.json"
+    plan_path.write_text(plan.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    output = tmp_path / "shots" / "shot-001.mp4"
 
-    assert len(plan.shots) == 6
-    for command in plan.generation_command_specs:
-        assert "--preset" in command.args
-        assert "odyssey-witch-pigs-v1" in command.args
+    assert resolve_story_preset_for_output(output) == ODYSSEY_PRESET
 
 
 def test_odyssey_story_preset_changes_geometry_across_transformation():
     before = build_story_scene(
-        preset="odyssey-witch-pigs-v1",
+        preset=ODYSSEY_PRESET,
         shot_index=1,
         progress=0.5,
         width=180,
         height=320,
     )
     after = build_story_scene(
-        preset="odyssey-witch-pigs-v1",
+        preset=ODYSSEY_PRESET,
         shot_index=2,
         progress=0.9,
         width=180,
