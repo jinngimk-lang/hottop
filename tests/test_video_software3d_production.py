@@ -3,6 +3,7 @@ import subprocess
 from pathlib import Path
 
 from hottop.video_software3d_production import (
+    COW_STORY_PROFILE,
     build_story_scene,
     render_story_frame_sequence,
     render_story_shot_video,
@@ -81,6 +82,7 @@ def test_render_story_shot_video_encodes_real_frame_sequence_and_cleans_workspac
         width=160,
         height=90,
         fps=4,
+        story_profile=COW_STORY_PROFILE,
         runner=runner,
     )
 
