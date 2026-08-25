@@ -11,8 +11,12 @@ from pathlib import Path
 
 from .video_artifacts import VideoArtifactManifest, VideoShotArtifact
 from .video_software3d import Camera3D, Mesh3D, Scene3D, Vec3, render_scene_frame
+from .video_software3d_odyssey import build_odyssey_story_scene
 
 Runner = Callable[..., subprocess.CompletedProcess[str]]
+
+COW_STORY_PROFILE = "cow-snake"
+ODYSSEY_STORY_PROFILE = "odyssey-witch-pigs"
 
 
 def _box(
@@ -76,7 +80,7 @@ def _snake_parts(progress: float, shot_index: int) -> list[Mesh3D]:
     return parts
 
 
-def build_story_scene(*, shot_index: int, progress: float, width: int, height: int) -> Scene3D:
+def _build_cow_story_scene(*, shot_index: int, progress: float, width: int, height: int) -> Scene3D:
     if shot_index < 1 or shot_index > 5:
         raise ValueError("software 3d flagship story expects shot_index 1..5")
     progress = min(1.0, max(0.0, progress))
@@ -137,14 +141,57 @@ def build_story_scene(*, shot_index: int, progress: float, width: int, height: i
     return Scene3D(camera=camera, meshes=meshes, background=(31, 24, 22))
 
 
-def _load_render_frames(render_source: Path) -> list[dict[str, object]]:
+def _story_profile_for_topic(topic_id: object) -> str:
+    if isinstance(topic_id, str) and topic_id.strip() == ODYSSEY_STORY_PROFILE:
+        return ODYSSEY_STORY_PROFILE
+    return COW_STORY_PROFILE
+
+
+def build_story_scene(
+    *,
+    shot_index: int,
+    progress: float,
+    width: int,
+    height: int,
+    story_profile: str = COW_STORY_PROFILE,
+) -> Scene3D:
+    if story_profile == ODYSSEY_STORY_PROFILE:
+        return build_odyssey_story_scene(
+            shot_index=shot_index,
+            progress=progress,
+            width=width,
+            height=height,
+        )
+    if story_profile != COW_STORY_PROFILE:
+        raise ValueError(f"unsupported software 3d story profile: {story_profile}")
+    return _build_cow_story_scene(
+        shot_index=shot_index,
+        progress=progress,
+        width=width,
+        height=height,
+    )
+
+
+def _load_render_source(render_source: Path) -> tuple[list[dict[str, object]], str]:
     raw = json.loads(render_source.read_text(encoding="utf-8"))
     if raw.get("schema_version") != "hottop.render.v2":
         raise ValueError("software 3d production requires hottop.render.v2")
     frames = raw.get("frames")
     if not isinstance(frames, list) or len(frames) != 5:
         raise ValueError("software 3d flagship source requires exactly five frames")
-    return frames
+    return frames, _story_profile_for_topic(raw.get("topic_id"))
+
+
+def _story_profile_from_workspace_plan(path: Path = Path("hottop-video-plan.json")) -> str:
+    if not path.is_file():
+        return COW_STORY_PROFILE
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError("software 3d workspace plan is unreadable") from exc
+    if raw.get("schema_version") != "hottop.video-plan.v1":
+        raise ValueError("software 3d workspace requires hottop.video-plan.v1")
+    return _story_profile_for_topic(raw.get("topic_id"))
 
 
 def render_story_frame_sequence(
@@ -156,7 +203,7 @@ def render_story_frame_sequence(
     fps: int = 12,
     seconds_per_shot: float = 2.4,
 ) -> list[Path]:
-    frames = _load_render_frames(render_source)
+    frames, story_profile = _load_render_source(render_source)
     if fps <= 0 or seconds_per_shot <= 0:
         raise ValueError("fps and seconds_per_shot must be positive")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -170,6 +217,7 @@ def render_story_frame_sequence(
                 progress=progress,
                 width=width,
                 height=height,
+                story_profile=story_profile,
             )
             path = output_dir / f"frame-{len(paths):05d}.png"
             render_scene_frame(scene, path)
@@ -222,6 +270,7 @@ def render_story_shot_video(
     if duration_seconds <= 0 or fps <= 0:
         raise ValueError("duration_seconds and fps must be positive")
 
+    story_profile = _story_profile_from_workspace_plan()
     output.parent.mkdir(parents=True, exist_ok=True)
     output.unlink(missing_ok=True)
     manifest_path = output.resolve().with_suffix(".artifact.json")
@@ -238,6 +287,7 @@ def render_story_shot_video(
                 progress=progress,
                 width=width,
                 height=height,
+                story_profile=story_profile,
             )
             render_scene_frame(scene, frames_dir / f"frame-{frame_index:05d}.png")
 
