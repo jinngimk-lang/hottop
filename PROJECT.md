@@ -181,6 +181,8 @@ Production v0.2 includes pure software low-poly 3D as a guaranteed zero-cost bas
 
 This baseline is intentionally suitable for Controlled Badness and reproducible evidence. It is **not** the cinematic quality ceiling.
 
+**Deterministic fallback must be story-explicit.** A software3d renderer may claim only story profiles it actually implements. Shot-mode rendering must derive story identity from the output workspace plan or an explicit supported profile, never from an unrelated current working directory. Unknown, blank or unsupported story topics fail closed; they must never silently reuse the cow template or another historical story merely to produce a playable MP4. Distinct checked-in story proofs must produce materially distinct world/character/prop staging, not only different captions.
+
 ### Generated-video routes
 
 - **HF ZeroGPU** — optional free shared-GPU transport; bounded, quality-gated, never guaranteed.
@@ -353,6 +355,7 @@ A mature package/archive should preserve enough to reproduce and audit the creat
 
 ## Decision log
 
+- **2026-08-25 — Deterministic story routing becomes fail-closed.** Artifact inspection proved that a correct Odyssey plan could still render the cow/workroom world because shot-mode software3d inferred story identity from the wrong working directory and silently defaulted to cow. Hottop now resolves deterministic story identity from the output workspace plan or an explicit supported profile, rejects unknown topics, and requires distinct story proofs to produce materially distinct visual worlds. This supersedes the permissive “unknown means cow” fallback.
 - **2026-08-25 — CJK subtitle rendering becomes fail-closed.** Direct inspection of production-smoke artifacts found Mandarin captions rendered as tofu because MoviePy fell back to a non-CJK Pillow font even though codec/media gates passed. Hottop now requires a real local CJK-capable caption font when CJK text is present; missing font is a production failure, not an acceptable encoding success. Normal execution does not auto-install fonts.
 - **2026-08-25 — Generator source provenance becomes part of continuity evidence.** Byte-valid reference/shot evidence is insufficient if a run can be relabelled as another generator candidate/version. Evaluated LightX2V artifacts now bind the actual local generator source revision and continuity evidence must match it. Framework source revision, model/checkpoint revision, evaluator revision and output bytes remain separate provenance dimensions. This supersedes the weaker self-reported benchmark `candidate_revision` interpretation and explicitly forbids treating a reviewed registry pin as proof of what code actually ran.
 - **2026-08-25 — Continuity evidence becomes subject-bound and complete within evaluated scope.** Output-side identity claims bind exact reference bytes + byte-bound generated artifacts to the same `subject_id`; every subject-bearing plan shot for an evaluated subject must be covered. This supersedes global-manifest/subset checking while avoiding an overbroad requirement for incidental single-shot subjects.
