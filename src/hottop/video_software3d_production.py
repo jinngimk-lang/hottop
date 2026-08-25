@@ -85,7 +85,15 @@ def _build_cow_story_scene(*, shot_index: int, progress: float, width: int, heig
     if shot_index < 1 or shot_index > 5:
         raise ValueError("software 3d flagship story expects shot_index 1..5")
     progress = min(1.0, max(0.0, progress))
-    camera = Camera3D(width=width, height=height, focal_length=width * 0.9, position=Vec3(0, 0.2, 0))
+    direction = -1.0 if shot_index % 2 else 1.0
+    camera_x = direction * (progress - 0.5) * 0.60
+    camera_y = 0.2 + 0.035 * math.sin(progress * math.pi * 2 + shot_index)
+    camera = Camera3D(
+        width=width,
+        height=height,
+        focal_length=width * 0.9,
+        position=Vec3(camera_x, camera_y, 0),
+    )
 
     meshes: list[Mesh3D] = [
         _box("floor", Vec3(0, -1.7, 6.5), Vec3(7.0, 0.25, 8.0), (77, 54, 38)),
