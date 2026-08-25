@@ -1,9 +1,11 @@
 import json
+import subprocess
 from pathlib import Path
 
 from hottop.video_software3d_production import (
     build_story_scene,
     render_story_frame_sequence,
+    render_story_shot_video,
 )
 
 
@@ -61,3 +63,31 @@ def test_render_story_frame_sequence_writes_real_png_frames(tmp_path: Path):
     assert len(frames) == 10
     assert all(path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n") for path in frames)
     assert len({path.read_bytes() for path in frames}) > 5
+
+
+def test_render_story_shot_video_encodes_real_frame_sequence_and_cleans_workspace(tmp_path: Path):
+    output = tmp_path / "shots" / "shot-001.mp4"
+    calls: list[list[str]] = []
+
+    def runner(argv, **kwargs):
+        calls.append(list(argv))
+        Path(argv[-1]).write_bytes(b"fake-mp4")
+        return subprocess.CompletedProcess(argv, 0, "", "")
+
+    result = render_story_shot_video(
+        shot_index=1,
+        output=output,
+        duration_seconds=0.5,
+        width=160,
+        height=90,
+        fps=4,
+        runner=runner,
+    )
+
+    assert result == output
+    assert output.read_bytes() == b"fake-mp4"
+    assert calls and calls[0][0] == "ffmpeg"
+    assert "libx264" in calls[0]
+    assert "yuv420p" in calls[0]
+    assert "+faststart" in calls[0]
+    assert not output.with_suffix(".frames").exists()
