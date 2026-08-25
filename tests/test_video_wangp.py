@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 import pytest
+
 from hottop.video_wangp import (
     WanGPAdapterConfig,
     WanGPError,
