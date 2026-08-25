@@ -1,0 +1,227 @@
+from __future__ import annotations
+
+import argparse
+import os
+import shutil
+import subprocess
+import sys
+from collections.abc import Callable
+from pathlib import Path
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+from .video_quality import VideoQualityPolicy, VideoQualityReport, inspect_video_quality
+from .video_reference import ReferenceRights
+
+
+class LightX2VError(RuntimeError):
+    """Raised when operator-managed LightX2V cannot run safely."""
+
+
+class LightX2VAdapterConfig(BaseModel):
+    root: Path
+    model_path: Path
+    config_json: Path
+    model_cls: Literal["wan2.2_moe", "wan2.2_moe_distill"]
+    task: Literal["t2v", "i2v"]
+    seed: int = 42
+    code_license: Literal["Apache-2.0"] = "Apache-2.0"
+    weights_license: Literal["Apache-2.0"] = "Apache-2.0"
+    python_executable: str = Field(default_factory=lambda: sys.executable)
+    require_local_model: Literal[True] = True
+    auto_install: Literal[False] = False
+    auto_download_models: Literal[False] = False
+    quality_policy: VideoQualityPolicy = Field(default_factory=VideoQualityPolicy)
+
+
+def _resolve_python(executable: str) -> str | None:
+    candidate = Path(executable)
+    if candidate.is_absolute() or candidate.parent != Path("."):
+        return str(candidate.resolve()) if candidate.is_file() else None
+    return shutil.which(executable)
+
+
+def _preflight(config: LightX2VAdapterConfig) -> None:
+    root = config.root.resolve()
+    if not (root / "lightx2v" / "infer.py").is_file():
+        raise LightX2VError(
+            f"LightX2V operator checkout is incomplete: {root / 'lightx2v' / 'infer.py'}"
+        )
+    if not config.model_path.resolve().is_dir():
+        raise LightX2VError(f"LightX2V model path is not available locally: {config.model_path}")
+    if not config.config_json.resolve().is_file():
+        raise LightX2VError(f"LightX2V config JSON is not available locally: {config.config_json}")
+    if _resolve_python(config.python_executable) is None:
+        raise LightX2VError(f"LightX2V Python executable is not available: {config.python_executable}")
+
+
+def build_lightx2v_command(
+    config: LightX2VAdapterConfig,
+    *,
+    prompt: str,
+    negative_prompt: str,
+    output: Path,
+    reference_image: Path | None = None,
+) -> list[str]:
+    command = [
+        config.python_executable,
+        "-m",
+        "lightx2v.infer",
+        "--model_cls",
+        config.model_cls,
+        "--task",
+        config.task,
+        "--model_path",
+        str(config.model_path.resolve()),
+        "--config_json",
+        str(config.config_json.resolve()),
+        "--prompt",
+        prompt,
+        "--negative_prompt",
+        negative_prompt,
+        "--seed",
+        str(config.seed),
+        "--save_result_path",
+        str(output.resolve()),
+    ]
+    if reference_image is not None:
+        command.extend(["--image_path", str(reference_image.resolve())])
+    return command
+
+
+def _offline_environment(root: Path) -> dict[str, str]:
+    env = os.environ.copy()
+    existing = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = str(root) if not existing else os.pathsep.join([str(root), existing])
+    env["HF_HUB_OFFLINE"] = "1"
+    env["TRANSFORMERS_OFFLINE"] = "1"
+    env["HF_DATASETS_OFFLINE"] = "1"
+    env["HF_HUB_DISABLE_TELEMETRY"] = "1"
+    return env
+
+
+def _verify_quality(
+    output: Path,
+    policy: VideoQualityPolicy,
+    inspector: Callable[[Path, VideoQualityPolicy], VideoQualityReport],
+) -> None:
+    try:
+        report = inspector(output, policy)
+    except Exception as exc:
+        output.unlink(missing_ok=True)
+        raise LightX2VError(f"LightX2V generated video quality inspection failed: {exc}") from exc
+    if report.pass_:
+        return
+    output.unlink(missing_ok=True)
+    reason = "; ".join(report.reasons) or "quality policy rejected the generated video"
+    raise LightX2VError(f"LightX2V generated video rejected by quality gate: {reason}")
+
+
+def run_lightx2v_shot(
+    config: LightX2VAdapterConfig,
+    *,
+    prompt: str,
+    negative_prompt: str,
+    output: Path,
+    reference_image: Path | None = None,
+    reference_rights: ReferenceRights | None = None,
+    runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+    quality_inspector: Callable[
+        [Path, VideoQualityPolicy], VideoQualityReport
+    ] = inspect_video_quality,
+) -> Path:
+    """Run one already-installed LightX2V Wan2.2 shot in network-offline mode."""
+
+    _preflight(config)
+    root = config.root.resolve()
+    output = output.resolve()
+
+    if config.task == "i2v":
+        if reference_image is None or reference_rights not in {
+            "generated-original",
+            "user-provided-rights-cleared",
+        }:
+            raise LightX2VError("LightX2V I2V requires one rights-safe reference image")
+        reference_image = reference_image.resolve()
+        if not reference_image.is_file():
+            raise LightX2VError(f"LightX2V reference image is missing: {reference_image}")
+    elif reference_image is not None or reference_rights is not None:
+        raise LightX2VError("LightX2V T2V does not accept reference-image metadata")
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.unlink(missing_ok=True)
+    command = build_lightx2v_command(
+        config,
+        prompt=prompt,
+        negative_prompt=negative_prompt,
+        output=output,
+        reference_image=reference_image,
+    )
+    completed = runner(
+        command,
+        cwd=root,
+        env=_offline_environment(root),
+        shell=False,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        output.unlink(missing_ok=True)
+        detail = (completed.stderr or completed.stdout or "").strip()
+        suffix = f": {detail[:500]}" if detail else ""
+        raise LightX2VError(
+            f"LightX2V generation failed with return code {completed.returncode}{suffix}"
+        )
+    if not output.is_file() or output.stat().st_size <= 0:
+        output.unlink(missing_ok=True)
+        raise LightX2VError("LightX2V completed without the expected non-empty video output")
+
+    _verify_quality(output, config.quality_policy, quality_inspector)
+    return output
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Generate one shot with operator-managed LightX2V")
+    parser.add_argument("--root", required=True)
+    parser.add_argument("--model-path", required=True)
+    parser.add_argument("--config-json", required=True)
+    parser.add_argument("--model-cls", choices=["wan2.2_moe", "wan2.2_moe_distill"], required=True)
+    parser.add_argument("--task", choices=["t2v", "i2v"], required=True)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--prompt", required=True)
+    parser.add_argument("--negative-prompt", default="")
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--reference-image")
+    parser.add_argument(
+        "--reference-rights",
+        choices=["generated-original", "user-provided-rights-cleared"],
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = _parse_args()
+    config = LightX2VAdapterConfig(
+        root=Path(args.root),
+        model_path=Path(args.model_path),
+        config_json=Path(args.config_json),
+        model_cls=args.model_cls,
+        task=args.task,
+    )
+    try:
+        run_lightx2v_shot(
+            config,
+            prompt=args.prompt,
+            negative_prompt=args.negative_prompt,
+            output=Path(args.output),
+            reference_image=Path(args.reference_image) if args.reference_image else None,
+            reference_rights=args.reference_rights,
+        )
+    except LightX2VError as exc:
+        raise SystemExit(str(exc)) from exc
+
+
+if __name__ == "__main__":
+    main()
