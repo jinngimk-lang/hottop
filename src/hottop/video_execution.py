@@ -43,6 +43,7 @@ class VideoExecutionStatus(BaseModel):
     )
     ready: bool
     wan22: BackendReadiness
+    external: BackendReadiness | None = None
     comfy_api: BackendReadiness | None = None
     zero_cost: BackendReadiness | None = None
     voice: BackendReadiness | None = None
@@ -107,6 +108,66 @@ def _wan22_readiness(
 
     return BackendReadiness(
         backend=config.generation_backend,
+        ready=not missing,
+        checks=checks,
+        missing=missing,
+    )
+
+
+def _external_readiness(
+    config: VideoProductionConfig,
+    project_root: Path,
+) -> BackendReadiness:
+    if config.generation_backend != "external":
+        return BackendReadiness(backend="external", ready=True, checks=["not selected"])
+
+    external = config.external_generation
+    if external is None:
+        return BackendReadiness(
+            backend="external",
+            ready=False,
+            missing=["external generation profile configuration"],
+        )
+
+    missing: list[str] = []
+    checks: list[str] = [f"python={sys.executable}"]
+    if not Path(sys.executable).is_file():
+        missing.append("python executable")
+
+    root = _resolve(project_root, external.root).resolve()
+    wgp = root / "wgp.py"
+    api = root / "shared" / "api.py"
+    settings = _resolve(project_root, external.settings_path).resolve()
+    checks.extend(
+        [
+            f"adapter={external.adapter}",
+            f"root={root}",
+            f"wgp.py={wgp}",
+            f"shared/api.py={api}",
+            f"settings={settings}",
+            f"cost_per_unit={external.cost_per_unit}",
+            f"operator_managed={external.operator_managed}",
+            f"auto_install={external.auto_install}",
+            f"auto_download_models={external.auto_download_models}",
+        ]
+    )
+    if not wgp.is_file():
+        missing.append("WanGP wgp.py")
+    if not api.is_file():
+        missing.append("WanGP shared/api.py")
+    if not settings.is_file():
+        missing.append("WanGP exported settings JSON")
+    else:
+        try:
+            payload = json.loads(settings.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            missing.append("valid WanGP exported settings JSON")
+        else:
+            if not isinstance(payload, dict) or not str(payload.get("model_type") or "").strip():
+                missing.append("WanGP settings model_type")
+
+    return BackendReadiness(
+        backend=external.adapter,
         ready=not missing,
         checks=checks,
         missing=missing,
@@ -276,6 +337,7 @@ def inspect_video_environment(
 
     root = project_root.resolve()
     wan22 = _wan22_readiness(config, root)
+    external = _external_readiness(config, root)
     comfy_api = _comfy_api_readiness(config, root)
     zero_cost = _zero_cost_readiness(config)
     voice = _voice_readiness(config)
@@ -287,6 +349,10 @@ def inspect_video_environment(
     if not wan22.ready:
         actions.append(
             "Configure the operator-controlled Wan2.2 repository/model files; Hottop will not download them."
+        )
+    if not external.ready:
+        actions.append(
+            "Prepare the operator-managed WanGP installation and exported settings JSON; Hottop will not install WanGP or download models."
         )
     if not comfy_api.ready:
         actions.append(
@@ -316,6 +382,7 @@ def inspect_video_environment(
     return VideoExecutionStatus(
         ready=(
             wan22.ready
+            and external.ready
             and comfy_api.ready
             and zero_cost.ready
             and voice.ready
@@ -324,6 +391,7 @@ def inspect_video_environment(
             and ffmpeg.ready
         ),
         wan22=wan22,
+        external=external,
         comfy_api=comfy_api,
         zero_cost=zero_cost,
         voice=voice,
@@ -379,6 +447,53 @@ def _wan22_runtime_generation_commands(
             ExternalCommandSpec(
                 program=sys.executable,
                 args=args,
+                cwd=str(project_root.resolve()),
+                stage="generation",
+            )
+        )
+    return commands
+
+
+def _external_runtime_generation_commands(
+    plan: VideoProductionPlan,
+    config: VideoProductionConfig,
+    *,
+    project_root: Path,
+    shots_dir: Path,
+) -> list[ExternalCommandSpec]:
+    external = config.external_generation
+    if config.generation_backend != "external" or external is None:
+        return []
+    if external.adapter != "wangp":
+        return []
+
+    root = _resolve(project_root, external.root).resolve()
+    settings = _resolve(project_root, external.settings_path).resolve()
+    commands: list[ExternalCommandSpec] = []
+    for shot in plan.shots:
+        commands.append(
+            ExternalCommandSpec(
+                program=sys.executable,
+                args=[
+                    "-m",
+                    "hottop.video_wangp",
+                    "--root",
+                    str(root),
+                    "--settings",
+                    str(settings),
+                    "--prompt",
+                    shot.generation_prompt,
+                    "--duration-seconds",
+                    str(shot.duration_seconds),
+                    "--fps",
+                    str(config.fps),
+                    "--output",
+                    str((shots_dir / f"shot-{shot.index:03d}.mp4").resolve()),
+                    "--profile",
+                    str(external.profile),
+                    "--attention",
+                    external.attention,
+                ],
                 cwd=str(project_root.resolve()),
                 stage="generation",
             )
@@ -491,6 +606,13 @@ def _runtime_generation_commands(
     project_root: Path,
     shots_dir: Path,
 ) -> list[ExternalCommandSpec]:
+    if config.generation_backend == "external":
+        return _external_runtime_generation_commands(
+            plan,
+            config,
+            project_root=project_root,
+            shots_dir=shots_dir,
+        )
     if config.generation_backend == "comfy-api-v2":
         return _comfy_runtime_generation_commands(
             plan,
