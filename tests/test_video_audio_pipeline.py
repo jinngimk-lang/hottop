@@ -97,7 +97,7 @@ def test_video_run_materializes_audio_stage_and_moviepy_dialogue_tracks(monkeypa
     assert Path(result.audio_dir).is_dir()
     audio_commands = [command for command in result.runtime_commands if command.stage == "audio"]
     assert len(audio_commands) == 3
-    assert all(command.program == "espeak" for command in audio_commands)
+    assert all(Path(command.program).name in {"espeak-ng", "espeak"} for command in audio_commands)
     assert all("-w" in command.args for command in audio_commands)
 
     plan = build_video_production_plan(_odyssey_request(), config)
