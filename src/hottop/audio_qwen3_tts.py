@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import importlib
 import importlib.util
+import json
 import os
 import wave
 from array import array
@@ -78,7 +79,11 @@ class Qwen3TTSCustomVoiceRequest(BaseModel):
         return self
 
 
-def inspect_qwen3_tts_environment(*, model_dir: Path) -> Qwen3TTSEnvironment:
+def inspect_qwen3_tts_environment(
+    *,
+    model_dir: Path,
+    require_instruct: bool = True,
+) -> Qwen3TTSEnvironment:
     """Inspect a local Qwen3 CustomVoice runtime without installing or downloading anything."""
 
     missing: list[str] = []
@@ -98,6 +103,17 @@ def inspect_qwen3_tts_environment(*, model_dir: Path) -> Qwen3TTSEnvironment:
         for path in required:
             if not path.is_file() or path.stat().st_size <= 0:
                 missing.append(f"local Qwen3-TTS model file: {path.relative_to(resolved)}")
+        config_path = resolved / "config.json"
+        if config_path.is_file() and config_path.stat().st_size > 0:
+            try:
+                model_config = json.loads(config_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                missing.append("valid local Qwen3-TTS config.json")
+            else:
+                if require_instruct and model_config.get("tts_model_size") == "0b6":
+                    missing.append(
+                        "Qwen3-TTS CustomVoice model with instruct support (1.7B required; 0.6B ignores instruct)"
+                    )
     return Qwen3TTSEnvironment(ready=not missing, missing=missing)
 
 
@@ -166,7 +182,10 @@ def _write_pcm16_wav(path: Path, samples: list[float], sample_rate: int) -> None
 def render_qwen3_custom_voice_dialogue(request: Qwen3TTSCustomVoiceRequest) -> Path:
     """Render one line with a preinstalled local Qwen3-TTS CustomVoice model."""
 
-    status = inspect_qwen3_tts_environment(model_dir=request.model_dir)
+    status = inspect_qwen3_tts_environment(
+        model_dir=request.model_dir,
+        require_instruct=bool(request.instruct),
+    )
     if not status.ready:
         raise Qwen3TTSError("Qwen3-TTS environment is not ready: " + ", ".join(status.missing))
 
