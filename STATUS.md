@@ -70,7 +70,7 @@ Research record: `docs/research/2026-08-25-reference-continuity-evaluator-radar.
 
 - **LightX2V** remains the primary Apache-2.0 operator inference framework. Tested Hottop pin remains `926299962ed32a142411e45468a289623432b4e4`; a fresh 2026-08-25 check still found no upstream change that justifies automatically replacing the tested Wan2.2 pin for the current gap.
 - **SigLIP 2 Base 256** remains the preferred first operator-local continuity evaluator experiment only after explicit local weights/revision are supplied; no implicit download.
-- **Qwen3-TTS CustomVoice / CosyVoice** remain operator-owned Mandarin quality candidates. Fresh checks found CosyVoice demo availability issues but no evidence that changes Hottop's existing admission posture or justifies auto-install/model download. citeturn232857search2turn232857search7
+- **Qwen3-TTS CustomVoice / CosyVoice** remain operator-owned Mandarin quality candidates. Fresh checks found CosyVoice demo availability issues but no evidence that changes Hottop's existing admission posture or justifies auto-install/model download.
 - DINOv3/DreamSim/WanGP remain gated by their respective weights/license/runtime boundaries.
 
 Durable rule: code license != model/weights/data license; popularity/freshness alone is not admission evidence.
