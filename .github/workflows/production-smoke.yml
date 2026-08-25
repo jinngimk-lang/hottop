@@ -1,6 +1,16 @@
 name: production-smoke
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/production-smoke.yml"
+      - "config/video/**"
+      - "examples/video/**"
+      - "src/hottop/video_*.py"
+      - "tests/test_production_smoke_workflow.py"
+      - "pyproject.toml"
   pull_request:
     paths:
       - ".github/workflows/production-smoke.yml"
