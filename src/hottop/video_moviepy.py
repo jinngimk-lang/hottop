@@ -320,10 +320,13 @@ def _apply_dialogue_ducking(
     for track in dialogue_tracks:
         if track.duck_bgm_db is None or track.duration_seconds is None:
             continue
-        start = max(0, min(sample_count, int(track.start_seconds * sample_rate)))
+        start = max(0, min(sample_count, int(round(track.start_seconds * sample_rate))))
         end = max(
             start,
-            min(sample_count, int(math.ceil((track.start_seconds + track.duration_seconds) * sample_rate))),
+            min(
+                sample_count,
+                int(round((track.start_seconds + track.duration_seconds) * sample_rate)),
+            ),
         )
         if end <= start:
             continue
