@@ -243,6 +243,8 @@ Preserve `speaker` + `delivery`, `voice_profile`, `music_profile`, `sfx_profile`
 
 MoviePy is the default deterministic unattended compositor. Motion Canvas remains optional for advanced vector/interactive work. FFmpeg finalizes H.264/AAC/yuv420p/fast-start output and final-media verification. `video-run` is dry-run by default; only explicit `--execute` may spawn trusted configured stages after readiness passes.
 
+**Mandarin/CJK subtitle readability is a fail-closed delivery boundary.** CJK captions must resolve a real locally available CJK-capable font before MoviePy composition. `HOTTOP_CAPTION_FONT` may point to an operator-provided local font; known installed system CJK fonts may be auto-detected. If no suitable local font exists, composition fails instead of rendering tofu/replacement glyphs. Normal `video-run` never auto-installs or vendors fonts; CI/production-smoke may explicitly provision a reviewed system font package.
+
 ## Autonomous operating mandate
 
 Routine safe/reversible/evidence-backed repository decisions proceed without repetitive approval. The operator may research, branch, test, implement, update configs/docs/examples/skills, repair regressions/security issues, run CI, create/review/merge PRs, select zero-cost/open alternatives, and add missing skills/MCPs/plugins when materially useful and safely admitted.
@@ -351,6 +353,7 @@ A mature package/archive should preserve enough to reproduce and audit the creat
 
 ## Decision log
 
+- **2026-08-25 — CJK subtitle rendering becomes fail-closed.** Direct inspection of production-smoke artifacts found Mandarin captions rendered as tofu because MoviePy fell back to a non-CJK Pillow font even though codec/media gates passed. Hottop now requires a real local CJK-capable caption font when CJK text is present; missing font is a production failure, not an acceptable encoding success. Normal execution does not auto-install fonts.
 - **2026-08-25 — Generator source provenance becomes part of continuity evidence.** Byte-valid reference/shot evidence is insufficient if a run can be relabelled as another generator candidate/version. Evaluated LightX2V artifacts now bind the actual local generator source revision and continuity evidence must match it. Framework source revision, model/checkpoint revision, evaluator revision and output bytes remain separate provenance dimensions. This supersedes the weaker self-reported benchmark `candidate_revision` interpretation and explicitly forbids treating a reviewed registry pin as proof of what code actually ran.
 - **2026-08-25 — Continuity evidence becomes subject-bound and complete within evaluated scope.** Output-side identity claims bind exact reference bytes + byte-bound generated artifacts to the same `subject_id`; every subject-bearing plan shot for an evaluated subject must be covered. This supersedes global-manifest/subset checking while avoiding an overbroad requirement for incidental single-shot subjects.
 - **2026-08-25 — Hotspot mechanism mapping becomes canonical; image-first is quality recovery, not a template.** Product must take a functional role that changes the story outcome. Image-first reference conditioning is used only when it improves a weak direct-video route; slideshows/stills do not count as successful video.
