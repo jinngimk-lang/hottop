@@ -33,8 +33,8 @@ class VideoShotArtifact(BaseModel):
     path: str = Field(min_length=1)
     artifact_kind: VideoArtifactKind
     backend: str = Field(min_length=1)
-    candidate_id: str | None = None
-    candidate_revision: str | None = None
+    candidate_id: str | None = Field(default=None, exclude_if=lambda value: value is None)
+    candidate_revision: str | None = Field(default=None, exclude_if=lambda value: value is None)
     degraded_from: str | None = None
     degradation_reason: str | None = None
     sha256: str | None = None
