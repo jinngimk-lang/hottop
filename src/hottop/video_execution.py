@@ -24,6 +24,7 @@ from .video_production import (
     VideoProductionPlan,
     build_video_production_plan,
 )
+from .video_wangp import REFERENCE_PLACEHOLDER
 
 
 class VideoExecutionError(RuntimeError):
@@ -918,6 +919,14 @@ def _verify_artifact_provenance(
         )
 
 
+def _has_reference_placeholder(value: object) -> bool:
+    if isinstance(value, dict):
+        return any(_has_reference_placeholder(item) for item in value.values())
+    if isinstance(value, list):
+        return any(_has_reference_placeholder(item) for item in value)
+    return value == REFERENCE_PLACEHOLDER
+
+
 def _generation_reference_actions(
     plan: VideoProductionPlan,
     config: VideoProductionConfig,
@@ -926,7 +935,38 @@ def _generation_reference_actions(
 ) -> list[str]:
     if config.generation_backend not in {"zero-cost-router", "external"}:
         return []
+
     actions: list[str] = []
+    if (
+        config.generation_backend == "external"
+        and config.external_generation is not None
+        and config.external_generation.adapter == "wangp"
+    ):
+        settings_path = _resolve(
+            project_root,
+            config.external_generation.settings_path,
+        ).resolve()
+        payload: object | None = None
+        if settings_path.is_file():
+            try:
+                payload = json.loads(settings_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                payload = None
+        has_placeholder = _has_reference_placeholder(payload)
+        referenced_shots = [shot for shot in plan.shots if shot.reference is not None]
+        if referenced_shots and not has_placeholder:
+            actions.append(
+                "WanGP reference image requires an exported settings reference placeholder "
+                f"({REFERENCE_PLACEHOLDER}) before GPU execution."
+            )
+        if has_placeholder:
+            for shot in plan.shots:
+                if shot.reference is None:
+                    actions.append(
+                        f"WanGP settings reference placeholder is configured but shot {shot.index} "
+                        "has no reference image."
+                    )
+
     for shot in plan.shots:
         if shot.reference is None:
             continue
