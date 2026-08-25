@@ -47,6 +47,7 @@ class VideoExecutionStatus(BaseModel):
     external: BackendReadiness | None = None
     comfy_api: BackendReadiness | None = None
     zero_cost: BackendReadiness | None = None
+    software3d: BackendReadiness | None = None
     voice: BackendReadiness | None = None
     motion_canvas: BackendReadiness
     moviepy: BackendReadiness | None = None
@@ -245,6 +246,25 @@ def _zero_cost_readiness(config: VideoProductionConfig) -> BackendReadiness:
     )
 
 
+def _software3d_readiness(config: VideoProductionConfig) -> BackendReadiness:
+    if config.generation_backend != "software3d":
+        return BackendReadiness(backend="software3d", ready=True, checks=["not selected"])
+    missing: list[str] = []
+    checks: list[str] = [f"python={sys.executable}"]
+    if not Path(sys.executable).is_file():
+        missing.append("python executable")
+    ffmpeg = shutil.which("ffmpeg")
+    checks.append(f"ffmpeg={ffmpeg or 'missing'}")
+    if ffmpeg is None:
+        missing.append("FFmpeg executable")
+    return BackendReadiness(
+        backend="software3d",
+        ready=not missing,
+        checks=checks,
+        missing=missing,
+    )
+
+
 def _voice_readiness(config: VideoProductionConfig) -> BackendReadiness:
     backend = config.audio.voice_backend
     if backend == "none":
@@ -341,6 +361,7 @@ def inspect_video_environment(
     external = _external_readiness(config, root)
     comfy_api = _comfy_api_readiness(config, root)
     zero_cost = _zero_cost_readiness(config)
+    software3d = _software3d_readiness(config)
     voice = _voice_readiness(config)
     motion_canvas = _motion_canvas_readiness(config, root)
     moviepy = _moviepy_readiness(config)
@@ -362,6 +383,10 @@ def inspect_video_environment(
     if not zero_cost.ready:
         actions.append(
             "Configure at least one valid cost-zero video candidate. Anonymous candidates need no token; authenticated free routes use environment variables only. Paid fallback is forbidden."
+        )
+    if not software3d.ready:
+        actions.append(
+            "Expose FFmpeg for the deterministic software3d shot encoder; software3d requires no GPU or model download."
         )
     if not voice.ready:
         actions.append(
@@ -386,6 +411,7 @@ def inspect_video_environment(
             and external.ready
             and comfy_api.ready
             and zero_cost.ready
+            and software3d.ready
             and voice.ready
             and motion_canvas.ready
             and moviepy.ready
@@ -395,6 +421,7 @@ def inspect_video_environment(
         external=external,
         comfy_api=comfy_api,
         zero_cost=zero_cost,
+        software3d=software3d,
         voice=voice,
         motion_canvas=motion_canvas,
         moviepy=moviepy,
@@ -611,6 +638,43 @@ def _zero_cost_runtime_generation_commands(
     return commands
 
 
+def _software3d_runtime_generation_commands(
+    plan: VideoProductionPlan,
+    config: VideoProductionConfig,
+    *,
+    project_root: Path,
+    shots_dir: Path,
+) -> list[ExternalCommandSpec]:
+    if config.generation_backend != "software3d":
+        return []
+    commands: list[ExternalCommandSpec] = []
+    for shot in plan.shots:
+        commands.append(
+            ExternalCommandSpec(
+                program=sys.executable,
+                args=[
+                    "-m",
+                    "hottop.video_software3d_production",
+                    "--shot-index",
+                    str(shot.index),
+                    "--duration-seconds",
+                    str(shot.duration_seconds),
+                    "--fps",
+                    str(config.fps),
+                    "--width",
+                    str(config.width),
+                    "--height",
+                    str(config.height),
+                    "--output",
+                    str((shots_dir / f"shot-{shot.index:03d}.mp4").resolve()),
+                ],
+                cwd=str(project_root.resolve()),
+                stage="generation",
+            )
+        )
+    return commands
+
+
 def _runtime_generation_commands(
     plan: VideoProductionPlan,
     config: VideoProductionConfig,
@@ -634,6 +698,13 @@ def _runtime_generation_commands(
         )
     if config.generation_backend == "zero-cost-router":
         return _zero_cost_runtime_generation_commands(
+            plan,
+            config,
+            project_root=project_root,
+            shots_dir=shots_dir,
+        )
+    if config.generation_backend == "software3d":
+        return _software3d_runtime_generation_commands(
             plan,
             config,
             project_root=project_root,
