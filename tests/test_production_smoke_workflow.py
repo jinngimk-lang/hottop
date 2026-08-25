@@ -20,7 +20,7 @@ def test_production_smoke_workflow_executes_checked_in_software3d_stories():
     assert ".[dev,video]" in rendered
     assert "ffmpeg" in rendered
     assert "espeak-ng-espeak" in rendered
-    assert "Full dictionary is not installed for 'zh'" in rendered
+    assert "Full dictionary is not installed for 'zh'" in raw
     assert "examples/video/inkclaw-cow-snake.render.json" in rendered
     assert "config/video/anti-polish-software3d.yml" in rendered
     assert "examples/video/inkclaw-odyssey-witch-pigs.render.json" in rendered
