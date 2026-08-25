@@ -11,29 +11,7 @@ Current milestone: **Production v0.2 — repeatable real video output**
 
 PR #1, **Build Hottop brand creative engine foundation**, was squash-merged into `main` as `ee0ffb388745d7ed1f890d278cfbb17cccea167c` after the verified PR head passed Ruff + the full pytest suite on Python 3.11 and 3.12. The resulting `main` push then passed CI again.
 
-Foundation v0.1 established Hottop as a cross-category, evidence-aware hot-topic brand creative engine with:
-
-- adaptive natural-language intent and promotion semantics;
-- trend/comparison research, enrichment, evidence discipline and semantic bridge search;
-- category-default / constraint-deletion reframing;
-- flexible creative formats/media plus hard Creative Review and contextual ranking;
-- provider-neutral `hottop.render.v2` and config-driven `hottop.video-plan.v1`;
-- dry-run-first trusted video execution;
-- MoviePy headless composition + FFmpeg compatibility/final-media verification;
-- first-class dialogue, original synthetic music and procedural SFX/Foley;
-- zero-cost, operator WanGP, local Wan2.2 and explicit Comfy API generation boundaries;
-- rights-safe reference I2V, cross-shot identity locks, generated-video quality gates and byte-bound artifact provenance;
-- Anti-Polish / Controlled Badness as a selectable style strategy rather than a universal look.
-
-## Closed security / integrity findings
-
-The Foundation closure review found and repaired concrete production-boundary issues before merge:
-
-- **ZeroGPU bearer-token / SSRF boundary:** remote SSE output URLs are confined to the configured Space origin and output-download redirects are disabled, so the Hugging Face bearer token cannot be redirected to an attacker-controlled host.
-- **Comfy output SSRF boundary:** remote endpoints require HTTPS; loopback HTTP must parse as a real loopback host rather than merely share a string prefix; remote outputs require HTTPS; local HTTP outputs must remain same-loopback-origin; output downloads carry no API token and do not follow redirects.
-- **WanGP reference binding:** rights-safe references use the explicit `__HOTTOP_REFERENCE_IMAGE__` exported-Settings placeholder, are locally preflighted, and must match every shot before GPU execution.
-- **WanGP generated output:** returned footage must pass the shared ffprobe/ffmpeg motion/duplicate/decodability gate before composition; rejected output is deleted.
-- **Cross-shot identity:** repeated `subject_id` references must carry consistent identity anchors before production commands are emitted.
+Foundation v0.1 established Hottop as a cross-category, evidence-aware hot-topic brand creative engine with adaptive intake, evidence-aware trend/comparison research, category reframing, bridge search, flexible formats/media, provider-neutral render/video contracts, dry-run-first trusted execution, first-class audio, zero-cost/operator video backends, reference identity locks, quality gates, artifact provenance and selectable Anti-Polish / Controlled Badness.
 
 ## Durable motion contract
 
@@ -45,24 +23,37 @@ Default unattended path:
 
 References teach grammar, not pixels. Protected frames, likenesses, official character designs, copied UI/layouts, source footage and copyrighted soundtracks remain excluded by default. Surface roughness never relaxes continuity, directing, subtitle/dialogue correctness, comedy timing, product semantics, claim safety, rights safety or encoding integrity.
 
-## Production v0.2 goal
+## Production v0.2 progress
 
-The next milestone moves from architecture completeness to **repeatable production evidence**. The flagship acceptance target is a real, playable vertical product short generated from a checked-in Hottop render source and production profile, with the same original character remaining recognizable across shots and the product benefit emerging through story rather than banner-ad UI.
+The milestone is now moving from provider architecture to **repeatable production evidence**.
 
-Priority order:
+Completed in the current production pass:
 
-1. Produce a representative config-to-MP4 run with real generated/pseudo-3D shot assets rather than a slideshow/vector placeholder.
-2. Preserve subject identity through reference-conditioned generation and reject identity/quality failures before composition.
-3. Keep one continuous story geography, dialogue, original BGM/SFX and natural shot transitions through the full pipeline.
-4. Archive the exact render source, production config, artifact provenance and final-media verification evidence needed to reproduce the run.
-5. Turn the successful run into the baseline for repeated hotspot/product production instead of adding more provider abstractions first.
+- Added `config/video/anti-polish-zero-cost.yml` as the free-only flagship production profile.
+- Added a dependency-free `src/hottop/video_software3d.py` software renderer using actual 3D vertices, yaw transforms, perspective projection, depth-sorted faces and deterministic PNG output. The identity signature is geometry-based and remains stable while a character moves or rotates.
+- Added `src/hottop/video_software3d_production.py`, which consumes the checked-in five-shot `examples/video/inkclaw-cow-snake.render.json` structure and produces one continuous low-poly 3D workshop sequence with stable young-cow geometry, mother-cow entrance, animated snake, laptop, task blocks and the final kicked Deploy box.
+- Added tests for perspective depth, real frame change under 3D motion, transform-stable identity, duplicate identity rejection, cross-shot hero identity and multi-frame story motion. The implementation pass at `ea2f566295f09a06d1cca36ffe1216fd5d3169a5` passed Ruff + the full pytest suite on Python 3.11 and 3.12.
+- Rendered a local 10.0-second production-evidence MP4 from the same software-3D approach: H.264, 360×640, yuv420p, AAC, SHA-256 `c9162bfbe6a881e89df1a2677f3dd6fb69a3d88b35dc4ee3df5324d0ae5f9b20`. The artifact is intentionally not committed as a binary fixture; repository code/tests remain the reproducible source.
 
-Representative sources already available:
+This software-3D path is a **zero-cost deterministic fallback**, not the quality ceiling. It exists so Hottop can still produce genuine 3D motion when free GPU routes are unavailable and so generated-model outputs have a deterministic continuity baseline to beat.
 
-- `examples/video/inkclaw-cow-snake.render.json` — high-roughness original Anti-Polish story.
-- `examples/video/inkclaw-odyssey-witch-pigs.render.json` — lower-roughness cinematic mythic meme.
-- `examples/video/hottop-zero-cost-reference-i2v.render.json` — repository-generated rights-safe reference-I2V example.
+## Ecosystem / autonomy policy
 
-## Immediate next action
+`docs/operations/autonomous-ecosystem-radar.md` now records the durable autonomous-owner and continuous-upstream-radar policy. Routine reversible repository decisions proceed without waiting for ordinary approval. The loop continuously checks current upstreams relevant to the active gap and integrates only source-verifiable, license-compatible, zero-cost-safe, testable and reversible improvements.
 
-Start Production v0.2 from current `main`, use the existing InkClaw cow/snake story as the first flagship production case, and prioritize **actual consistent moving imagery** over additional orchestration surface area.
+Fresh August 2026 findings include official `zai-org/SCAIL-2` as a strong multi-reference / character-animation candidate for the identity-continuity gap and continued rapid WanGP evolution (including newer LTX 2.5 / upsampling paths). These remain operator-owned model stacks until exact model-license/runtime gates are satisfied; Hottop should integrate them through adapters rather than automatic model downloads.
+
+## Closed security / integrity boundaries
+
+- ZeroGPU output URLs are confined to the configured Space origin and redirects are disabled, preventing bearer-token exfiltration and remote download steering.
+- Comfy remote endpoints/outputs require safe parsed URL semantics; loopback HTTP is restricted to real loopback origins; output downloads carry no API token and do not follow redirects.
+- WanGP references use an explicit exported-Settings placeholder, are locally rights-preflighted, and returned footage must pass the shared video-quality gate.
+- Repeated `subject_id` references must carry consistent identity anchors before production commands are emitted.
+
+## Next production actions
+
+1. Wire the software-3D production path into the normal config/workspace execution surface rather than leaving it as a standalone production CLI.
+2. Run the existing MoviePy dialogue/music/SFX stage over the software-3D shot sequence so the deterministic baseline proves the entire render → motion → audio → finalization contract.
+3. Add a rights-safe multi-reference/last-frame continuity benchmark for free GPU or operator-owned backends; SCAIL-2 is now a high-priority candidate, with WanGP remaining the practical low-VRAM operator integration.
+4. Archive reproducible final-media/provenance evidence for a polished enough cinematic profile as well as the Anti-Polish baseline.
+5. Prefer actual production improvements over adding provider abstractions without a measured gap.
