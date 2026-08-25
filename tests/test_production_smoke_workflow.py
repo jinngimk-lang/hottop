@@ -7,12 +7,16 @@ def test_production_smoke_workflow_executes_checked_in_software3d_stories():
     path = Path(".github/workflows/production-smoke.yml")
     assert path.is_file()
 
-    workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
+    raw = path.read_text(encoding="utf-8")
+    workflow = yaml.safe_load(raw)
     jobs = workflow["jobs"]
     job = jobs["software3d-production-smoke"]
     steps = job["steps"]
     rendered = "\n".join(str(step) for step in steps)
 
+    assert "push:" in raw
+    assert "branches:" in raw
+    assert "- main" in raw
     assert ".[dev,video]" in rendered
     assert "ffmpeg" in rendered
     assert "espeak" in rendered
