@@ -111,6 +111,7 @@ def test_wangp_copies_successful_generated_video_to_expected_shot_path(tmp_path)
         fps=24,
         output=output,
         session_factory=factory,
+        quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
     )
 
     assert result == output
