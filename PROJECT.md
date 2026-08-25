@@ -67,6 +67,26 @@ Search for concrete product/hotspot bridges across:
 
 The linkage should be understandable before explanation. A product becoming the culturally recognizable action is stronger than a logo placed beside the reference.
 
+### Cultural mechanism mapping
+
+**Borrow the mechanism, not the skin.** A hotspot is valuable because audiences already understand a relationship, causal chain, ritual, transformation, conflict, reversal or delivery grammar—not because it supplies a costume, famous-looking character, location, palette or catchphrase to paste around an ad.
+
+If the user supplies a hotspot, scene, meme, news item, image, phrase or cultural point, analyze that supplied source first and use fresh public research to verify factual/current context when needed. Do not silently replace a user-selected source merely because another topic is larger. If the user supplies no hotspot, run the mandatory live discovery pass and select a current candidate before mechanism mapping.
+
+For every selected hotspot, extract:
+
+1. the **recognition hook** — what people immediately remember/repeat;
+2. the **causal/relationship mechanism** — roles, desire, obstacle/transformation, escalation, reversal and resolution;
+3. the **native visual grammar** — the medium, camera/staging, polish/roughness and distribution cues that make it feel native;
+4. the **native dialogue/language rhythm** — role relationship, sentence shape, pause, deadpan/seriousness, escalation and punchline timing;
+5. for motion, the **native audio grammar** — voice delivery, music energy/texture, silence and Foley/SFX timing that materially carries recognition or comedy.
+
+Then map a real product pain point/differentiator into a functional role inside that mechanism: route, key, antidote, obstruction-breaker, transformation, rule deletion, rescue action, tool, material, consequence or reveal. **Every retained hotspot element must have a job** in the causal chain; decorative references are removed.
+
+The **product must change the story outcome** through a product truth or defensible metaphor. If another unrelated brand can replace it without changing the story logic, reject or rebuild the concept. Prefer the audience decoding order **hotspot recognition → mapping → product consequence → punchline**. Benefits should be understood from the changed outcome before they are stated as feature copy.
+
+Mythic transformation/rescue, cave-blocking obstruction/breakout, crude-family/deadpan 3D, chase/escape, looping failure, boss fight and similar patterns are examples of reusable analytical primitives only. They are not templates. The current hotspot decides the mechanism, humor, medium, dialogue and audio treatment every time.
+
 ### 4. Format follows the idea
 
 Choose the smallest expression form that makes the bridge land:
@@ -168,20 +188,20 @@ Revision controls such as `换方向`, `更有梗`, `更大胆`, `产品更明�
 1. Resolve interaction intent.
 2. Resolve promotion semantics.
 3. Discover competitors/substitutes/legacy workflows when useful.
-4. Discover current hotspots with fresh live evidence for the current generation request.
-5. Enrich source context and cultural cues.
+4. If the user supplied a hotspot, analyze and freshly verify that source first; otherwise discover current hotspots with fresh live evidence for the current generation request.
+5. Extract hotspot recognition hook, causal/relationship mechanism, native visual/dialogue/audio grammar and source context.
 6. Research visual references when useful, abstracting grammar only.
 7. Normalize evidence/reference records.
 8. Reframe category defaults and deleted constraints.
-9. Search semantic/visual bridges.
-10. Rank trend and bridge quality.
+9. Search semantic/visual bridges and assign the product a functional role that changes the story outcome.
+10. Rank trend, mechanism and bridge quality.
 11. Select expression form, platform treatment, style and roughness dynamically for this request.
-12. Write beats, captions, reveal order, dialogue and punchlines.
+12. Write beats, captions, reveal order, dialogue, audio cues and punchlines.
 13. Run hard Creative Review and contextual ranking.
 14. Guardrail claims, copyright/likeness/trademark and competitor framing.
 15. Run the mandatory fresh-generation preflight; blocked inputs do not proceed to asset generation.
-16. For motion: `hottop.render.v2 → VideoProductionConfig → hottop.video-plan.v1 → generation → audio → compositor → encoder → media verification`.
-17. Archive intent, provenance, evidence, reference manifest, rejected assumptions, selected bridge, format, reviews, prompts, risks and outcome evidence.
+16. For motion: choose the strongest quality route, including image-first reference-conditioned recovery when direct generation misses the quality bar, then `hottop.render.v2 → VideoProductionConfig → hottop.video-plan.v1 → generation → audio → compositor → encoder → media verification`.
+17. Archive intent, provenance, evidence, hotspot mechanism, reference manifest, rejected assumptions, selected bridge, product role/outcome change, format, reviews, prompts, risks and outcome evidence.
 
 ## Motion production doctrine
 
@@ -214,6 +234,14 @@ Generated or deterministic footage is not trusted merely because a provider retu
 ### Character/reference continuity
 
 Reference-conditioned generation uses local, rights-safe inputs only (`generated-original` or `user-provided-rights-cleared`). Repeated subjects carry stable `subject_id`, role and identity-lock semantics; conflicts fail before GPU work. Provider-specific image fields are isolated behind adapters rather than guessed in the creative contract.
+
+### Image-first quality recovery
+
+**Image-first quality recovery** is an optional quality route, not a universal pipeline. Use it when the concept calls for motion but the available **direct video** path fails the chosen style's visual-quality, identity or consistency bar and the existing reference-conditioned path is likely to improve it.
+
+Generate or select high-quality rights-safe keyframe/reference images first, and require them to pass the same hotspot-mechanism, product-role, visual-style and identity review expected of the final piece. Bind their provenance, SHA-256 and stable subject/role/identity-lock data, then use the repository's existing **reference-conditioned I2V** adapters when the chosen backend supports them. Do not add a duplicate video backend merely to implement this routing rule. When direct video already meets or exceeds the target, keep the direct route.
+
+The final asset is **not a slideshow**. Static stills, pan/zoom-only motion, unrelated hard-cut images or an MP4 container without meaningful action do not count as successful video. Reference-conditioned I2V must still show meaningful motion, preserve geography/identity/action, follow the hotspot's native timing and pass motion/duplicate, audio, artifact, codec and final media verification. Reject, retry or reroute when the generated motion is worse than the approved keyframe or breaks continuity.
 
 ### Audio is first-class
 
@@ -326,6 +354,8 @@ Before generation, recover the minimum relevant current state from the repositor
 
 A new explicit user instruction in the current conversation may evolve the project, but durable changes must be reconciled back into the repository. Do not generate from an old remembered style/config when the repository has a newer one. The mandatory fresh-generation entry gate applies even when the prior Chat turn used the same product: re-research the hotspot and re-select style/format before a new image/video asset.
 
+When the user names or supplies the hotspot, analyze that hotspot's mechanism and native visual/dialogue/audio grammar first; when no hotspot is supplied, discover fresh candidates first. In both cases the current repository skill—not an old uploaded or remembered copy—is the canonical Chat creative method.
+
 ### Living updates
 
 A **material direction change** must be challenged against current doctrine/evidence and classified as durable or experiment-specific. If durable, **update the charter** (`PROJECT.md`) and the relevant skill/spec in the same workstream, explicitly state what stale assumption it supersedes when useful, then update `STATUS.md` so the next recovery immediately sees the new state.
@@ -366,6 +396,9 @@ A mature creative package should serialize:
 - intent and provenance/confidence for inferred values;
 - promotion semantics and selected comparison context;
 - topic + timestamp + evidence;
+- hotspot recognition hook + causal/relationship mechanism;
+- native visual grammar + dialogue/language rhythm + motion audio grammar when applicable;
+- product role inside the mechanism + story-outcome change;
 - optional reference manifest + provenance/rights mode;
 - category default, deleted constraint and new competition axis;
 - bridge type + bridge sentence;
@@ -377,10 +410,11 @@ A mature creative package should serialize:
 - generation prompt, negative prompt, exclusions and risk flags;
 - factual-claim status (`satire`, `supported`, `needs_evidence`);
 - provider-neutral `hottop.render.v2` handoff;
-- when motion is selected: `hottop.video-plan.v1` with ordered shots, continuity, `roughness_score`, role-aware dialogue, music/SFX profiles/cues, backend commands/manifests, provenance and final encoding contract.
+- when motion is selected: route choice (direct or image-first reference-conditioned recovery when justified) plus `hottop.video-plan.v1` with ordered shots, continuity, `roughness_score`, role-aware dialogue, music/SFX profiles/cues, backend commands/manifests, provenance and final encoding contract.
 
 ## Decision log
 
+- **2026-08-25 — Hotspot mechanism mapping becomes canonical; image-first is a quality recovery route, not a template.** Hottop now distinguishes user-supplied hotspots from unspecified requests, extracts recognition/causal/visual/dialogue/audio grammar, requires the product to take a functional role that changes the story outcome, and rejects decorative hotspot skins. When direct video misses the selected quality/identity/style bar, already-reviewed keyframes may drive the existing rights-safe reference-conditioned I2V path; motion/audio/media gates remain mandatory and stills/slideshows do not count as successful video. This extends the existing dynamic-hotspot and reference-continuity architecture without adding a duplicate backend or skill.
 - **2026-08-25 — Fresh hotspot research becomes a mandatory generation entry gate.** Every new image/video request, including Chat generation, re-resolves the promoted subject, performs live current-hotspot research, chooses style/medium/format dynamically, and must pass `hottop.generation-preflight.v1` before final generation. This supersedes the weaker assumption that a recently used hotspot/style/example can be silently reused as the next request's default.
 - **2026-08-25 — GitHub becomes the Chat generation source of truth; existing capability wins over duplicate installation.** Hottop-related image/video generation in Chat must first recover the latest repository doctrine, status, relevant skills, examples/configs and constraints. Existing suitable skills/MCPs/plugins are reused; new capabilities are added only for real gaps after admission checks.
 - **2026-08-25 — Autonomous operation + continuous ecosystem radar become canonical.** Routine reversible repository decisions, integrations, tests, CI work, PR lifecycle and durable project-memory updates proceed without repetitive approval. Every production cycle also performs targeted freshness checks for materially stronger open-source/GitHub/model/runtime options; candidates that pass source/license/cost/hardware/security/value gates are integrated rather than merely reported. High-risk destructive, secret, paid, legal and sensitive-publication actions remain explicit stop boundaries.
@@ -392,9 +426,9 @@ A mature creative package should serialize:
 
 ## Reusable skills
 
-- `skills/brand-metaphor-creative/SKILL.md` — primary creative method: intent, category reframing, constraint deletion, bridge search, format/medium routing, Controlled Badness and review gates.
+- `skills/brand-metaphor-creative/SKILL.md` — primary creative method: intent, category reframing, constraint deletion, mechanism-first hotspot mapping, bridge search, format/medium routing, Controlled Badness, image-first reference-conditioned quality recovery and review gates.
 - `skills/creative-reference-research/SKILL.md` — provenance-first visual-reference research and grammar-only handoff.
-- `skills/hottop-meme/SKILL.md` — hotspot acquisition, evidence-aware comparison, medium routing and four-panel execution when four-panel is selected.
+- `skills/hottop-meme/SKILL.md` — supplied-vs-unspecified hotspot acquisition/analysis, evidence-aware comparison, medium routing and four-panel execution when four-panel is selected.
 - External/operator skills, MCPs and plugins may be added only when the existing-skill-first rule finds a concrete capability gap and the autonomous admission rule says the addition materially improves that task.
 
 ## Current milestone
@@ -407,7 +441,7 @@ Priority order:
 
 1. Produce and verify end-to-end config → real moving shots → audio → composite → final MP4 runs.
 2. Keep the software3d route as a guaranteed zero-cost baseline while benchmarking stronger free/open reference-conditioned routes for cinematic quality.
-3. Improve character/reference consistency and reject identity/quality failures before composition.
+3. Improve character/reference consistency and reject identity/quality failures before composition; use approved image-first references when they measurably improve a weak direct-video route.
 4. Upgrade Mandarin dialogue quality through reviewed zero-cost/operator-owned TTS (CosyVoice3/Qwen3-TTS or stronger candidates) while preserving voice-rights gates.
 5. Archive render source, production profile, candidate/model provenance, artifact hashes and final media verification so runs are reproducible.
 6. Turn successful production runs into repeatable hotspot/product baselines instead of accumulating unproven provider abstractions.
@@ -423,4 +457,5 @@ When resuming:
 5. Inspect current main, open PRs and exact-head CI.
 6. Perform a targeted ecosystem freshness check relevant to the current Production gap.
 7. For any new image/video generation request, separately perform live hotspot/news research and pass the mandatory fresh-generation preflight before generating the asset.
-8. Continue the highest-value safe action autonomously; do not stop for routine approval or wait for a scheduled loop boundary.
+8. If a hotspot is supplied, analyze its mechanism before product mapping; if no hotspot is supplied, discover fresh candidates first.
+9. Continue the highest-value safe action autonomously; do not stop for routine approval or wait for a scheduled loop boundary.
