@@ -237,7 +237,39 @@ def _fit_caption_text_clip(
 
     font_size = max(38, frame_width // 14)
     minimum_font_size = max(28, frame_width // 24)
+    maximum_text_width = int(frame_width * 0.88)
     maximum_text_height = max(72, round(frame_height * 0.18))
+
+    single_line_font_size = font_size
+    while True:
+        single_line = text_clip_factory(
+            text=text,
+            font=font,
+            font_size=single_line_font_size,
+            color="white",
+            stroke_color="black",
+            stroke_width=3,
+            method="label",
+            size=(None, None),
+            text_align="center",
+        )
+        if single_line.w <= maximum_text_width and single_line.h <= maximum_text_height:
+            return single_line
+        if single_line_font_size <= minimum_font_size:
+            single_line.close()
+            break
+
+        width_scale = maximum_text_width / max(1, single_line.w)
+        height_scale = maximum_text_height / max(1, single_line.h)
+        next_font_size = max(
+            minimum_font_size,
+            min(
+                single_line_font_size - 1,
+                math.floor(single_line_font_size * min(width_scale, height_scale)),
+            ),
+        )
+        single_line.close()
+        single_line_font_size = next_font_size
 
     while True:
         clip = text_clip_factory(
@@ -248,7 +280,7 @@ def _fit_caption_text_clip(
             stroke_color="black",
             stroke_width=3,
             method="caption",
-            size=(int(frame_width * 0.88), None),
+            size=(maximum_text_width, None),
             text_align="center",
         )
         if clip.h <= maximum_text_height or font_size <= minimum_font_size:
