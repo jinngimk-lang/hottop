@@ -28,6 +28,8 @@ jobs:
   software3d-production-smoke:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      HOTTOP_CAPTION_FONT: /usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -37,9 +39,17 @@ jobs:
       - name: Install free local media dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg espeak
+          sudo apt-get install -y ffmpeg espeak fonts-noto-cjk
           python -m pip install --upgrade pip
           pip install -e ".[dev,video]"
+          test -f "$HOTTOP_CAPTION_FONT"
+          python - <<'PY'
+          import os
+          from PIL import ImageFont
+
+          font = ImageFont.truetype(os.environ["HOTTOP_CAPTION_FONT"], 48)
+          assert bytes(font.getmask("妈")) != bytes(font.getmask("傻"))
+          PY
       - name: Execute checked-in anti-polish cow story
         run: |
           hottop video-run examples/video/inkclaw-cow-snake.render.json \
