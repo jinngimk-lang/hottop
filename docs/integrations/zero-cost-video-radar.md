@@ -1,6 +1,6 @@
 # Zero-Cost Video Integration Radar
 
-Updated: 2026-08-24
+Updated: 2026-08-25
 
 This radar tracks candidate technologies for Hottop's **strictly zero-paid-cost** video path. A candidate listed here is not automatically production-approved. Every adapter must stay isolated, reversible, quality-gated, and compatible with Hottop's provider-neutral `hottop.render.v2 → hottop.video-plan.v1 → video-run` contract.
 
@@ -11,6 +11,7 @@ This radar tracks candidate technologies for Hottop's **strictly zero-paid-cost*
 3. **No autonomous heavyweight provisioning.** Hottop does not silently download model weights, install unreviewed custom nodes, provision GPUs, create accounts, or run third-party one-click installers.
 4. **Evidence before adoption.** Pin an upstream version/commit, verify source/license, isolate the adapter, add tests, run a real MP4 smoke when execution changes, and require a measurable gain in quality, consistency, speed, or reliability.
 5. **Failure must be safe.** Free capacity exhaustion or a rejected artifact must retry within configured bounds or degrade to deterministic production; it must never switch to a paid service.
+6. **Interoperate before embedding.** If an upstream application has a restrictive license, Hottop may still interoperate with an operator-provided local executable/service when that license permits the use, but Hottop must not copy, bundle, white-label, or expose the upstream application as a paid backend.
 
 ## Current routes and candidates
 
@@ -18,9 +19,10 @@ This radar tracks candidate technologies for Hottop's **strictly zero-paid-cost*
 |---|---|---|---|
 | `jinngimk-lang/ai-video-director` | Behavior donor for HF ZeroGPU submit/poll/download, bounded free routing, media/motion gates and zero-cost smoke methodology | User-owned project; port behavior into Hottop's Python contracts rather than importing the old app architecture | **Adopted behavior** |
 | Hugging Face ZeroGPU | Shared free GPU transport for short high-value shots when a public Space is healthy | Space/model rights are separate from HF platform access; free quota/availability is nondeterministic | **Adopted optional free route** |
-| Lightricks LTX family | T2V/I2V candidate behind HF ZeroGPU or operator-controlled runtime | Track **code license separately from model/weights license**; Hottop requires explicit `weights_license_review` metadata and makes no universal commercial-rights claim | **License-gated candidate** |
-| `Wan-Video/Wan2.2` | Preferred operator-controlled self-hosted generation family when adequate GPU exists | Repository license verified Apache-2.0; model/runtime assets still remain operator-controlled | **Adopted optional local route** |
-| `lllyasviel/FramePack` | Low-VRAM progressive I2V / continuity candidate | Repository license verified Apache-2.0. Official README states RTX 30/40/50 support, at least 6GB VRAM, and that its standalone flow may automatically download more than 30GB of models. Hottop must not trigger that download automatically. | **Future isolated local adapter** |
+| Lightricks LTX family / LTX-2.x | T2V/I2V and newer synchronized audio-video candidate behind a free Space or operator-owned GPU | LTX-2.x uses a Community License; current license requires a paid commercial agreement for entities at/above the stated revenue threshold, while non-commercial testing is separately defined. Never assume the model is commercially free merely because code is public. | **License-gated candidate** |
+| `Wan-Video/Wan2.2` | Preferred operator-controlled self-hosted generation family when adequate GPU exists | Repository is Apache-2.0; model/runtime assets remain operator-controlled and must be checked independently | **Adopted optional local route** |
+| `DeepBeepMeep/Wan2GP` | Low-VRAM operator-side orchestration across Wan2.2/LTX-2/Qwen/Hunyuan plus queueing, headless execution, RIFE/FlashVSR and audio tooling | WanGP Community License 2.0 permits free internal/company use and output creation, but restricts selling/embedding/exposing WanGP itself as a paid product/service. Third-party model licenses remain separate. Hottop must interoperate externally, not copy/bundle WanGP. | **Adopt external operator adapter candidate** |
+| `lllyasviel/FramePack` | Low-VRAM progressive I2V / continuity candidate | Repository license verified Apache-2.0. Official README states RTX 30/40/50 support and at least 6GB VRAM; its standalone flow may automatically download large models. Hottop must not trigger that download automatically. | **Future isolated local adapter** |
 | `hao-ai-lab/FastVideo` | Future inference acceleration / training-sidecar option for operator GPU | Repository license verified Apache-2.0; useful only when a concrete self-hosted performance gap is measured | **Observe / benchmark before integration** |
 | `HKUDS/ViMax` | Director/screenwriter/producer decomposition and reflection ideas | Repository license verified MIT | **Architecture / planning ideas** |
 | `HBAI-Ltd/Toonflow-app` | Persistent character/storyboard/provider-abstraction ideas | Treat application and integrated providers/models separately; do not import the Electron app wholesale | **Architecture ideas only** |
@@ -38,13 +40,16 @@ This radar tracks candidate technologies for Hottop's **strictly zero-paid-cost*
 - Deterministic FFmpeg/ffprobe video-quality inspection.
 - Quality rejection deletes the bad artifact and retries the next configured free candidate rather than accepting a fake-motion/duplicate-heavy MP4.
 - MoviePy + local dialogue/music/SFX + FFmpeg remain available independently of free remote GPU capacity.
+- Artifact provenance is bound to exact generated bytes and rechecked immediately before composition.
 
 ## Near-term experiments
 
-1. **Reference-first I2V consistency:** add a rights-safe reference-image contract so character/product keyframes can feed an eligible free/local I2V backend without changing creative semantics.
-2. **Deterministic generation degradation:** when all free generative candidates are unavailable, evaluate a clearly labeled image/recording-motion fallback instead of publishing a mock as generated footage.
-3. **FramePack isolation benchmark:** only if an operator GPU is available, compare identity drift, motion quality, latency and installation footprint against the existing Wan/ZeroGPU paths. Do not auto-download its models.
-4. **Post-processing adapters:** RIFE/Real-ESRGAN enter only after a measurable failing quality case demonstrates value; do not add heavyweight dependencies speculatively.
+1. **External WanGP interoperability adapter:** add a structured, shell-safe operator command contract for an already-installed WanGP instance. Hottop will pass a shot plan and expected output path without copying WanGP code or silently downloading models. The adapter must remain opt-in, local-only, and outside the default unattended zero-cost cloud route.
+2. **Reference-first I2V consistency:** add a rights-safe reference-image contract so character/product keyframes can feed an eligible free/local I2V backend without changing creative semantics.
+3. **LTX-2 synchronized audio/video evaluation:** evaluate as a local operator backend only after the current license is accepted for the intended use; compare whether synchronized native audio materially beats Hottop's existing free local voice/music/SFX chain.
+4. **Deterministic generation degradation:** when all free generative candidates are unavailable, evaluate a clearly labeled image/recording-motion fallback instead of publishing a mock as generated footage.
+5. **FramePack isolation benchmark:** only if an operator GPU is available, compare identity drift, motion quality, latency and installation footprint against the existing Wan/ZeroGPU paths. Do not auto-download its models.
+6. **Post-processing adapters:** RIFE/Real-ESRGAN enter only after a measurable failing quality case demonstrates value; do not add heavyweight dependencies speculatively.
 
 ## Rejection rules
 
