@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-25 11:24 +08:00
+Last updated: 2026-08-25
 Active branch: `feat/hottop-foundation`
 Milestone: Foundation v0.1 closure
 PR: #1 — open, draft, mergeable at last fetch
@@ -35,6 +35,7 @@ Default unattended path:
 - Generated video is quality-gated for decodability, motion and duplicate-frame ratio; rejected artifacts are deleted before failover.
 - Optional deterministic reference-motion degradation is explicit and provenance-labelled, never misreported as AI-generated.
 - Accepted shot artifacts are bound to configured backend identity plus SHA-256/byte size and re-verified immediately before MoviePy consumption.
+- ZeroGPU output downloads are restricted to the configured Space origin and download redirects are disabled, so a remote SSE result cannot redirect a Hugging Face bearer token to an attacker-controlled host.
 
 ### Operator WanGP
 
@@ -43,13 +44,14 @@ Default unattended path:
 - Reference files and rights metadata are checked locally before session creation.
 - Cross-shot `subject_id` / identity-lock semantics are validated before production-plan commands are emitted.
 - Identity anchors are injected into generation prompts so every backend receives the same subject semantics.
-- Dry-run now fail-closes when a shot has a reference but exported Settings lack the placeholder, or when Settings contain the placeholder but a shot has no reference.
+- Dry-run fail-closes when a shot has a reference but exported Settings lack the placeholder, or when Settings contain the placeholder but a shot has no reference.
 - WanGP output passes the shared ffprobe/ffmpeg generated-video quality gate before being returned; rejected output is deleted.
 
 ### Other routes
 
 - Wan2.2 remains an optional operator-controlled local route; model downloads/GPU provisioning are never automatic.
 - `comfy-api-v2` remains an explicit optional remote/self-hosted route with environment-only credentials and explicit execution.
+- Comfy remote endpoints require HTTPS; plain HTTP is accepted only for structurally validated loopback endpoints. Remote job output URLs must use HTTPS, while local HTTP output is allowed only from the same loopback origin. Output downloads do not carry the API bearer token and do not follow redirects.
 
 ## Style / creative direction
 
@@ -73,14 +75,16 @@ Recent closure work was introduced RED-first and then brought GREEN on both Pyth
 - WanGP reference placeholder binding + rights/file preflight;
 - WanGP generated-video quality gate;
 - `video-run` WanGP placeholder/reference dry-run fail-closed checks;
+- ZeroGPU cross-origin bearer-token/SSRF confinement;
+- Comfy endpoint parsing and remote-output SSRF confinement;
 - README architecture synchronization.
 
-Always re-fetch the current head's CI before making a completion or merge claim.
+The latest security implementation head was GREEN on both supported Python versions before this documentation-only synchronization. Always re-fetch the current head's CI before making a completion or merge claim.
 
 ## Remaining closure actions
 
-1. Review the accumulated Foundation diff for concrete regressions, dead assumptions, security/integrity gaps and stale documentation; repair findings only when evidence supports them.
-2. Re-fetch the current head, required checks, PR review threads/comments and mergeability after the closure edits.
-3. Verify the final current head on Python 3.11 / 3.12 with Ruff + full pytest.
-4. If no blocking findings remain, synchronize the PR summary, mark PR #1 ready for review, and merge using an expected-head SHA so a moved branch cannot be merged accidentally.
+1. Verify this final synchronized head on Python 3.11 / 3.12 with Ruff + full pytest.
+2. Re-fetch PR #1 mergeability, comments/review threads and current head after the verification run. Branch-protection details are not readable through the current GitHub integration, so do not infer them.
+3. Synchronize the PR summary and mark PR #1 ready for review if no blocking finding appears.
+4. Treat the final merge as the remaining irreversible repository action: use the verified expected-head SHA and do not merge a moved head accidentally.
 5. After merge, verify `main` contains the merged head and record the next milestone rather than continuing Foundation indefinitely.
