@@ -1,10 +1,12 @@
+from typing import Final
+
 import pytest
 
 from hottop.video_software3d import project_point
 from hottop.video_software3d_production import build_story_scene
 
 
-SUBJECT_PREFIXES = {
+SUBJECT_PREFIXES: Final = {
     "cow-snake": (
         "young-cow-",
         "mother-cow-",
