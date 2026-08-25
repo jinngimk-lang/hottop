@@ -19,31 +19,41 @@
       "index": 1,
       "scene": "In one dim, messy rural-industrial programmer workshop, an original orange-brown rough 3D cow with short dark horns and an oversized muted-gray muzzle types at an old laptop while environment setup cards and cables pile up. A black-green nuisance snake tagged only as satirical generic workflow clutter begins sliding from under the desk and wrapping around the cables. Preserve this exact cow, snake, workshop, lighting and prop layout across all later shots.",
       "caption": "哎呀！又来绊我！",
-      "intent": "establish developer friction and the absurd snake metaphor inside one continuous low-budget 3D film world"
+      "intent": "establish developer friction and the absurd snake metaphor inside one continuous low-budget 3D film world",
+      "speaker": "young-cow",
+      "delivery": "frustrated, startled conversational Mandarin; comedic but clearly intelligible"
     },
     {
       "index": 2,
       "scene": "Without changing location or character design, follow the same cow as it recoils from the same snake, knocks the chair back, points toward the doorway and calls for help. The snake keeps physically tangling the same dependency cards and cables instead of becoming a separate graphic overlay.",
       "caption": "妈——！",
-      "intent": "escalate the obstruction through character reaction and eyeline continuity"
+      "intent": "escalate the obstruction through character reaction and eyeline continuity",
+      "speaker": "young-cow",
+      "delivery": "brief panicked call for help in natural Mandarin; loud enough to land the comedy beat without shouting distortion"
     },
     {
       "index": 3,
       "scene": "Follow the cow's eyeline to the same workshop doorway as a larger original mother cow from the same rough 3D family enters slowly under the same warm practical light. She looks once at the same snake and laptop, stays completely deadpan, and points one hoof toward the computer.",
       "caption": "傻孩子，用 InkClawAgent。",
-      "intent": "deliver the deadpan family-comedy reversal through a continuous entrance, not an advertisement cutaway"
+      "intent": "deliver the deadpan family-comedy reversal through a continuous entrance, not an advertisement cutaway",
+      "speaker": "mother-cow",
+      "delivery": "calm deadpan maternal Mandarin; matter-of-fact and slightly unimpressed"
     },
     {
       "index": 4,
       "scene": "Match the mother cow's pointing hoof into the same laptop. InkClawAgent appears as a deliberately plain, rough-world work surface rather than glossy sci-fi UI. The tangled setup cards collapse into three crude readable benefits inside the scene: 不用部署, 开发零门槛, Free Token 入门. Simple task markers Research, Write, Review and Code begin moving while the same snake loosens and slips off the cables. The young cow stares at the result in disbelief.",
       "caption": "啊？这么直接？",
-      "intent": "make product benefits visible consequences of the joke while keeping the promoted product native to the intentionally cheap world"
+      "intent": "make product benefits visible consequences of the joke while keeping the promoted product native to the intentionally cheap world",
+      "speaker": "young-cow",
+      "delivery": "surprised, skeptical conversational Mandarin with a short upward reaction"
     },
     {
       "index": 5,
       "scene": "Stay in the same workshop. The young cow resumes useful work while rough Research, Write, Review and Code task markers continue. The same snake retreats across the foreground. The mother cow calmly watches as the young cow kicks one empty Deploy cardboard box out of frame, using the flying box as foreground occlusion for the ending. No URL, QR code, app-store badge or glossy end card.",
       "caption": "别被蛇绊住。",
-      "intent": "land the punchline and compact product memory through action, then end like a strange native internet film clip"
+      "intent": "land the punchline and compact product memory through action, then end like a strange native internet film clip",
+      "speaker": "mother-cow",
+      "delivery": "dry compact deadpan Mandarin; quiet closing authority"
     }
   ],
   "master_prompt": "Original Anti-Polish / Controlled Badness short film. One continuous rural-industrial programmer workshop, same original rough 3D cow family and same nuisance snake in every shot. Intentionally cheap geometry, basic fur/materials, stiff physical comedy, blunt staging, warm practical bulb lighting, slightly clumsy camera movement, deadpan absurdity treated seriously. Low production feel, high comedy control. Product value must happen through dialogue, physical consequence and task motion rather than feature-card advertising.",
