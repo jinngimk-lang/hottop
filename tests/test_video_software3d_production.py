@@ -2,6 +2,8 @@ import json
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from hottop.video_software3d_production import (
     build_story_scene,
     render_story_frame_sequence,
@@ -91,3 +93,22 @@ def test_render_story_shot_video_encodes_real_frame_sequence_and_cleans_workspac
     assert "yuv420p" in calls[0]
     assert "+faststart" in calls[0]
     assert not output.with_suffix(".frames").exists()
+
+
+def test_render_story_shot_video_fails_closed_without_workspace_plan(tmp_path: Path):
+    output = tmp_path / "run" / "shots" / "shot-001.mp4"
+
+    def runner(argv, **kwargs):
+        Path(argv[-1]).write_bytes(b"fake-mp4")
+        return subprocess.CompletedProcess(argv, 0, "", "")
+
+    with pytest.raises(ValueError, match="workspace plan"):
+        render_story_shot_video(
+            shot_index=1,
+            output=output,
+            duration_seconds=0.5,
+            width=160,
+            height=90,
+            fps=4,
+            runner=runner,
+        )
