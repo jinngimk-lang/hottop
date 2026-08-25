@@ -48,6 +48,7 @@ class VideoExecutionStatus(BaseModel):
     comfy_api: BackendReadiness | None = None
     zero_cost: BackendReadiness | None = None
     software3d: BackendReadiness | None = None
+    lightx2v: BackendReadiness | None = None
     voice: BackendReadiness | None = None
     motion_canvas: BackendReadiness
     moviepy: BackendReadiness | None = None
@@ -265,6 +266,61 @@ def _software3d_readiness(config: VideoProductionConfig) -> BackendReadiness:
     )
 
 
+def _lightx2v_readiness(
+    config: VideoProductionConfig,
+    project_root: Path,
+) -> BackendReadiness:
+    if config.generation_backend != "lightx2v-operator":
+        return BackendReadiness(backend="lightx2v-operator", ready=True, checks=["not selected"])
+
+    adapter = config.lightx2v
+    if adapter is None:
+        return BackendReadiness(
+            backend="lightx2v-operator",
+            ready=False,
+            missing=["LightX2V profile configuration"],
+        )
+
+    missing: list[str] = []
+    checks: list[str] = [f"python={sys.executable}"]
+    if not Path(sys.executable).is_file():
+        missing.append("python executable")
+
+    root = _resolve(project_root, adapter.root).resolve()
+    infer = root / "lightx2v" / "infer.py"
+    model_path = _resolve(project_root, adapter.model_path).resolve()
+    config_json = _resolve(project_root, adapter.config_json).resolve()
+    checks.extend(
+        [
+            f"root={root}",
+            f"infer.py={infer}",
+            f"model_path={model_path}",
+            f"config_json={config_json}",
+            f"model_cls={adapter.model_cls}",
+            f"task={adapter.task}",
+            f"code_license={adapter.code_license}",
+            f"weights_license={adapter.weights_license}",
+            f"cost_per_unit={adapter.cost_per_unit}",
+            f"operator_managed={adapter.operator_managed}",
+            f"auto_install={adapter.auto_install}",
+            f"auto_download_models={adapter.auto_download_models}",
+        ]
+    )
+    if not infer.is_file():
+        missing.append("LightX2V operator checkout with lightx2v/infer.py")
+    if not model_path.is_dir():
+        missing.append("LightX2V local model directory")
+    if not config_json.is_file():
+        missing.append("LightX2V local config JSON")
+
+    return BackendReadiness(
+        backend="lightx2v-operator",
+        ready=not missing,
+        checks=checks,
+        missing=missing,
+    )
+
+
 def _voice_readiness(config: VideoProductionConfig) -> BackendReadiness:
     backend = config.audio.voice_backend
     if backend == "none":
@@ -362,6 +418,7 @@ def inspect_video_environment(
     comfy_api = _comfy_api_readiness(config, root)
     zero_cost = _zero_cost_readiness(config)
     software3d = _software3d_readiness(config)
+    lightx2v = _lightx2v_readiness(config, root)
     voice = _voice_readiness(config)
     motion_canvas = _motion_canvas_readiness(config, root)
     moviepy = _moviepy_readiness(config)
@@ -388,6 +445,10 @@ def inspect_video_environment(
         actions.append(
             "Expose FFmpeg for the deterministic software3d shot encoder; software3d requires no GPU or model download."
         )
+    if not lightx2v.ready:
+        actions.append(
+            "Prepare the operator-managed LightX2V checkout, local model directory and config JSON; Hottop will not install LightX2V or download models."
+        )
     if not voice.ready:
         actions.append(
             "Install/expose the configured local voice backend or configure an explicit external voice adapter."
@@ -412,6 +473,7 @@ def inspect_video_environment(
             and comfy_api.ready
             and zero_cost.ready
             and software3d.ready
+            and lightx2v.ready
             and voice.ready
             and motion_canvas.ready
             and moviepy.ready
@@ -422,6 +484,7 @@ def inspect_video_environment(
         comfy_api=comfy_api,
         zero_cost=zero_cost,
         software3d=software3d,
+        lightx2v=lightx2v,
         voice=voice,
         motion_canvas=motion_canvas,
         moviepy=moviepy,
@@ -675,6 +738,65 @@ def _software3d_runtime_generation_commands(
     return commands
 
 
+def _lightx2v_runtime_generation_commands(
+    plan: VideoProductionPlan,
+    config: VideoProductionConfig,
+    *,
+    project_root: Path,
+    shots_dir: Path,
+) -> list[ExternalCommandSpec]:
+    adapter = config.lightx2v
+    if config.generation_backend != "lightx2v-operator" or adapter is None:
+        return []
+
+    root = _resolve(project_root, adapter.root).resolve()
+    model_path = _resolve(project_root, adapter.model_path).resolve()
+    config_json = _resolve(project_root, adapter.config_json).resolve()
+    commands: list[ExternalCommandSpec] = []
+    for shot in plan.shots:
+        args = [
+            "-m",
+            "hottop.video_lightx2v",
+            "--root",
+            str(root),
+            "--model-path",
+            str(model_path),
+            "--config-json",
+            str(config_json),
+            "--model-cls",
+            adapter.model_cls,
+            "--task",
+            adapter.task,
+            "--seed",
+            str(adapter.seed),
+            "--prompt",
+            shot.generation_prompt,
+            "--negative-prompt",
+            shot.negative_prompt,
+            "--output",
+            str((shots_dir / f"shot-{shot.index:03d}.mp4").resolve()),
+        ]
+        if shot.reference is not None:
+            reference_path = _resolve(project_root, shot.reference.image_path).resolve()
+            args.extend(
+                [
+                    "--reference-image",
+                    str(reference_path),
+                    "--reference-rights",
+                    shot.reference.rights,
+                ]
+            )
+        commands.append(
+            ExternalCommandSpec(
+                program=sys.executable,
+                args=args,
+                cwd=str(project_root.resolve()),
+                stage="generation",
+            )
+        )
+    return commands
+
+
 def _runtime_generation_commands(
     plan: VideoProductionPlan,
     config: VideoProductionConfig,
@@ -705,6 +827,13 @@ def _runtime_generation_commands(
         )
     if config.generation_backend == "software3d":
         return _software3d_runtime_generation_commands(
+            plan,
+            config,
+            project_root=project_root,
+            shots_dir=shots_dir,
+        )
+    if config.generation_backend == "lightx2v-operator":
+        return _lightx2v_runtime_generation_commands(
             plan,
             config,
             project_root=project_root,
@@ -1018,7 +1147,7 @@ def _generation_reference_actions(
     *,
     project_root: Path,
 ) -> list[str]:
-    if config.generation_backend not in {"zero-cost-router", "external"}:
+    if config.generation_backend not in {"zero-cost-router", "external", "lightx2v-operator"}:
         return []
 
     actions: list[str] = []
@@ -1051,6 +1180,13 @@ def _generation_reference_actions(
                         f"WanGP settings reference placeholder is configured but shot {shot.index} "
                         "has no reference image."
                     )
+
+    if config.generation_backend == "lightx2v-operator" and config.lightx2v is not None:
+        for shot in plan.shots:
+            if config.lightx2v.task == "i2v" and shot.reference is None:
+                actions.append(f"LightX2V I2V shot {shot.index} requires a rights-safe reference image.")
+            if config.lightx2v.task == "t2v" and shot.reference is not None:
+                actions.append(f"LightX2V T2V shot {shot.index} must not carry reference-image metadata.")
 
     for shot in plan.shots:
         if shot.reference is None:
