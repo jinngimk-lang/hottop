@@ -16,6 +16,7 @@ GenerationBackend = Literal[
     "wan22-i2v-a14b",
     "comfy-api-v2",
     "zero-cost-router",
+    "software3d",
     "external",
 ]
 CompositorBackend = Literal["motion-canvas", "moviepy", "external"]
@@ -363,6 +364,47 @@ def _wan22_command(config: VideoProductionConfig, prompt: str) -> str | None:
     return " ".join(shlex.quote(value) for value in [spec.program, *spec.args])
 
 
+def _software3d_command_spec(
+    config: VideoProductionConfig,
+    duration_seconds: float,
+    shot_index: int,
+) -> ExternalCommandSpec | None:
+    if config.generation_backend != "software3d":
+        return None
+    return ExternalCommandSpec(
+        program="python",
+        args=[
+            "-m",
+            "hottop.video_software3d_production",
+            "--shot-index",
+            str(shot_index),
+            "--duration-seconds",
+            f"{duration_seconds:g}",
+            "--fps",
+            str(config.fps),
+            "--width",
+            str(config.width),
+            "--height",
+            str(config.height),
+            "--output",
+            f"shots/shot-{shot_index:03d}.mp4",
+        ],
+        cwd=".",
+        stage="generation",
+    )
+
+
+def _software3d_command(
+    config: VideoProductionConfig,
+    duration_seconds: float,
+    shot_index: int,
+) -> str | None:
+    spec = _software3d_command_spec(config, duration_seconds, shot_index)
+    if spec is None:
+        return None
+    return " ".join(shlex.quote(value) for value in [spec.program, *spec.args])
+
+
 def _external_command_spec(
     config: VideoProductionConfig,
     prompt: str,
@@ -570,14 +612,18 @@ def build_video_production_plan(
                 reference=frame.reference,
             )
         )
-        command = _external_command(config, prompt, shot_duration, position) or _wan22_command(
-            config, prompt
+        command = (
+            _software3d_command(config, shot_duration, position)
+            or _external_command(config, prompt, shot_duration, position)
+            or _wan22_command(config, prompt)
         )
         if command:
             commands.append(command)
-        command_spec = _external_command_spec(
-            config, prompt, shot_duration, position
-        ) or _wan22_command_spec(config, prompt)
+        command_spec = (
+            _software3d_command_spec(config, shot_duration, position)
+            or _external_command_spec(config, prompt, shot_duration, position)
+            or _wan22_command_spec(config, prompt)
+        )
         if command_spec:
             command_specs.append(command_spec)
 
@@ -613,6 +659,11 @@ def build_video_production_plan(
         generation_note = (
             "Zero-cost execution may use only configured cost=0 candidates and must never fall back "
             "to paid generation."
+        )
+    elif config.generation_backend == "software3d":
+        generation_note = (
+            "Software3D is a deterministic zero-cost local fallback using real 3D geometry and perspective; "
+            "it requires no model download, no GPU and no paid service."
         )
     elif config.generation_backend == "external" and config.external_generation is not None:
         generation_note = (
