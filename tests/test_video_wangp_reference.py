@@ -6,7 +6,12 @@ from hottop.rendering import CreativeRenderFrame, CreativeRenderRequest
 from hottop.video_execution import VideoExecutionError, run_video_production
 from hottop.video_production import load_video_production_config
 from hottop.video_reference import VideoReference
-from hottop.video_wangp import WanGPAdapterConfig, WanGPError, prepare_wangp_settings, run_wangp_shot
+from hottop.video_wangp import (
+    WanGPAdapterConfig,
+    WanGPError,
+    prepare_wangp_settings,
+    run_wangp_shot,
+)
 
 REFERENCE_PLACEHOLDER = "__HOTTOP_REFERENCE_IMAGE__"
 
