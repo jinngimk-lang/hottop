@@ -1,0 +1,82 @@
+name: production-smoke
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/production-smoke.yml"
+      - "config/video/**"
+      - "examples/video/**"
+      - "src/hottop/video_*.py"
+      - "tests/test_production_smoke_workflow.py"
+      - "pyproject.toml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  software3d-production-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install free local media dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,video]"
+      - name: Execute checked-in software3d story
+        run: |
+          hottop video-run examples/video/inkclaw-cow-snake.render.json \
+            --config config/video/anti-polish-software3d.yml \
+            --output-dir artifacts/production-smoke \
+            --project-root . \
+            --execute \
+            --output artifacts/production-smoke/run-result.json
+      - name: Verify final media and provenance
+        run: |
+          test -s artifacts/production-smoke/hottop-output.mp4
+          test "$(find artifacts/production-smoke/shots -name '*.artifact.json' -type f | wc -l)" -eq 5
+          ffprobe -v error \
+            -show_entries stream=codec_type,codec_name,pix_fmt \
+            -show_entries format=duration \
+            -of json \
+            artifacts/production-smoke/hottop-output.mp4 \
+            > artifacts/production-smoke/ffprobe.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("artifacts/production-smoke")
+          probe = json.loads((root / "ffprobe.json").read_text())
+          streams = probe["streams"]
+          video = next(item for item in streams if item["codec_type"] == "video")
+          audio = next(item for item in streams if item["codec_type"] == "audio")
+          assert video["codec_name"] == "h264"
+          assert video["pix_fmt"] == "yuv420p"
+          assert audio["codec_name"] == "aac"
+          assert float(probe["format"]["duration"]) > 0
+
+          result = json.loads((root / "run-result.json").read_text())
+          assert result["executed"] is True
+          assert len(result["artifact_manifest_paths"]) == 5
+          for manifest in result["artifact_manifest_paths"]:
+              assert Path(manifest).is_file()
+          PY
+      - name: Upload reproducible production evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: hottop-software3d-production-smoke
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            artifacts/production-smoke/hottop-output.mp4
+            artifacts/production-smoke/run-result.json
+            artifacts/production-smoke/hottop-video-plan.json
+            artifacts/production-smoke/ffprobe.json
+            artifacts/production-smoke/shots/*.artifact.json

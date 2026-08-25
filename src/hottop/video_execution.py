@@ -896,7 +896,14 @@ def _artifact_manifest_path(command: ExternalCommandSpec) -> Path | None:
     try:
         return Path(command.args[command.args.index("--artifact-manifest") + 1])
     except (ValueError, IndexError):
-        return None
+        pass
+    if "hottop.video_software3d_production" in command.args:
+        try:
+            output = Path(command.args[command.args.index("--output") + 1])
+        except (ValueError, IndexError):
+            return None
+        return output.with_suffix(".artifact.json")
+    return None
 
 
 def _shot_index(command: ExternalCommandSpec) -> int | None:
@@ -947,7 +954,8 @@ def _verify_artifact_provenance(
         raise VideoExecutionError(
             f"video generation artifact provenance is invalid: {manifest_path}"
         ) from exc
-    if manifest.planned_generation_backend != "zero-cost-router":
+
+    if manifest.planned_generation_backend != config.generation_backend:
         raise VideoExecutionError(
             f"video generation artifact provenance planned backend mismatch: {manifest_path}"
         )
@@ -957,7 +965,13 @@ def _verify_artifact_provenance(
             f"video generation artifact provenance must describe exactly one shot: {manifest_path}"
         )
     artifact = manifest.shots[0]
-    if artifact.artifact_kind == "ai-generated":
+
+    if config.generation_backend == "software3d":
+        if artifact.artifact_kind != "deterministic-generated" or artifact.backend != "software3d":
+            raise VideoExecutionError(
+                f"video generation artifact provenance software3d artifact mismatch: {manifest_path}"
+            )
+    elif artifact.artifact_kind == "ai-generated":
         allowed_backends = (
             {candidate.id for candidate in config.zero_cost.candidates}
             if config.generation_backend == "zero-cost-router" and config.zero_cost is not None
@@ -1086,11 +1100,12 @@ def run_video_production(
         composite_output=composite_output,
         final_output=final_output,
     )
-    artifact_manifest_paths = (
-        [str((shots_dir / f"shot-{shot.index:03d}.artifact.json").resolve()) for shot in plan.shots]
-        if config.generation_backend == "zero-cost-router"
-        else []
-    )
+    artifact_manifest_paths = [
+        str(path.resolve())
+        for command in commands
+        if command.stage == "generation"
+        if (path := _artifact_manifest_path(command)) is not None
+    ]
     readiness = inspect_video_environment(config, project_root=root)
     reference_actions = _generation_reference_actions(
         plan,
