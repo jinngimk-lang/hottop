@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import shutil
 import subprocess
@@ -11,6 +12,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from .video_artifacts import VideoArtifactManifest, VideoShotArtifact
 from .video_quality import VideoQualityPolicy, VideoQualityReport, inspect_video_quality
 from .video_reference import ReferenceRights
 
@@ -118,6 +120,50 @@ def _verify_quality(
     raise LightX2VError(f"LightX2V generated video rejected by quality gate: {reason}")
 
 
+def _byte_identity(path: Path) -> tuple[str, int]:
+    digest = hashlib.sha256()
+    size_bytes = 0
+    with path.open("rb") as stream:
+        while chunk := stream.read(1024 * 1024):
+            digest.update(chunk)
+            size_bytes += len(chunk)
+    return digest.hexdigest(), size_bytes
+
+
+def _write_artifact_manifest(
+    *,
+    config: LightX2VAdapterConfig,
+    output: Path,
+    shot_index: int,
+    manifest_path: Path,
+) -> None:
+    sha256, size_bytes = _byte_identity(output)
+    manifest = VideoArtifactManifest(
+        planned_generation_backend="lightx2v-operator",
+        shots=[
+            VideoShotArtifact(
+                shot_index=shot_index,
+                path=str(output.resolve()),
+                artifact_kind="ai-generated",
+                backend=f"lightx2v:{config.model_cls}",
+                sha256=sha256,
+                size_bytes=size_bytes,
+            )
+        ],
+    )
+    manifest_path = manifest_path.resolve()
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = manifest_path.with_suffix(manifest_path.suffix + ".part")
+    try:
+        temporary.write_text(manifest.model_dump_json(indent=2) + "\n", encoding="utf-8")
+        temporary.replace(manifest_path)
+    except OSError as exc:
+        output.unlink(missing_ok=True)
+        manifest_path.unlink(missing_ok=True)
+        temporary.unlink(missing_ok=True)
+        raise LightX2VError(f"LightX2V artifact provenance write failed: {manifest_path}") from exc
+
+
 def run_lightx2v_shot(
     config: LightX2VAdapterConfig,
     *,
@@ -126,6 +172,8 @@ def run_lightx2v_shot(
     output: Path,
     reference_image: Path | None = None,
     reference_rights: ReferenceRights | None = None,
+    shot_index: int | None = None,
+    artifact_manifest: Path | None = None,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
     quality_inspector: Callable[
         [Path, VideoQualityPolicy], VideoQualityReport
@@ -136,6 +184,13 @@ def run_lightx2v_shot(
     _preflight(config)
     root = config.root.resolve()
     output = output.resolve()
+    if (shot_index is None) != (artifact_manifest is None):
+        raise LightX2VError("LightX2V artifact provenance requires shot_index and artifact_manifest together")
+    if shot_index is not None and shot_index < 1:
+        raise LightX2VError("LightX2V shot_index must be positive")
+    if artifact_manifest is not None:
+        artifact_manifest = artifact_manifest.resolve()
+        artifact_manifest.unlink(missing_ok=True)
 
     if config.task == "i2v":
         if reference_image is None or reference_rights not in {
@@ -179,6 +234,13 @@ def run_lightx2v_shot(
         raise LightX2VError("LightX2V completed without the expected non-empty video output")
 
     _verify_quality(output, config.quality_policy, quality_inspector)
+    if artifact_manifest is not None and shot_index is not None:
+        _write_artifact_manifest(
+            config=config,
+            output=output,
+            shot_index=shot_index,
+            manifest_path=artifact_manifest,
+        )
     return output
 
 
@@ -193,6 +255,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--prompt", required=True)
     parser.add_argument("--negative-prompt", default="")
     parser.add_argument("--output", required=True)
+    parser.add_argument("--shot-index", type=int)
+    parser.add_argument("--artifact-manifest")
     parser.add_argument("--reference-image")
     parser.add_argument(
         "--reference-rights",
@@ -218,6 +282,8 @@ def main() -> None:
             output=Path(args.output),
             reference_image=Path(args.reference_image) if args.reference_image else None,
             reference_rights=args.reference_rights,
+            shot_index=args.shot_index,
+            artifact_manifest=Path(args.artifact_manifest) if args.artifact_manifest else None,
         )
     except LightX2VError as exc:
         raise SystemExit(str(exc)) from exc
