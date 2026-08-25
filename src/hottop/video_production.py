@@ -16,6 +16,7 @@ GenerationBackend = Literal[
     "wan22-i2v-a14b",
     "comfy-api-v2",
     "zero-cost-router",
+    "software-lowpoly-3d",
     "external",
 ]
 CompositorBackend = Literal["motion-canvas", "moviepy", "external"]
@@ -86,6 +87,10 @@ class Wan22Config(BaseModel):
     model_dir: str
     offload_model: bool = True
     convert_model_dtype: bool = True
+
+
+class SoftwareLowPolyConfig(BaseModel):
+    preset: str = Field(min_length=1)
 
 
 class ExternalGenerationConfig(BaseModel):
@@ -185,6 +190,7 @@ class VideoProductionConfig(BaseModel):
     text: TextConfig
     anti_polish: AntiPolishConfig = Field(default_factory=AntiPolishConfig)
     wan22: Wan22Config | None = None
+    software_lowpoly: SoftwareLowPolyConfig | None = None
     external_generation: ExternalGenerationConfig | None = None
     comfy_api_v2: ComfyApiV2Config | None = None
     zero_cost: ZeroCostConfig | None = None
@@ -196,6 +202,8 @@ class VideoProductionConfig(BaseModel):
     def validate_selected_generation_backend(self) -> VideoProductionConfig:
         if self.generation_backend == "zero-cost-router" and self.zero_cost is None:
             raise ValueError("zero-cost-router requires zero_cost configuration")
+        if self.generation_backend == "software-lowpoly-3d" and self.software_lowpoly is None:
+            raise ValueError("software-lowpoly-3d requires software_lowpoly configuration")
         if self.generation_backend == "external" and self.external_generation is None:
             raise ValueError("external generation requires external_generation configuration")
         return self
@@ -358,6 +366,50 @@ def _wan22_command_spec(
 
 def _wan22_command(config: VideoProductionConfig, prompt: str) -> str | None:
     spec = _wan22_command_spec(config, prompt)
+    if spec is None:
+        return None
+    return " ".join(shlex.quote(value) for value in [spec.program, *spec.args])
+
+
+def _software_lowpoly_command_spec(
+    config: VideoProductionConfig,
+    duration_seconds: float,
+    shot_index: int,
+) -> ExternalCommandSpec | None:
+    software = config.software_lowpoly
+    if config.generation_backend != "software-lowpoly-3d" or software is None:
+        return None
+    return ExternalCommandSpec(
+        program="python",
+        args=[
+            "-m",
+            "hottop.video_lowpoly3d",
+            "--preset",
+            software.preset,
+            "--shot-index",
+            str(shot_index),
+            "--duration-seconds",
+            f"{duration_seconds:g}",
+            "--width",
+            str(config.width),
+            "--height",
+            str(config.height),
+            "--fps",
+            str(config.fps),
+            "--output",
+            f"shots/shot-{shot_index:03d}.mp4",
+        ],
+        cwd=".",
+        stage="generation",
+    )
+
+
+def _software_lowpoly_command(
+    config: VideoProductionConfig,
+    duration_seconds: float,
+    shot_index: int,
+) -> str | None:
+    spec = _software_lowpoly_command_spec(config, duration_seconds, shot_index)
     if spec is None:
         return None
     return " ".join(shlex.quote(value) for value in [spec.program, *spec.args])
@@ -570,14 +622,18 @@ def build_video_production_plan(
                 reference=frame.reference,
             )
         )
-        command = _external_command(config, prompt, shot_duration, position) or _wan22_command(
-            config, prompt
+        command = (
+            _software_lowpoly_command(config, shot_duration, position)
+            or _external_command(config, prompt, shot_duration, position)
+            or _wan22_command(config, prompt)
         )
         if command:
             commands.append(command)
-        command_spec = _external_command_spec(
-            config, prompt, shot_duration, position
-        ) or _wan22_command_spec(config, prompt)
+        command_spec = (
+            _software_lowpoly_command_spec(config, shot_duration, position)
+            or _external_command_spec(config, prompt, shot_duration, position)
+            or _wan22_command_spec(config, prompt)
+        )
         if command_spec:
             command_specs.append(command_spec)
 
@@ -613,6 +669,11 @@ def build_video_production_plan(
         generation_note = (
             "Zero-cost execution may use only configured cost=0 candidates and must never fall back "
             "to paid generation."
+        )
+    elif config.generation_backend == "software-lowpoly-3d":
+        generation_note = (
+            "Zero-cost deterministic software 3D renders original low-poly geometry locally with real "
+            "perspective and motion; it requires no model download, cloud upload, GPU, token, or paid service."
         )
     elif config.generation_backend == "external" and config.external_generation is not None:
         generation_note = (
