@@ -4,12 +4,23 @@ import argparse
 import hashlib
 import json
 import math
+import os
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, Field
 
 from .video_production import VideoProductionPlan
+
+_DEFAULT_CJK_FONT_CANDIDATES = (
+    Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"),
+    Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.otf"),
+    Path("/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"),
+    Path("/System/Library/Fonts/PingFang.ttc"),
+    Path("C:/Windows/Fonts/msyh.ttc"),
+    Path("C:/Windows/Fonts/simhei.ttf"),
+)
 
 
 class MoviePyTimelineShot(BaseModel):
@@ -165,6 +176,45 @@ def verify_moviepy_shot_artifacts(timeline: MoviePyTimeline) -> None:
             raise ValueError(f"MoviePy shot {shot.index} content mismatch with artifact provenance")
 
 
+def _contains_cjk(text: str) -> bool:
+    return any(
+        0x3400 <= ord(character) <= 0x4DBF
+        or 0x4E00 <= ord(character) <= 0x9FFF
+        or 0xF900 <= ord(character) <= 0xFAFF
+        for character in text
+    )
+
+
+def _resolve_caption_font(
+    captions: list[MoviePyTimelineCaption],
+    *,
+    environ: Mapping[str, str] | None = None,
+    candidates: tuple[Path, ...] = _DEFAULT_CJK_FONT_CANDIDATES,
+) -> str | None:
+    """Resolve a local CJK-capable caption font or fail closed before composition."""
+
+    if not any(_contains_cjk(caption.text) for caption in captions):
+        return None
+
+    environment = os.environ if environ is None else environ
+    explicit = environment.get("HOTTOP_CAPTION_FONT")
+    if explicit:
+        font_path = Path(explicit).expanduser().resolve()
+        if font_path.is_file():
+            return str(font_path)
+        raise RuntimeError(f"CJK caption font is not available locally: {font_path}")
+
+    for candidate in candidates:
+        font_path = candidate.expanduser().resolve()
+        if font_path.is_file():
+            return str(font_path)
+
+    raise RuntimeError(
+        "CJK caption font is required for Mandarin/CJK captions; "
+        "set HOTTOP_CAPTION_FONT to a local CJK-capable font file"
+    )
+
+
 def _synthetic_bgm_array(
     duration_seconds: float,
     description: str = "",
@@ -238,6 +288,7 @@ def render_moviepy_timeline(
     """Render shots with captions, dialogue, original music and procedural Foley/SFX."""
 
     verify_moviepy_shot_artifacts(timeline)
+    caption_font = _resolve_caption_font(timeline.captions)
 
     try:
         from moviepy import (
@@ -286,6 +337,7 @@ def render_moviepy_timeline(
         for caption in timeline.captions:
             text = TextClip(
                 text=caption.text,
+                font=caption_font,
                 font_size=max(38, timeline.width // 14),
                 color="white",
                 stroke_color="black",
