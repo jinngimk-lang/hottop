@@ -63,30 +63,52 @@ candidates:
       Keep download/conversion/execution operator-owned; prefer safetensors conversion or a
       reviewed isolated runtime before production use.
 
+  qwen3_tts_0_6b_customvoice:
+    repo: QwenLM/Qwen3-TTS
+    commit: 022e286b98fbec7e1e916cb940cdf532cd9f488e
+    weights: Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice
+    weights_revision_reviewed: 85e237c
+    code_license: Apache-2.0
+    weights_license: Apache-2.0
+    status: benchmark_ready_operator_local
+    target_gaps:
+      - natural_mandarin_dialogue
+      - multilingual_tts
+      - expressive_local_voice
+      - style_control_without_voice_cloning
+    capabilities:
+      - chinese_and_9_other_languages
+      - nine_preset_timbres
+      - natural_language_style_instruction
+      - safetensors_weights
+      - local_custom_voice_generation
+    integration_strategy: isolated_operator_owned_local_tts_adapter
+    runtime_boundary: >-
+      Hottop accepts only an already provisioned local model directory, forces offline/local
+      loading and never downloads the roughly 2.5 GB checkpoint during CI or video production.
+      This preset-timbre route is the preferred Qwen3 benchmark for normal dialogue because it
+      does not require reference voice audio. Keep eSpeak as the guaranteed local fallback until
+      a real operator-owned benchmark proves better intelligibility/prosody at acceptable cost.
+
   qwen3_tts_0_6b_base:
     repo: QwenLM/Qwen3-TTS
     commit: 022e286b98fbec7e1e916cb940cdf532cd9f488e
     weights: Qwen/Qwen3-TTS-12Hz-0.6B-Base
     code_license: Apache-2.0
     weights_license: Apache-2.0
-    status: high_priority_benchmark
+    status: rights_gated_voice_clone_benchmark
     target_gaps:
-      - natural_mandarin_dialogue
+      - rights_cleared_voice_clone
       - multilingual_tts
-      - expressive_local_voice
-      - streaming_tts
     capabilities:
       - chinese_and_9_other_languages
       - safetensors_weights
-      - 0_6b_base_model
       - voice_clone_capability
-      - streaming_tts_family
     integration_strategy: operator_owned_local_tts_adapter
     runtime_boundary: >-
-      Prefer preset, designed, or otherwise rights-safe voices for unattended production.
-      Do not clone or imitate a real person's voice without rights-cleared source audio and
-      explicit intended-use authority. Model provisioning stays operator-controlled; Hottop
-      must not silently download the multi-gigabyte model during normal video-run or CI.
+      Base is not the normal unattended dialogue route. Reference voice audio requires explicit
+      rights provenance and intended-use authority. Model provisioning stays operator-controlled;
+      Hottop must not silently download the multi-gigabyte model during normal video-run or CI.
 
   wangp:
     repo: deepbeepmeep/Wan2GP
