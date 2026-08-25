@@ -1,12 +1,8 @@
 import pytest
 
 from hottop.briefing import build_brief
-from hottop.models import (
-    HotspotMechanism,
-    ProductMechanismMapping,
-    ProductProfile,
-    TrendCandidate,
-)
+from hottop.mechanism import HotspotMechanism, ProductMechanismMapping
+from hottop.models import ProductProfile, TrendCandidate
 from hottop.pipeline import build_batch
 
 
@@ -78,8 +74,8 @@ def test_four_panel_brief_uses_hotspot_native_mechanism_instead_of_keyword_arche
         "intentionally crude low-budget 3D"
     )
     assert "deadpan practical advice" in brief.image_prompt
-    assert "awkward pause" in brief.image_prompt
     assert "clever hero" not in brief.image_prompt.lower()
+    assert "awkward pause" in (brief.mechanism_mapping.mechanism.native_audio_grammar or "")
     assert brief.punchlines == ["傻孩子，别折腾那一套，打开就干活。"]
 
 
