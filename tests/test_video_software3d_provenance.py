@@ -10,6 +10,16 @@ from hottop.video_software3d_production import render_story_shot_video
 
 
 def test_software3d_shot_writes_byte_bound_provenance_manifest(tmp_path: Path):
+    (tmp_path / "hottop-video-plan.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "hottop.video-plan.v1",
+                "topic_id": "inkclaw-anti-polish-cow-snake",
+                "shots": [{"index": 1}],
+            }
+        ),
+        encoding="utf-8",
+    )
     output = tmp_path / "shots" / "shot-001.mp4"
     manifest = output.with_suffix(".artifact.json")
     payload = b"software3d-video-bytes"
