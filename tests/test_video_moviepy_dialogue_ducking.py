@@ -86,3 +86,22 @@ def test_dialogue_ducking_changes_only_the_dialogue_window() -> None:
     np.testing.assert_allclose(ducked[2:6], expected_gain)
     np.testing.assert_allclose(ducked[6:], 1.0)
     np.testing.assert_allclose(audio, 1.0)
+
+
+def test_effective_dialogue_duck_track_uses_actual_voice_duration() -> None:
+    track = video_moviepy.MoviePyTimelineDialogueTrack(
+        source="dialogue.wav",
+        start_seconds=2.0,
+        duration_seconds=2.0,
+        duck_bgm_db=-8.0,
+    )
+
+    effective = video_moviepy._effective_dialogue_duck_track(  # noqa: SLF001
+        track,
+        actual_duration_seconds=0.9,
+    )
+
+    assert effective.duration_seconds == 0.9
+    assert effective.start_seconds == track.start_seconds
+    assert effective.duck_bgm_db == track.duck_bgm_db
+    assert track.duration_seconds == 2.0
