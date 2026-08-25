@@ -165,6 +165,18 @@ def build_story_scene(*, shot_index: int, progress: float, width: int, height: i
     raise ValueError(f"unknown software 3d story preset: {preset}")
 
 
+def resolve_story_preset_for_output(output: Path) -> str:
+    plan_path = output.resolve().parent.parent / "hottop-video-plan.json"
+    if not plan_path.is_file():
+        return DEFAULT_PRESET
+    try:
+        raw = json.loads(plan_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return DEFAULT_PRESET
+    topic_id = str(raw.get("topic_id") or "").strip()
+    return topic_id if topic_id in STORY_SHOT_COUNTS else DEFAULT_PRESET
+
+
 def _load_render_frames(render_source: Path, *, preset: str = DEFAULT_PRESET) -> list[dict[str, object]]:
     raw = json.loads(render_source.read_text(encoding="utf-8"))
     if raw.get("schema_version") != "hottop.render.v2":
@@ -213,12 +225,13 @@ def _write_shot_manifest(*, shot_index: int, output: Path) -> Path:
     return manifest_path
 
 
-def render_story_shot_video(*, shot_index: int, output: Path, duration_seconds: float, width: int = 360, height: int = 640, fps: int = 12, preset: str = DEFAULT_PRESET, runner: Runner = subprocess.run) -> Path:
-    expected = STORY_SHOT_COUNTS.get(preset)
+def render_story_shot_video(*, shot_index: int, output: Path, duration_seconds: float, width: int = 360, height: int = 640, fps: int = 12, preset: str | None = None, runner: Runner = subprocess.run) -> Path:
+    selected_preset = preset or resolve_story_preset_for_output(output)
+    expected = STORY_SHOT_COUNTS.get(selected_preset)
     if expected is None:
-        raise ValueError(f"unknown software 3d story preset: {preset}")
+        raise ValueError(f"unknown software 3d story preset: {selected_preset}")
     if shot_index < 1 or shot_index > expected:
-        raise ValueError(f"software 3d preset {preset} expects shot_index 1..{expected}")
+        raise ValueError(f"software 3d preset {selected_preset} expects shot_index 1..{expected}")
     if duration_seconds <= 0 or fps <= 0:
         raise ValueError("duration_seconds and fps must be positive")
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -232,7 +245,7 @@ def render_story_shot_video(*, shot_index: int, output: Path, duration_seconds: 
     try:
         for frame_index in range(frame_count):
             progress = frame_index / max(1, frame_count - 1)
-            scene = build_story_scene(shot_index=shot_index, progress=progress, width=width, height=height, preset=preset)
+            scene = build_story_scene(shot_index=shot_index, progress=progress, width=width, height=height, preset=selected_preset)
             render_scene_frame(scene, frames_dir / f"frame-{frame_index:05d}.png")
         completed = runner(["ffmpeg", "-y", "-framerate", str(fps), "-i", str(frames_dir / "frame-%05d.png"), "-t", f"{duration_seconds:g}", "-an", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(output)], capture_output=True, text=True, check=False)
         if completed.returncode != 0:
@@ -262,7 +275,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--fps", type=int, default=12)
     parser.add_argument("--seconds-per-shot", type=float, default=2.4)
     parser.add_argument("--duration-seconds", type=float)
-    parser.add_argument("--preset", default=DEFAULT_PRESET, choices=sorted(STORY_SHOT_COUNTS))
+    parser.add_argument("--preset", choices=sorted(STORY_SHOT_COUNTS))
     return parser.parse_args()
 
 
@@ -275,7 +288,7 @@ def main() -> None:
         return
     if not args.render or not args.output_dir:
         raise SystemExit("sequence mode requires --render and --output-dir")
-    render_story_frame_sequence(render_source=Path(args.render), output_dir=Path(args.output_dir), width=args.width, height=args.height, fps=args.fps, seconds_per_shot=args.seconds_per_shot, preset=args.preset)
+    render_story_frame_sequence(render_source=Path(args.render), output_dir=Path(args.output_dir), width=args.width, height=args.height, fps=args.fps, seconds_per_shot=args.seconds_per_shot, preset=args.preset or DEFAULT_PRESET)
 
 
 if __name__ == "__main__":
