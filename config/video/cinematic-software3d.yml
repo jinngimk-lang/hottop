@@ -8,11 +8,11 @@ encoder_backend: ffmpeg
 width: 360
 height: 640
 fps: 12
-duration_seconds: 10.0
+duration_seconds: 15.0
 output_format: mp4
 shot_policy:
   min_shot_seconds: 1.0
-  max_shot_seconds: 2.0
+  max_shot_seconds: 3.0
   transition_bias:
     - follow
     - eyeline
