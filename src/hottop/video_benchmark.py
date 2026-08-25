@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import hashlib
+import pathlib
 import typing
 
 import pydantic
+
+from .video_artifacts import VideoArtifactManifest
 
 Sha256 = typing.Annotated[str, pydantic.Field(pattern=r"^[0-9a-f]{64}$")]
 
@@ -55,6 +59,43 @@ class ReferenceContinuityReport(pydantic.BaseModel):
     pass_: bool
     subject_reports: list[SubjectContinuityReport]
     reasons: list[str] = pydantic.Field(default_factory=list)
+
+
+def _sha256(path: pathlib.Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        while chunk := stream.read(1024 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def verify_reference_continuity_artifacts(
+    evidence: ReferenceContinuityBenchmark,
+    manifest: VideoArtifactManifest,
+    reference_paths: dict[str, pathlib.Path],
+) -> None:
+    """Bind visual-continuity scores to the exact reference and generated shot bytes."""
+
+    manifest.verify_required_byte_identity()
+    manifest_hashes: set[str] = set()
+    for artifact in manifest.shots:
+        if artifact.sha256 is None or artifact.size_bytes is None:
+            raise ValueError("continuity benchmark requires byte-bound shot artifacts")
+        manifest_hashes.add(artifact.sha256)
+
+    for subject in evidence.subjects:
+        reference_path = reference_paths.get(subject.subject_id)
+        if reference_path is None:
+            raise ValueError(f"reference path missing for subject {subject.subject_id}")
+        if not reference_path.is_file():
+            raise ValueError(f"reference path is not a file: {reference_path}")
+        if _sha256(reference_path) != subject.reference_sha256:
+            raise ValueError(f"reference content mismatch for subject {subject.subject_id}")
+        missing_hashes = set(subject.shot_sha256s) - manifest_hashes
+        if missing_hashes:
+            raise ValueError(
+                f"benchmark shot hashes not bound to artifact manifest for {subject.subject_id}"
+            )
 
 
 def evaluate_reference_continuity(
