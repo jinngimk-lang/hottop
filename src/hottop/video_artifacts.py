@@ -7,7 +7,12 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
 
-VideoArtifactKind = Literal["ai-generated", "deterministic-non-generative", "operator-provided"]
+VideoArtifactKind = Literal[
+    "ai-generated",
+    "deterministic-generated",
+    "deterministic-non-generative",
+    "operator-provided",
+]
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -41,10 +46,13 @@ class VideoShotArtifact(BaseModel):
             if not self.degradation_reason:
                 raise ValueError("deterministic fallback artifacts require degradation_reason")
         elif self.degraded_from is not None or self.degradation_reason is not None:
+            labels = {
+                "ai-generated": "AI-generated",
+                "deterministic-generated": "deterministic generated",
+                "operator-provided": "operator-provided",
+            }
             raise ValueError(
-                "AI-generated artifacts cannot carry deterministic degradation metadata"
-                if self.artifact_kind == "ai-generated"
-                else "operator-provided artifacts cannot carry deterministic degradation metadata"
+                f"{labels[self.artifact_kind]} artifacts cannot carry deterministic degradation metadata"
             )
 
         if (self.sha256 is None) != (self.size_bytes is None):
@@ -61,18 +69,26 @@ class VideoArtifactManifest(BaseModel):
     planned_generation_backend: str = Field(min_length=1)
     shots: list[VideoShotArtifact] = Field(default_factory=list)
 
-    def verify_zero_cost_byte_identity(self) -> None:
-        if self.planned_generation_backend != "zero-cost-router":
+    def verify_required_byte_identity(self) -> None:
+        if self.planned_generation_backend not in {"zero-cost-router", "software3d"}:
             return
+        backend_label = (
+            "zero-cost" if self.planned_generation_backend == "zero-cost-router" else "software3d"
+        )
         for artifact in self.shots:
             if artifact.sha256 is None or artifact.size_bytes is None:
-                raise ValueError("zero-cost artifact byte identity missing")
+                raise ValueError(f"{backend_label} artifact byte identity missing")
             artifact_path = Path(artifact.path)
             if not artifact_path.is_file():
-                raise ValueError(f"zero-cost artifact path is not a file: {artifact.path}")
+                raise ValueError(f"{backend_label} artifact path is not a file: {artifact.path}")
             actual_sha256, actual_size = _file_byte_identity(artifact_path)
             if actual_size != artifact.size_bytes or actual_sha256 != artifact.sha256:
-                raise ValueError("zero-cost artifact content mismatch")
+                raise ValueError(f"{backend_label} artifact content mismatch")
+
+    def verify_zero_cost_byte_identity(self) -> None:
+        """Backward-compatible alias retained for callers that predate software3d provenance."""
+
+        self.verify_required_byte_identity()
 
     @classmethod
     def model_validate_json(
@@ -81,5 +97,5 @@ class VideoArtifactManifest(BaseModel):
         **kwargs: object,
     ) -> VideoArtifactManifest:
         manifest = super().model_validate_json(json_data, **kwargs)
-        manifest.verify_zero_cost_byte_identity()
+        manifest.verify_required_byte_identity()
         return manifest

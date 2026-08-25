@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import shutil
@@ -8,6 +9,7 @@ import subprocess
 from collections.abc import Callable
 from pathlib import Path
 
+from .video_artifacts import VideoArtifactManifest, VideoShotArtifact
 from .video_software3d import Camera3D, Mesh3D, Scene3D, Vec3, render_scene_frame
 
 Runner = Callable[..., subprocess.CompletedProcess[str]]
@@ -175,6 +177,36 @@ def render_story_frame_sequence(
     return paths
 
 
+def _write_shot_manifest(*, shot_index: int, output: Path) -> Path:
+    resolved_output = output.resolve()
+    payload = resolved_output.read_bytes()
+    manifest_path = resolved_output.with_suffix(".artifact.json")
+    temporary = manifest_path.with_suffix(manifest_path.suffix + ".part")
+    manifest = VideoArtifactManifest(
+        planned_generation_backend="software3d",
+        shots=[
+            VideoShotArtifact(
+                shot_index=shot_index,
+                path=str(resolved_output),
+                artifact_kind="deterministic-generated",
+                backend="software3d",
+                sha256=hashlib.sha256(payload).hexdigest(),
+                size_bytes=len(payload),
+            )
+        ],
+    )
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        temporary.write_text(
+            manifest.model_dump_json(indent=2) + "\n",
+            encoding="utf-8",
+        )
+        temporary.replace(manifest_path)
+    finally:
+        temporary.unlink(missing_ok=True)
+    return manifest_path
+
+
 def render_story_shot_video(
     *,
     shot_index: int,
@@ -192,6 +224,8 @@ def render_story_shot_video(
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.unlink(missing_ok=True)
+    manifest_path = output.resolve().with_suffix(".artifact.json")
+    manifest_path.unlink(missing_ok=True)
     frames_dir = output.with_suffix(".frames")
     shutil.rmtree(frames_dir, ignore_errors=True)
     frames_dir.mkdir(parents=True, exist_ok=True)
@@ -237,6 +271,12 @@ def render_story_shot_video(
             )
         if not output.is_file() or output.stat().st_size <= 0:
             raise RuntimeError("software 3d shot encoder produced no output")
+        try:
+            _write_shot_manifest(shot_index=shot_index, output=output)
+        except Exception:
+            output.unlink(missing_ok=True)
+            manifest_path.unlink(missing_ok=True)
+            raise
         return output
     finally:
         shutil.rmtree(frames_dir, ignore_errors=True)
