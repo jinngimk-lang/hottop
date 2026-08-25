@@ -86,7 +86,7 @@ def test_unknown_topic_falls_back_to_existing_cow_story(monkeypatch, tmp_path):
 
     production.render_story_shot_video(
         shot_index=1,
-        output=tmp_path / "shot.mp4",
+        output=tmp_path / "shots" / "shot-001.mp4",
         duration_seconds=1.0,
         width=180,
         height=320,
