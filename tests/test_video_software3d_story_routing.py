@@ -13,6 +13,11 @@ def _mesh_names(scene) -> set[str]:
     return {mesh.name for mesh in scene.meshes}
 
 
+def _luminance(rgb: tuple[int, int, int]) -> float:
+    red, green, blue = rgb
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+
+
 def test_sequence_mode_routes_odyssey_source_to_odyssey_geometry(monkeypatch, tmp_path):
     captured = []
     monkeypatch.setattr(production, "render_scene_frame", lambda scene, _path: captured.append(scene))
@@ -35,6 +40,29 @@ def test_sequence_mode_routes_odyssey_source_to_odyssey_geometry(monkeypatch, tm
     assert any(name.startswith("pig-") for name in second_names)
     assert "hero-body" in fourth_names
     assert "young-cow-body" not in first_names
+
+
+def test_cinematic_odyssey_has_brighter_environment_than_anti_polish_cow():
+    cow = production.build_story_scene(
+        shot_index=2,
+        progress=0.5,
+        width=180,
+        height=320,
+        story_profile=production.COW_STORY_PROFILE,
+    )
+    odyssey = production.build_story_scene(
+        shot_index=2,
+        progress=0.5,
+        width=180,
+        height=320,
+        story_profile=production.ODYSSEY_STORY_PROFILE,
+    )
+
+    cow_wall = next(mesh for mesh in cow.meshes if mesh.name == "back-wall")
+    odyssey_wall = next(mesh for mesh in odyssey.meshes if mesh.name == "hall-back-wall")
+
+    assert _luminance(odyssey.background) >= _luminance(cow.background) + 10
+    assert _luminance(odyssey_wall.base_color) >= _luminance(cow_wall.base_color) + 10
 
 
 def test_shot_mode_reads_workspace_plan_topic_for_story_routing(monkeypatch, tmp_path):

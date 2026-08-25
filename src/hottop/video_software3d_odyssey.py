@@ -21,7 +21,7 @@ def _person_parts(
     y: float,
     z: float,
     body_color: tuple[int, int, int],
-    head_color: tuple[int, int, int] = (168, 126, 92),
+    head_color: tuple[int, int, int] = (184, 139, 103),
     scale: float = 1.0,
 ) -> list[Mesh3D]:
     return [
@@ -41,7 +41,7 @@ def _person_parts(
 
 
 def _pig_parts(prefix: str, *, x: float, y: float, z: float, scale: float = 1.0) -> list[Mesh3D]:
-    pink = (190, 120, 116)
+    pink = (212, 142, 138)
     return [
         _box(
             f"{prefix}-body",
@@ -59,17 +59,17 @@ def _pig_parts(prefix: str, *, x: float, y: float, z: float, scale: float = 1.0)
             f"{prefix}-snout",
             Vec3(x, y + 0.34 * scale, z - 0.42 * scale),
             Vec3(0.38 * scale, 0.22 * scale, 0.18 * scale),
-            (210, 150, 142),
+            (232, 174, 164),
         ),
     ]
 
 
 def _hall_geometry(progress: float) -> list[Mesh3D]:
     meshes = [
-        _box("hall-floor", Vec3(0, -1.72, 7.2), Vec3(7.4, 0.24, 8.5), (64, 47, 35)),
-        _box("hall-back-wall", Vec3(0, 1.0, 10.0), Vec3(7.4, 5.6, 0.24), (73, 52, 39)),
-        _box("long-table", Vec3(-0.15, -0.72, 6.2), Vec3(4.8, 0.28, 1.20), (103, 69, 43)),
-        _box("hall-door", Vec3(2.75, 0.15, 9.62), Vec3(1.35, 3.7, 0.18), (43, 34, 29)),
+        _box("hall-floor", Vec3(0, -1.72, 7.2), Vec3(7.4, 0.24, 8.5), (84, 62, 48)),
+        _box("hall-back-wall", Vec3(0, 1.0, 10.0), Vec3(7.4, 5.6, 0.24), (103, 78, 60)),
+        _box("long-table", Vec3(-0.15, -0.72, 6.2), Vec3(4.8, 0.28, 1.20), (126, 85, 55)),
+        _box("hall-door", Vec3(2.75, 0.15, 9.62), Vec3(1.35, 3.7, 0.18), (62, 48, 40)),
     ]
     for index, x in enumerate((-1.55, -0.15, 1.25)):
         meshes.extend(
@@ -78,19 +78,19 @@ def _hall_geometry(progress: float) -> list[Mesh3D]:
                     f"laptop-{index}-base",
                     Vec3(x, -0.45, 5.72),
                     Vec3(0.82, 0.08, 0.48),
-                    (52, 55, 54),
+                    (69, 73, 72),
                 ),
                 _box(
                     f"laptop-{index}-screen",
                     Vec3(x, -0.07, 5.98),
                     Vec3(0.82, 0.60, 0.08),
-                    (43, 68, 64),
+                    (56, 105, 96),
                 ),
                 _box(
                     f"clay-bowl-{index}",
                     Vec3(x + 0.42, -0.43, 5.55),
                     Vec3(0.34, 0.12, 0.34),
-                    (125, 82, 55),
+                    (150, 99, 66),
                 ),
             ]
         )
@@ -102,13 +102,13 @@ def _hall_geometry(progress: float) -> list[Mesh3D]:
                     f"candle-{index}",
                     Vec3(x, -0.12, 7.95),
                     Vec3(0.12, 0.76, 0.12),
-                    (178, 151, 96),
+                    (198, 169, 112),
                 ),
                 _box(
                     f"candle-flame-{index}",
                     Vec3(x, 0.34 + flame, 7.92),
                     Vec3(0.18, 0.28, 0.12),
-                    (226, 147, 62),
+                    (244, 170, 76),
                 ),
             ]
         )
@@ -124,8 +124,8 @@ def _witch(progress: float, *, foreground: bool) -> list[Mesh3D]:
         x=x,
         y=y,
         z=z,
-        body_color=(67, 42, 68),
-        head_color=(145, 102, 81),
+        body_color=(92, 58, 96),
+        head_color=(174, 124, 98),
         scale=1.06,
     )
     parts.append(
@@ -133,7 +133,7 @@ def _witch(progress: float, *, foreground: bool) -> list[Mesh3D]:
             "witch-cloak",
             Vec3(x, y - 0.58, z + 0.08),
             Vec3(0.92, 0.75, 0.58),
-            (54, 35, 58),
+            (76, 48, 80),
         )
     )
     if foreground:
@@ -142,7 +142,7 @@ def _witch(progress: float, *, foreground: bool) -> list[Mesh3D]:
                 "witch-raised-hand",
                 Vec3(x - 0.42, y + 0.60 + 0.15 * math.sin(progress * math.pi), z - 0.05),
                 Vec3(0.18, 0.52, 0.18),
-                (145, 102, 81),
+                (174, 124, 98),
             )
         )
     return parts
@@ -161,7 +161,7 @@ def _magic(progress: float, strength: float) -> list[Mesh3D]:
                     5.45 + math.cos(phase * 0.7) * 0.10,
                 ),
                 Vec3(0.22, 0.12, 0.20),
-                (102, 66, 112),
+                (143, 92, 158),
             )
         )
     return parts
@@ -189,7 +189,7 @@ def build_odyssey_story_scene(*, shot_index: int, progress: float, width: int, h
                     x=x,
                     y=0.02 + 0.04 * math.sin(progress * math.pi + index),
                     z=6.65,
-                    body_color=(76 + index * 16, 72, 61),
+                    body_color=(92 + index * 18, 88, 73),
                     scale=0.86,
                 )
             )
@@ -210,7 +210,7 @@ def build_odyssey_story_scene(*, shot_index: int, progress: float, width: int, h
                 x=hero_x,
                 y=0.04,
                 z=7.25 - progress * 0.70,
-                body_color=(82, 91, 73),
+                body_color=(105, 119, 94),
                 scale=0.98,
             )
         )
@@ -218,8 +218,8 @@ def build_odyssey_story_scene(*, shot_index: int, progress: float, width: int, h
         meshes.extend(_magic(progress, max(0.12, 1.0 - progress)))
         meshes.extend(
             [
-                _box("inkclaw-laptop-base", Vec3(0.55, -0.46, 5.55), Vec3(0.88, 0.08, 0.50), (50, 56, 54)),
-                _box("inkclaw-screen", Vec3(0.55, -0.03, 5.83), Vec3(0.88, 0.64, 0.08), (38, 94, 74)),
+                _box("inkclaw-laptop-base", Vec3(0.55, -0.46, 5.55), Vec3(0.88, 0.08, 0.50), (66, 74, 72)),
+                _box("inkclaw-screen", Vec3(0.55, -0.03, 5.83), Vec3(0.88, 0.64, 0.08), (42, 132, 96)),
             ]
         )
     else:
@@ -230,7 +230,7 @@ def build_odyssey_story_scene(*, shot_index: int, progress: float, width: int, h
                     x=x,
                     y=0.02 + 0.04 * math.sin(progress * math.pi * 2 + index),
                     z=6.65,
-                    body_color=(76 + index * 16, 72, 61),
+                    body_color=(92 + index * 18, 88, 73),
                     scale=0.86,
                 )
             )
@@ -240,7 +240,7 @@ def build_odyssey_story_scene(*, shot_index: int, progress: float, width: int, h
                 x=1.95,
                 y=0.04,
                 z=7.10,
-                body_color=(82, 91, 73),
+                body_color=(105, 119, 94),
                 scale=0.98,
             )
         )
@@ -252,8 +252,8 @@ def build_odyssey_story_scene(*, shot_index: int, progress: float, width: int, h
                     f"harmless-smoke-{index}",
                     Vec3(1.55 + index * 0.22, 0.12 + progress * 0.55, 6.1 + index * 0.08),
                     Vec3(0.22 * smoke_scale, 0.22 * smoke_scale, 0.22 * smoke_scale),
-                    (116, 105, 112),
+                    (142, 130, 145),
                 )
             )
 
-    return Scene3D(camera=camera, meshes=meshes, background=(24, 20, 22))
+    return Scene3D(camera=camera, meshes=meshes, background=(45, 38, 42))
