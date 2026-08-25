@@ -1,7 +1,7 @@
 # Hottop Status
 
 Last updated: 2026-08-25
-Active workstream: **Production v0.2 — obtain real reference-conditioned continuity evidence**
+Active workstream: **Production v0.2 — bind real reference-conditioned continuity evidence to generator provenance**
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
@@ -9,68 +9,74 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current main state
 
-Current deployed `main`: `cdcaa24024aaf84b588ea5245ad43865213a091e` (`Production v0.2: require complete continuity shot coverage (#31)`).
+Recovery baseline `main`: `94e3e1d206c0372aeb3affb0213da62750fc3f76` (`Sync Production v0.2 continuity status (#32)`). Main CI run **1447** passed.
 
-Post-merge evidence for #31 is complete:
+The guaranteed zero-cost production baseline remains healthy: checked-in cow and Odyssey software3d stories execute through real config → moving shots → Mandarin audio/music/SFX → MoviePy → FFmpeg → final media/provenance verification in production-smoke, without GPU/model download/credits.
 
-- main CI run **1445** passed;
-- automatically triggered main-push production-smoke run **50** passed;
-- the production smoke executed both checked-in cow and Odyssey software3d stories through real config → moving shots → Mandarin audio/music/SFX → MoviePy → FFmpeg → final media/provenance verification and uploaded the reproducible evidence bundle.
+Deployed reference-continuity verification already fails closed on:
 
-The deployed continuity verifier now has three fail-closed layers:
+1. exact planned reference bytes;
+2. shot bytes bound to plan shots carrying the same `reference.subject_id`;
+3. complete coverage of every subject-bearing plan shot for each evaluated subject.
 
-1. evaluator evidence is bound to the exact planned reference bytes;
-2. claimed shot bytes must belong to plan shots carrying the same `reference.subject_id`;
-3. for every subject actually included in continuity evaluation, evidence must cover **all** byte-bound subject-bearing plan shots, preventing routes from cherry-picking only their best-looking shots and omitting identity-drift failures.
+Benchmark scope remains explicit; incidental or single-shot subjects are not forced into cross-shot evaluation merely because they carry a `subject_id`.
 
-Benchmark scope remains explicit. Incidental or single-shot subjects are not forced into cross-shot evaluation merely because they carry a `subject_id`.
+## Active candidate-provenance closure
 
-Recent deployed milestones:
+Draft PR #33, **Bind continuity benchmarks to generator provenance**, closes the remaining attribution hole between generated artifacts and the benchmark's self-reported candidate/revision.
 
-- PR #23 — fresh-hotspot generation preflight, merged as `ee801cb289f99baecd932a32b520e89fd0155aec`.
-- PR #24 — mechanism-first creative doctrine + optional image-first/reference-conditioned quality recovery, merged as `8f1e24e2e8b89c0aa8a0608739e754fcf30b74f4`.
-- PR #25 — runtime removal of legacy keyword/archetype/template briefing behavior, merged as `39f601f5a4c5b22d73f9542d4b3f45a149f9386f`.
-- PR #28 — output-side identity evidence and exact-byte continuity binding, merged as `3fd869a93b8fc651cc3f2e624767c13498076de7`.
-- PR #29 — post-merge `main` production evidence, merged as `fb3c8dea92591f8872cd5fc89197a2b8fd914cd3`.
-- PR #30 — subject→planned-reference→subject-shot continuity binding, merged as `eac3beed84f9a9481c3ee9b7e9716803ef9bcdc9`.
-- PR #31 — complete shot coverage for each evaluated subject, merged as `cdcaa24024aaf84b588ea5245ad43865213a091e`.
+TDD evidence on the branch:
+
+- CI run **1448**: RED. Ruff passed; pytest failed on the new contract proving byte-valid LightX2V artifacts could otherwise be relabelled as a different candidate revision.
+- CI run **1450**: implementation found a backward-compatibility regression because optional provenance fields serialized as `null` into legacy deterministic artifact JSON. The JSON shape was preserved by omitting absent candidate fields.
+- CI run **1451**: GREEN on Python 3.11 and 3.12 for benchmark↔artifact candidate/revision binding.
+- CI run **1452**: RED. Ruff passed; pytest failed because the real LightX2V artifact writer did not yet emit candidate/source provenance.
+- CI run **1453**: GREEN on Python 3.11 and 3.12 after LightX2V artifacts began recording `candidate_id` plus the actual local generator source revision.
+- CI run **1454**: exact-head documentation-inclusive CI passed. Final production-smoke for the exact head must remain green before merge.
+
+For LightX2V, `candidate_revision` now means **actual local generator source revision**, not a reviewed registry pin and not model weights revision. A git checkout records its actual HEAD; a packaged/non-git checkout records `source-sha256:<sha256(lightx2v/infer.py)>`. This prevents source-version relabelling without fabricating provenance.
+
+Model/checkpoint provenance remains independent. Hottop must not infer weights revision from framework source revision; bind it only when an operator runtime exposes verifiable local model metadata.
 
 ## Current measured gap
 
-The remaining identity gap is no longer structural benchmark integrity. It is **real generated-output evidence** from an operator-owned reference-conditioned route.
+After candidate/source provenance is merged, the remaining identity gap is **real generated-output evidence** from an operator-owned reference-conditioned route, plus independently verifiable model/checkpoint provenance where available.
 
-Hottop does not currently have an operator-provided local LightX2V/Wan2.2 or compliant WanGP runtime/model/assets available in this execution environment, and normal unattended operation must not auto-download multi-GB models, provision a GPU, consume credits or weaken that boundary. The guaranteed software3d baseline remains fully usable and continuously smoke-tested.
+This environment still does not contain an operator-provided LightX2V/Wan2.2 or compliant WanGP model/runtime/assets. Normal unattended operation must not auto-download multi-GB models, provision a GPU, consume credits or weaken that boundary. The guaranteed software3d baseline remains fully usable and continuously smoke-tested.
 
-The next identity claim therefore requires an actual operator-controlled run, not another unproven provider abstraction:
+A production identity claim requires:
 
 - at least two generated, byte-bound plan shots for the same rights-safe evaluated subject;
 - the exact planned local reference and stable `subject_id`;
-- quality-gated shot artifacts and provenance;
-- continuity evidence covering **every** subject-bearing plan shot for that evaluated subject;
-- explicit evaluator identity/revision and fail-closed thresholds before the route may be described as identity-preserving.
+- quality-gated shot artifacts and byte provenance;
+- generator candidate + actual source revision bound to the evaluated artifacts;
+- model/checkpoint provenance recorded separately when locally verifiable;
+- continuity evidence covering every subject-bearing plan shot for that evaluated subject;
+- explicit evaluator identity/revision and fail-closed thresholds.
 
 ## Reference-continuity evaluator radar
 
 Research record: `docs/research/2026-08-25-reference-continuity-evaluator-radar.md`.
 
-Current evaluator admission posture:
+Current posture:
 
-- **SigLIP 2 Base 256** remains the preferred first operator-local evaluator experiment: official Apache-2.0 model-card posture, roughly 1.54 GB repository / 1.5 GB main safetensors, but local-path-only because standard Transformers loading can download implicitly.
-- **SigLIP 2 SO400M** remains a higher-capacity multi-GB fallback candidate, not the first experiment.
+- **LightX2V** remains the primary Apache-2.0 operator inference framework. Hottop's tested integration pin remains `926299962ed32a142411e45468a289623432b4e4`; a 2026-08-25 freshness check observed upstream `main` at `5dc5d6372654406761474719647763ac7b4bd018`, but the newer SwiftVR-specific fix does not justify an automatic re-pin of the tested Wan2.2 route.
+- **SigLIP 2 Base 256** remains the preferred first operator-local evaluator experiment: official Apache-2.0 model-card posture and materially smaller than SO400M, but explicit local-path-only because standard loading can download implicitly.
+- **SigLIP v1 Base 256** is a still-smaller Apache-2.0 control/fallback candidate for evaluator experiments, not a preferred evaluator unless benchmark separation proves sufficient.
 - **DINOv3** remains operator-owned/local-only because code + released weights use the custom DINOv3 License and pretrained access requires upstream acceptance.
 - **DreamSim** remains gated because MIT code does not establish the rights/runtime boundary for downloaded pretrained weights/backbones.
-- **LightX2V** remains the primary Apache-2.0 operator inference framework; exact model/weights terms remain separate.
-- **WanGP** remains operator-owned under its current community-license restrictions; upstream reference/continuation and LTX/H3 quality work remains useful for later benchmarks but does not change the license/runtime boundary or justify vendoring/auto-provisioning.
+- **WanGP** remains operator-owned under its current community-license restrictions; do not vendor or auto-provision it.
 
-Durable rule remains: **code license != model/weights/data license**, and permissive code/model terms do not justify hidden multi-GB downloads in unattended Hottop.
+Durable rule: **generator code revision, model/weights revision, evaluator revision and artifact bytes are separate provenance dimensions**. Code license also remains distinct from model/weights/data license.
 
 ## Immediate next actions
 
-1. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime and rights-safe assets are actually present, execute the real multi-shot identity benchmark and serialize full evaluated-subject continuity evidence before making an identity-preservation claim.
-2. Prefer the reviewed SigLIP 2 Base 256 local-path route for the first model-based evaluator experiment, but only after explicit local weights are supplied; pin exact revision/hash, perform no implicit download, and require same-subject vs identity-drift control separation before admission.
-3. Continue the guaranteed software3d cow/Odyssey production proof and real fresh-hotspot + product-mechanism production independently of optional GPU availability.
-4. Continue Mandarin dialogue quality benchmarking through reviewed operator-owned local Qwen3-TTS/CosyVoice routes when their local runtimes/models are supplied; eSpeak remains the guaranteed fallback.
-5. Continue targeted upstream scans against measured gaps; integrate only candidates that clear source/license/weights-license/cost/hardware/security/reversibility/value gates.
+1. Finish PR #33 only after exact-head CI + production-smoke are green; merge with expected-head protection, then verify post-merge `main`.
+2. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime and rights-safe assets are actually present, execute the real multi-shot identity benchmark before making an identity-preservation claim.
+3. Prefer the reviewed SigLIP 2 Base 256 local-path route for the first model-based evaluator experiment only after explicit local weights are supplied; pin exact revision/hash, perform no implicit download, and require same-subject vs identity-drift control separation before admission.
+4. Continue the guaranteed software3d cow/Odyssey production proof and fresh-hotspot + product-mechanism production independently of optional GPU availability.
+5. Continue Mandarin dialogue quality benchmarking through reviewed operator-owned local Qwen3-TTS/CosyVoice routes when their local runtimes/models are supplied; eSpeak remains the guaranteed fallback.
+6. Continue targeted upstream scans against measured gaps; integrate only candidates that clear source/license/weights-license/cost/hardware/security/reversibility/value gates.
 
 ## Recovery order
 
