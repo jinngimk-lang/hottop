@@ -12,6 +12,23 @@ The durable goal is not “attach a logo to a hot character.” Find a natural b
 
 ## Creative doctrine
 
+## Mandatory fresh-generation entry gate
+
+Every new image or video generation request is a fresh creative run, including requests made directly in Chat. Before invoking an image/video generation tool, renderer, or production backend:
+
+1. recover current Hottop truth from `PROJECT.md`, `STATUS.md`, and the relevant checked-in creative skill/config when the request is Hottop-related;
+2. resolve the promoted product/subject from the current request and current facts rather than silently inheriting a prior campaign subject;
+3. **re-explore current news, culture, entertainment, technology and internet hotspots with live public research for that request**, even when a previous asset was generated recently;
+4. retain source/provenance plus fresh observation/publication timing for the selected hotspot;
+5. choose the visual style/medium and output format from the current product-to-hotspot bridge and source-medium grammar, not from a historical template;
+6. construct `hottop.generation-preflight.v1` and require `evaluate_generation_preflight(...)` or `hottop generation-preflight` to return `ready=true` before final asset generation.
+
+Default freshness is fail-closed: live research must have been observed within **6 hours**; when a trustworthy publication timestamp exists, the selected hotspot must have been published within **7 days**. A source with unknown publication time may pass only when fresh observation evidence exists, and copy must not invent publication recency. Missing/stale evidence means research again or select another hotspot; it does not mean generate anyway.
+
+**Historical examples are not defaults.** Previous products, hotspots, characters, cow/snake/Odyssey stories, four-panel layouts, Anti-Polish, low-poly 3D, cinematic realism, or any other successful treatment teach reusable grammar only. Product, hotspot, visual style/medium, and output format are re-resolved per request. A stable product understanding may be reused only when the current request still promotes that same product and the facts remain current; the hotspot/style/format still require a fresh decision.
+
+This entry gate is provider-neutral. Live Chat/web research or configured collectors acquire evidence; the runtime preflight validates that evidence and the dynamic creative selections before generation. It does not silently browse, install dependencies, or substitute a stale trend.
+
 ### 1. Semantics before jokes
 
 Resolve the promoted subject before choosing a trend or gag:
@@ -151,19 +168,20 @@ Revision controls such as `换方向`, `更有梗`, `更大胆`, `产品更明�
 1. Resolve interaction intent.
 2. Resolve promotion semantics.
 3. Discover competitors/substitutes/legacy workflows when useful.
-4. Discover current hotspots.
+4. Discover current hotspots with fresh live evidence for the current generation request.
 5. Enrich source context and cultural cues.
 6. Research visual references when useful, abstracting grammar only.
 7. Normalize evidence/reference records.
 8. Reframe category defaults and deleted constraints.
 9. Search semantic/visual bridges.
 10. Rank trend and bridge quality.
-11. Select expression form, platform treatment, style and roughness.
+11. Select expression form, platform treatment, style and roughness dynamically for this request.
 12. Write beats, captions, reveal order, dialogue and punchlines.
 13. Run hard Creative Review and contextual ranking.
 14. Guardrail claims, copyright/likeness/trademark and competitor framing.
-15. For motion: `hottop.render.v2 → VideoProductionConfig → hottop.video-plan.v1 → generation → audio → compositor → encoder → media verification`.
-16. Archive intent, provenance, evidence, reference manifest, rejected assumptions, selected bridge, format, reviews, prompts, risks and outcome evidence.
+15. Run the mandatory fresh-generation preflight; blocked inputs do not proceed to asset generation.
+16. For motion: `hottop.render.v2 → VideoProductionConfig → hottop.video-plan.v1 → generation → audio → compositor → encoder → media verification`.
+17. Archive intent, provenance, evidence, reference manifest, rejected assumptions, selected bridge, format, reviews, prompts, risks and outcome evidence.
 
 ## Motion production doctrine
 
@@ -304,9 +322,9 @@ Before generation, recover the minimum relevant current state from the repositor
 2. the relevant checked-in reusable skill(s);
 3. the relevant current example/render source, style/config profile, creative directive, rights/provenance rule and production constraint;
 4. current `main` / active PR state when it changes the generation contract;
-5. fresh hotspot/public evidence when the request depends on current culture or facts.
+5. fresh hotspot/public evidence for the new asset request.
 
-A new explicit user instruction in the current conversation may evolve the project, but durable changes must be reconciled back into the repository. Do not generate from an old remembered style/config when the repository has a newer one.
+A new explicit user instruction in the current conversation may evolve the project, but durable changes must be reconciled back into the repository. Do not generate from an old remembered style/config when the repository has a newer one. The mandatory fresh-generation entry gate applies even when the prior Chat turn used the same product: re-research the hotspot and re-select style/format before a new image/video asset.
 
 ### Living updates
 
@@ -363,6 +381,7 @@ A mature creative package should serialize:
 
 ## Decision log
 
+- **2026-08-25 — Fresh hotspot research becomes a mandatory generation entry gate.** Every new image/video request, including Chat generation, re-resolves the promoted subject, performs live current-hotspot research, chooses style/medium/format dynamically, and must pass `hottop.generation-preflight.v1` before final generation. This supersedes the weaker assumption that a recently used hotspot/style/example can be silently reused as the next request's default.
 - **2026-08-25 — GitHub becomes the Chat generation source of truth; existing capability wins over duplicate installation.** Hottop-related image/video generation in Chat must first recover the latest repository doctrine, status, relevant skills, examples/configs and constraints. Existing suitable skills/MCPs/plugins are reused; new capabilities are added only for real gaps after admission checks.
 - **2026-08-25 — Autonomous operation + continuous ecosystem radar become canonical.** Routine reversible repository decisions, integrations, tests, CI work, PR lifecycle and durable project-memory updates proceed without repetitive approval. Every production cycle also performs targeted freshness checks for materially stronger open-source/GitHub/model/runtime options; candidates that pass source/license/cost/hardware/security/value gates are integrated rather than merely reported. High-risk destructive, secret, paid, legal and sensitive-publication actions remain explicit stop boundaries.
 - **2026-08-25 — Software 3D becomes the guaranteed zero-cost motion baseline, not the quality ceiling.** Hottop can now generate real low-poly 3D geometry/animation and MP4 shots without Blender/GPU/model downloads, with byte-bound provenance before composition. This secures repeatable Anti-Polish production while cinematic styles continue to seek stronger reference-conditioned open models.
@@ -403,4 +422,5 @@ When resuming:
 4. Read newest relevant spec/plan/decision record.
 5. Inspect current main, open PRs and exact-head CI.
 6. Perform a targeted ecosystem freshness check relevant to the current Production gap.
-7. Continue the highest-value safe action autonomously; do not stop for routine approval or wait for a scheduled loop boundary.
+7. For any new image/video generation request, separately perform live hotspot/news research and pass the mandatory fresh-generation preflight before generating the asset.
+8. Continue the highest-value safe action autonomously; do not stop for routine approval or wait for a scheduled loop boundary.
