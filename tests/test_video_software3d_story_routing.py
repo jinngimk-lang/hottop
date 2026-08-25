@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 import hottop.video_software3d_production as production
 
 
@@ -69,31 +71,20 @@ def test_shot_mode_reads_workspace_plan_topic_for_story_routing(monkeypatch, tmp
     assert "young-cow-body" not in names
 
 
-def test_unknown_topic_falls_back_to_existing_cow_story(monkeypatch, tmp_path):
+def test_unknown_topic_fails_closed_in_shot_mode(tmp_path):
     plan = {
         "schema_version": "hottop.video-plan.v1",
         "topic_id": "unknown-generic-topic",
         "shots": [{"index": 1}],
     }
     (tmp_path / "hottop-video-plan.json").write_text(json.dumps(plan), encoding="utf-8")
-    captured = []
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(production, "render_scene_frame", lambda scene, _path: captured.append(scene))
 
-    def fake_runner(args, **_kwargs):
-        Path(args[-1]).write_bytes(b"fake-mp4")
-        return SimpleNamespace(returncode=0, stdout="", stderr="")
-
-    production.render_story_shot_video(
-        shot_index=1,
-        output=tmp_path / "shots" / "shot-001.mp4",
-        duration_seconds=1.0,
-        width=180,
-        height=320,
-        fps=2,
-        runner=fake_runner,
-    )
-
-    names = _mesh_names(captured[0])
-    assert "young-cow-body" in names
-    assert "witch-body" not in names
+    with pytest.raises(ValueError, match="unsupported software 3d story topic"):
+        production.render_story_shot_video(
+            shot_index=1,
+            output=tmp_path / "shots" / "shot-001.mp4",
+            duration_seconds=1.0,
+            width=180,
+            height=320,
+            fps=2,
+        )
