@@ -19,6 +19,10 @@ Default freshness policy is the project-wide preflight contract: live research o
 
 ## Hotspot discovery
 
+When the user supplies the hotspot, title, news item, meme, scene, image, quotation, or cultural point, **analyze that supplied hotspot first**. Verify its factual/current context with fresh public research when the request depends on recency, but do not replace it merely because another topic is larger today. Extract why people recognize it, what actually happens in its causal/relationship mechanism, and its native visual, language/dialogue and audio/timing grammar before product mapping. Route that analysis into `brand-metaphor-creative` for mechanism-first product integration.
+
+When no hotspot is supplied, perform fresh live discovery for the current generation request and select from current recognizable candidates using the project evidence/freshness gates. A previous chat hotspot is never an implicit substitute for this discovery pass.
+
 Prefer current, recognizable topics with a clear visual conflict or cultural action. Collect enough evidence to know what the topic is and why it is current; do not turn a headline fragment into a factual claim.
 
 Prioritize:
@@ -70,6 +74,8 @@ A ready hotspot concept should retain:
 
 - promotion context;
 - topic, timestamp and evidence;
+- hotspot recognition cue + causal/relationship mechanism;
+- native visual/dialogue/audio grammar;
 - comparison candidates / chosen target;
 - bridge and creative reframe from `brand-metaphor-creative`;
 - selected format;
