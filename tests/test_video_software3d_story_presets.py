@@ -1,7 +1,14 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 from hottop.rendering import CreativeRenderFrame, CreativeRenderRequest
-from hottop.video_production import VideoProductionConfig, build_video_production_plan
+from hottop.video_production import (
+    VideoProductionConfig,
+    build_video_production_plan,
+    load_video_production_config,
+)
 from hottop.video_software3d_production import (
     ODYSSEY_PRESET,
     build_story_scene,
@@ -117,3 +124,26 @@ def test_cow_snake_story_remains_default_for_backward_compatibility():
     names = {mesh.name for mesh in scene.meshes}
     assert "young-cow-body" in names
     assert "laptop-screen" in names
+
+
+def test_checked_in_odyssey_software3d_assets_build_full_audio_video_plan():
+    root = Path(__file__).resolve().parents[1]
+    render_path = root / "examples/video/inkclaw-odyssey-witch-pigs-software3d.render.json"
+    config_path = root / "config/video/odyssey-software3d.yml"
+
+    raw_render = json.loads(render_path.read_text(encoding="utf-8"))
+    request = CreativeRenderRequest.model_validate(raw_render)
+    config = load_video_production_config(config_path)
+    plan = build_video_production_plan(request, config)
+
+    assert request.topic_id == ODYSSEY_PRESET
+    assert len(plan.shots) == 6
+    assert plan.duration_seconds == 12
+    assert plan.generation_backend == "software3d"
+    assert plan.audio_profile is not None
+    assert plan.audio_profile.voice_backend == "espeak"
+    assert plan.audio_profile.music_backend == "synthetic"
+    assert plan.audio_profile.sfx_backend == "procedural"
+    dialogue = [cue for cue in plan.audio_cues if cue.kind == "dialogue"]
+    assert len(dialogue) == 6
+    assert {cue.character for cue in dialogue} >= {"crew", "witch", "hero", "pig"}
