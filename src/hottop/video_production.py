@@ -7,6 +7,7 @@ from typing import Literal
 import yaml
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+from .audio_qwen3_tts import Qwen3DType, Qwen3Language, Qwen3Speaker
 from .rendering import CreativeRenderRequest
 from .video_reference import VideoReference, validate_reference_identity_consistency
 
@@ -24,7 +25,7 @@ CompositorBackend = Literal["motion-canvas", "moviepy", "external"]
 EncoderBackend = Literal["ffmpeg", "external"]
 OutputFormat = Literal["mp4", "webm", "gif"]
 AudioCueKind = Literal["dialogue", "foley", "sfx", "bgm"]
-VoiceBackend = Literal["none", "espeak", "external"]
+VoiceBackend = Literal["none", "espeak", "qwen3-customvoice", "external"]
 MusicBackend = Literal["none", "synthetic", "external"]
 SfxBackend = Literal["none", "procedural", "external"]
 CommandStage = Literal["generation", "audio", "compositor", "finalization"]
@@ -36,6 +37,43 @@ class ShotPolicy(BaseModel):
     transition_bias: list[str] = Field(default_factory=list)
 
 
+class Qwen3CustomVoiceConfig(BaseModel):
+    model_dir: str = Field(min_length=1)
+    default_speaker: Qwen3Speaker = "Vivian"
+    speaker_map: dict[str, Qwen3Speaker] = Field(default_factory=dict)
+    language: Qwen3Language = "Chinese"
+    device: str = Field(default="cuda:0", min_length=1)
+    dtype: Qwen3DType = "bfloat16"
+    attn_implementation: str | None = "flash_attention_2"
+
+    @field_validator("model_dir", "device")
+    @classmethod
+    def normalize_nonblank_text(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("Qwen3 CustomVoice configuration values must not be blank")
+        return normalized
+
+    @field_validator("speaker_map")
+    @classmethod
+    def normalize_speaker_map(cls, value: dict[str, Qwen3Speaker]) -> dict[str, Qwen3Speaker]:
+        normalized: dict[str, Qwen3Speaker] = {}
+        for character, speaker in value.items():
+            key = character.strip()
+            if not key:
+                raise ValueError("Qwen3 CustomVoice speaker-map character must not be blank")
+            normalized[key] = speaker
+        return normalized
+
+    @field_validator("attn_implementation")
+    @classmethod
+    def normalize_attention(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        normalized = value.strip()
+        return normalized or None
+
+
 class AudioConfig(BaseModel):
     bgm_style: str
     dialogue_duck_db: float = -8
@@ -44,11 +82,18 @@ class AudioConfig(BaseModel):
     voice_profile: str = "natural-dialogue"
     voice_language: str = "zh"
     voice_rate_wpm: int = Field(default=155, ge=80, le=320)
+    qwen3_custom_voice: Qwen3CustomVoiceConfig | None = None
     music_backend: MusicBackend = "synthetic"
     music_profile: str | None = None
     sfx_backend: SfxBackend = "procedural"
     sfx_profile: str | None = None
     original_music_only: bool = True
+
+    @model_validator(mode="after")
+    def validate_selected_voice_backend(self) -> AudioConfig:
+        if self.voice_backend == "qwen3-customvoice" and self.qwen3_custom_voice is None:
+            raise ValueError("qwen3-customvoice requires qwen3_custom_voice configuration")
+        return self
 
 
 class AudioProductionProfile(BaseModel):

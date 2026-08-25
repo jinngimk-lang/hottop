@@ -11,6 +11,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from .audio_qwen3_tts import inspect_qwen3_tts_environment
 from .rendering import CreativeRenderRequest
 from .video_artifacts import VideoArtifactManifest
 from .video_final_output import (
@@ -321,7 +322,10 @@ def _lightx2v_readiness(
     )
 
 
-def _voice_readiness(config: VideoProductionConfig) -> BackendReadiness:
+def _voice_readiness(
+    config: VideoProductionConfig,
+    project_root: Path,
+) -> BackendReadiness:
     backend = config.audio.voice_backend
     if backend == "none":
         return BackendReadiness(backend="none", ready=True, checks=["voice disabled"])
@@ -332,6 +336,27 @@ def _voice_readiness(config: VideoProductionConfig) -> BackendReadiness:
             ready=resolved is not None,
             checks=[f"espeak={resolved or 'missing'}"],
             missing=[] if resolved else ["espeak executable"],
+        )
+    if backend == "qwen3-customvoice":
+        adapter = config.audio.qwen3_custom_voice
+        if adapter is None:
+            return BackendReadiness(
+                backend=backend,
+                ready=False,
+                missing=["Qwen3 CustomVoice profile configuration"],
+            )
+        model_dir = _resolve(project_root, adapter.model_dir).resolve()
+        status = inspect_qwen3_tts_environment(model_dir=model_dir)
+        return BackendReadiness(
+            backend=backend,
+            ready=status.ready,
+            checks=[
+                f"model_dir={model_dir}",
+                f"device={adapter.device}",
+                f"dtype={adapter.dtype}",
+                f"auto_download_models={status.auto_download_models}",
+            ],
+            missing=list(status.missing),
         )
     return BackendReadiness(
         backend=backend,
@@ -419,7 +444,7 @@ def inspect_video_environment(
     zero_cost = _zero_cost_readiness(config)
     software3d = _software3d_readiness(config)
     lightx2v = _lightx2v_readiness(config, root)
-    voice = _voice_readiness(config)
+    voice = _voice_readiness(config, root)
     motion_canvas = _motion_canvas_readiness(config, root)
     moviepy = _moviepy_readiness(config)
     ffmpeg = _ffmpeg_readiness(config)
@@ -451,7 +476,7 @@ def inspect_video_environment(
         )
     if not voice.ready:
         actions.append(
-            "Install/expose the configured local voice backend or configure an explicit external voice adapter."
+            "Prepare/expose the configured local voice backend and its operator-provisioned model/runtime; Hottop will not install packages or download voice models automatically."
         )
     if not motion_canvas.ready:
         actions.append(
@@ -860,24 +885,64 @@ def _runtime_audio_commands(
     project_root: Path,
     audio_dir: Path,
 ) -> list[ExternalCommandSpec]:
-    if config.audio.voice_backend != "espeak":
-        return []
     dialogue = [cue for cue in plan.audio_cues if cue.kind == "dialogue"]
     commands: list[ExternalCommandSpec] = []
+    if config.audio.voice_backend == "espeak":
+        for index, cue in enumerate(dialogue, start=1):
+            output = (audio_dir / f"dialogue-{index:03d}.wav").resolve()
+            commands.append(
+                ExternalCommandSpec(
+                    program="espeak",
+                    args=[
+                        "-v",
+                        config.audio.voice_language,
+                        "-s",
+                        str(config.audio.voice_rate_wpm),
+                        "-w",
+                        str(output),
+                        cue.text,
+                    ],
+                    cwd=str(project_root.resolve()),
+                    stage="audio",
+                )
+            )
+        return commands
+
+    if config.audio.voice_backend != "qwen3-customvoice":
+        return []
+    adapter = config.audio.qwen3_custom_voice
+    if adapter is None:
+        return []
+    model_dir = _resolve(project_root, adapter.model_dir).resolve()
     for index, cue in enumerate(dialogue, start=1):
         output = (audio_dir / f"dialogue-{index:03d}.wav").resolve()
+        speaker = adapter.speaker_map.get(cue.character or "", adapter.default_speaker)
+        args = [
+            "-m",
+            "hottop.audio_qwen3_tts",
+            "--model-dir",
+            str(model_dir),
+            "--text",
+            cue.text,
+            "--speaker",
+            speaker,
+            "--language",
+            adapter.language,
+            "--instruct",
+            (cue.delivery or "").strip(),
+            "--output",
+            str(output),
+            "--device",
+            adapter.device,
+            "--dtype",
+            adapter.dtype,
+        ]
+        if adapter.attn_implementation is not None:
+            args.extend(["--attn-implementation", adapter.attn_implementation])
         commands.append(
             ExternalCommandSpec(
-                program="espeak",
-                args=[
-                    "-v",
-                    config.audio.voice_language,
-                    "-s",
-                    str(config.audio.voice_rate_wpm),
-                    "-w",
-                    str(output),
-                    cue.text,
-                ],
+                program=sys.executable,
+                args=args,
                 cwd=str(project_root.resolve()),
                 stage="audio",
             )
@@ -1013,11 +1078,13 @@ def _expected_stage_output(
                 continue
         return None
     if command.stage == "audio":
-        try:
-            output_index = command.args.index("-w") + 1
-            return Path(command.args[output_index])
-        except (ValueError, IndexError):
-            return None
+        for flag in ("-w", "--output"):
+            try:
+                output_index = command.args.index(flag) + 1
+                return Path(command.args[output_index])
+            except (ValueError, IndexError):
+                continue
+        return None
     if command.stage == "compositor":
         return composite_output
     if command.stage == "finalization":
