@@ -1,12 +1,8 @@
-from typing import Final
-
-import pytest
-
 from hottop.video_software3d import project_point
 from hottop.video_software3d_production import build_story_scene
 
 
-SUBJECT_PREFIXES: Final = {
+SUBJECT_PREFIXES = {
     "cow-snake": (
         "young-cow-",
         "mother-cow-",
@@ -51,11 +47,20 @@ def _projected_subject_bounds(
     return min(ys) / height, max(ys) / height
 
 
-@pytest.mark.parametrize("story_profile", ["cow-snake", "odyssey-witch-pigs"])
-def test_vertical_story_subjects_use_the_mobile_canvas(story_profile: str):
-    """Narrative subjects should not sit below a persistent empty upper third."""
-
+def _assert_story_uses_mobile_canvas(story_profile: str) -> None:
     for shot_index in range(1, 6):
         top, bottom = _projected_subject_bounds(story_profile, shot_index)
         assert top <= 0.35, (story_profile, shot_index, top, bottom)
         assert bottom <= 0.72, (story_profile, shot_index, top, bottom)
+
+
+def test_cow_story_subjects_use_the_mobile_canvas():
+    """Anti-Polish narrative subjects should not sit below an empty upper third."""
+
+    _assert_story_uses_mobile_canvas("cow-snake")
+
+
+def test_odyssey_story_subjects_use_the_mobile_canvas():
+    """Cinematic narrative subjects should not sit below an empty upper third."""
+
+    _assert_story_uses_mobile_canvas("odyssey-witch-pigs")
