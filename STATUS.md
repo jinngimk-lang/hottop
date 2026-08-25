@@ -1,7 +1,7 @@
 # Hottop Status
 
 Last updated: 2026-08-25
-Active workstream: **Production v0.2 — real mechanism-driven generation smoke + image/video quality benchmark**
+Active workstream: **Production v0.2 — output-side reference/identity continuity proof**
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
@@ -9,89 +9,66 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current main state
 
-Current deployed creative/runtime chain:
+Current `main` at recovery: `829b4bf2085f06464d8c9ce7272c99d131893340` (`docs: sync status after mechanism runtime deployment (#27)`).
 
-`fresh/supplied hotspot analysis → hotspot mechanism mapping → product role/outcome change → hottop.generation-preflight.v1 → dynamic format/style selection → render route → voice/music/SFX → final quality/media verification`
+Deployed chain:
 
-The repository now enforces four complementary layers:
+`fresh/supplied hotspot analysis → hotspot mechanism mapping → product role/outcome change → hottop.generation-preflight.v1 → dynamic format/style selection → render route → voice/music/SFX → quality/provenance/continuity gates → final media verification`
 
-1. **Fresh-generation gate** — every new image/video request re-resolves product, hotspot, style and format; when no hotspot is supplied, run fresh live discovery; when the user supplies one, analyze that source first and freshly verify current/factual context as needed.
-2. **Mechanism-first creative mapping** — extract recognition hook, causal/relationship mechanism, native visual grammar, native dialogue/language rhythm and native audio grammar; the product must take a functional role that changes the story outcome.
-3. **No-template runtime** — the old keyword → fixed archetype → product-as-hero → automatic four-panel path is removed. Legacy four-panel briefing now requires explicit `ProductMechanismMapping`; batch discovery without mechanism analysis returns `mechanism_required_ids` instead of inventing a generic brief.
-4. **Video quality routing** — direct video remains preferred when it meets the selected quality bar; when it does not, approved rights-safe keyframes may feed the existing reference-conditioned I2V path. Image-first is a recovery route, not a universal template, and the output must still contain meaningful motion, continuity and hotspot-native timing/audio.
+Current deployed guarantees include mandatory fresh-generation preflight, mechanism-first creative mapping, no silent legacy template/archetype fallback, the guaranteed zero-cost software3d → audio → MoviePy → FFmpeg baseline, operator-owned LightX2V/Wan2.2 and WanGP interoperability routes, byte-bound shot provenance, composition-consumption verification, Qwen3-TTS benchmark-ready local audio, and final ffprobe media verification.
 
-## Deployed milestones
+Deployed recent milestones:
 
-- PR #23 — mandatory fresh-hotspot generation preflight, merged as `ee801cb289f99baecd932a32b520e89fd0155aec`.
-- PR #24 — canonical mechanism-first creative doctrine + optional image-first/reference-conditioned video quality recovery, merged as `8f1e24e2e8b89c0aa8a0608739e754fcf30b74f4`.
-- PR #25 — runtime removal of the legacy keyword/archetype/template briefing behavior, merged as `39f601f5a4c5b22d73f9542d4b3f45a149f9386f`.
+- PR #23 — fresh-hotspot generation preflight, merged as `ee801cb289f99baecd932a32b520e89fd0155aec`.
+- PR #24 — mechanism-first creative doctrine + optional image-first/reference-conditioned quality recovery, merged as `8f1e24e2e8b89c0aa8a0608739e754fcf30b74f4`.
+- PR #25 — runtime removal of legacy keyword/archetype/template briefing behavior, merged as `39f601f5a4c5b22d73f9542d4b3f45a149f9386f`.
+- PR #27 — status synchronization after #24/#25 deployment, merged as `829b4bf2085f06464d8c9ce7272c99d131893340`.
 
-Supporting production baseline remains deployed:
+## Active reference-continuity work
 
-- deterministic zero-cost software3d → audio → MoviePy → FFmpeg → verified MP4 path;
-- software3d multi-story routing including cow/snake and Odyssey production cases;
-- operator-managed LightX2V/Wan2.2 T2V/I2V route and reusable I2V profile;
-- byte-bound shot provenance before composition;
-- Qwen3-TTS benchmark-ready offline local adapter;
-- role/subject/identity-lock reference continuity contract.
+Stale-base PR #21 and failing/stale-base PR #22 were closed as superseded. Their useful contracts were rebuilt on current `main` after PR #27 as the reference-continuity workstream.
 
-## Verification evidence
+The work adds three linked production contracts:
 
-### PR #24
+1. The checked-in generated-original signal-orb I2V example uses one stable `subject_id`, role and conservative identity traits across all shots, so the existing identity-anchor prompt contract is actually engaged.
+2. `hottop.reference-continuity-benchmark.v1` records exact candidate/revision, evaluator/revision, reference SHA-256, generated-shot SHA-256 values, reference-adherence score, cross-shot-identity score and explicit fail-closed thresholds.
+3. Continuity evidence is bound to **actual bytes**, not manually copied hashes: the reference file is re-hashed and generated shots are re-verified through `VideoArtifactManifest` before benchmark hashes are accepted.
 
-- RED contract head `47062886b4a0f4df2541d85bc4fa54844c49a16d` failed because the mechanism doctrine did not yet exist.
-- Exact implementation head `4f806c412afd96784ef88ae2e26c438a7ccecc06` passed Ruff + full pytest on Python 3.11 and 3.12.
-- Post-merge main CI run `32834370593` passed Python 3.11 and 3.12.
+TDD evidence from the predecessor fresh-base workstream remains the proof history for the byte-binding layer:
 
-### PR #25
+- RED head `95bbddba50a8dc1765e6df87b83ace33d3d815ab`: Ruff passed; pytest failed exactly one test because `verify_reference_continuity_artifacts` did not exist (**1 failed / 432 passed**) in CI run **1418**.
+- GREEN implementation head `cb335fc6dd6ba75658cea9b9b94f807bf28cfd3e`: CI run **1419** passed on Python 3.11 and 3.12; production-smoke run **28** passed both checked-in stories plus provenance/final-media verification.
 
-- RED head `66b114c3ff0b7662d8939a7dd824829ece563d89` failed pytest on Python 3.11 and 3.12 before the mechanism runtime existed.
-- The first implementation run exposed four migration/test-fixture failures; workflow logs showed two were legitimate dedupe of identical test titles and two were stale render-v1 tests still calling `build_brief()` without a mechanism mapping. Those test contracts were corrected rather than weakening the runtime guard.
-- Exact PR head `228cce83a1660ca6f5c9263ce394a1ec8801d47b` passed Ruff + full pytest on Python 3.11 and 3.12 in CI run `32835317473`.
-- Post-merge main head `39f601f5a4c5b22d73f9542d4b3f45a149f9386f` passed Ruff + full pytest on Python 3.11 and 3.12 in CI run `32835457340`.
+Because `main` advanced during that work, the final state was rebuilt on current `main@829b4bf…` rather than force-merging a diverged branch. Re-fetch the active PR/head and exact-head checks before merge claims.
 
-No new skill, MCP, plugin, package, paid service or duplicate video backend was introduced for PR #24/#25 because the existing Hottop creative skills, GitHub/TDD/debugging capabilities and reference-conditioned I2V architecture already covered the required surface.
+Research record: `docs/research/2026-08-25-reference-continuity-evaluator-radar.md`.
 
-## Current creative contract
+## Ecosystem decision
 
-For every new Hottop image/video task in Chat or production:
+The measured gap is **generated-output identity**, not another provider abstraction. This cycle therefore admits a provider-neutral benchmark contract rather than a heavyweight evaluator dependency.
 
-- recover current `PROJECT.md`, `STATUS.md` and relevant checked-in skills/configs;
-- if the user supplies a hotspot, analyze its actual recognition mechanism and native visual/dialogue/audio grammar first;
-- if no hotspot is supplied, perform a fresh live hotspot/news/culture/internet discovery pass;
-- never inherit a previous product, cow/Odyssey character, four-panel format, 3D treatment, cinematic treatment or other historical example as an implicit default;
-- make the product perform a real job inside the hotspot mechanism and change the outcome;
-- reject `hot character + logo`, decorative hotspot skins and concepts that could advertise any brand unchanged;
-- require fresh evidence and `hottop.generation-preflight.v1` readiness before final asset generation;
-- for video, treat BGM, voice delivery, SFX/Foley, timing, subject continuity and meaningful motion as first-class quality gates;
-- use image-first/reference-conditioned I2V only when it measurably improves a weak direct-video route; never downgrade the result into a slideshow.
+- **LightX2V:** framework code is Apache-2.0 and remains the primary operator-owned Wan2.2 inference candidate already integrated in Hottop. Exact model/weights terms remain a separate gate.
+- **WanGP:** current `WanGP Community License 2.0` permits broad private/internal use but restricts monetized embedding/API/SaaS/white-label usage without separate licensing. Keep interoperability operator-owned; do not vendor WanGP or make it an unattended/public paid backend.
+- **DreamSim:** code is MIT, but documented pretrained use downloads weights on first use. Exact weights/backbone licenses, revision, hidden download behavior and measurable benchmark value must be reviewed before admission. It is not added to the unattended default environment.
+- **DINO-family evaluators:** plausible future similarity components, but exact checkpoint/model licenses must be reviewed independently from repository code licenses. No dependency added this cycle.
 
-## Current ecosystem priorities
-
-1. **Real creative smoke:** exercise the mechanism runtime with a genuinely current hotspot and a real promoted product, not only synthetic test data.
-2. **Hotspot-source quality:** improve freshness/source diversity/evidence quality only where it raises concept quality or reduces false trend selection.
-3. **Video benchmark:** compare direct video with image-first reference-conditioned I2V on the same accepted creative when direct generation misses identity/style quality.
-4. **Audio benchmark:** improve Mandarin voice quality and match BGM/SFX/voice delivery to the selected hotspot's native audio grammar; eSpeak remains a deterministic fallback, not the quality ceiling.
-5. **Cross-shot identity/continuation:** promote routes only when they preserve subject identity and action/geography across shots with measurable evidence.
-6. **Ecosystem radar:** continue targeted GitHub/open-source/news scans against measured gaps; integrate only candidates that clear source/license/weights-license/cost/hardware/security/reversibility/value gates.
+Durable admission rule remains: **code license != model/weights/data license**. Hidden downloads/network calls are incompatible with normal zero-cost unattended execution unless explicitly operator-controlled and reviewed.
 
 ## Immediate next actions
 
-1. Run a **real fresh-hotspot + product mechanism creative smoke** through the newly deployed runtime and generation preflight.
-2. Archive the selected hotspot evidence, mechanism mapping, product role/outcome change, style/format rationale and creative review result.
-3. If motion is selected, compare direct video quality with the existing image-first reference-conditioned I2V route only when direct output misses the chosen quality bar; preserve voice/BGM/SFX and continuity gates.
-4. Turn successful real production cases into reusable evidence/examples without making their product, hotspot, character, format or style the next request's default.
-5. Continue targeted upstream scans and integrate only changes that materially improve a measured Hottop gap.
+1. Run exact-head CI + production-smoke on the current-main rebuild of the continuity workstream.
+2. Review the complete diff; if current-base evidence is green and no new integrity problem appears, mark ready and squash-merge.
+3. After merge, produce real operator-owned LightX2V/Wan2.2 or compliant WanGP reference-conditioned shots when local GPU/model assets are actually available; serialize byte-bound continuity evidence and require threshold PASS before claiming the route preserves identity.
+4. Continue the guaranteed software3d baseline and a real fresh-hotspot + product mechanism smoke independently of optional GPU availability.
+5. Continue targeted upstream scans against measured gaps; integrate only candidates that clear source/license/weights-license/cost/hardware/security/reversibility/value gates.
 
 ## Recovery order
 
-When resuming after context pressure/new conversation:
-
 1. Read `PROJECT.md`.
 2. Read this `STATUS.md`.
-3. Read the relevant checked-in skill(s), especially `brand-metaphor-creative` and `hottop-meme` for generation work.
-4. Read the newest relevant config/spec/example/decision record.
-5. Inspect current `main`, open PRs and exact-head CI.
-6. Perform the targeted ecosystem scan relevant to the active production gap.
+3. Read relevant checked-in skill(s), especially `brand-metaphor-creative` and `hottop-meme` for generation work.
+4. Read the newest relevant config/spec/example/decision/research record.
+5. Inspect current `main`, open PRs and exact-head CI/production-smoke.
+6. Perform the targeted ecosystem scan relevant to the measured gap.
 7. For a new image/video request, perform the fresh hotspot pass or supplied-hotspot mechanism analysis before generation.
 8. Continue the highest-value safe action autonomously rather than asking for routine project decisions.

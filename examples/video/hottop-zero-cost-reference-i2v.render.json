@@ -24,7 +24,15 @@
       "intent": "establish one stable original reference identity and a waiting system",
       "reference": {
         "image_path": "assets/generated-original/hottop-signal-orb.ppm",
-        "rights": "generated-original"
+        "rights": "generated-original",
+        "subject_id": "hottop-signal-orb",
+        "role": "generated-original workflow signal orb",
+        "identity_lock": [
+          "round symmetric silhouette",
+          "warm amber outer glow",
+          "pale golden center",
+          "dark navy halo"
+        ]
       }
     },
     {
@@ -34,7 +42,15 @@
       "intent": "demonstrate reference-anchored continuity through meaningful movement",
       "reference": {
         "image_path": "assets/generated-original/hottop-signal-orb.ppm",
-        "rights": "generated-original"
+        "rights": "generated-original",
+        "subject_id": "hottop-signal-orb",
+        "role": "generated-original workflow signal orb",
+        "identity_lock": [
+          "round symmetric silhouette",
+          "warm amber outer glow",
+          "pale golden center",
+          "dark navy halo"
+        ]
       }
     },
     {
@@ -44,7 +60,15 @@
       "intent": "land the continuity payoff and light product attribution",
       "reference": {
         "image_path": "assets/generated-original/hottop-signal-orb.ppm",
-        "rights": "generated-original"
+        "rights": "generated-original",
+        "subject_id": "hottop-signal-orb",
+        "role": "generated-original workflow signal orb",
+        "identity_lock": [
+          "round symmetric silhouette",
+          "warm amber outer glow",
+          "pale golden center",
+          "dark navy halo"
+        ]
       }
     }
   ],
