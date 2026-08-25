@@ -82,6 +82,16 @@ def _resolve(project_root: Path, configured: str) -> Path:
     return path if path.is_absolute() else project_root / path
 
 
+def _resolve_espeak_executable() -> tuple[str | None, str | None]:
+    """Resolve the guaranteed local speech fallback, preferring native eSpeak-NG."""
+
+    for name in ("espeak-ng", "espeak"):
+        resolved = shutil.which(name)
+        if resolved is not None:
+            return name, resolved
+    return None, None
+
+
 def _wan22_readiness(
     config: VideoProductionConfig,
     project_root: Path,
@@ -330,12 +340,12 @@ def _voice_readiness(
     if backend == "none":
         return BackendReadiness(backend="none", ready=True, checks=["voice disabled"])
     if backend == "espeak":
-        resolved = shutil.which("espeak")
+        executable, resolved = _resolve_espeak_executable()
         return BackendReadiness(
             backend="espeak",
             ready=resolved is not None,
-            checks=[f"espeak={resolved or 'missing'}"],
-            missing=[] if resolved else ["espeak executable"],
+            checks=[f"{executable or 'espeak-ng'}={resolved or 'missing'}"],
+            missing=[] if resolved else ["eSpeak-NG or eSpeak executable"],
         )
     if backend == "qwen3-customvoice":
         adapter = config.audio.qwen3_custom_voice
@@ -888,11 +898,13 @@ def _runtime_audio_commands(
     dialogue = [cue for cue in plan.audio_cues if cue.kind == "dialogue"]
     commands: list[ExternalCommandSpec] = []
     if config.audio.voice_backend == "espeak":
+        _, voice_program = _resolve_espeak_executable()
+        voice_program = voice_program or "espeak-ng"
         for index, cue in enumerate(dialogue, start=1):
             output = (audio_dir / f"dialogue-{index:03d}.wav").resolve()
             commands.append(
                 ExternalCommandSpec(
-                    program="espeak",
+                    program=voice_program,
                     args=[
                         "-v",
                         config.audio.voice_language,
