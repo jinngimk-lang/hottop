@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 from hottop.rendering import CreativeRenderFrame, CreativeRenderRequest
@@ -79,8 +80,76 @@ def test_video_plan_carries_voice_music_and_sfx_profiles():
     assert all(cue.delivery for cue in dialogue)
 
 
+def _voice_which(real_which, *, espeak_ng: str | None, espeak: str | None):
+    def resolve(name: str):
+        if name == "espeak-ng":
+            return espeak_ng
+        if name == "espeak":
+            return espeak
+        return real_which(name)
+
+    return resolve
+
+
+def test_video_run_prefers_espeak_ng_cmn_for_mandarin(monkeypatch, tmp_path):
+    config = load_video_production_config(Path("config/video/anti-polish-direct.yml"))
+    real_which = shutil.which
+    monkeypatch.setattr(
+        "hottop.video_execution.shutil.which",
+        _voice_which(real_which, espeak_ng="/usr/bin/espeak-ng", espeak="/usr/bin/espeak"),
+    )
+
+    def forbidden_run(*_args, **_kwargs):
+        raise AssertionError("dry-run must not spawn external processes")
+
+    monkeypatch.setattr("hottop.video_execution.subprocess.run", forbidden_run)
+    result = run_video_production(
+        _odyssey_request(),
+        config,
+        output_dir=tmp_path / "run",
+        project_root=Path("."),
+        execute=False,
+    )
+
+    audio_commands = [command for command in result.runtime_commands if command.stage == "audio"]
+    assert len(audio_commands) == 3
+    assert all(command.program == "/usr/bin/espeak-ng" for command in audio_commands)
+    assert all(command.args[:2] == ["-v", "cmn"] for command in audio_commands)
+
+
+def test_video_run_keeps_legacy_espeak_fallback(monkeypatch, tmp_path):
+    config = load_video_production_config(Path("config/video/anti-polish-direct.yml"))
+    real_which = shutil.which
+    monkeypatch.setattr(
+        "hottop.video_execution.shutil.which",
+        _voice_which(real_which, espeak_ng=None, espeak="/usr/bin/espeak"),
+    )
+
+    def forbidden_run(*_args, **_kwargs):
+        raise AssertionError("dry-run must not spawn external processes")
+
+    monkeypatch.setattr("hottop.video_execution.subprocess.run", forbidden_run)
+    result = run_video_production(
+        _odyssey_request(),
+        config,
+        output_dir=tmp_path / "run",
+        project_root=Path("."),
+        execute=False,
+    )
+
+    audio_commands = [command for command in result.runtime_commands if command.stage == "audio"]
+    assert len(audio_commands) == 3
+    assert all(command.program == "/usr/bin/espeak" for command in audio_commands)
+    assert all(command.args[:2] == ["-v", "zh"] for command in audio_commands)
+
+
 def test_video_run_materializes_audio_stage_and_moviepy_dialogue_tracks(monkeypatch, tmp_path):
     config = load_video_production_config(Path("config/video/anti-polish-direct.yml"))
+    real_which = shutil.which
+    monkeypatch.setattr(
+        "hottop.video_execution.shutil.which",
+        _voice_which(real_which, espeak_ng=None, espeak="/usr/bin/espeak"),
+    )
 
     def forbidden_run(*_args, **_kwargs):
         raise AssertionError("dry-run must not spawn external processes")
@@ -97,7 +166,7 @@ def test_video_run_materializes_audio_stage_and_moviepy_dialogue_tracks(monkeypa
     assert Path(result.audio_dir).is_dir()
     audio_commands = [command for command in result.runtime_commands if command.stage == "audio"]
     assert len(audio_commands) == 3
-    assert all(command.program == "espeak" for command in audio_commands)
+    assert all(command.program == "/usr/bin/espeak" for command in audio_commands)
     assert all("-w" in command.args for command in audio_commands)
 
     plan = build_video_production_plan(_odyssey_request(), config)
