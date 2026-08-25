@@ -32,4 +32,5 @@ def test_production_smoke_workflow_executes_checked_in_software3d_stories():
     assert "odyssey" in rendered
     assert "sha256.txt" in rendered
     assert "upload-artifact" in rendered
-    assert "*.artifact.json" in rendered
+    assert "artifacts/production-smoke/cow/shots/*.artifact.json" in raw
+    assert "artifacts/production-smoke/odyssey/shots/*.artifact.json" in raw
