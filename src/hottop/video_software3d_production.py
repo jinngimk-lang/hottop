@@ -86,9 +86,9 @@ def _build_cow_story_scene(*, shot_index: int, progress: float, width: int, heig
         raise ValueError("software 3d flagship story expects shot_index 1..5")
     progress = min(1.0, max(0.0, progress))
     direction = -1.0 if shot_index % 2 else 1.0
-    camera_x = direction * (progress - 0.5) * 0.60
+    camera_x = direction * (progress - 0.5) * 1.35
     camera_y = 0.2 + 0.035 * math.sin(progress * math.pi * 2 + shot_index)
-    camera_z = (progress - 0.5) * 0.48
+    camera_z = (progress - 0.5) * 0.85
     camera = Camera3D(
         width=width,
         height=height,
