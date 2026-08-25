@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import subprocess
 from pathlib import Path
 from types import SimpleNamespace
@@ -136,6 +138,41 @@ def test_lightx2v_executes_offline_and_quality_gates_output(tmp_path):
     assert str(config.root.resolve()) in env["PYTHONPATH"].split("\n")[0].split(":")
     assert config.auto_install is False
     assert config.auto_download_models is False
+
+
+def test_lightx2v_writes_byte_bound_artifact_manifest_after_quality_pass(tmp_path):
+    config = _config(tmp_path, task="t2v")
+    output = tmp_path / "shots" / "shot-003.mp4"
+    artifact_manifest = tmp_path / "shots" / "shot-003.artifact.json"
+    payload = b"model-generated-video-bytes"
+
+    def runner(command, **_kwargs):
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(payload)
+        return subprocess.CompletedProcess(command, 0, "ok", "")
+
+    run_lightx2v_shot(
+        config,
+        prompt="original cinematic shot",
+        negative_prompt="identity drift",
+        output=output,
+        shot_index=3,
+        artifact_manifest=artifact_manifest,
+        runner=runner,
+        quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
+    )
+
+    manifest = json.loads(artifact_manifest.read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == "hottop.video-artifacts.v1"
+    assert manifest["planned_generation_backend"] == "lightx2v-operator"
+    assert len(manifest["shots"]) == 1
+    shot = manifest["shots"][0]
+    assert shot["shot_index"] == 3
+    assert shot["path"] == str(output.resolve())
+    assert shot["artifact_kind"] == "ai-generated"
+    assert shot["backend"] == "lightx2v:wan2.2_moe"
+    assert shot["size_bytes"] == len(payload)
+    assert shot["sha256"] == hashlib.sha256(payload).hexdigest()
 
 
 def test_lightx2v_rejected_output_is_deleted(tmp_path):
