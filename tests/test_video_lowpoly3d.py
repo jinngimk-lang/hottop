@@ -164,7 +164,7 @@ def test_video_plan_and_dry_run_treat_software_3d_as_zero_cost_generation(tmp_pa
     generation = plan.generation_command_specs[0]
     assert generation.args[:2] == ["-m", "hottop.video_lowpoly3d"]
     assert "cow-snake-workshop-v1" in generation.args
-    assert "zero-cost deterministic software 3D" in " ".join(plan.execution_notes).lower()
+    assert "zero-cost deterministic software 3d" in " ".join(plan.execution_notes).lower()
 
     status = inspect_video_environment(config, project_root=tmp_path)
     assert status.ready is True
