@@ -9,6 +9,8 @@ class _FakeTextClip:
     def __init__(self, **kwargs: object) -> None:
         self.text = str(kwargs["text"])
         self.font_size = int(kwargs["font_size"])
+        method = str(kwargs["method"])
+        self.w = 250 if method == "label" and len(self.text) <= 8 else 400
         if len(self.text) <= 8:
             self.h = 48
         else:
