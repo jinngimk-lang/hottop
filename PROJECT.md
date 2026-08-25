@@ -181,6 +181,8 @@ Production v0.2 includes pure software low-poly 3D as a guaranteed zero-cost bas
 
 This baseline is intentionally suitable for Controlled Badness and reproducible evidence. It is **not** the cinematic quality ceiling.
 
+**Deterministic fallback must be story-explicit.** A software3d renderer may claim only story profiles it actually implements. Shot-mode rendering must derive story identity from the output workspace plan, never from an unrelated current working directory. Missing workspace plans and blank, unknown or unsupported story topics fail closed; they must never silently reuse the cow template or another historical story merely to produce a playable MP4. Distinct checked-in story proofs must produce materially distinct world/character/prop staging, not only different captions.
+
 ### Generated-video routes
 
 - **HF ZeroGPU** — optional free shared-GPU transport; bounded, quality-gated, never guaranteed.
@@ -353,6 +355,7 @@ A mature package/archive should preserve enough to reproduce and audit the creat
 
 ## Decision log
 
+- **2026-08-25 — Deterministic story routing becomes fail-closed.** Direct production artifact inspection found a correct Odyssey plan/subtitle track could still render the cow/workroom world. PR #39 fixed output-workspace plan routing, PR #40 made missing plans fail closed, and PR #43 removed the residual blank/unknown-topic-to-cow fallback. Hottop now rejects unsupported deterministic stories rather than emitting a technically valid but semantically false MP4. Distinct story proofs must remain materially distinct visual worlds.
 - **2026-08-25 — CJK subtitle rendering becomes fail-closed.** Direct inspection of production-smoke artifacts found Mandarin captions rendered as tofu because MoviePy fell back to a non-CJK Pillow font even though codec/media gates passed. Hottop now requires a real local CJK-capable caption font when CJK text is present; missing font is a production failure, not an acceptable encoding success. Normal execution does not auto-install fonts.
 - **2026-08-25 — Generator source provenance becomes part of continuity evidence.** Byte-valid reference/shot evidence is insufficient if a run can be relabelled as another generator candidate/version. Evaluated LightX2V artifacts now bind the actual local generator source revision and continuity evidence must match it. Framework source revision, model/checkpoint revision, evaluator revision and output bytes remain separate provenance dimensions. This supersedes the weaker self-reported benchmark `candidate_revision` interpretation and explicitly forbids treating a reviewed registry pin as proof of what code actually ran.
 - **2026-08-25 — Continuity evidence becomes subject-bound and complete within evaluated scope.** Output-side identity claims bind exact reference bytes + byte-bound generated artifacts to the same `subject_id`; every subject-bearing plan shot for an evaluated subject must be covered. This supersedes global-manifest/subset checking while avoiding an overbroad requirement for incidental single-shot subjects.
@@ -397,5 +400,5 @@ Priority order:
 4. Read newest relevant spec/plan/decision/research record.
 5. Inspect current `main`, open PRs and exact-head CI/production-smoke.
 6. Perform targeted ecosystem freshness check for the current Production gap.
-7. For new image/video generation, perform live hotspot/current-context research and pass generation preflight.
+7. For new image/video generation, perform the fresh hotspot pass or supplied-hotspot mechanism analysis before generation.
 8. Continue the highest-value safe action autonomously; do not stop for routine approval or a scheduled-run boundary.
