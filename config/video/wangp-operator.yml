@@ -1,0 +1,76 @@
+schema_version: hottop.video-config.v1
+name: wangp-operator
+style_profile: cinematic
+roughness_score: 28
+generation_backend: external
+compositor_backend: moviepy
+encoder_backend: ffmpeg
+width: 720
+height: 1280
+fps: 24
+duration_seconds: 14.0
+output_format: mp4
+shot_policy:
+  min_shot_seconds: 1.2
+  max_shot_seconds: 3.5
+  transition_bias:
+    - follow
+    - eyeline
+    - match-action
+    - foreground-occlusion
+    - motivated-pan
+audio:
+  bgm_style: original cinematic meme score, restrained low strings, frame drums, plucked folk accents
+  dialogue_duck_db: -10
+  foley_style: cinematic Foley with clear physical sync and restrained comic accents
+  voice_backend: espeak
+  voice_profile: natural-mandarin-cinematic
+  voice_language: zh
+  voice_rate_wpm: 145
+  music_backend: synthetic
+  music_profile: cinematic-meme-original
+  sfx_backend: procedural
+  sfx_profile: cinematic-physical-foley
+  original_music_only: true
+text:
+  subtitle_mode: dialogue-first
+  max_end_card_seconds: 0.7
+  allow_url: false
+  allow_qr: false
+anti_polish:
+  enabled: false
+  rough_3d: false
+  low_poly_bias: false
+  awkward_motion: false
+  deadpan_acting: true
+  cheap_instrumentation: false
+  forbid_glossy_ai_ad_defaults: true
+  precision_must_remain:
+    - character continuity
+    - scene geography
+    - cause and effect
+    - facial consistency
+    - subtitle correctness
+    - dialogue intelligibility
+    - comedy timing
+    - product semantics
+    - rights safety
+external_generation:
+  adapter: wangp
+  root: integrations/WanGP-operator
+  settings_path: integrations/WanGP-operator/hottop-settings.json
+  profile: 4
+  attention: sdpa
+  cost_per_unit: 0
+  operator_managed: true
+  auto_install: false
+  auto_download_models: false
+  license_disclosure: WanGP operator integration; use is disclosed and subject to WanGP Terms and the selected model/weights license.
+moviepy:
+  shot_dir: shots
+  composite_name: hottop-composite.mp4
+ffmpeg:
+  video_codec: libx264
+  audio_codec: aac
+  pixel_format: yuv420p
+  movflags: +faststart
