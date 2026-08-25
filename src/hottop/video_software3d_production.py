@@ -184,7 +184,7 @@ def _load_render_source(render_source: Path) -> tuple[list[dict[str, object]], s
 
 def _story_profile_from_workspace_plan(path: Path = Path("hottop-video-plan.json")) -> str:
     if not path.is_file():
-        return COW_STORY_PROFILE
+        raise ValueError(f"software 3d workspace plan is missing: {path}")
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
