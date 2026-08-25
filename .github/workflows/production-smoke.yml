@@ -51,6 +51,35 @@ jobs:
           font = ImageFont.truetype(os.environ["HOTTOP_CAPTION_FONT"], 48)
           assert bytes(font.getmask("妈")) != bytes(font.getmask("傻"))
           PY
+      - name: Probe eSpeak-NG Mandarin dialogue duration
+        run: |
+          python - <<'PY'
+          import subprocess
+          import tempfile
+          import wave
+          from pathlib import Path
+
+          probes = [
+              (155, "哎呀，又绊我！"),
+              (155, "妈——！"),
+              (155, "用 InkClawAgent。"),
+              (155, "啊？这么直接？"),
+              (155, "别被蛇绊住。"),
+              (145, "这需求再改一下就行……"),
+              (145, "先把环境、依赖、部署、Token 配好再说。"),
+              (145, "不用。打开 InkClawAgent，直接干活。"),
+          ]
+          with tempfile.TemporaryDirectory() as directory:
+              for index, (rate, text) in enumerate(probes, start=1):
+                  path = Path(directory) / f"probe-{index:02d}.wav"
+                  subprocess.run(
+                      ["espeak", "-v", "zh", "-s", str(rate), "-w", str(path), text],
+                      check=True,
+                  )
+                  with wave.open(str(path), "rb") as wav:
+                      duration = wav.getnframes() / wav.getframerate()
+                  print(f"HOTTOP_ESPEAK_NG_PROBE rate={rate} duration={duration:.3f}s text={text}")
+          PY
       - name: Execute checked-in anti-polish cow story
         run: |
           hottop video-run examples/video/inkclaw-cow-snake.render.json \
