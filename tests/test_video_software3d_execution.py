@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from hottop.rendering import CreativeRenderFrame, CreativeRenderRequest
-from hottop.video_execution import run_video_production
+from hottop.video_execution import inspect_video_environment, run_video_production
 from hottop.video_production import VideoProductionConfig
 
 
@@ -77,3 +77,15 @@ def test_video_run_materializes_software3d_generation_into_workspace(tmp_path: P
         assert output.is_absolute()
         assert output == (tmp_path / "run" / "shots" / f"shot-{index:03d}.mp4").resolve()
         assert command.cwd == str(tmp_path.resolve())
+
+
+def test_software3d_readiness_requires_ffmpeg_for_shot_encoding(monkeypatch, tmp_path: Path):
+    monkeypatch.setattr("hottop.video_execution.shutil.which", lambda _name: None)
+
+    status = inspect_video_environment(_config(), project_root=tmp_path)
+
+    assert status.ready is False
+    assert status.software3d is not None
+    assert status.software3d.ready is False
+    assert "FFmpeg executable" in status.software3d.missing
+    assert any("software3d" in action.lower() for action in status.actions_required)
