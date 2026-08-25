@@ -176,7 +176,8 @@ def build_odyssey_story_scene(*, shot_index: int, progress: float, width: int, h
     camera_x = base_camera_x + direction * (progress - 0.5) * 2.8
     camera_y = 0.18 + (progress - 0.5) * 0.8
     camera_z = (progress - 0.5) * 1.3
-    focal_length = width * 0.98 * (1.0 + (progress - 0.5) * 0.10)
+    focal_multiplier = 1.10 if height > width else 0.98
+    focal_length = width * focal_multiplier * (1.0 + (progress - 0.5) * 0.10)
     camera = Camera3D(
         width=width,
         height=height,
