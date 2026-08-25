@@ -1,106 +1,96 @@
 # Hottop Status
 
 Last updated: 2026-08-25
-Active workstream: **Production v0.2 — close real output-quality gaps before stronger generated routes**
+Active workstream: **Production v0.2 — real output quality + reference-conditioned evidence**
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
 > This file is the short-lived execution snapshot. `PROJECT.md` is durable doctrine. Re-fetch GitHub state before exact CI/head claims.
 
-## Current main state
+## Current recovered main
 
-Current recovered `main`: `ff996554e868d1ff67bce7d1d0ffeb53846ec319` (`Sync post-provenance Production status (#36)`). Main CI run **1464** passed on Python 3.11 and 3.12.
+Current base before active PR #41: `27db1a009a5e1d0813bbfcb7bc3a22b6d3df03a5` (`Fix software3d story routing in production workspace (#39)`).
 
-Latest merged runtime production baseline before the active subtitle fix remains production-smoke **58** on the post-#33 runtime tree. Direct inspection of that uploaded artifact uncovered a real defect that codec/provenance checks had missed: **Mandarin captions in both cow and Odyssey final MP4s rendered as tofu boxes** because MoviePy fell back to a non-CJK Pillow font.
+Recent merged runtime evidence:
 
-Active PR **#37 — Fix CJK caption font routing** closes that defect:
+- PR #37 CJK subtitle fix: post-merge main CI **1470** + production-smoke **63** GREEN; downloaded prior smoke artifacts were visually inspected and Mandarin subtitles render as real glyphs instead of tofu.
+- PR #39 workspace story routing: exact-head CI **1478** + production-smoke **67** GREEN; it fixed the observed runtime bug where software3d shot mode looked in process cwd rather than the output workspace for `hottop-video-plan.json`.
+- Independent smoke **66** artifact from the stricter parallel line was downloaded and visually inspected: cow remains the cow/workroom world, while Odyssey renders a materially distinct banquet-hall / witch / pig-transformation world. The two checked-in examples are no longer caption-only variants of one visual template.
 
-- CI **1465** RED: `_resolve_caption_font` did not exist;
-- implementation resolves `HOTTOP_CAPTION_FONT` first, then known local CJK font paths, and fails closed for CJK captions when no local font exists;
-- normal `video-run` does not install or vendor fonts;
-- production-smoke explicitly installs `fonts-noto-cjk`, validates the CJK glyph masks and passes the local font to MoviePy;
-- CI **1467** GREEN on Python 3.11/3.12;
-- production-smoke **60** GREEN for both full cow and Odyssey pipelines;
-- downloaded production-smoke 60 artifact was manually inspected: Chinese captions now render as real glyphs in both final MP4s, not replacement boxes.
+## Active PR #41 — remove residual implicit-cow fallbacks
 
-This makes subtitle readability a real delivery gate rather than assuming H.264/AAC success implies readable text.
+PR #39 fixed normal workspace routing, but two permissive branches remained on main: a missing workspace plan returned cow, and an unknown topic returned cow. A future unsupported deterministic story could therefore still produce a technically valid but semantically false cow MP4.
 
-## Newly discovered software3d semantic gap
+PR #41 (`Reject unsupported software3d story fallbacks`) makes that boundary fail closed:
 
-The same production-smoke 60 visual inspection exposed the next higher-value Production v0.2 defect: **the Odyssey case carries Odyssey captions/story timing, but its rendered visual world is still the same cow/workroom software3d scene grammar used by the cow story.**
+- CI **1482 RED**: strict public story resolver absent;
+- implementation introduces explicit known topic mapping and rejects blank/unknown topics;
+- missing workspace plan now fails instead of defaulting cow;
+- legacy unit fixtures were updated to provide explicit cow workspace semantics rather than weakening production behavior;
+- the old test that required `unknown → cow` was replaced with a fail-closed contract;
+- exact code-head CI **1489** GREEN on Python 3.11 and 3.12;
+- code-head production-smoke **75** GREEN for both full cow and Odyssey pipelines;
+- no GPU, model, network, credential or paid dependency was added.
 
-The guaranteed software3d baseline is therefore real moving 3D + audio + verified media, but it is not yet honestly multi-story visual production: story-specific visual semantics are being under-consumed by the deterministic renderer. This must be fixed before treating cow + Odyssey as two independent visual production proofs.
+`PROJECT.md` now records the durable rule: deterministic fallback is story-explicit. Missing/unknown/unsupported stories must fail rather than silently reuse a historical template simply to emit a playable MP4.
 
-Next software3d acceptance should require the renderer to consume deterministic story/scene semantics strongly enough that distinct checked-in stories produce materially distinct world/character/prop staging while preserving the zero-cost/no-GPU guarantee. Do not hide this gap behind different subtitles.
+## Guaranteed zero-cost baseline
 
-## Completed continuity/provenance integrity
+The software3d baseline now has reproducible proof for:
 
-Production v0.2 reference-continuity evidence fails closed on:
+- distinct story-specific moving 3D worlds for cow and Odyssey;
+- Mandarin dialogue + readable CJK subtitles;
+- original synthetic music + procedural Foley/SFX;
+- MoviePy composition + FFmpeg H.264/AAC/yuv420p finalization;
+- per-shot byte/provenance binding + pre-composition re-verification;
+- final media verification;
+- zero GPU, zero model download, zero credentials and zero paid services.
 
-1. exact planned reference bytes;
-2. shot bytes bound to plan shots carrying the same `reference.subject_id`;
-3. complete coverage of every subject-bearing plan shot for each evaluated subject;
-4. generated-artifact candidate/source provenance for LightX2V continuity evidence;
-5. explicit evaluator identity/revision and thresholds.
+This is the guaranteed fallback and evidence baseline, not the cinematic quality ceiling.
 
-PR #33 added generator-attribution binding after TDD RED/GREEN cycles, and post-merge main CI **1456** + production-smoke **58** passed. PR #35 made the generator-provenance doctrine canonical while preserving established creative/fresh-generation/reference/Anti-Polish/platform-native contracts; PR #36 then synchronized the execution snapshot.
+## Generated/reference-conditioned identity gap
 
-For LightX2V, `candidate_revision` means **actual local generator source revision**: git HEAD for a real checkout, otherwise `source-sha256:<sha256(lightx2v/infer.py)>` for packaged/non-git local code. A reviewed registry pin is not substituted for code actually executed.
-
-**Generator source revision, model/checkpoint revision, evaluator revision and artifact bytes are separate provenance dimensions.** Hottop does not infer model/weights revision from framework source revision; model provenance is bound only when independently verifiable local model metadata exists.
-
-Benchmark scope remains explicit: incidental/single-shot subjects are not automatically forced into cross-shot evaluation merely because they carry `subject_id`.
-
-## Current generated-output identity gap
-
-The remaining reference-identity gap still requires **real generated-output evidence** from an operator-owned reference-conditioned route.
-
-This execution environment does not contain a provisioned LightX2V/Wan2.2 or compliant WanGP model/runtime/assets. Normal unattended Hottop must not auto-download multi-GB models, provision GPU, consume credits or weaken that boundary.
+The remaining identity gap requires **real generated-output evidence** from an operator-owned reference-conditioned route. This execution environment still does not contain a provisioned LightX2V/Wan2.2 or compliant WanGP model/runtime/assets. Normal unattended Hottop must not auto-download multi-GB models, provision GPU, consume credits or weaken that boundary.
 
 A production identity-preservation claim requires:
 
 - at least two generated, byte-bound plan shots for the same rights-safe evaluated subject;
 - exact planned local reference + stable `subject_id`;
-- quality-gated generated artifacts;
-- generator candidate + actual source revision bound to those bytes;
+- generated-video quality gates;
+- generator candidate + actual local source revision bound to those bytes;
 - independently verifiable model/checkpoint provenance when available;
 - continuity evidence covering every subject-bearing plan shot for the evaluated subject;
-- explicit evaluator identity/revision and fail-closed thresholds.
+- explicit evaluator identity/revision + fail-closed thresholds.
 
-Until that runtime exists, structural benchmark work must not be mistaken for real visual-continuity evidence.
+Generator source revision, model/checkpoint revision, evaluator revision and output artifact bytes remain separate provenance dimensions.
 
-## Reference-continuity evaluator radar
+## Current ecosystem radar
 
 Research record: `docs/research/2026-08-25-reference-continuity-evaluator-radar.md`.
 
-Current posture:
+- **LightX2V** remains the primary Apache-2.0 operator inference framework. Tested Hottop pin remains `926299962ed32a142411e45468a289623432b4e4`; a fresh 2026-08-25 check still found no upstream change that justifies automatically replacing the tested Wan2.2 pin for the current gap.
+- **SigLIP 2 Base 256** remains the preferred first operator-local continuity evaluator experiment only after explicit local weights/revision are supplied; no implicit download.
+- **Qwen3-TTS CustomVoice / CosyVoice** remain operator-owned Mandarin quality candidates. Fresh checks found CosyVoice demo availability issues but no evidence that changes Hottop's existing admission posture or justifies auto-install/model download. citeturn232857search2turn232857search7
+- DINOv3/DreamSim/WanGP remain gated by their respective weights/license/runtime boundaries.
 
-- **LightX2V** remains the primary Apache-2.0 operator inference framework. Hottop's tested integration pin remains `926299962ed32a142411e45468a289623432b4e4`; a 2026-08-25 freshness check observed upstream `main` at `5dc5d6372654406761474719647763ac7b4bd018`, but the SwiftVR-specific fix does not justify an automatic re-pin of the tested Wan2.2 route.
-- **SigLIP 2 Base 256** remains the preferred first operator-local evaluator experiment; explicit local path only, with no implicit model download.
-- **SigLIP v1 Base 256** is a lower-footprint Apache-2.0 control/fallback candidate, not preferred unless benchmark separation proves sufficient.
-- **DINOv3** remains operator-owned/local-only because code + released weights use the custom DINOv3 License and pretrained access requires upstream acceptance.
-- **DreamSim** remains gated because MIT code does not establish the downloaded weights/backbone rights/runtime boundary.
-- **WanGP** remains operator-owned under community-license restrictions; do not vendor or auto-provision it.
-
-Durable rule remains: **code license != model/weights/data license**. Popularity/freshness alone is not an admission reason.
+Durable rule: code license != model/weights/data license; popularity/freshness alone is not admission evidence.
 
 ## Immediate next actions
 
-1. Finish/merge PR #37 only after its exact-head CI + production-smoke remain green with the doctrine/status updates; preserve the manually verified CJK glyph result.
-2. Immediately TDD the newly observed software3d semantic failure: prove the Odyssey and cow plans currently collapse to the same visual world, then make deterministic scene/character/prop staging consume story-specific semantics without adding GPU/model/network dependencies.
-3. Re-run full cow + Odyssey production-smoke after the semantic fix and visually verify the two outputs are materially distinct, not merely caption variants.
-4. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime + rights-safe assets are actually present, execute the real multi-shot identity benchmark before making an identity-preservation claim.
-5. Prefer SigLIP 2 Base 256 for the first model-based evaluator experiment only after explicit local weights are supplied; pin exact revision/hash, use no implicit download, and require same-subject vs identity-drift control separation.
-6. Continue Mandarin dialogue quality benchmarking through reviewed operator-owned local Qwen3-TTS/CosyVoice routes when local runtimes/models are supplied; eSpeak remains the guaranteed fallback.
-7. Continue targeted ecosystem scans against measured gaps and integrate only candidates that clear source/license/weights-license/cost/hardware/security/reversibility/value gates.
+1. Merge PR #41 only after final docs exact-head CI remains green; post-merge verify main CI + production-smoke.
+2. Continue direct output inspection of the guaranteed software3d artifacts and fix visible/story/audio failures before adding provider abstractions.
+3. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime + rights-safe assets actually exist, execute the real multi-shot identity benchmark before claiming identity preservation.
+4. Prefer SigLIP 2 Base 256 for the first local evaluator benchmark only with explicit local weights + exact revision/hash and same-subject vs identity-drift controls.
+5. Continue Mandarin dialogue quality benchmarking through reviewed local Qwen3-TTS/CosyVoice routes when runtimes/models are supplied; eSpeak remains guaranteed fallback.
+6. Continue targeted ecosystem scans against measured gaps and integrate only candidates clearing source/license/weights-license/cost/hardware/security/reversibility/value gates.
 
 ## Recovery order
 
-1. Read `PROJECT.md`.
-2. Read this `STATUS.md`.
-3. Read relevant checked-in skill(s), especially `brand-metaphor-creative` and `hottop-meme` for generation work.
-4. Read the newest relevant config/spec/example/decision/research record.
-5. Inspect current `main`, open PRs and exact-head CI/production-smoke.
-6. Perform the targeted ecosystem scan relevant to the measured gap.
-7. For a new image/video request, perform the fresh hotspot pass or supplied-hotspot mechanism analysis before generation.
-8. Continue the highest-value safe action autonomously rather than asking for routine project decisions.
+1. `PROJECT.md`.
+2. this `STATUS.md`.
+3. relevant reusable skills.
+4. newest relevant spec/plan/decision/research record.
+5. current `main`, open PRs and exact-head CI/production-smoke.
+6. targeted ecosystem scan for the measured gap.
+7. fresh hotspot/mechanism analysis for new creative generation.
+8. continue the highest-value safe action autonomously.
