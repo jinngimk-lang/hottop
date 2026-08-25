@@ -3,7 +3,7 @@ from pathlib import Path
 import yaml
 
 
-def test_production_smoke_workflow_executes_checked_in_software3d_story():
+def test_production_smoke_workflow_executes_checked_in_software3d_stories():
     path = Path(".github/workflows/production-smoke.yml")
     assert path.is_file()
 
@@ -18,8 +18,13 @@ def test_production_smoke_workflow_executes_checked_in_software3d_story():
     assert "espeak" in rendered
     assert "examples/video/inkclaw-cow-snake.render.json" in rendered
     assert "config/video/anti-polish-software3d.yml" in rendered
+    assert "examples/video/inkclaw-odyssey-witch-pigs.render.json" in rendered
+    assert "config/video/cinematic-software3d.yml" in rendered
     assert "hottop video-run" in rendered
-    assert "--execute" in rendered
+    assert rendered.count("--execute") >= 2
     assert "hottop-output.mp4" in rendered
+    assert "cow" in rendered
+    assert "odyssey" in rendered
+    assert "sha256.txt" in rendered
     assert "upload-artifact" in rendered
     assert "*.artifact.json" in rendered
