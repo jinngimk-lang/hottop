@@ -9,7 +9,7 @@ from hottop.pipeline import build_batch
 def _candidate(candidate_id: str = "cow:family") -> TrendCandidate:
     return TrendCandidate(
         id=candidate_id,
-        title="A crude 3D family meme about a child asking a parent for help",
+        title=f"A crude 3D family meme about a child asking a parent for help — {candidate_id}",
         url=f"https://example.com/{candidate_id}",
         source="test",
         tags=["animation", "3d", "meme"],
