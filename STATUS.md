@@ -9,13 +9,14 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current main state
 
-Current `main`: `e1f9e5cd67aae42b44d60cb073f17df0e39af81f` (`Bind continuity benchmarks to generator provenance (#33)`).
+Current `main`: `4f34b53a5c44dd7a10ee3b162322e79092a7fe47` (`Persist generator provenance doctrine (#35)`).
 
 Post-merge verification is complete:
 
-- main CI run **1456** passed;
-- main production-smoke run **58** passed;
-- production-smoke again executed both checked-in cow and Odyssey software3d stories through config → real moving shots → Mandarin dialogue/music/SFX → MoviePy → FFmpeg → final media/provenance verification and uploaded reproducible evidence.
+- main CI run **1462** passed on Python 3.11 and 3.12;
+- latest runtime production-smoke remains run **58**, passed on the prior runtime-equivalent main after PR #33;
+- PR #35 was docs-only and did not touch any `production-smoke.yml` trigger path, so no new smoke run was expected from that merge;
+- production-smoke 58 executed both checked-in cow and Odyssey software3d stories through config → real moving shots → Mandarin dialogue/music/SFX → MoviePy → FFmpeg → final media/provenance verification and uploaded reproducible evidence.
 
 The guaranteed zero-cost software3d production baseline remains healthy without GPU/model download/credits.
 
@@ -39,6 +40,8 @@ PR #33 added the generator-attribution layer after two TDD cycles:
 - final PR exact-head CI **1455** + production-smoke **57** passed before merge;
 - post-merge main CI **1456** + production-smoke **58** passed.
 
+PR #35 then made this evidence boundary canonical in `PROJECT.md` while preserving the repository's established creative/fresh-generation/reference/Anti-Polish/platform-native doctrine. Its verified branch head passed CI **1460**; merged main passed CI **1462**.
+
 For LightX2V, `candidate_revision` means **actual local generator source revision**: git HEAD for a real checkout, otherwise `source-sha256:<sha256(lightx2v/infer.py)>` for packaged/non-git local code. A reviewed registry pin is not substituted for the code actually executed.
 
 **Generator source revision, model/checkpoint revision, evaluator revision and artifact bytes are separate provenance dimensions.** Hottop does not infer model/weights revision from framework source revision; model provenance is bound only when independently verifiable local model metadata exists.
@@ -47,7 +50,7 @@ Benchmark scope remains explicit: incidental/single-shot subjects are not automa
 
 ## Current measured gap
 
-The remaining identity gap is now genuinely **real generated-output evidence** from an operator-owned reference-conditioned route.
+The remaining identity gap is genuinely **real generated-output evidence** from an operator-owned reference-conditioned route.
 
 This execution environment still does not contain a provisioned LightX2V/Wan2.2 or compliant WanGP model/runtime/assets. Normal unattended Hottop must not auto-download multi-GB models, provision GPU, consume credits or weaken that boundary.
 
