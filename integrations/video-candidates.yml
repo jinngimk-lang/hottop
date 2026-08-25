@@ -1,0 +1,113 @@
+schema_version: hottop.video-candidates.v1
+reviewed_at: 2026-08-25
+policy:
+  zero_cost_default: true
+  auto_download_models: false
+  auto_accept_licenses: false
+  paid_fallback: false
+  prefer_isolated_adapters: true
+  require_code_and_weights_license_review: true
+
+candidates:
+  longcat_video_avatar_1_5:
+    repo: meituan-longcat/LongCat-Video
+    commit: 6b3f4b8582a8bc3f20f795735f5383716c4ba794
+    weights: meituan-longcat/LongCat-Video-Avatar-1.5
+    code_license: MIT
+    weights_license: MIT
+    status: high_priority_benchmark
+    target_gaps:
+      - audio_driven_character_animation
+      - identity_continuity
+      - stylized_and_animal_characters
+      - multilingual_dialogue
+      - video_continuation
+    capabilities:
+      - audio_text_to_video
+      - audio_image_text_to_video
+      - audio_driven_video_continuation
+      - single_and_multi_stream_audio
+      - chinese_dialogue_support
+      - stylized_domain_support
+      - animal_character_support
+      - distilled_8_step_inference
+      - int8_weight_variant_available
+    integration_strategy: operator_owned_external_adapter_or_wangp_profile
+    runtime_boundary: >-
+      Never download weights automatically. Keep CUDA/FlashAttention/model provisioning
+      operator-controlled. Benchmark identity, lip-sync, body stability and end-to-end shot
+      latency against the current software3d/WanGP baseline before promotion.
+
+  scail_2:
+    repo: zai-org/SCAIL-2
+    commit: 78fe19576bb06be96c2375e088574a262a300edb
+    weights: zai-org/SCAIL-2
+    code_license: Apache-2.0
+    weights_license: MIT-model-card
+    status: high_priority_benchmark
+    target_gaps:
+      - multi_reference_identity
+      - character_replacement
+      - pose_driven_animation
+      - animal_character_animation
+    capabilities:
+      - multi_reference_inference
+      - end_to_end_character_animation
+      - character_replacement
+      - animal_driving
+      - comfyui_integration
+      - training_code_available
+    integration_strategy: isolated_adapter_or_comfy_workflow
+    runtime_boundary: >-
+      The published checkpoint stack is tens of gigabytes and includes PyTorch pickle files.
+      Keep download/conversion/execution operator-owned; prefer safetensors conversion or a
+      reviewed isolated runtime before production use.
+
+  wangp:
+    repo: deepbeepmeep/Wan2GP
+    commit: f76ef2bb848a7d6bfc94779d493b2a9f149cd683
+    code_license: WanGP-Community-License-2.0
+    weights_license: model_specific
+    status: operator_backend
+    target_gaps:
+      - low_vram_generation
+      - multi_model_operator_runtime
+      - local_headless_generation
+    capabilities:
+      - low_vram_model_execution
+      - wan_family
+      - hunyuan_family
+      - ltx_family
+      - longcat_family
+      - native_audio_capable_models
+      - headless_and_api_surfaces
+    integration_strategy: interoperate_do_not_vendor
+    runtime_boundary: >-
+      Internal production/headless use is permitted by the WanGP Community License, but paid
+      embedding, paid API/SaaS/hosted exposure or white-label redistribution requires separate
+      commercial permission. Keep Hottop interoperable rather than embedding WanGP code.
+
+  minimax_h3:
+    repo: MiniMax-H3/MiniMax-H3
+    code_license: Apache-2.0-repository
+    weights_license: MiniMax-H3-Community-License
+    status: blocked_by_weights_license_review
+    target_gaps:
+      - multimodal_reference_video
+      - native_video_and_stereo_audio
+      - first_last_frame_control
+      - reference_image_video_audio_conditioning
+    capabilities:
+      - text_to_video
+      - first_or_last_frame_to_video
+      - first_and_last_frame_to_video
+      - multi_reference_images_video_audio
+      - native_32khz_stereo_audio
+      - chinese_dialogue_support
+      - up_to_15_second_generation
+    integration_strategy: metadata_only_until_license_gate_clears
+    runtime_boundary: >-
+      Do not download, execute, or make H3 a default backend merely because repository code is
+      Apache-2.0. The model weights use a separate community license with geographic,
+      commercial, disclosure and acceptable-use conditions. Treat the weights/output terms as
+      a hard execution gate and re-check the current upstream license before any use.
