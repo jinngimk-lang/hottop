@@ -1,127 +1,97 @@
 # Hottop Status
 
 Last updated: 2026-08-25
-Active workstream: **Production v0.2 — mechanism-first hotspot creative + reference-conditioned video quality proof**
+Active workstream: **Production v0.2 — real mechanism-driven generation smoke + image/video quality benchmark**
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
 > This file is the short-lived execution snapshot. `PROJECT.md` is durable doctrine. Re-fetch GitHub state before exact CI/head claims.
 
-## Current production state
+## Current main state
 
-Hottop now has four complementary production layers:
+Current deployed creative/runtime chain:
 
-1. a **mandatory fresh-generation entry gate** for every new image/video request;
-2. a **mechanism-first hotspot creative doctrine** that analyzes the hotspot's causal/relationship, visual, language and audio grammar before product insertion;
-3. a guaranteed **zero-cost deterministic software3d → audio → MoviePy → FFmpeg → verified MP4** baseline; and
-4. isolated operator-owned/open reference-conditioned generation routes that can be benchmarked without changing the provider-neutral creative/runtime contract.
+`fresh/supplied hotspot analysis → hotspot mechanism mapping → product role/outcome change → hottop.generation-preflight.v1 → dynamic format/style selection → render route → voice/music/SFX → final quality/media verification`
 
-Closed production evidence:
+The repository now enforces four complementary layers:
 
-- PR #12 established the reproducible software3d config-to-MP4 loop with byte-bound provenance manifests and final media verification.
-- PR #15 generalized software3d story routing beyond the cow/snake flagship and added the Odyssey witch/pigs cinematic profile; it was squash-merged as `01e54432978f9694ea79a645e8b53308c474f3d5`.
-- PR #13 added the benchmark-ready offline local Qwen3-TTS 0.6B CustomVoice adapter and was merged as `b9743763316f240d5c095c84bc5f2f071ee32716`.
-- PR #14 added the first-class operator-managed LightX2V/Wan2.2 T2V/I2V backend and was merged as `e32a0632d1245752baa0b60cd464a18af110a8df`.
-- `8410458fd9cbc416f0cb98fa39001f685f6feb7c` added the reusable checked-in LightX2V/Wan2.2 I2V operator profile and registry boundary.
-- `859f2c382119facf96b3c6147e0b85fff979f514` bound accepted LightX2V shot bytes to artifact provenance and re-verification before composition.
-- PR #23 deployed the mandatory fresh-hotspot generation preflight to `main` as `ee801cb289f99baecd932a32b520e89fd0155aec`.
+1. **Fresh-generation gate** — every new image/video request re-resolves product, hotspot, style and format; when no hotspot is supplied, run fresh live discovery; when the user supplies one, analyze that source first and freshly verify current/factual context as needed.
+2. **Mechanism-first creative mapping** — extract recognition hook, causal/relationship mechanism, native visual grammar, native dialogue/language rhythm and native audio grammar; the product must take a functional role that changes the story outcome.
+3. **No-template runtime** — the old keyword → fixed archetype → product-as-hero → automatic four-panel path is removed. Legacy four-panel briefing now requires explicit `ProductMechanismMapping`; batch discovery without mechanism analysis returns `mechanism_required_ids` instead of inventing a generic brief.
+4. **Video quality routing** — direct video remains preferred when it meets the selected quality bar; when it does not, approved rights-safe keyframes may feed the existing reference-conditioned I2V path. Image-first is a recovery route, not a universal template, and the output must still contain meaningful motion, continuity and hotspot-native timing/audio.
 
-## Fresh-generation preflight deployment
+## Deployed milestones
 
-PR #23 (`feat/fresh-hotspot-generation-preflight`) is merged and implements the hard requirement that **every new image/video generation request starts from newly researched current hotspot evidence and a new product/hotspot/style/format decision** rather than inheriting an old example.
+- PR #23 — mandatory fresh-hotspot generation preflight, merged as `ee801cb289f99baecd932a32b520e89fd0155aec`.
+- PR #24 — canonical mechanism-first creative doctrine + optional image-first/reference-conditioned video quality recovery, merged as `8f1e24e2e8b89c0aa8a0608739e754fcf30b74f4`.
+- PR #25 — runtime removal of the legacy keyword/archetype/template briefing behavior, merged as `39f601f5a4c5b22d73f9542d4b3f45a149f9386f`.
 
-Runtime/API:
+Supporting production baseline remains deployed:
 
-- `src/hottop/generation_preflight.py` defines `GenerationPreflightInput`, `GenerationPreflightResult`, and `evaluate_generation_preflight(...)`.
-- schema: `hottop.generation-preflight.v1`;
-- required dynamic fields: promoted `product`, selected `hotspot`, `visual_style`, `style_rationale`, `output_format`, `output_kind`, and timezone-aware `researched_at`;
-- default freshness gate: research observation <= **6 hours**; known hotspot publication <= **7 days**;
-- fail-closed blockers include missing/stale evidence, stale research observation, and stale known publication time;
-- unknown publication time may pass only with fresh observed evidence and remains unknown rather than being invented.
+- deterministic zero-cost software3d → audio → MoviePy → FFmpeg → verified MP4 path;
+- software3d multi-story routing including cow/snake and Odyssey production cases;
+- operator-managed LightX2V/Wan2.2 T2V/I2V route and reusable I2V profile;
+- byte-bound shot provenance before composition;
+- Qwen3-TTS benchmark-ready offline local adapter;
+- role/subject/identity-lock reference continuity contract.
 
-Operator/Chat entrypoint:
+## Verification evidence
 
-- `hottop generation-preflight <json> [--now ...]` runs the same gate; blocked inputs exit non-zero.
-- `PROJECT.md`, `skills/brand-metaphor-creative/SKILL.md`, and `skills/hottop-meme/SKILL.md` require Chat generation to reread repository truth, perform a new live hotspot/news/culture/internet scan for each asset request, select product/hotspot/style/format dynamically, and pass the preflight before final image/video generation.
-- Historical cow/snake/Odyssey/four-panel/Anti-Polish/low-poly/cinematic examples remain reusable grammar only and are not implicit defaults.
-- No new skill, MCP, plugin, package, or external dependency was added; existing Hottop/GitHub/TDD capabilities were sufficient.
+### PR #24
 
-Closed TDD/CI evidence for PR #23:
+- RED contract head `47062886b4a0f4df2541d85bc4fa54844c49a16d` failed because the mechanism doctrine did not yet exist.
+- Exact implementation head `4f806c412afd96784ef88ae2e26c438a7ccecc06` passed Ruff + full pytest on Python 3.11 and 3.12.
+- Post-merge main CI run `32834370593` passed Python 3.11 and 3.12.
 
-- runtime RED: Ruff passed; the existing **409 tests passed** and exactly **6 new tests failed** because `hottop.generation_preflight` did not yet exist;
-- CLI RED: **415 tests passed** and exactly **2 new tests failed** because `generation-preflight` did not yet exist;
-- durable-doctrine RED: **417 tests passed** and exactly **3 contract tests failed** because `PROJECT.md` and the two existing creative skills did not yet contain the mandatory rule;
-- GREEN after implementation/doctrine: Python 3.11 and 3.12 passed Ruff + **420 tests**;
-- live-current-news smoke was then added using a Reuters story observed on 2026-08-25, with publication timestamp intentionally left unknown because the exact time was not evidenced;
-- PR merge-ref CI run `32831989190` passed on Python 3.11 and 3.12; Python 3.12 explicitly reports **421 passed** after the live fixture was added.
+### PR #25
 
-Archived live smoke input:
+- RED head `66b114c3ff0b7662d8939a7dd824829ece563d89` failed pytest on Python 3.11 and 3.12 before the mechanism runtime existed.
+- The first implementation run exposed four migration/test-fixture failures; workflow logs showed two were legitimate dedupe of identical test titles and two were stale render-v1 tests still calling `build_brief()` without a mechanism mapping. Those test contracts were corrected rather than weakening the runtime guard.
+- Exact PR head `228cce83a1660ca6f5c9263ce394a1ec8801d47b` passed Ruff + full pytest on Python 3.11 and 3.12 in CI run `32835317473`.
+- Post-merge main head `39f601f5a4c5b22d73f9542d4b3f45a149f9386f` passed Ruff + full pytest on Python 3.11 and 3.12 in CI run `32835457340`.
 
-- `examples/preflight/live-smoke-2026-08-25.json`;
-- promoted subject for this smoke: Hottop;
-- selected hotspot: Reuters, `Waiting on Nvidia for next leg of AI rally`;
-- selected treatment: financial-news/social-native editorial realism;
-- selected format: single visual metaphor;
-- this fixture proves a real live-research result can flow through the same runtime preflight used by synthetic unit cases without fabricating an unknown publication timestamp.
+No new skill, MCP, plugin, package, paid service or duplicate video backend was introduced for PR #24/#25 because the existing Hottop creative skills, GitHub/TDD/debugging capabilities and reference-conditioned I2V architecture already covered the required surface.
 
-## Active PR #24 — mechanism-first creative + image-first quality recovery
+## Current creative contract
 
-Branch: `feat/hotspot-mechanism-image-first-quality`
+For every new Hottop image/video task in Chat or production:
 
-This work deliberately **extends existing capabilities instead of duplicating them**:
-
-- user-supplied hotspot → analyze that source first, then verify current/factual context as needed;
-- no supplied hotspot → perform fresh discovery for the current request;
-- extract recognition hook, **causal/relationship mechanism**, native visual grammar, native dialogue/language rhythm, and native audio grammar;
-- place the product in a functional role inside the mechanism and require it to **change the story outcome** rather than decorate the hotspot skin;
-- require retained hotspot elements to have jobs in the causal chain;
-- prefer audience decoding `hotspot recognition → mapping → product consequence → punchline`;
-- use **Image-first quality recovery** only when direct video misses the selected visual/identity/style bar: approve rights-safe keyframes first, then reuse the repository's existing reference-conditioned I2V path;
-- image-first is not a new backend and not a universal template; successful video still requires meaningful motion, continuity, native timing, BGM/voice/SFX quality, artifact integrity and final media verification;
-- no new skill/MCP/plugin/package/backend is being introduced because existing `brand-metaphor-creative`, `hottop-meme`, TDD and reference-conditioned I2V infrastructure already cover the required execution surface.
-
-Strict TDD evidence so far:
-
-- RED contract commit: `47062886b4a0f4df2541d85bc4fa54844c49a16d`;
-- PR #24 was opened as draft with only the new contract test;
-- CI run `32833835372` showed Ruff success and Python **3.11 pytest failure** on the RED test-only head, confirming the new doctrine was genuinely absent before implementation; Python 3.12 was also running the same pytest contract at that checkpoint;
-- implementation commits then updated the canonical `PROJECT.md`, `skills/brand-metaphor-creative/SKILL.md`, and `skills/hottop-meme/SKILL.md` rather than adding a parallel skill or duplicate video route;
-- exact-head GREEN verification is the next gate before merge.
-
-## Durable governance state
-
-`PROJECT.md` is canonical and requires:
-
-- repository-backed context recovery whenever a session is new, long, stale, or handed off;
-- every new Hottop image/video generation request in Chat to re-read current repository doctrine/status/relevant skills/configs;
-- if the user supplies the hotspot, analyze its mechanism first; if not, discover fresh current candidates first;
-- product, hotspot, visual style/medium, output format, dialogue/audio grammar and mechanism mapping to be per-request choices rather than historical defaults;
-- the product to take a functional role that changes the hotspot story outcome;
-- mandatory `hottop.generation-preflight.v1` readiness before final asset generation;
-- **existing-skill first** capability routing: reuse a suitable installed skill/MCP/plugin rather than duplicating it; add capabilities only for a concrete uncovered gap after permission/license/security/cost/reversibility review;
-- targeted ecosystem freshness scans against measured project gaps, followed by real integration when a candidate clears the admission gate.
+- recover current `PROJECT.md`, `STATUS.md` and relevant checked-in skills/configs;
+- if the user supplies a hotspot, analyze its actual recognition mechanism and native visual/dialogue/audio grammar first;
+- if no hotspot is supplied, perform a fresh live hotspot/news/culture/internet discovery pass;
+- never inherit a previous product, cow/Odyssey character, four-panel format, 3D treatment, cinematic treatment or other historical example as an implicit default;
+- make the product perform a real job inside the hotspot mechanism and change the outcome;
+- reject `hot character + logo`, decorative hotspot skins and concepts that could advertise any brand unchanged;
+- require fresh evidence and `hottop.generation-preflight.v1` readiness before final asset generation;
+- for video, treat BGM, voice delivery, SFX/Foley, timing, subject continuity and meaningful motion as first-class quality gates;
+- use image-first/reference-conditioned I2V only when it measurably improves a weak direct-video route; never downgrade the result into a slideshow.
 
 ## Current ecosystem priorities
 
-1. **Fresh creative truth + mechanism quality:** improve live source diversity/evidence quality while measuring whether the selected hotspot mechanism creates a natural, product-specific joke rather than a surface reference.
-2. **Cinematic generated-video proof:** benchmark the merged LightX2V/Wan2.2 operator route when local assets exist, comparing direct video with approved image-first reference-conditioned recovery when appropriate.
-3. **Cross-shot identity / continuation:** prioritize measurable reference/continuation capability rather than generic single-shot demo quality.
-4. **Mandarin dialogue/audio quality:** benchmark Qwen3 CustomVoice and CosyVoice3 only when operator-provisioned local models are available; match voice/BGM/SFX to hotspot-native grammar. eSpeak remains the guaranteed fallback, not the quality ceiling.
-5. **Production evidence over abstraction:** promoted routes must end in reproducible evidence, not merely another provider interface.
-6. **License separation:** code repositories and model/weights licenses remain separate gates.
+1. **Real creative smoke:** exercise the mechanism runtime with a genuinely current hotspot and a real promoted product, not only synthetic test data.
+2. **Hotspot-source quality:** improve freshness/source diversity/evidence quality only where it raises concept quality or reduces false trend selection.
+3. **Video benchmark:** compare direct video with image-first reference-conditioned I2V on the same accepted creative when direct generation misses identity/style quality.
+4. **Audio benchmark:** improve Mandarin voice quality and match BGM/SFX/voice delivery to the selected hotspot's native audio grammar; eSpeak remains a deterministic fallback, not the quality ceiling.
+5. **Cross-shot identity/continuation:** promote routes only when they preserve subject identity and action/geography across shots with measurable evidence.
+6. **Ecosystem radar:** continue targeted GitHub/open-source/news scans against measured gaps; integrate only candidates that clear source/license/weights-license/cost/hardware/security/reversibility/value gates.
 
 ## Immediate next actions
 
-1. Finish PR #24 exact-head Python 3.11/3.12 CI verification and keep the contract GREEN.
-2. Review the PR diff for accidental doctrine loss/duplication, then merge when gates are satisfied.
-3. Re-fetch `main` after merge and verify `PROJECT.md`, both creative skills, contract tests and status are actually deployed.
-4. Continue Production v0.2 with a real hotspot/product generation smoke that exercises mechanism mapping; for motion, compare direct video against image-first reference-conditioned I2V only when direct output misses the quality bar.
-5. Continue targeted upstream scans and integrate only changes that materially improve a measured Hottop gap and clear source/license/cost/hardware/security/rollback gates.
+1. Run a **real fresh-hotspot + product mechanism creative smoke** through the newly deployed runtime and generation preflight.
+2. Archive the selected hotspot evidence, mechanism mapping, product role/outcome change, style/format rationale and creative review result.
+3. If motion is selected, compare direct video quality with the existing image-first reference-conditioned I2V route only when direct output misses the chosen quality bar; preserve voice/BGM/SFX and continuity gates.
+4. Turn successful real production cases into reusable evidence/examples without making their product, hotspot, character, format or style the next request's default.
+5. Continue targeted upstream scans and integrate only changes that materially improve a measured Hottop gap.
 
-## Durable motion contract
+## Recovery order
 
-`fresh/supplied hotspot analysis → mechanism mapping → product role/outcome change → hottop.generation-preflight.v1 → hottop.render.v2 → route(direct video | image-first reference-conditioned I2V when justified) → hottop.video-plan.v1 → generation → voice/music/SFX → MoviePy → FFmpeg → final media verification`
+When resuming after context pressure/new conversation:
 
-Default unattended target remains zero-cost. Free GPU exhaustion may wait, bounded-retry, fail, or use an explicitly deterministic path; it must never become paid credits or a hidden paid provider. `video-run` is dry-run by default; only explicit `--execute` may spawn trusted stages after readiness passes.
-
-Surface roughness is style-routed. Anti-Polish may deliberately look cheap; continuity, geography, subtitles, dialogue intelligibility, comedy timing, product semantics, evidence/claim safety, rights safety and final-media integrity remain hard gates.
+1. Read `PROJECT.md`.
+2. Read this `STATUS.md`.
+3. Read the relevant checked-in skill(s), especially `brand-metaphor-creative` and `hottop-meme` for generation work.
+4. Read the newest relevant config/spec/example/decision record.
+5. Inspect current `main`, open PRs and exact-head CI.
+6. Perform the targeted ecosystem scan relevant to the active production gap.
+7. For a new image/video request, perform the fresh hotspot pass or supplied-hotspot mechanism analysis before generation.
+8. Continue the highest-value safe action autonomously rather than asking for routine project decisions.
