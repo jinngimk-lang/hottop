@@ -7,7 +7,7 @@ import os
 import time
 from pathlib import Path
 from typing import Any
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 import httpx
 from pydantic import BaseModel, Field, field_validator
@@ -15,6 +15,33 @@ from pydantic import BaseModel, Field, field_validator
 
 class ComfyApiError(RuntimeError):
     """Raised when the configured Comfy API v2 job cannot complete safely."""
+
+
+def _url_origin(value: str) -> tuple[str, str, int] | None:
+    try:
+        parsed = urlsplit(value)
+        port = parsed.port
+    except ValueError:
+        return None
+    scheme = parsed.scheme.lower()
+    host = (parsed.hostname or "").lower()
+    if scheme not in {"http", "https"} or not host:
+        return None
+    if port is None:
+        port = 443 if scheme == "https" else 80
+    return scheme, host, port
+
+
+def _is_loopback_http_endpoint(value: str) -> bool:
+    try:
+        parsed = urlsplit(value)
+    except ValueError:
+        return False
+    return parsed.scheme.lower() == "http" and (parsed.hostname or "").lower() in {
+        "localhost",
+        "127.0.0.1",
+        "::1",
+    }
 
 
 class ComfyJobRequest(BaseModel):
@@ -32,9 +59,20 @@ class ComfyJobRequest(BaseModel):
     @classmethod
     def validate_endpoint(cls, value: str) -> str:
         normalized = value.strip().rstrip("/")
-        if not normalized.startswith(("https://", "http://localhost", "http://127.0.0.1")):
-            raise ValueError("Comfy API endpoint must use HTTPS or an explicit localhost URL")
-        return normalized
+        try:
+            parsed = urlsplit(normalized)
+            _ = parsed.port
+        except ValueError as exc:
+            raise ValueError("Comfy API endpoint must use HTTPS or an explicit localhost URL") from exc
+        scheme = parsed.scheme.lower()
+        host = (parsed.hostname or "").lower()
+        if parsed.username is not None or parsed.password is not None:
+            raise ValueError("Comfy API endpoint must not embed credentials")
+        if scheme == "https" and host:
+            return normalized
+        if scheme == "http" and host in {"localhost", "127.0.0.1", "::1"}:
+            return normalized
+        raise ValueError("Comfy API endpoint must use HTTPS or an explicit localhost URL")
 
     @field_validator("prompt_node_id", "prompt_input_name", "prompt")
     @classmethod
@@ -88,6 +126,20 @@ def _select_video_output(job: dict[str, Any]) -> str:
     raise ComfyApiError("Comfy API succeeded without a downloadable video output")
 
 
+def _safe_output_url(endpoint: str, raw_output_url: str) -> str:
+    resolved = urljoin(endpoint.rstrip("/") + "/", raw_output_url)
+    origin = _url_origin(resolved)
+    if origin is None:
+        raise ComfyApiError("Comfy API output URL must use HTTP(S)")
+    if origin[0] == "https":
+        return resolved
+    if _is_loopback_http_endpoint(endpoint) and origin == _url_origin(endpoint):
+        return resolved
+    raise ComfyApiError(
+        "Comfy API remote output URL must use HTTPS; plain HTTP is allowed only for the same localhost endpoint"
+    )
+
+
 def execute_comfy_job(
     request: ComfyJobRequest,
     *,
@@ -135,8 +187,8 @@ def execute_comfy_job(
             error = job.get("error")
             raise ComfyApiError(f"Comfy API job ended with status {status}: {error or 'no details'}")
 
-        output_url = _select_video_output(job)
-        download = http.get(output_url)
+        output_url = _safe_output_url(request.endpoint, _select_video_output(job))
+        download = http.get(output_url, follow_redirects=False)
         try:
             download.raise_for_status()
         except httpx.HTTPStatusError as exc:
