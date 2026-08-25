@@ -135,10 +135,16 @@ def verify_reference_continuity_artifacts(
             raise ValueError(
                 f"subject {subject.subject_id} has no referenced shots in the video plan"
             )
-        foreign_hashes = set(subject.shot_sha256s) - allowed_hashes
+        evidence_hashes = set(subject.shot_sha256s)
+        foreign_hashes = evidence_hashes - allowed_hashes
         if foreign_hashes:
             raise ValueError(
                 f"benchmark shot hashes are not bound to subject {subject.subject_id} in the video plan"
+            )
+        missing_hashes = allowed_hashes - evidence_hashes
+        if missing_hashes:
+            raise ValueError(
+                f"benchmark coverage for subject {subject.subject_id} must include all subject-bearing plan shots"
             )
 
 
