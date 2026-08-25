@@ -39,7 +39,8 @@ jobs:
       - name: Install free local media dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg espeak fonts-noto-cjk
+          sudo apt-get install -y ffmpeg espeak-ng-espeak fonts-noto-cjk
+          espeak --version | grep -F "eSpeak NG"
           python -m pip install --upgrade pip
           pip install -e ".[dev,video]"
           test -f "$HOTTOP_CAPTION_FONT"
@@ -100,6 +101,10 @@ jobs:
               assert len(result["artifact_manifest_paths"]) == 5
               for manifest in result["artifact_manifest_paths"]:
                   assert Path(manifest).is_file()
+              assert all(
+                  "Full dictionary is not installed for 'zh'" not in summary
+                  for summary in result["command_summaries"]
+              )
 
               output = case_root / "hottop-output.mp4"
               (case_root / "sha256.txt").write_text(
@@ -125,4 +130,3 @@ jobs:
             artifacts/production-smoke/odyssey/hottop-video-plan.json
             artifacts/production-smoke/odyssey/ffprobe.json
             artifacts/production-smoke/odyssey/sha256.txt
-            artifacts/production-smoke/odyssey/shots/*.artifact.json
