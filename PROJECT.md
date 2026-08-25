@@ -6,13 +6,13 @@
 
 Build a durable **hot-topic brand creative system** for marketing any user-selected brand, product, service, feature, campaign, person, idea, keyword, or tool. InkClawAgent is one example, not a permanent assumption.
 
-Hottop turns current film, entertainment, animation, technology, internet and culture into original promotional concepts that make a product's value visually memorable. Output format is flexible: a single visual metaphor, swipe reveal, four-panel meme, faux still/poster, split old-vs-new comparison, short cinematic video, GIF/animation or another compact social form. Not every concept is four-panel, not every output is Anti-Polish, and the promoted subject does not have to be a hero character.
+Hottop turns current film, entertainment, animation, technology, internet and culture into original promotional concepts that make a product's value visually memorable. Output format is flexible: a single visual metaphor, `swipe-reveal`, four-panel meme, faux still/poster, split old-vs-new comparison, short cinematic video, GIF/animation or another compact social form. Not every concept is four-panel, not every output is Anti-Polish, and the promoted subject does not have to be a hero character.
 
 The durable creative goal is not `hot character + logo`. Find a natural bridge between the promoted subject and a recognizable cultural mechanism, then make the subject itself part of the action, prop, transformation, role, material, route, environment or reveal.
 
 ## Mandatory fresh-generation entry gate
 
-Every new image/video generation request is a fresh creative run, including Chat generation.
+Every new image or video generation request is a fresh creative run, including Chat generation.
 
 Before any final image/video generation:
 
@@ -54,9 +54,9 @@ Identify the **category default** competitors are optimizing, then test constrai
 
 Prefer `old premise → deleted constraint → new axis` when it is more truthful, surprising and ownable than incremental feature comparison. Strategic hypotheses stay hypotheses until evidence supports them.
 
-### 3. Borrow the mechanism, not the skin
+### Cultural mechanism mapping
 
-A hotspot is useful because audiences already understand a relationship, causal chain, ritual, transformation, conflict, reversal, chase, rescue, delivery grammar or other mechanism—not because it supplies a costume, famous-looking character, palette or catchphrase to paste around an ad.
+**Borrow the mechanism, not the skin.** A hotspot is useful because audiences already understand a relationship, causal chain, ritual, transformation, conflict, reversal, chase, rescue, delivery grammar or other mechanism—not because it supplies a costume, famous-looking character, palette or catchphrase to paste around an ad.
 
 For each selected hotspot extract:
 
@@ -102,7 +102,7 @@ For hotspot/meme/brand-memory work, audience experience comes before landing-pag
 
 Hottop supports **low production feel + high comedy control** when roughness strengthens the native grammar. Cheap low-poly surfaces, stiff motion, blunt Foley, simple lighting/instrumentation and deadpan acting can be deliberate.
 
-Roughness never relaxes character continuity, scene geography, cause/effect, subtitle correctness, Mandarin intelligibility, comedy timing, product semantics, evidence/claim safety, rights safety or encoding integrity. Low production feel can be intentional; random failure cannot.
+**Do not polish the badness away; make the badness precise.** Roughness never relaxes character continuity, scene geography, cause/effect, subtitle correctness, Mandarin intelligibility, comedy timing, product semantics, evidence/claim safety, rights safety or encoding integrity. Low production feel can be intentional; random failure cannot.
 
 `roughness_score` is a routing variable, not product identity. Cinematic/premium/social-native/serious hotspots require presentable execution.
 
@@ -139,7 +139,7 @@ Contextual review (platform/style/goal/ambition/project-shape/hotspot-native/hum
 
 Hottop behaves like a creative director, not a configuration form. Resolve what the user already said, infer conservative defaults with provenance/confidence, and ask only unresolved questions that materially change the result. Typical budget: **0–3 questions**, usually zero or one.
 
-Durable controls include campaign goal, platform, style, creative ambition, product visibility and optional audience. Explicit user choices override inference. Project shape is a routing signal: consumer/food emphasizes sensory bridges; software/B2B emphasizes workflow pain/category-default deletion; entertainment follows source-medium grammar; fashion/beauty emphasizes form/material/style; services emphasize ritual/outcome/emotion; campaigns/ideas emphasize symbol/semantic bridges.
+Durable controls include campaign goal, platform, style, creative ambition, product visibility and optional audience. Output should be **platform-native** before rendering. Explicit user choices override inference. Project shape is a routing signal: consumer/food emphasizes sensory bridges; software/B2B emphasizes workflow pain/category-default deletion; entertainment follows source-medium grammar; fashion/beauty emphasizes form/material/style; services emphasize ritual/outcome/emotion; campaigns/ideas emphasize symbol/semantic bridges.
 
 Revision controls should mutate only relevant dimensions instead of restarting product understanding.
 
@@ -225,9 +225,9 @@ Input locks are constraints, not proof of generated visual identity. A route bec
 
 ### Image-first quality recovery
 
-Image-first reference-conditioned recovery is optional, not universal. Use it when direct video misses the chosen style/identity quality bar and a rights-safe approved keyframe/reference is likely to improve the route.
+Image-first quality recovery is optional, not universal. Use it when direct video misses the chosen style/identity quality bar and a rights-safe approved keyframe/reference is likely to improve the route.
 
-The final result is still video, not a slideshow: meaningful motion, geography/identity/action, timing, audio, motion/duplicate gates, provenance and final media verification remain mandatory.
+When supported by the selected backend, use the existing **reference-conditioned I2V** path rather than inventing a duplicate backend. The final result is still video, not a slideshow: meaningful motion, geography/identity/action, timing, audio, motion/duplicate gates, provenance and final media verification remain mandatory.
 
 ### Audio is first-class
 
@@ -281,7 +281,9 @@ When a candidate clears the gate, integrate the smallest useful registry/config/
 
 ## Persistent project memory protocol
 
-Long-running work must not depend on chat memory alone.
+Long-running work must not depend on chat memory alone. `PROJECT.md` is the **living project charter** and `STATUS.md` is the short-lived execution snapshot.
+
+### Context recovery
 
 Recovery order:
 
@@ -294,7 +296,9 @@ Recovery order:
 
 Do not ask the user to repeat stable direction that the repository can recover.
 
-When a durable new direction, integration strategy, safety boundary or repeatedly successful pattern survives challenge, update `PROJECT.md` and the relevant skill/spec in the **same workstream**, note the stale assumption it supersedes when useful, then update `STATUS.md`. Do not silently stack contradictory doctrine. Periodically compact stale duplication while preserving current canonical rules.
+### Living updates
+
+A **material direction change** must be challenged against current doctrine/evidence and classified as durable or experiment-specific. If durable, **update the charter** (`PROJECT.md`) and the relevant skill/spec in the same workstream, note the stale assumption it supersedes when useful, then update `STATUS.md`. Do not silently stack contradictory doctrine. Periodically compact stale duplication while preserving current canonical rules and the decision log.
 
 ### Chat generation source of truth
 
