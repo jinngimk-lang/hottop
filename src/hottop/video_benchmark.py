@@ -97,18 +97,12 @@ def verify_reference_continuity_artifacts(
     manifest: VideoArtifactManifest,
     reference_paths: dict[str, pathlib.Path],
     *,
-    plan: VideoProductionPlan | None = None,
+    plan: VideoProductionPlan,
 ) -> None:
     """Bind visual-continuity scores to exact reference and subject-bearing shot bytes."""
 
     manifest.verify_required_byte_identity()
-    manifest_hashes: set[str] = set()
-    for artifact in manifest.shots:
-        if artifact.sha256 is None or artifact.size_bytes is None:
-            raise ValueError("continuity benchmark requires byte-bound shot artifacts")
-        manifest_hashes.add(artifact.sha256)
-
-    subject_hashes = _subject_artifact_hashes(manifest, plan) if plan is not None else None
+    subject_hashes = _subject_artifact_hashes(manifest, plan)
 
     for subject in evidence.subjects:
         reference_path = reference_paths.get(subject.subject_id)
@@ -118,14 +112,6 @@ def verify_reference_continuity_artifacts(
             raise ValueError(f"reference path is not a file: {reference_path}")
         if _sha256(reference_path) != subject.reference_sha256:
             raise ValueError(f"reference content mismatch for subject {subject.subject_id}")
-
-        if subject_hashes is None:
-            missing_hashes = set(subject.shot_sha256s) - manifest_hashes
-            if missing_hashes:
-                raise ValueError(
-                    f"benchmark shot hashes not bound to artifact manifest for {subject.subject_id}"
-                )
-            continue
 
         allowed_hashes = subject_hashes.get(subject.subject_id)
         if not allowed_hashes:
