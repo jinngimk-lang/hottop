@@ -18,7 +18,7 @@
     {
       "index": 1,
       "scene": "In one dim, messy rural-industrial programmer workshop, an original orange-brown rough 3D cow with short dark horns and an oversized muted-gray muzzle types at an old laptop while environment setup cards and cables pile up. A black-green nuisance snake tagged only as satirical generic workflow clutter begins sliding from under the desk and wrapping around the cables. Preserve this exact cow, snake, workshop, lighting and prop layout across all later shots.",
-      "caption": "哎呀！又来绊我！",
+      "caption": "哎呀，又绊我！",
       "intent": "establish developer friction and the absurd snake metaphor inside one continuous low-budget 3D film world",
       "speaker": "young-cow",
       "delivery": "frustrated, startled conversational Mandarin; comedic but clearly intelligible"
@@ -34,7 +34,7 @@
     {
       "index": 3,
       "scene": "Follow the cow's eyeline to the same workshop doorway as a larger original mother cow from the same rough 3D family enters slowly under the same warm practical light. She looks once at the same snake and laptop, stays completely deadpan, and points one hoof toward the computer.",
-      "caption": "傻孩子，用 InkClawAgent。",
+      "caption": "用 InkClawAgent。",
       "intent": "deliver the deadpan family-comedy reversal through a continuous entrance, not an advertisement cutaway",
       "speaker": "mother-cow",
       "delivery": "calm deadpan maternal Mandarin; matter-of-fact and slightly unimpressed"

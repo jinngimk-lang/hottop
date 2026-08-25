@@ -21,7 +21,7 @@
       "end_seconds": 2.4,
       "duration_seconds": 2.4,
       "scene": "Same dim rough-3D programmer workshop: the young cow types while a nuisance snake starts tangling setup cards and cables.",
-      "caption": "哎呀！又来绊我！",
+      "caption": "哎呀，又绊我！",
       "intent": "establish developer friction and the snake metaphor",
       "continuity_instruction": "Establish one continuous location, lighting setup, character identity and object state; carry them into the next shot.",
       "generation_prompt": "Original Anti-Polish rough 3D cow-family comedy in one continuous workshop; young cow coding as the same nuisance snake tangles setup cards and cables; low production feel, high comedy control; preserve character continuity.",
@@ -45,7 +45,7 @@
       "end_seconds": 7.2,
       "duration_seconds": 2.4,
       "scene": "The same mother cow enters the same doorway, observes the snake and laptop deadpan, then points one hoof at the computer.",
-      "caption": "傻孩子，用 InkClawAgent。",
+      "caption": "用 InkClawAgent。",
       "intent": "deliver the deadpan family-comedy reversal",
       "continuity_instruction": "Preserve the same characters, scene geography, lighting and object state from the prior shot; bridge the action with a eyeline transition rather than an unrelated still cut.",
       "generation_prompt": "Continue the same original low-budget 3D workshop; mother cow enters on the established eyeline, stays deadpan and points toward the laptop; cheap geometry and controlled timing.",
@@ -87,7 +87,7 @@
       "kind": "dialogue",
       "start_seconds": 0.0,
       "duration_seconds": 2.4,
-      "text": "哎呀！又来绊我！",
+      "text": "哎呀，又绊我！",
       "duck_bgm_db": -8.0
     },
     {
@@ -101,7 +101,7 @@
       "kind": "dialogue",
       "start_seconds": 4.8,
       "duration_seconds": 2.4,
-      "text": "傻孩子，用 InkClawAgent。",
+      "text": "用 InkClawAgent。",
       "duck_bgm_db": -8.0
     },
     {

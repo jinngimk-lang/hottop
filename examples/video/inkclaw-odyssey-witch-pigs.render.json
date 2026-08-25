@@ -20,7 +20,7 @@
     {
       "index": 1,
       "scene": "Inside one original candlelit mythic island banquet hall, a consistent group of weathered anonymous sailors eat from rough clay bowls while coding on battered laptops at the same long wooden table. An original dark-haired witch host watches from the background. Keep the cast, table, room geography and practical firelight stable for every following shot.",
-      "caption": "就差最后一点了……",
+      "caption": "就差一点。",
       "intent": "establish the coding feast and relaxed false security",
       "speaker": "crew",
       "delivery": "tired but relieved, conversational Mandarin, understated"
@@ -28,7 +28,7 @@
     {
       "index": 2,
       "scene": "Without changing location, the original witch moves into the same foreground and calmly raises one hand over the meal. A small deliberately fictional satirical prop tag near her bowl reads '某包 / Work巴迪?' rather than making a factual product claim. Purple-brown practical-looking magic crawls across the table; the same sailors transform into expressive pigs while their laptops and half-written code stay in place. The transformation is absurd mythic satire, not a claim about any real product.",
-      "caption": "先把环境、依赖、部署、Token 配好再说。",
+      "caption": "先配环境。",
       "intent": "turn setup ceremony into an absurd transformation curse",
       "speaker": "witch",
       "delivery": "calm, ominous, deadpan Mandarin; no shouting"
@@ -36,7 +36,7 @@
     {
       "index": 3,
       "scene": "Camera follows the transformed pig crew around the same table instead of cutting to a new scene. One pig stares at its laptop, another paws uselessly at the keyboard, bowls are overturned, and the witch remains composed in the background. Preserve every pig as the transformed counterpart of a sailor from the prior shot.",
-      "caption": "不是，怎么写着写着成人了？",
+      "caption": "怎么越写越大？",
       "intent": "reaction beat and meme escalation before the rescue",
       "speaker": "crew",
       "delivery": "confused, offended, fast conversational Mandarin"
@@ -44,7 +44,7 @@
     {
       "index": 4,
       "scene": "The hall door opens naturally in the existing background and an original anonymous returning sailor hero enters through warm exterior light, with no resemblance to any real actor or protected film character design. He crosses into the same table space, opens a battered laptop showing only the text InkClawAgent, and the curse begins reversing through the crew as work starts. No glossy hologram, no futuristic feature cards, no commercial end-card interruption.",
-      "caption": "不用。打开 InkClawAgent，直接干活。",
+      "caption": "直接干活。",
       "intent": "deadpan hero arrival, product-as-rescue action and punchline",
       "speaker": "hero",
       "delivery": "grounded, confident, low-key Mandarin; calm heroic timing"

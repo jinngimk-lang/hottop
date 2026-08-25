@@ -26,9 +26,9 @@ def test_anti_polish_cow_story_archive_is_config_driven_and_rights_safe():
     assert request.in_asset_cta_policy == "no-destination"
     assert len(request.frames) == 5
     assert [frame.caption for frame in request.frames if frame.caption] == [
-        "哎呀！又来绊我！",
+        "哎呀，又绊我！",
         "妈——！",
-        "傻孩子，用 InkClawAgent。",
+        "用 InkClawAgent。",
         "啊？这么直接？",
         "别被蛇绊住。",
     ]

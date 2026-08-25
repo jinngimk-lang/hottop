@@ -21,6 +21,7 @@ _DEFAULT_CJK_FONT_CANDIDATES = (
     Path("C:/Windows/Fonts/msyh.ttc"),
     Path("C:/Windows/Fonts/simhei.ttf"),
 )
+_DIALOGUE_DURATION_TOLERANCE_SECONDS = 0.25
 
 
 class MoviePyTimelineShot(BaseModel):
@@ -42,6 +43,7 @@ class MoviePyTimelineDialogueTrack(BaseModel):
     duration_seconds: float | None = Field(default=None, gt=0)
     character: str | None = None
     delivery: str | None = None
+    duck_bgm_db: float | None = None
 
 
 class MoviePyTimelineSfxCue(BaseModel):
@@ -106,6 +108,7 @@ def build_moviepy_timeline(
                 duration_seconds=cue.duration_seconds,
                 character=cue.character,
                 delivery=cue.delivery,
+                duck_bgm_db=cue.duck_bgm_db,
             )
             for index, cue in enumerate(dialogue_cues, start=1)
         ]
@@ -296,6 +299,76 @@ def _synthetic_bgm_array(
     return stereo, sample_rate
 
 
+def _apply_dialogue_ducking(
+    audio,
+    *,
+    sample_rate: int,
+    dialogue_tracks: list[MoviePyTimelineDialogueTrack],
+):
+    """Attenuate a BGM copy only inside dialogue windows using the strongest configured duck."""
+
+    try:
+        import numpy as np
+    except ImportError as exc:  # pragma: no cover - execution-environment guard
+        raise RuntimeError("MoviePy video execution requires the optional `video` dependencies") from exc
+
+    ducked = np.array(audio, dtype=float, copy=True)
+    if ducked.ndim == 0 or ducked.shape[0] == 0:
+        return ducked
+
+    sample_count = ducked.shape[0]
+    gains = np.ones(sample_count, dtype=float)
+    for track in dialogue_tracks:
+        if track.duck_bgm_db is None or track.duration_seconds is None:
+            continue
+        start = max(0, min(sample_count, int(round(track.start_seconds * sample_rate))))
+        end = max(
+            start,
+            min(
+                sample_count,
+                int(round((track.start_seconds + track.duration_seconds) * sample_rate)),
+            ),
+        )
+        if end <= start:
+            continue
+        track_gain = 10 ** (track.duck_bgm_db / 20)
+        gains[start:end] = np.minimum(gains[start:end], track_gain)
+
+    if ducked.ndim == 1:
+        return ducked * gains
+    return ducked * gains.reshape((-1,) + (1,) * (ducked.ndim - 1))
+
+
+def _validate_dialogue_track_duration(
+    *,
+    actual_duration_seconds: float,
+    track: MoviePyTimelineDialogueTrack,
+) -> None:
+    """Fail closed instead of silently truncating materially overlong dialogue."""
+
+    if track.duration_seconds is None:
+        return
+    if actual_duration_seconds - track.duration_seconds > _DIALOGUE_DURATION_TOLERANCE_SECONDS:
+        raise RuntimeError(
+            "dialogue audio exceeds its planned window: "
+            f"{track.source} is {actual_duration_seconds:.3f}s for "
+            f"{track.duration_seconds:.3f}s"
+        )
+
+
+def _effective_dialogue_duck_track(
+    track: MoviePyTimelineDialogueTrack,
+    *,
+    actual_duration_seconds: float,
+) -> MoviePyTimelineDialogueTrack:
+    """Bind BGM attenuation to validated audible voice length, not the whole planned shot."""
+
+    duration = actual_duration_seconds
+    if track.duration_seconds is not None:
+        duration = min(duration, track.duration_seconds)
+    return track.model_copy(update={"duration_seconds": duration})
+
+
 def _procedural_sfx_array(
     duration_seconds: float,
     cues: list[MoviePyTimelineSfxCue],
@@ -404,10 +477,34 @@ def render_moviepy_timeline(
         if composite.audio is not None:
             audio_layers.append(composite.audio)
 
+        prepared_dialogue = []
+        effective_duck_tracks = []
+        for track in timeline.dialogue_tracks:
+            voice = AudioFileClip(track.source)
+            opened_audio.append(voice)
+            _validate_dialogue_track_duration(
+                actual_duration_seconds=voice.duration,
+                track=track,
+            )
+            effective_duck_tracks.append(
+                _effective_dialogue_duck_track(
+                    track,
+                    actual_duration_seconds=voice.duration,
+                )
+            )
+            if track.duration_seconds is not None and voice.duration > track.duration_seconds:
+                voice = voice.subclipped(0, track.duration_seconds)
+            prepared_dialogue.append((track, voice))
+
         if timeline.generate_synthetic_bgm:
             audio_array, sample_rate = _synthetic_bgm_array(
                 duration,
                 timeline.bgm_description,
+            )
+            audio_array = _apply_dialogue_ducking(
+                audio_array,
+                sample_rate=sample_rate,
+                dialogue_tracks=effective_duck_tracks,
             )
             bgm = AudioArrayClip(audio_array, fps=sample_rate).with_duration(duration)
             audio_layers.append(bgm)
@@ -417,11 +514,7 @@ def render_moviepy_timeline(
             sfx = AudioArrayClip(sfx_array, fps=sample_rate).with_duration(duration)
             audio_layers.append(sfx)
 
-        for track in timeline.dialogue_tracks:
-            voice = AudioFileClip(track.source)
-            opened_audio.append(voice)
-            if track.duration_seconds is not None and voice.duration > track.duration_seconds:
-                voice = voice.subclipped(0, track.duration_seconds)
+        for track, voice in prepared_dialogue:
             voice = voice.with_start(track.start_seconds)
             audio_layers.append(voice)
 
