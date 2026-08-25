@@ -1,3 +1,4 @@
+# ruff: noqa: I001
 from __future__ import annotations
 
 import hashlib
@@ -6,6 +7,9 @@ import struct
 import zlib
 from dataclasses import dataclass, field
 from pathlib import Path
+
+
+PORTRAIT_PRINCIPAL_Y_RATIO = 0.42
 
 
 @dataclass(frozen=True)
@@ -125,7 +129,8 @@ def project_point(point: Vec3, camera: Camera3D) -> tuple[float, float, float] |
     if relative.z <= camera.near:
         return None
     x = camera.width / 2 + camera.focal_length * relative.x / relative.z
-    y = camera.height / 2 - camera.focal_length * relative.y / relative.z
+    principal_y_ratio = PORTRAIT_PRINCIPAL_Y_RATIO if camera.height > camera.width else 0.5
+    y = camera.height * principal_y_ratio - camera.focal_length * relative.y / relative.z
     return x, y, relative.z
 
 
