@@ -154,7 +154,7 @@ def test_lowpoly_shot_is_real_decodable_motion_video(tmp_path: Path):
     assert report.duration > 0
 
 
-def test_video_plan_and_dry_run_treat_software_3d_as_zero_cost_generation(tmp_path: Path):
+def test_video_plan_and_dry_run_treat_software_3d_as_zero_cost_generation(monkeypatch, tmp_path: Path):
     config = _config()
     request = _render_request()
     plan = build_video_production_plan(request, config)
@@ -166,6 +166,7 @@ def test_video_plan_and_dry_run_treat_software_3d_as_zero_cost_generation(tmp_pa
     assert "cow-snake-workshop-v1" in generation.args
     assert "zero-cost deterministic software 3d" in " ".join(plan.execution_notes).lower()
 
+    monkeypatch.setattr("hottop.video_execution.shutil.which", lambda name: f"/usr/bin/{name}")
     status = inspect_video_environment(config, project_root=tmp_path)
     assert status.ready is True
 
