@@ -11,14 +11,14 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 Current runtime `main`: `d902c78433f329e41ebc8d79fe8b5f74d7c41c52` (`prod: improve Odyssey mobile subject scale`, squash merge of PR #53).
 
-Verified pre-merge evidence for PR #53:
+Verified evidence:
 
 - RED CI **1539**: Ruff passed; pytest isolated the subject-scale contract at exactly **1 failed / 458 passed**, with Odyssey shot-4 hero measuring `0.128614250658297` of portrait frame height vs the `>=0.14` test contract;
 - GREEN exact-head `ac2cc7ca56bab490833d08db1ab91f7895a4f535` CI **1540** passed on Python 3.11 and 3.12;
-- production-smoke **106** passed the real cow + Odyssey config → moving shots → Mandarin dialogue/music/SFX → MoviePy → FFmpeg → final media/provenance path;
-- direct inspection of the #106 Odyssey MP4 confirmed visibly larger key characters without subtitle clipping or broken scene geography.
-
-Post-merge main CI **1541** and production-smoke **107** were running at the last fetch and must be re-fetched before claiming the merge commit green.
+- PR production-smoke **106** passed the real cow + Odyssey config → moving shots → Mandarin dialogue/music/SFX → MoviePy → FFmpeg → final media/provenance path;
+- direct inspection of the #106 Odyssey MP4 confirmed visibly larger key characters without subtitle clipping or broken scene geography;
+- post-merge main CI **1541** passed;
+- post-merge production-smoke **107** passed both checked-in stories, final-media/provenance verification and evidence upload.
 
 ## Real artifact-level closures from this production cycle
 
@@ -100,13 +100,12 @@ Durable rule: code license != model/weights/data license; popularity/freshness a
 
 ## Immediate next actions
 
-1. Re-fetch post-merge `main` CI **1541** and production-smoke **107** for `d902c784…`; repair immediately if either fails.
-2. Continue **direct artifact inspection** of the now motion-, placement-, and subject-scale-gated software3d outputs. Quantify the next visible deterministic gap before changing code.
-3. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime + rights-safe assets exist, execute the real multi-shot identity benchmark before claiming identity preservation.
-4. Prefer SigLIP 2 Base 256 for the first local evaluator benchmark only with explicit local weights + exact revision/hash and same-subject vs identity-drift controls.
-5. Continue Mandarin dialogue quality benchmarking through reviewed local Qwen3-TTS/CosyVoice routes when runtimes/models are supplied; eSpeak remains the guaranteed fallback.
-6. Continue targeted ecosystem scans against measured gaps and integrate only candidates clearing source/license/weights-license/cost/hardware/security/reversibility/value gates.
-7. For fresh creative output, continue current-hotspot research + mechanism mapping + generation preflight rather than treating cow/Odyssey as defaults.
+1. Continue **direct artifact inspection** of the now motion-, placement-, and subject-scale-gated software3d outputs. Quantify the next visible deterministic gap before changing code.
+2. When a compliant operator-owned LightX2V/Wan2.2 or WanGP reference-conditioned runtime + rights-safe assets exist, execute the real multi-shot identity benchmark before claiming identity preservation.
+3. Prefer SigLIP 2 Base 256 for the first local evaluator benchmark only with explicit local weights + exact revision/hash and same-subject vs identity-drift controls.
+4. Continue Mandarin dialogue quality benchmarking through reviewed local Qwen3-TTS/CosyVoice routes when runtimes/models are supplied; eSpeak remains the guaranteed fallback.
+5. Continue targeted ecosystem scans against measured gaps and integrate only candidates clearing source/license/weights-license/cost/hardware/security/reversibility/value gates.
+6. For fresh creative output, continue current-hotspot research + mechanism mapping + generation preflight rather than treating cow/Odyssey as defaults.
 
 ## Recovery order
 
