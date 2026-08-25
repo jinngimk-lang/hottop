@@ -1,0 +1,63 @@
+name: production-odyssey-software3d
+
+on:
+  pull_request:
+    paths:
+      - "src/hottop/video_software3d.py"
+      - "src/hottop/video_software3d_production.py"
+      - "src/hottop/video_moviepy.py"
+      - "src/hottop/video_execution.py"
+      - "src/hottop/video_final_output.py"
+      - "src/hottop/video_audio.py"
+      - "examples/video/inkclaw-odyssey-witch-pigs-software3d.render.json"
+      - "config/video/odyssey-software3d.yml"
+      - ".github/workflows/production-odyssey-software3d.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install local production dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak
+          python -m pip install --upgrade pip
+          pip install -e ".[video]"
+      - name: Execute deterministic Odyssey production
+        run: |
+          hottop video-run \
+            examples/video/inkclaw-odyssey-witch-pigs-software3d.render.json \
+            --config config/video/odyssey-software3d.yml \
+            --output-dir artifacts/odyssey-software3d \
+            --project-root . \
+            --execute \
+            --output artifacts/odyssey-software3d-run.json
+      - name: Verify playable final MP4
+        run: |
+          test -s artifacts/odyssey-software3d/hottop-output.mp4
+          ffprobe -v error \
+            -show_entries format=duration:stream=index,codec_type,codec_name,width,height,pix_fmt \
+            -of json \
+            artifacts/odyssey-software3d/hottop-output.mp4 \
+            > artifacts/odyssey-software3d/ffprobe-final.json
+          cat artifacts/odyssey-software3d/ffprobe-final.json
+      - name: Upload production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hottop-odyssey-software3d
+          path: |
+            artifacts/odyssey-software3d-run.json
+            artifacts/odyssey-software3d/
+          if-no-files-found: warn
+          retention-days: 7
