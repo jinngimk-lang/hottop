@@ -21,7 +21,7 @@ Before any final image/video generation:
 3. perform live current-hotspot research for that request unless the user supplied the hotspot, in which case freshly verify the supplied source/context when needed;
 4. retain source provenance plus observation/publication timing;
 5. choose style, medium and format from the current product↔hotspot bridge and source-medium grammar, not from a historical template;
-6. construct `hottop.generation-preflight.v1` and require `ready=true` before final generation.
+6. construct `hottop.generation-preflight.v1` and require `evaluate_generation_preflight(...)` or `hottop generation-preflight` to return `ready=true` before final generation.
 
 Default freshness is fail-closed: live research should have been observed within **6 hours**; when a trustworthy publication timestamp exists, the selected hotspot should be within **7 days**. Unknown publication time can pass only with fresh observation evidence and no invented recency claims.
 
