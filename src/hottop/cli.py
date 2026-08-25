@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +23,7 @@ from .creative_package import CreativePackageInput, build_creative_package
 from .directives import build_creative_directive
 from .doctor import local_doctor
 from .enrichment import build_default_enrichment_pipeline
+from .generation_preflight import GenerationPreflightInput, evaluate_generation_preflight
 from .intake import CreativeIntent, next_question, resolve_intent
 from .integrations.playwright_cli import PlaywrightCliAdapter
 from .models import (
@@ -197,6 +199,35 @@ def creative_directive_command(
     resolved_intent = CreativeIntent.model_validate(raw["intent"])
     promotion_context = PromotionContext.model_validate(raw["promotion_context"])
     _write_or_echo(build_creative_directive(resolved_intent, promotion_context), output)
+
+
+@app.command(name="generation-preflight")
+def generation_preflight_command(
+    input_path: Path = typer.Argument(..., exists=True, dir_okay=False),
+    now: str | None = typer.Option(
+        None,
+        "--now",
+        help="Optional timezone-aware ISO-8601 clock for deterministic verification",
+    ),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Fail closed unless a new image/video request carries fresh hotspot evidence."""
+    raw = json.loads(input_path.read_text(encoding="utf-8"))
+    preflight = GenerationPreflightInput.model_validate(raw)
+    current = None
+    if now is not None:
+        try:
+            current = datetime.fromisoformat(now.replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise typer.BadParameter("--now must be an ISO-8601 timestamp") from exc
+        if current.tzinfo is None:
+            raise typer.BadParameter("--now must be timezone-aware")
+
+    result = evaluate_generation_preflight(preflight, now=current)
+    if not result.ready:
+        typer.echo(_json_dump(result))
+        raise typer.Exit(code=2)
+    _write_or_echo(result, output)
 
 
 @app.command(name="video-plan")

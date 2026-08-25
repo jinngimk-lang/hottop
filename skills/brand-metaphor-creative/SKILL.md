@@ -11,6 +11,14 @@ Create advertising people understand before they finish reading it. The promoted
 
 Core principle: **reframe before optimize**. Do not automatically make a better version of the category's current answer. First ask whether the category default itself should disappear.
 
+### Mandatory fresh-generation preflight
+
+When a new image or video is requested inside Hottop, first reread `PROJECT.md` and `STATUS.md` plus the relevant checked-in creative skill/config needed for the request. Then re-explore current news, culture, and internet hotspots with live public research before choosing the cultural bridge. Do this for every new asset request even when a previous generation happened moments earlier.
+
+The product, hotspot, visual style/medium, and output format are all per-request creative decisions. Historical examples, previous characters, a prior successful hotspot, four-panel structure, Anti-Polish, low-poly 3D, cinematic realism, or any other earlier treatment are references—not implicit defaults. Re-resolve the promoted subject from the current request and current product facts, then let the strongest natural bridge and the selected hotspot determine medium and format.
+
+Retain fresh public evidence with source/provenance and observation/publication timestamps. Before invoking the final image/video generation tool or renderer, build the shared Hottop preflight record and require the `generation-preflight` gate to return ready. The default contract requires research observed within 6 hours and, when a publication timestamp is known, a hotspot published within 7 days. Unknown publication time may pass only with fresh observation evidence and must remain unknown in factual copy. If the gate blocks, research again or select another hotspot; do not generate the final asset from stale or missing hotspot evidence.
+
 ## 1. Resolve the subject before the joke
 
 Identify the promoted subject's category, job-to-be-done, pain point, differentiator, physical/sensory properties, usage ritual, emotional payoff, and recognizable alternatives. Research current facts when the subject or market is unfamiliar or time-sensitive.

@@ -1,0 +1,29 @@
+{
+  "output_kind": "image",
+  "product": {
+    "name": "Hottop",
+    "subject_type": "service",
+    "category": "hot-topic brand creative system",
+    "job_to_be_done": "turn current public culture and news into original product-relevant social creative"
+  },
+  "hotspot": {
+    "id": "reuters-nvidia-ai-rally-2026-08-25",
+    "title": "Waiting on Nvidia for next leg of AI rally",
+    "url": "https://www.reuters.com/world/china/global-markets-view-europe-2026-08-25/",
+    "source": "Reuters",
+    "source_quality": 0.95,
+    "evidence": [
+      {
+        "url": "https://www.reuters.com/world/china/global-markets-view-europe-2026-08-25/",
+        "source": "Reuters",
+        "observed_at": "2026-08-25T09:25:00Z",
+        "source_quality": 0.95,
+        "notes": "Live conversation research observed the Reuters story on 2026-08-25. Exact publication time was not available in the search result, so publication recency is intentionally left unknown rather than invented."
+      }
+    ]
+  },
+  "visual_style": "financial-news social-native editorial realism with original data-center silhouettes and a creator workstation",
+  "style_rationale": "The selected hotspot is a live markets/technology news story, so a crisp social-native editorial treatment fits better than carrying over prior low-poly, Odyssey, four-panel, or other historical visual defaults.",
+  "output_format": "single-visual-metaphor",
+  "researched_at": "2026-08-25T09:25:00Z"
+}

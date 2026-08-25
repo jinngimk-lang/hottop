@@ -9,6 +9,14 @@ description: Use when a marketing concept needs a fresh public hotspot, evidence
 
 Inside this repository, read `PROJECT.md` and `STATUS.md` first. For creative strategy, **REQUIRED:** apply `brand-metaphor-creative` before locking the joke or output format. This skill handles hotspot acquisition/evidence and the four-panel path when four-panel is actually the best form.
 
+### Mandatory fresh-generation preflight
+
+For every new image or video generation request, perform a new live hotspot pass before any asset-generation tool or renderer is invoked. Never reuse a previous hotspot, product, character, style, or panel format as an implicit default. Re-resolve the promoted subject from the current request, gather fresh hotspot evidence, and let the selected hotspot plus product bridge determine whether the right treatment is live action, animation, documentary/social-native, commercial product imagery, native meme grammar, four-panel, single visual, carousel, poster, or motion.
+
+When working in Hottop, the current repository remains the durable source of truth. The general creative skill must reread `PROJECT.md` and `STATUS.md`; then this skill must reacquire current public evidence rather than trusting a headline, cached trend list, or prior chat result. Before final image/video generation, the request must pass the shared `generation-preflight` gate. A blocked preflight means research again or choose another hotspot; do not generate the final asset and do not relabel stale evidence as current.
+
+Default freshness policy is the project-wide preflight contract: live research observation within 6 hours and, when a publication timestamp exists, hotspot publication within 7 days. A source without a reliable publication timestamp can be used only when fresh observation evidence exists, and its publication recency must remain unknown rather than invented.
+
 ## Hotspot discovery
 
 Prefer current, recognizable topics with a clear visual conflict or cultural action. Collect enough evidence to know what the topic is and why it is current; do not turn a headline fragment into a factual claim.
