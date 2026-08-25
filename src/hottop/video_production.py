@@ -88,6 +88,19 @@ class Wan22Config(BaseModel):
     convert_model_dtype: bool = True
 
 
+class ExternalGenerationConfig(BaseModel):
+    adapter: Literal["wangp"]
+    root: str = Field(min_length=1)
+    settings_path: str = Field(min_length=1)
+    profile: int = Field(default=4, ge=1, le=5)
+    attention: str = Field(default="sdpa", min_length=1)
+    cost_per_unit: Literal[0] = 0
+    operator_managed: Literal[True] = True
+    auto_install: Literal[False] = False
+    auto_download_models: Literal[False] = False
+    license_disclosure: str = Field(min_length=1)
+
+
 class ComfyApiV2Config(BaseModel):
     endpoint: str
     workflow_path: str
@@ -172,6 +185,7 @@ class VideoProductionConfig(BaseModel):
     text: TextConfig
     anti_polish: AntiPolishConfig = Field(default_factory=AntiPolishConfig)
     wan22: Wan22Config | None = None
+    external_generation: ExternalGenerationConfig | None = None
     comfy_api_v2: ComfyApiV2Config | None = None
     zero_cost: ZeroCostConfig | None = None
     motion_canvas: MotionCanvasConfig | None = None
@@ -182,6 +196,8 @@ class VideoProductionConfig(BaseModel):
     def validate_selected_generation_backend(self) -> VideoProductionConfig:
         if self.generation_backend == "zero-cost-router" and self.zero_cost is None:
             raise ValueError("zero-cost-router requires zero_cost configuration")
+        if self.generation_backend == "external" and self.external_generation is None:
+            raise ValueError("external generation requires external_generation configuration")
         return self
 
 
@@ -342,6 +358,56 @@ def _wan22_command(config: VideoProductionConfig, prompt: str) -> str | None:
     return " ".join(shlex.quote(value) for value in [spec.program, *spec.args])
 
 
+def _external_command_spec(
+    config: VideoProductionConfig,
+    prompt: str,
+    duration_seconds: float,
+    shot_index: int,
+) -> ExternalCommandSpec | None:
+    external = config.external_generation
+    if config.generation_backend != "external" or external is None:
+        return None
+    if external.adapter != "wangp":
+        return None
+    return ExternalCommandSpec(
+        program="python",
+        args=[
+            "-m",
+            "hottop.video_wangp",
+            "--root",
+            external.root,
+            "--settings",
+            external.settings_path,
+            "--prompt",
+            prompt,
+            "--duration-seconds",
+            f"{duration_seconds:g}",
+            "--fps",
+            str(config.fps),
+            "--output",
+            f"shots/shot-{shot_index:03d}.mp4",
+            "--profile",
+            str(external.profile),
+            "--attention",
+            external.attention,
+        ],
+        cwd=".",
+        stage="generation",
+    )
+
+
+def _external_command(
+    config: VideoProductionConfig,
+    prompt: str,
+    duration_seconds: float,
+    shot_index: int,
+) -> str | None:
+    spec = _external_command_spec(config, prompt, duration_seconds, shot_index)
+    if spec is None:
+        return None
+    return " ".join(shlex.quote(value) for value in [spec.program, *spec.args])
+
+
 def _compositor_command_spec(config: VideoProductionConfig) -> ExternalCommandSpec | None:
     if config.compositor_backend == "motion-canvas" and config.motion_canvas is not None:
         return ExternalCommandSpec(
@@ -479,13 +545,14 @@ def build_video_production_plan(
     for position, frame in enumerate(render_request.frames, start=1):
         start = round((position - 1) * duration, 3)
         end = round(min(position * duration, config.duration_seconds), 3)
+        shot_duration = round(end - start, 3)
         prompt = _generation_prompt(render_request, config, frame.scene)
         shots.append(
             VideoShot(
                 index=position,
                 start_seconds=start,
                 end_seconds=end,
-                duration_seconds=round(end - start, 3),
+                duration_seconds=shot_duration,
                 scene=frame.scene,
                 caption=frame.caption,
                 intent=frame.intent,
@@ -495,10 +562,14 @@ def build_video_production_plan(
                 reference=frame.reference,
             )
         )
-        command = _wan22_command(config, prompt)
+        command = _external_command(config, prompt, shot_duration, position) or _wan22_command(
+            config, prompt
+        )
         if command:
             commands.append(command)
-        command_spec = _wan22_command_spec(config, prompt)
+        command_spec = _external_command_spec(
+            config, prompt, shot_duration, position
+        ) or _wan22_command_spec(config, prompt)
         if command_spec:
             command_specs.append(command_spec)
 
@@ -525,6 +596,25 @@ def build_video_production_plan(
         if config.compositor_backend == "moviepy"
         else "Motion Canvas is the deterministic compositor for subtitles, SFX/BGM timing and continuity."
     )
+    if config.generation_backend == "comfy-api-v2":
+        generation_note = (
+            "Comfy API v2 execution is optional and operator-configured; only workflow JSON, "
+            "generated prompts and explicit job metadata are sent. Credentials remain environment-only."
+        )
+    elif config.generation_backend == "zero-cost-router":
+        generation_note = (
+            "Zero-cost execution may use only configured cost=0 candidates and must never fall back "
+            "to paid generation."
+        )
+    elif config.generation_backend == "external" and config.external_generation is not None:
+        generation_note = (
+            "External generation uses operator-managed WanGP through its disclosed local API integration; "
+            "Hottop does not install WanGP, download models, enable paid services, or hide WanGP attribution/terms."
+        )
+    else:
+        generation_note = (
+            "Wan2.2 execution is optional/local and requires operator-controlled model files and GPU resources."
+        )
     execution_notes = [
         compositor_note,
         (
@@ -534,15 +624,7 @@ def build_video_production_plan(
         "Roughness is style-routed: surface polish may vary by hotspot, but continuity and directing precision may not.",
         "Voice, music and SFX are explicit production profiles; changing audio providers must not change creative semantics.",
         "When original_music_only is true, do not fetch or imitate copyrighted commercial soundtrack audio.",
-        (
-            "Comfy API v2 execution is optional and operator-configured; only workflow JSON, generated prompts and explicit job metadata are sent. Credentials remain environment-only."
-            if config.generation_backend == "comfy-api-v2"
-            else (
-                "Zero-cost execution may use only configured cost=0 candidates and must never fall back to paid generation."
-                if config.generation_backend == "zero-cost-router"
-                else "Wan2.2 execution is optional/local and requires operator-controlled model files and GPU resources."
-            )
-        ),
+        generation_note,
         "Do not auto-fetch copyrighted film footage, protected character assets or commercial soundtracks.",
     ]
     finalization_command = _finalization_command(config)
