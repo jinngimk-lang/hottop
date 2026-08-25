@@ -754,6 +754,8 @@ def _lightx2v_runtime_generation_commands(
     config_json = _resolve(project_root, adapter.config_json).resolve()
     commands: list[ExternalCommandSpec] = []
     for shot in plan.shots:
+        output_path = (shots_dir / f"shot-{shot.index:03d}.mp4").resolve()
+        artifact_path = (shots_dir / f"shot-{shot.index:03d}.artifact.json").resolve()
         args = [
             "-m",
             "hottop.video_lightx2v",
@@ -774,7 +776,11 @@ def _lightx2v_runtime_generation_commands(
             "--negative-prompt",
             shot.negative_prompt,
             "--output",
-            str((shots_dir / f"shot-{shot.index:03d}.mp4").resolve()),
+            str(output_path),
+            "--shot-index",
+            str(shot.index),
+            "--artifact-manifest",
+            str(artifact_path),
         ]
         if shot.reference is not None:
             reference_path = _resolve(project_root, shot.reference.image_path).resolve()
@@ -1099,6 +1105,14 @@ def _verify_artifact_provenance(
         if artifact.artifact_kind != "deterministic-generated" or artifact.backend != "software3d":
             raise VideoExecutionError(
                 f"video generation artifact provenance software3d artifact mismatch: {manifest_path}"
+            )
+    elif config.generation_backend == "lightx2v-operator":
+        expected_backend = (
+            f"lightx2v:{config.lightx2v.model_cls}" if config.lightx2v is not None else None
+        )
+        if artifact.artifact_kind != "ai-generated" or artifact.backend != expected_backend:
+            raise VideoExecutionError(
+                f"video generation artifact provenance LightX2V artifact mismatch: {manifest_path}"
             )
     elif artifact.artifact_kind == "ai-generated":
         allowed_backends = (

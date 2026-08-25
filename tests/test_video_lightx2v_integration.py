@@ -119,8 +119,9 @@ def test_lightx2v_doctor_fails_closed_until_operator_assets_exist(tmp_path):
     assert any("will not" in action.lower() for action in status.actions_required)
 
 
-def test_lightx2v_dry_run_resolves_operator_paths_and_reference(tmp_path):
+def test_lightx2v_dry_run_resolves_operator_paths_reference_and_provenance(tmp_path):
     config = _config(tmp_path)
+    assert config.lightx2v is not None
     root = tmp_path / "LightX2V"
     (root / "lightx2v").mkdir(parents=True)
     (root / "lightx2v" / "infer.py").write_text("# local\n", encoding="utf-8")
@@ -146,3 +147,8 @@ def test_lightx2v_dry_run_resolves_operator_paths_and_reference(tmp_path):
     )
     reference = command.args[command.args.index("--reference-image") + 1]
     assert reference == str((tmp_path / "hero.png").resolve())
+    assert command.args[command.args.index("--shot-index") + 1] == "1"
+    artifact = command.args[command.args.index("--artifact-manifest") + 1]
+    expected_artifact = str((tmp_path / "run" / "shots" / "shot-001.artifact.json").resolve())
+    assert artifact == expected_artifact
+    assert result.artifact_manifest_paths == [expected_artifact]

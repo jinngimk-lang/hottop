@@ -70,11 +70,15 @@ class VideoArtifactManifest(BaseModel):
     shots: list[VideoShotArtifact] = Field(default_factory=list)
 
     def verify_required_byte_identity(self) -> None:
-        if self.planned_generation_backend not in {"zero-cost-router", "software3d"}:
+        required_backends = {"zero-cost-router", "software3d", "lightx2v-operator"}
+        if self.planned_generation_backend not in required_backends:
             return
-        backend_label = (
-            "zero-cost" if self.planned_generation_backend == "zero-cost-router" else "software3d"
-        )
+        labels = {
+            "zero-cost-router": "zero-cost",
+            "software3d": "software3d",
+            "lightx2v-operator": "LightX2V",
+        }
+        backend_label = labels[self.planned_generation_backend]
         for artifact in self.shots:
             if artifact.sha256 is None or artifact.size_bytes is None:
                 raise ValueError(f"{backend_label} artifact byte identity missing")
