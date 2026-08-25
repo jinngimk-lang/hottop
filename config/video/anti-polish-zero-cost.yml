@@ -1,0 +1,97 @@
+schema_version: hottop.video-config.v1
+name: anti-polish-zero-cost
+style_profile: anti-polish
+roughness_score: 78
+generation_backend: zero-cost-router
+compositor_backend: moviepy
+encoder_backend: ffmpeg
+width: 720
+height: 1280
+fps: 24
+duration_seconds: 12.0
+output_format: mp4
+shot_policy:
+  min_shot_seconds: 1.0
+  max_shot_seconds: 3.0
+  transition_bias:
+    - follow
+    - eyeline
+    - match-action
+    - foreground-occlusion
+    - whip-pan
+audio:
+  bgm_style: cheap xylophone, bass plucks, crude folk accents, light electronic drums
+  dialogue_duck_db: -8
+  foley_style: blunt comedic Foley, slightly exaggerated and intentionally cheap
+  voice_backend: espeak
+  voice_profile: rough-mandarin-dialogue
+  voice_language: zh
+  voice_rate_wpm: 155
+  music_backend: synthetic
+  music_profile: cheap-comedy-original
+  sfx_backend: procedural
+  sfx_profile: blunt-comedic-foley
+  original_music_only: true
+text:
+  subtitle_mode: dialogue-first
+  max_end_card_seconds: 0.8
+  allow_url: false
+  allow_qr: false
+anti_polish:
+  enabled: true
+  rough_3d: true
+  low_poly_bias: true
+  awkward_motion: true
+  deadpan_acting: true
+  cheap_instrumentation: true
+  forbid_glossy_ai_ad_defaults: true
+  precision_must_remain:
+    - character continuity
+    - scene geography
+    - cause and effect
+    - subtitle correctness
+    - dialogue intelligibility
+    - comedy timing
+    - product semantics
+    - rights safety
+zero_cost:
+  enabled: true
+  allow_paid_fallback: false
+  max_attempts_per_shot: 2
+  quality_gate:
+    min_motion_delta: 1.5
+    max_duplicate_ratio: 0.65
+    sample_fps: 4
+    sample_width: 96
+    sample_height: 54
+  candidates:
+    - id: hf-ltx23-public
+      kind: hf-zerogpu
+      profile: ltx23
+      space_url: https://lightricks-ltx-2-3.hf.space
+      api_name: generate_video
+      token_env: HF_TOKEN
+      allow_anonymous: true
+      cost_per_unit: 0
+      weights_license_review: required-before-production
+      width: 768
+      height: 512
+    - id: hf-ltx-fast-public
+      kind: hf-zerogpu
+      profile: ltx-fast
+      space_url: https://lightricks-ltx-video-distilled.hf.space
+      api_name: text_to_video
+      token_env: HF_TOKEN
+      allow_anonymous: true
+      cost_per_unit: 0
+      weights_license_review: required-before-production
+      width: 704
+      height: 512
+moviepy:
+  shot_dir: shots
+  composite_name: hottop-composite.mp4
+ffmpeg:
+  video_codec: libx264
+  audio_codec: aac
+  pixel_format: yuv420p
+  movflags: +faststart
