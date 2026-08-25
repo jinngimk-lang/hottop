@@ -3,9 +3,14 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import shutil
+import subprocess
+from collections.abc import Callable
 from pathlib import Path
 
 from .video_software3d import Camera3D, Mesh3D, Scene3D, Vec3, render_scene_frame
+
+Runner = Callable[..., subprocess.CompletedProcess[str]]
 
 
 def _box(
@@ -170,19 +175,103 @@ def render_story_frame_sequence(
     return paths
 
 
+def render_story_shot_video(
+    *,
+    shot_index: int,
+    output: Path,
+    duration_seconds: float,
+    width: int = 360,
+    height: int = 640,
+    fps: int = 12,
+    runner: Runner = subprocess.run,
+) -> Path:
+    if shot_index < 1 or shot_index > 5:
+        raise ValueError("software 3d flagship story expects shot_index 1..5")
+    if duration_seconds <= 0 or fps <= 0:
+        raise ValueError("duration_seconds and fps must be positive")
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.unlink(missing_ok=True)
+    frames_dir = output.with_suffix(".frames")
+    shutil.rmtree(frames_dir, ignore_errors=True)
+    frames_dir.mkdir(parents=True, exist_ok=True)
+    frame_count = max(2, round(duration_seconds * fps))
+    try:
+        for frame_index in range(frame_count):
+            progress = frame_index / max(1, frame_count - 1)
+            scene = build_story_scene(
+                shot_index=shot_index,
+                progress=progress,
+                width=width,
+                height=height,
+            )
+            render_scene_frame(scene, frames_dir / f"frame-{frame_index:05d}.png")
+
+        completed = runner(
+            [
+                "ffmpeg",
+                "-y",
+                "-framerate",
+                str(fps),
+                "-i",
+                str(frames_dir / "frame-%05d.png"),
+                "-t",
+                f"{duration_seconds:g}",
+                "-an",
+                "-c:v",
+                "libx264",
+                "-pix_fmt",
+                "yuv420p",
+                "-movflags",
+                "+faststart",
+                str(output),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if completed.returncode != 0:
+            output.unlink(missing_ok=True)
+            raise RuntimeError(
+                f"software 3d shot encoding failed with return code {completed.returncode}"
+            )
+        if not output.is_file() or output.stat().st_size <= 0:
+            raise RuntimeError("software 3d shot encoder produced no output")
+        return output
+    finally:
+        shutil.rmtree(frames_dir, ignore_errors=True)
+
+
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Render the Hottop software-3D flagship frame sequence")
-    parser.add_argument("--render", required=True)
-    parser.add_argument("--output-dir", required=True)
+    parser = argparse.ArgumentParser(description="Render Hottop deterministic software-3D footage")
+    parser.add_argument("--render")
+    parser.add_argument("--output-dir")
+    parser.add_argument("--shot-index", type=int)
+    parser.add_argument("--output")
     parser.add_argument("--width", type=int, default=360)
     parser.add_argument("--height", type=int, default=640)
     parser.add_argument("--fps", type=int, default=12)
     parser.add_argument("--seconds-per-shot", type=float, default=2.4)
+    parser.add_argument("--duration-seconds", type=float)
     return parser.parse_args()
 
 
 def main() -> None:
     args = _parse_args()
+    if args.shot_index is not None or args.output is not None:
+        if args.shot_index is None or args.output is None or args.duration_seconds is None:
+            raise SystemExit("shot mode requires --shot-index, --duration-seconds and --output")
+        render_story_shot_video(
+            shot_index=args.shot_index,
+            output=Path(args.output),
+            duration_seconds=args.duration_seconds,
+            width=args.width,
+            height=args.height,
+            fps=args.fps,
+        )
+        return
+    if not args.render or not args.output_dir:
+        raise SystemExit("sequence mode requires --render and --output-dir")
     render_story_frame_sequence(
         render_source=Path(args.render),
         output_dir=Path(args.output_dir),
