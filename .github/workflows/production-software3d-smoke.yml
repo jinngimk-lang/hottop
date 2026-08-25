@@ -1,0 +1,134 @@
+name: software3d-production-smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/production-software3d-smoke.yml"
+      - "src/hottop/video_software3d.py"
+      - "src/hottop/video_software3d_production.py"
+      - "src/hottop/video_execution.py"
+      - "src/hottop/video_moviepy.py"
+      - "src/hottop/video_audio.py"
+      - "src/hottop/video_final_output.py"
+      - "config/video/anti-polish-software3d.yml"
+      - "examples/video/inkclaw-cow-snake.render.json"
+  push:
+    branches: [main]
+    paths:
+      - "src/hottop/video_software3d.py"
+      - "src/hottop/video_software3d_production.py"
+      - "src/hottop/video_execution.py"
+      - "src/hottop/video_moviepy.py"
+      - "src/hottop/video_audio.py"
+      - "src/hottop/video_final_output.py"
+      - "config/video/anti-polish-software3d.yml"
+      - "examples/video/inkclaw-cow-snake.render.json"
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Ensure free local media tools
+        run: |
+          set -euo pipefail
+          missing=0
+          command -v ffmpeg >/dev/null || missing=1
+          command -v ffprobe >/dev/null || missing=1
+          command -v espeak >/dev/null || missing=1
+          if [ "$missing" -ne 0 ]; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg espeak
+          fi
+          ffmpeg -version | head -n 1
+          espeak --version | head -n 1
+
+      - name: Install Hottop video runtime
+        run: python -m pip install -e ".[video]"
+
+      - name: Inspect production readiness
+        run: |
+          hottop video-doctor \
+            --config config/video/anti-polish-software3d.yml \
+            --output artifacts/software3d-doctor.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path("artifacts/software3d-doctor.json").read_text())
+          assert status["ready"] is True, status.get("actions_required")
+          PY
+
+      - name: Execute full zero-cost production
+        run: |
+          hottop video-run examples/video/inkclaw-cow-snake.render.json \
+            --config config/video/anti-polish-software3d.yml \
+            --output-dir artifacts/software3d-production \
+            --execute \
+            --output artifacts/software3d-run-result.json
+
+      - name: Verify final playable media
+        run: |
+          set -euo pipefail
+          FINAL="artifacts/software3d-production/hottop-output.mp4"
+          test -s "$FINAL"
+          ffprobe -v error -show_streams -show_format -of json "$FINAL" > artifacts/software3d-final-ffprobe.json
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          final = Path("artifacts/software3d-production/hottop-output.mp4")
+          probe = json.loads(Path("artifacts/software3d-final-ffprobe.json").read_text())
+          streams = probe["streams"]
+          video = next(stream for stream in streams if stream.get("codec_type") == "video")
+          audio = next(stream for stream in streams if stream.get("codec_type") == "audio")
+          assert video["codec_name"] == "h264", video
+          assert video["pix_fmt"] == "yuv420p", video
+          assert audio["codec_name"] == "aac", audio
+          duration = float(probe["format"]["duration"])
+          assert 9.0 <= duration <= 11.5, duration
+          digest = hashlib.sha256(final.read_bytes()).hexdigest()
+          evidence = {
+              "schema_version": "hottop.production-smoke-evidence.v1",
+              "final_output": str(final),
+              "sha256": digest,
+              "bytes": final.stat().st_size,
+              "duration_seconds": duration,
+              "video_codec": video["codec_name"],
+              "pixel_format": video["pix_fmt"],
+              "audio_codec": audio["codec_name"],
+              "width": video["width"],
+              "height": video["height"],
+          }
+          Path("artifacts/software3d-production-evidence.json").write_text(
+              json.dumps(evidence, indent=2) + "\n", encoding="utf-8"
+          )
+          print(json.dumps(evidence, indent=2))
+          PY
+
+      - name: Upload reproducible production evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: software3d-production-evidence
+          path: |
+            artifacts/software3d-production/hottop-output.mp4
+            artifacts/software3d-production/hottop-video-plan.json
+            artifacts/software3d-production/compositor-manifest.json
+            artifacts/software3d-production/*.artifact.json
+            artifacts/software3d-doctor.json
+            artifacts/software3d-run-result.json
+            artifacts/software3d-final-ffprobe.json
+            artifacts/software3d-production-evidence.json
+          if-no-files-found: error
+          retention-days: 7
