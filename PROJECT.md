@@ -6,7 +6,7 @@
 
 Build a durable **hot-topic brand creative system** for marketing any user-selected brand, product, service, feature, campaign, person, idea, keyword, or tool. InkClawAgent is one example, not a permanent assumption.
 
-Hottop turns current film, entertainment, animation, technology, internet and culture into original promotional concepts that make a product's value visually memorable. It may produce a four-panel meme, a single visual metaphor, a swipe-reveal carousel, a faux film still/poster, a split old-vs-new comparison, a short cinematic video, or another compact social format. **Not every concept is four-panel, not every output is Anti-Polish, and not every promoted subject must be personified as a hero.**
+Hottop turns current film, entertainment, animation, technology, internet and culture into original promotional concepts that make a product's value visually memorable. It may produce a four-panel meme, a single visual metaphor, a swipe-reveal carousel, a faux film still/poster, a split old-vs-new comparison, a short cinematic video, or another compact social format. **Not every concept must be four-panel**, not every output is Anti-Polish, and not every promoted subject must be personified as a hero.
 
 The durable goal is not “attach a logo to a hot character.” Find a natural bridge between the promoted subject and a recognizable cultural idea, then make the subject itself part of the action, prop, transformation, role, material, route, environment, or reveal.
 
@@ -127,22 +127,22 @@ Reject `hot character + logo`, feature lists wearing costumes, forced references
 
 ## Adaptive guided intake and orchestration
 
-Hottop should feel like a creative director, not a configuration form. Resolve what the user already said, infer conservative defaults with provenance/confidence, and ask only unresolved questions that materially change the result. Normal question budget: **0–3**, usually zero or one.
+Hottop should feel like a creative director, not a configuration form. Resolve what the user already said, infer conservative defaults with provenance/confidence, and ask only unresolved questions that materially change the result. The default interaction budget is **0–3 questions**, usually zero or one.
 
 Durable controls:
 
-- campaign goal — awareness, pain contrast, launch, conversion, brand memory, hotspot participation, category reframe;
-- platform — creative input, not only export size;
-- style — creative grammar, not prompt adjectives only;
-- ambition — `safe`, `witty`, `breakout`, `category-breaking`;
-- product visibility — `metaphor-first`, `balanced`, `product-first`;
-- audience — optional unless it materially changes tone/risk/decoding.
+- **campaign goal** — awareness, pain contrast, launch, conversion, brand memory, hotspot participation, category reframe;
+- **platform** — creative input, not only export size; output should be **platform-native** before rendering;
+- **style** — creative grammar, not prompt adjectives only;
+- **creative ambition** — `safe`, `witty`, `breakout`, `category-breaking`;
+- **product visibility** — `metaphor-first`, `balanced`, `product-first`;
+- **audience** — optional unless it materially changes tone/risk/decoding.
 
-Question priority is promotion target → campaign goal → platform → style → ambition → product visibility. Explicit user choices override inference. When the question budget is exhausted, proceed with transparent defaults.
+Question priority is promotion target → campaign goal → platform → style → creative ambition → product visibility. Explicit user choices override inference. When the question budget is exhausted, proceed with transparent defaults.
 
-Project-shape is a routing signal: food/consumer emphasizes sensory/physical bridges; software/AI/B2B emphasizes workflow pain and category-default deletion; entertainment follows source-medium grammar; fashion/beauty emphasizes form/material/style; services/local emphasize ritual/outcome/emotion; campaigns/ideas emphasize semantic/symbol bridges.
+**Project-shape** is a routing signal: food/consumer emphasizes sensory/physical bridges; software/AI/B2B emphasizes workflow pain and category-default deletion; entertainment follows source-medium grammar; fashion/beauty emphasizes form/material/style; services/local emphasize ritual/outcome/emotion; campaigns/ideas emphasize semantic/symbol bridges.
 
-The seven-part Creative Review remains the hard gate. Contextual scores — platform/style/goal/ambition/project-shape/hotspot-native/humor fit — rank only concepts that already pass the hard gate.
+The seven-part Creative Review remains the hard gate. **Contextual review** — platform/style/goal/ambition/project-shape/hotspot-native/humor fit — ranks only concepts that already pass the hard gate.
 
 Revision controls such as `换方向`, `更有梗`, `更大胆`, `产品更明显`, `更高级`, `换平台` should mutate only the relevant dimensions rather than restarting product understanding.
 
@@ -280,9 +280,11 @@ Freshness checks are targeted, not noisy. If nothing material changed, continue 
 
 ## Persistent project memory protocol
 
-Long-running work must not depend on chat memory alone. `PROJECT.md` is the durable charter and `STATUS.md` the current branch/CI/work/next-action snapshot.
+Long-running work must not depend on chat memory alone. `PROJECT.md` is the **living project charter** and `STATUS.md` the current branch/CI/work/next-action snapshot.
 
-### Recovery order
+### Context recovery
+
+Context recovery order:
 
 1. `PROJECT.md`.
 2. `STATUS.md`.
@@ -294,13 +296,7 @@ Do not ask the user to repeat stable project direction that the repository can r
 
 ### Living updates
 
-When a material new direction appears:
-
-1. challenge it against current doctrine/evidence;
-2. distinguish durable direction from experiment-specific learning;
-3. if durable, update `PROJECT.md` and the relevant skill/spec in the same workstream;
-4. explicitly record what old assumption it supersedes and why when useful;
-5. update `STATUS.md` so the next recovery immediately sees the new state.
+A **material direction change** must be challenged against current doctrine/evidence and classified as durable or experiment-specific. If durable, **update the charter** (`PROJECT.md`) and the relevant skill/spec in the same workstream, explicitly state what stale assumption it supersedes when useful, then update `STATUS.md` so the next recovery immediately sees the new state.
 
 Do not silently stack contradictory instructions. After meaningful doctrine/architecture changes, reread the charter for stale milestones, duplication and contradictions.
 
