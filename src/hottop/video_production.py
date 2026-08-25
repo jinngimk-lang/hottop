@@ -8,7 +8,7 @@ import yaml
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from .rendering import CreativeRenderRequest
-from .video_reference import VideoReference
+from .video_reference import VideoReference, validate_reference_identity_consistency
 
 VideoStyleProfile = Literal["anti-polish", "cinematic", "social-native"]
 GenerationBackend = Literal[
@@ -293,8 +293,13 @@ def _generation_prompt(
     render_request: CreativeRenderRequest,
     config: VideoProductionConfig,
     scene: str,
+    reference: VideoReference | None = None,
 ) -> str:
     parts = [render_request.master_prompt, scene]
+    if reference is not None:
+        identity_prompt = reference.identity_prompt()
+        if identity_prompt:
+            parts.append(identity_prompt)
     if config.anti_polish.enabled or config.roughness_score >= 65:
         parts.append(
             "Intentional rough cheap low-budget 3D: simple geometry and materials, slightly awkward "
@@ -536,6 +541,9 @@ def build_video_production_plan(
     render_request: CreativeRenderRequest,
     config: VideoProductionConfig,
 ) -> VideoProductionPlan:
+    validate_reference_identity_consistency(
+        frame.reference for frame in render_request.frames if frame.reference is not None
+    )
     shot_count = len(render_request.frames)
     duration = _shot_duration(config, shot_count)
     shots: list[VideoShot] = []
@@ -546,7 +554,7 @@ def build_video_production_plan(
         start = round((position - 1) * duration, 3)
         end = round(min(position * duration, config.duration_seconds), 3)
         shot_duration = round(end - start, 3)
-        prompt = _generation_prompt(render_request, config, frame.scene)
+        prompt = _generation_prompt(render_request, config, frame.scene, frame.reference)
         shots.append(
             VideoShot(
                 index=position,
