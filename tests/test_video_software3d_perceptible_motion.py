@@ -46,3 +46,35 @@ def test_software3d_shots_have_perceptible_camera_motion(story_profile: str, anc
             f"{story_profile} shot {shot_index} only moves a stable scene anchor "
             f"{displacement:.2f}px; the baseline should have clearly perceptible camera motion"
         )
+
+
+@pytest.mark.parametrize(
+    ("story_profile", "minimum_dolly"),
+    [
+        ("cow-snake", 0.40),
+        ("odyssey-witch-pigs", 0.25),
+    ],
+)
+def test_software3d_motion_changes_scene_scale_with_style_routed_dolly(
+    story_profile: str,
+    minimum_dolly: float,
+):
+    """Camera motion must affect the whole frame, not only slide it sideways."""
+
+    for shot_index in range(1, 6):
+        start = build_story_scene(
+            shot_index=shot_index,
+            progress=0.0,
+            width=360,
+            height=640,
+            story_profile=story_profile,
+        )
+        end = build_story_scene(
+            shot_index=shot_index,
+            progress=1.0,
+            width=360,
+            height=640,
+            story_profile=story_profile,
+        )
+
+        assert abs(end.camera.position.z - start.camera.position.z) >= minimum_dolly
