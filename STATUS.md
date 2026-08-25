@@ -1,7 +1,7 @@
 # Hottop Status
 
 Last updated: 2026-08-25
-Active workstream: PR #13 `prod/qwen3-tts-customvoice`
+Active workstream: **Production v0.2 — operator-owned generative benchmark + cinematic quality proof**
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable real video output**
 
@@ -9,54 +9,65 @@ Current milestone: **Production v0.2 — repeatable real video output**
 
 ## Current production state
 
-Foundation PR #1 and Production PR #12 are merged. Production v0.2 now has a **real, automatically reproducible zero-cost config-to-MP4 baseline** plus isolated optional free/operator-owned generative and audio routes.
+Hottop now has two distinct production layers:
+
+1. a guaranteed **zero-cost deterministic software3d → audio → MoviePy → FFmpeg → verified MP4** baseline; and
+2. isolated operator-owned/open generation routes that can be benchmarked without changing the creative/runtime contract.
 
 Closed production evidence:
 
-- `software3d` is integrated into normal `video-run` execution. It renders real 3D geometry/projection/animation, encodes per-shot MP4 through FFmpeg, and requires no Blender, GPU or model download.
-- software3d shots emit `.artifact.json` sidecars with SHA-256 + byte size. `video-run` validates planned backend / artifact kind / backend / shot identity / output identity after generation, and MoviePy independently re-verifies exact bytes before composition.
-- The checked-in cow/snake source + `anti-polish-software3d.yml` has executed end to end on a clean Ubuntu runner with role-aware eSpeak Mandarin dialogue, original synthetic music, procedural SFX/Foley, MoviePy and FFmpeg.
-- The production smoke artifact contains final MP4, run-result, plan, ffprobe evidence and five provenance manifests. Verified final media: **10.008005 s**, **H.264 / yuv420p**, **AAC**, SHA-256 `bab46a50557ddb984d42abb1342d5e74e2f73cd9aa1db83fdfa2369b4a48674a`.
-- PR #12 exact-head CI + production-smoke passed and the PR was squash-merged to `main` as `fde10b2b37536e66f29ff7af7a93966eb1c27fb6`; post-merge main CI run 1300 passed.
-- ZeroGPU, WanGP and Comfy boundaries remain quality/provenance gated and fail closed; cross-shot identity locks and rights-safe references are checked before generation.
-- eSpeak remains the guaranteed local TTS fallback. A rights-safe local CosyVoice3 adapter exists for reference-conditioned voice work.
+- PR #12 established the reproducible software3d config-to-MP4 loop with byte-bound provenance manifests and final media verification.
+- PR #15 generalized software3d story routing beyond the cow/snake flagship and added the Odyssey witch/pigs cinematic profile. Exact-head CI run 1320 and production-smoke run 11 passed; the PR was squash-merged as `01e54432978f9694ea79a645e8b53308c474f3d5`.
+- The production smoke now executes both checked-in stories end to end and verifies H.264/yuv420p + AAC output plus five per-shot provenance manifests for each case.
+- PR #13 added the benchmark-ready offline local Qwen3-TTS 0.6B CustomVoice adapter and was merged as `b9743763316f240d5c095c84bc5f2f071ee32716`. It remains optional until a real operator-owned benchmark proves materially better Mandarin dialogue quality.
+- PR #14 added a first-class `lightx2v-operator` generation backend for Wan2.2 T2V/I2V. The backend fails closed until an operator-provisioned LightX2V checkout, local model directory and config JSON exist; it resolves rights-safe I2V references, emits structured runtime commands, forces offline execution in the adapter, and never installs packages or downloads models. Exact-head CI run 1324 and production-smoke run 14 passed; the PR was squash-merged as `e32a0632d1245752baa0b60cd464a18af110a8df`.
+- PR #16 was closed as fully superseded by #15; its only unique file was already present on `main` after #15.
 
-## Mandarin dialogue quality workstream
+## Durable governance state
 
-Fresh official review on 2026-08-25 found that **Qwen3-TTS-12Hz-0.6B-CustomVoice** is a better normal-dialogue benchmark target than the previously tracked Base checkpoint:
+`PROJECT.md` is canonical and now explicitly requires:
 
-- upstream code revision reviewed: `QwenLM/Qwen3-TTS@022e286b98fbec7e1e916cb940cdf532cd9f488e`;
-- code license: Apache-2.0; official CustomVoice model card license: Apache-2.0;
-- official checkpoint is roughly 2.5 GB and exposes nine preset timbres across ten languages, including Mandarin, plus natural-language style instructions;
-- unlike Base voice cloning, the preset CustomVoice path does **not** require reference voice audio, so it avoids making voice-identity rights provenance a routine requirement;
-- the official quickstart can resolve a remote model ID, so Hottop deliberately does the opposite in unattended safety policy: only an already provisioned **local model directory** is accepted; runtime sets Hugging Face/Transformers offline mode and local-only loading; no CI/model auto-download is allowed.
+- repository-backed context recovery whenever a session is new, long or stale;
+- Hottop-related image/video generation in Chat to re-read the current GitHub doctrine/status/relevant skills/examples/configs/constraints before generation;
+- **existing-skill first** capability routing: reuse an available suitable skill/MCP/plugin instead of reinstalling or introducing a duplicate; add a new capability only for a concrete uncovered gap after permission/license/security/cost/reversibility review;
+- targeted ecosystem freshness checks against measured project gaps, followed by real integration when a candidate clears the admission gate.
 
-PR #13 adds a benchmark-ready isolated adapter in `src/hottop/audio_qwen3_tts.py`. It does **not** replace eSpeak or become a standard `video-run` backend yet. The first clean RED reached pytest on CI run 1303; implementation CI run 1305 passed Ruff + full pytest on Python 3.11 and 3.12. The candidate registry now marks CustomVoice as `benchmark_ready_operator_local` and demotes Base to a rights-gated voice-clone benchmark.
+The governance update passed CI run 1327 and was merged to `main` as `737a53e9ee1439e3849112058006819577006536`.
 
-Promotion gate: wire Qwen3 CustomVoice into normal `VideoProductionConfig.audio.voice_backend` only after an operator-owned local model/GPU benchmark demonstrates materially better Mandarin intelligibility/prosody at acceptable runtime cost. No paid endpoint or hidden download may satisfy this gate.
+## LightX2V / Wan2.2 operator route
 
-## Autonomous governance / ecosystem radar
+Fresh upstream review on 2026-08-25 confirmed the current LightX2V route remains aligned with Hottop's adapter:
 
-`PROJECT.md` remains canonical. Every active production cycle identifies the measured gap first and then performs targeted official/public upstream review. Candidates must pass code + weights/data license, cost, hardware, install/network security, measurable value and rollback gates before promotion. Useful capabilities enter through narrow adapters/config/tests/benchmarks rather than broad vendoring.
+- reviewed upstream: `ModelTC/LightX2V@926299962ed32a142411e45468a289623432b4e4`;
+- repository license: Apache-2.0;
+- upstream `python -m lightx2v.infer` still exposes `wan2.2_moe`, `t2v` / `i2v`, local `--model_path`, `--config_json`, `--prompt`, `--negative_prompt`, `--image_path` and `--save_result_path` arguments matching the Hottop adapter boundary;
+- official `Wan-AI/Wan2.2-I2V-A14B` weights are Apache-2.0;
+- upstream continues to evolve rapidly, so Hottop pins the reviewed revision in the candidate registry and must re-review the CLI/config contract before adopting a materially newer revision.
+
+The current follow-up workstream adds a checked-in operator profile `config/video/cinematic-lightx2v-wan22-i2v.yml`, a reviewed candidate-registry entry, and a contract test locking `cost_per_unit=0`, `operator_managed=true`, `auto_install=false`, and `auto_download_models=false`.
+
+No actual Wan2.2 model is downloaded or executed by CI. A real cinematic benchmark remains gated on operator-provisioned local compute/model assets.
+
+## Current ecosystem priorities
+
+1. **Cinematic generated-video proof:** benchmark the merged LightX2V/Wan2.2 operator route when local assets exist, comparing motion quality, identity continuity, reference adherence, artifact rejection and runtime cost against the deterministic baseline.
+2. **Cross-shot identity / continuation:** prioritize candidates with measurable reference/continuation capability rather than generic single-shot quality. LongCat-Video-Avatar 1.5 and SCAIL-2 remain high-priority reviewed candidates; WanGP remains an interop route rather than vendored code.
+3. **Mandarin dialogue quality:** benchmark Qwen3 CustomVoice and CosyVoice3 only when operator-provisioned local models are available. eSpeak remains the guaranteed fallback; voice cloning remains rights-gated.
+4. **Production evidence over abstraction:** every promoted route should end in a reproducible render/config → moving shots → audio → composite → verified MP4 case with hashes/provenance, not merely another provider interface.
+5. **License separation:** new code repositories and model/weights licenses remain separate gates. New support in an Apache-licensed runtime does not clear a model whose weights use different terms.
+
+## Immediate next actions
+
+1. Merge the LightX2V operator profile + registry + contract-test sync after exact-head CI passes.
+2. If no operator-owned GPU/model runtime is provisioned, do not auto-download anything; continue the next unblocked Production v0.2 task instead.
+3. Build the next benchmark contract around **reference-conditioned identity continuity and multi-shot continuation**, so future model candidates are judged by Hottop's real creative requirement rather than demo aesthetics alone.
+4. When a local LightX2V/Wan2.2 runtime becomes available, run a real Odyssey/reference-conditioned benchmark through the normal quality/provenance/composition gates and archive measured evidence.
+5. Continue targeted upstream scans; integrate only changes that materially improve the measured gap and clear source/license/cost/hardware/security/rollback gates.
 
 ## Durable motion contract
 
 `hottop.render.v2 → hottop.video-plan.v1 → generation → audio → MoviePy → FFmpeg → final media verification`
 
-Default unattended target is zero-cost. Free GPU exhaustion may wait, bounded-retry, fail, or use an explicitly deterministic path; it must never turn into paid credits or a hidden paid provider. `video-run` is dry-run by default; only explicit `--execute` may spawn trusted stages after readiness passes.
+Default unattended target is zero-cost. Free GPU exhaustion may wait, bounded-retry, fail, or use an explicitly deterministic path; it must never become paid credits or a hidden paid provider. `video-run` is dry-run by default; only explicit `--execute` may spawn trusted stages after readiness passes.
 
 Surface roughness is style-routed. Anti-Polish may deliberately look cheap; continuity, geography, subtitles, dialogue intelligibility, comedy timing, product semantics, evidence/claim safety, rights safety and final-media integrity remain hard gates.
-
-## Current ecosystem priorities
-
-1. **Mandarin dialogue quality:** benchmark local Qwen3 CustomVoice and CosyVoice3 against eSpeak when operator-provisioned runtimes are present. Voice cloning/reference audio remains rights-gated.
-2. **Identity / reference-conditioned cinematic video:** benchmark only candidates whose exact code and weights terms permit intended use. WanGP is the practical operator route; SCAIL-2 and LongCat remain high-interest; H3 remains license-gated.
-3. **Cinematic style proof:** produce a second complete reproducible lower-roughness Odyssey witch/pigs case so style routing is proven beyond Anti-Polish.
-4. **Production evidence:** prefer actual config→moving shots→audio→composite→verified MP4 evidence over accumulating unbenchmarked abstractions.
-
-## Immediate next actions
-
-1. Close PR #13 after exact-head CI verifies the adapter/registry/status tree together; merge only as a benchmark-ready optional adapter, not a default voice backend.
-2. If no local Qwen/CosyVoice model is operator-provisioned, do not download one automatically; continue the next unblocked Production v0.2 action instead.
-3. Advance the lower-roughness Odyssey witch/pigs source toward a second reproducible full-pipeline case, reusing existing MoviePy/FFmpeg/audio/provenance gates rather than adding provider abstraction.
-4. Continue targeted upstream scans against measured gaps and integrate only material improvements that clear the admission gate.

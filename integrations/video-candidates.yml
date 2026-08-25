@@ -63,6 +63,34 @@ candidates:
       Keep download/conversion/execution operator-owned; prefer safetensors conversion or a
       reviewed isolated runtime before production use.
 
+  lightx2v:
+    repo: ModelTC/LightX2V
+    commit: 926299962ed32a142411e45468a289623432b4e4
+    code_license: Apache-2.0
+    weights: Wan-AI/Wan2.2-I2V-A14B
+    weights_license: Apache-2.0
+    status: operator_backend
+    target_gaps:
+      - efficient_local_wan22_inference
+      - text_to_video
+      - image_to_video
+      - reference_conditioned_cinematic_video
+      - multi_model_operator_runtime
+    capabilities:
+      - wan22_moe_t2v
+      - wan22_moe_i2v
+      - distilled_and_quantized_wan22_routes
+      - local_cli_inference
+      - multiple_accelerator_backends
+    integration_strategy: isolated_operator_owned_local_adapter
+    runtime_boundary: >-
+      Hottop supports only an already provisioned local LightX2V checkout, model directory and
+      config JSON. Normal CI/video-run never installs LightX2V or downloads weights. The reviewed
+      upstream revision exposes `python -m lightx2v.infer` with wan2.2_moe T2V/I2V, local model,
+      config JSON, prompt/negative prompt, image path and explicit result path. Pin/re-review the
+      upstream revision when its CLI/config contract changes; generated footage remains subject to
+      Hottop rights, quality and final-media gates.
+
   qwen3_tts_0_6b_customvoice:
     repo: QwenLM/Qwen3-TTS
     commit: 022e286b98fbec7e1e916cb940cdf532cd9f488e
