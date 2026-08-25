@@ -61,6 +61,52 @@ def test_reference_identity_rejects_same_subject_with_conflicting_lock():
         validate_reference_identity_consistency(references)
 
 
+def test_video_plan_rejects_conflicting_identity_before_generation_commands():
+    config = load_video_production_config(Path("config/video/cinematic-zero-cost.yml"))
+    request = CreativeRenderRequest(
+        topic_id="identity-conflict",
+        topic_title="identity conflict",
+        subject_name="InkClawAgent",
+        expression_form="faux-film-still",
+        visual_medium="live-action-cinematic",
+        genre_treatment="original cinematic mythic meme",
+        distribution_mode="motion",
+        in_asset_cta_policy="no-destination",
+        motion_continuity_required=True,
+        frames=[
+            CreativeRenderFrame(
+                index=1,
+                scene="The hero enters.",
+                intent="setup",
+                reference=VideoReference(
+                    image_path="assets/generated-original/hero-a.png",
+                    rights="generated-original",
+                    subject_id="hero",
+                    identity_lock=["dark curly hair"],
+                ),
+            ),
+            CreativeRenderFrame(
+                index=2,
+                scene="The hero returns.",
+                intent="payoff",
+                reference=VideoReference(
+                    image_path="assets/generated-original/hero-b.png",
+                    rights="generated-original",
+                    subject_id="hero",
+                    identity_lock=["dark curly hair"],
+                ),
+            ),
+        ],
+        master_prompt="original cinematic mythic world",
+        negative_prompt="actor likeness, copied film frame",
+        punchlines=["done"],
+        claim_status="satire",
+    )
+
+    with pytest.raises(ValueError, match="conflicting reference image"):
+        build_video_production_plan(request, config)
+
+
 def test_video_plan_adds_identity_lock_to_generation_prompt():
     config = load_video_production_config(Path("config/video/cinematic-zero-cost.yml"))
     reference = VideoReference(
