@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 import hashlib
 import math
+from pathlib import Path
 import struct
 import zlib
-from dataclasses import dataclass, field
-from pathlib import Path
 
 
 PORTRAIT_PRINCIPAL_Y_RATIO = 0.42
