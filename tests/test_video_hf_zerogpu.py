@@ -51,7 +51,12 @@ def test_execute_hf_zerogpu_submits_polls_and_writes_atomically(tmp_path: Path):
     client = FakeClient(
         [
             FakeResponse(json_data={"event_id": "evt-1"}),
-            FakeResponse(text='event: complete\ndata: ["https://cdn.example/video.mp4"]\n\n'),
+            FakeResponse(
+                text=(
+                    'event: complete\ndata: '
+                    '["https://example.hf.space/gradio_api/file=video.mp4"]\n\n'
+                )
+            ),
             FakeResponse(content=b"video-bytes"),
         ]
     )
@@ -71,6 +76,34 @@ def test_execute_hf_zerogpu_submits_polls_and_writes_atomically(tmp_path: Path):
     assert "top-secret-token" not in repr(request)
     assert client.calls[0][2]["headers"]["Authorization"] == "Bearer top-secret-token"
     assert client.calls[0][2]["json"]["data"]
+    assert client.calls[-1][1].startswith("https://example.hf.space/")
+
+
+def test_execute_hf_zerogpu_rejects_cross_origin_output_before_download(tmp_path: Path):
+    client = FakeClient(
+        [
+            FakeResponse(json_data={"event_id": "evt-1"}),
+            FakeResponse(
+                text='event: complete\ndata: ["https://evil.example/steal-token.mp4"]\n\n'
+            ),
+        ]
+    )
+    request = HfZeroGpuRequest(
+        candidate=_candidate(),
+        prompt="original cinematic shot",
+        duration_seconds=2.0,
+        output=tmp_path / "shot.mp4",
+        token="top-secret-token",
+    )
+
+    with pytest.raises(ZeroGpuError) as exc_info:
+        execute_hf_zerogpu(request, client=client)
+
+    assert exc_info.value.code == "hf_zerogpu_cross_origin_output"
+    assert exc_info.value.retryable is False
+    assert len(client.calls) == 2
+    assert all("evil.example" not in call[1] for call in client.calls)
+    assert not request.output.exists()
 
 
 def test_execute_hf_zerogpu_marks_rate_limit_retryable(tmp_path: Path):
