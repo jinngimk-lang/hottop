@@ -9,18 +9,17 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified production baseline
 
-Latest production-code `main` at this snapshot: `e5a286e8791d1cc962badeab8976125688cc664f` (`Prevent orphaned mixed-script mobile captions`, squash merge of PR #62).
+Latest production-code `main` at this snapshot: `ae62a5a6583956650fbf8454f9980590289c60a5` (`Prefer native eSpeak-NG in runtime fallback`, squash merge of PR #66).
 
 Verified exact-head evidence:
 
-- PR #62 exact head `30eea89f9d1659f6d4eaab77ec4541abca699b6b`: CI **1584** passed and production-smoke **134** passed;
-- the #134 production artifact was downloaded and directly inspected at ~1/3/5/7/9 s for both cow and Odyssey; the short mixed caption `用 InkClawAgent。` remains on one line in the lower safe area rather than creating a one-character orphan;
-- PR #62 was squash-merged as `e5a286e8791d1cc962badeab8976125688cc664f`;
-- post-merge CI **1585** passed and production-smoke **135** passed again on that exact production commit.
+- PR #62 closed the mixed CJK/Latin orphan-line defect; its production artifact was directly inspected and `用 InkClawAgent。` remained on one line in the lower safe area;
+- later Production v0.2 work preserved the dialogue/BGM ducking, actual-voice-duration windows, clipping fail-close, mobile framing and subtitle contracts;
+- PR #65 restored both cow and Odyssey provenance archives in production smoke after a workflow regression;
+- PR #66 made normal runtime readiness/execution prefer native `espeak-ng` when available while retaining `espeak` compatibility as the guaranteed local fallback family;
+- exact-head `ae62a5a6583956650fbf8454f9980590289c60a5`: CI **1605** passed and production-smoke **150** passed.
 
-The immediately preceding `main` commit `a99cf5b64d9f403e19de040e2d45363db6de6a61` also closed actual MoviePy dialogue/BGM interaction: dialogue ducking is executed rather than metadata-only, ducking follows actual voice duration, materially clipped dialogue fails closed, and checked-in cow/Odyssey short-form lines were adjusted to fit intelligible windows.
-
-`docs/decisions/2026-08-26-mobile-subject-readability.md` records the durable portrait-readability rule, now covering subject placement, readable subject scale, subtitle block occupancy and line-break quality.
+`docs/decisions/2026-08-26-mobile-subject-readability.md` records the durable portrait-readability rule, covering subject placement, readable subject scale, subtitle block occupancy and line-break quality.
 
 ## Guaranteed zero-cost software3d baseline
 
@@ -32,11 +31,13 @@ The checked-in software3d route has reproducible production evidence for:
 - adaptive full-copy caption fitting with a readable font floor, CJK local-font fail-closed behavior and bottom safe-area anchoring;
 - deliberate Anti-Polish cow vs brighter lower-roughness Odyssey presentation;
 - role-aware dialogue metadata (`speaker` + `delivery`) preserved into `hottop.video-plan.v1`;
-- Mandarin dialogue, original synthetic music and procedural Foley/SFX;
+- Mandarin dialogue using the guaranteed local eSpeak family, preferring native eSpeak-NG when installed;
+- original synthetic music and procedural Foley/SFX;
 - executed dialogue-aware BGM ducking, actual-voice-duration duck windows and fail-closed materially clipped dialogue;
 - final AAC that is codec-valid, audibly active and duration-covering;
 - MoviePy composition + FFmpeg H.264/AAC/yuv420p finalization;
 - per-shot byte/provenance binding + pre-composition re-verification;
+- both cow and Odyssey provenance archives retained by production smoke;
 - final media verification;
 - zero GPU, zero model download, zero credentials and zero paid services.
 
@@ -44,13 +45,13 @@ This is the guaranteed fallback/evidence baseline, not the cinematic quality cei
 
 ## Operator-local Mandarin TTS
 
-Qwen3-TTS CustomVoice remains integrated as an explicit non-default local route without replacing eSpeak:
+Qwen3-TTS CustomVoice remains integrated as an explicit non-default local route without replacing the guaranteed eSpeak-family fallback:
 
 - normal `video-run` can select `qwen3-customvoice` through typed audio config;
 - dialogue `character` maps to configured preset speakers and `delivery` maps to `--instruct`;
 - local checkout/model/runtime preflight is fail-closed and never installs packages or downloads models;
 - HF offline mode + `local_files_only=True` remain enforced in the adapter;
-- eSpeak remains the guaranteed zero-cost/offline fallback.
+- native eSpeak-NG is preferred when present; legacy `espeak` remains compatible as the deterministic local fallback.
 
 Capability boundary: current official 0.6B CustomVoice code discards `instruct`; the Production role-aware route therefore requires an instruct-capable checkpoint such as the current 1.7B path when delivery control is requested. Preset-speaker output/commercial-use clearance remains an operator rights gate separate from repository/model licensing.
 
@@ -58,7 +59,7 @@ Research record: `docs/research/2026-08-26-qwen3-customvoice-routing.md`.
 
 ## Mobile-first readability closure
 
-Production evidence has now closed four independent portrait-readability defects:
+Production evidence has closed four independent portrait-readability defects:
 
 1. principal subjects were too low in frame;
 2. key Odyssey characters remained too small after placement was corrected;
@@ -79,10 +80,10 @@ Generator source revision, model/checkpoint revision, evaluator revision and out
 
 ## Current ecosystem radar
 
-- **LightX2V** remains the primary Apache-2.0 operator inference framework for the tested Wan2.2/local path. Targeted freshness check on 2026-08-26 still shows upstream `main` at `5dc5d6372654406761474719647763ac7b4bd018`; the newest commits are SwiftVR BF16 export handling plus MiniMax-H3 deployment/host-pinning work. None is measured against Hottop's tested Wan2.2 path, so the existing tested pin remains preferable to freshness-driven repinning.
-- **MiniMax H3 via LightX2V** is now visibly maintained upstream, including 5090 deployment configuration and Qwen host-weight pinning, but this does not clear model/weights/output-rights, hardware, benchmark or local-provisioning gates. It remains an operator benchmark candidate, not an unattended default.
-- **Qwen3-TTS CustomVoice** remains the preferred operator-local role-aware Mandarin candidate. The official repository head checked on 2026-08-26 remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no source delta invalidates the existing 0.6B-vs-1.7B capability gate. Real quality comparison still requires an operator-provisioned local 1.7B runtime.
-- **CosyVoice3 / cosyvoice.cpp** remain comparison candidates. Current public evidence still includes a repeatable CosyVoice3 TensorRT+FP16 non-finite-audio failure report and additional runtime/dependency requirements, so there is no evidence-backed reason to replace Qwen/eSpeak routing without a same-dialogue benchmark.
+- **LightX2V** remains the primary Apache-2.0 operator inference framework for the tested Wan2.2/local path. Fresh public checks on 2026-08-26 continue to show active upstream work around InfiniteTalk and MiniMax-H3-related requests/configuration, but no Hottop measurement justifies freshness-driven repinning of the tested Wan2.2 route.
+- **MiniMax H3 via LightX2V** is visibly active upstream, but model/weights/output-rights, hardware, benchmark and local-provisioning gates remain uncleared. It stays an operator benchmark candidate, not an unattended default.
+- **Qwen3-TTS CustomVoice** remains the preferred operator-local role-aware Mandarin candidate. Real quality comparison still requires an operator-provisioned local 1.7B runtime; third-party runtimes do not supersede the reviewed official adapter without independent license/runtime/quality evidence.
+- **CosyVoice3 / cosyvoice.cpp** remain comparison candidates; no same-dialogue benchmark currently supports replacing Qwen/eSpeak routing.
 - **SigLIP 2 Base 256** remains the preferred first operator-local continuity evaluator experiment only after explicit local weights + revision/hash are supplied; no implicit download.
 - DINOv3, DreamSim, WanGP, FramePack, FastVideo, LTX, SCAIL, LongCat, InfiniteTalk and other candidates remain subject to code-license, weights/data/output-rights, hardware, hidden-download/network, cost, security, benchmark-value and rollback gates.
 
@@ -90,8 +91,8 @@ Durable rule: code license != model/weights/data/output-rights clearance; popula
 
 ## Immediate next actions
 
-1. Continue **direct artifact inspection** of guaranteed software3d outputs and quantify the next visible/audible deterministic gap before changing code. The direct #134 review after the caption fix did not reveal a new specific regression worth coding immediately.
-2. When an operator-provisioned Qwen3-TTS 1.7B CustomVoice runtime exists, run a same-dialogue eSpeak vs Qwen benchmark using checked-in roles/deliveries; do not claim quality improvement before real audio evidence.
+1. Continue **direct artifact inspection** of guaranteed software3d outputs and quantify the next visible/audible deterministic gap before changing code.
+2. When an operator-provisioned Qwen3-TTS 1.7B CustomVoice runtime exists, run a same-dialogue eSpeak-NG/eSpeak vs Qwen benchmark using checked-in roles/deliveries; do not claim quality improvement before real audio evidence.
 3. When a compliant operator-owned LightX2V/Wan2.2, MiniMax-H3-through-LightX2V or WanGP reference-conditioned runtime + rights-safe assets exist, execute a real multi-shot identity/style benchmark before changing defaults or claiming identity preservation.
 4. Prefer SigLIP 2 Base 256 for the first local evaluator benchmark only with explicit local weights + exact revision/hash and same-subject vs identity-drift controls.
 5. Continue targeted ecosystem scans against measured gaps and integrate only candidates clearing source/license/weights-license/cost/hardware/security/reversibility/value gates.
