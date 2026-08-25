@@ -32,7 +32,7 @@ def test_video_run_rejects_non_media_final_output_even_when_finalizer_returns_ze
             output = Path(command[command.index("--save_file") + 1])
             output.parent.mkdir(parents=True, exist_ok=True)
             output.write_bytes(b"generated-shot")
-        elif "-w" in command and command[0] == "espeak":
+        elif "-w" in command and Path(command[0]).name in {"espeak-ng", "espeak"}:
             output = Path(command[command.index("-w") + 1])
             output.parent.mkdir(parents=True, exist_ok=True)
             output.write_bytes(b"dialogue-wav")
