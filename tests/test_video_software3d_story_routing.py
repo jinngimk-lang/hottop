@@ -2,98 +2,72 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from types import SimpleNamespace
 
-import hottop.video_software3d_production as production
+import pytest
+
+from hottop.rendering import CreativeRenderRequest
+from hottop.video_production import build_video_production_plan, load_video_production_config
+from hottop.video_software3d_production import (
+    COW_STORY_PROFILE,
+    ODYSSEY_STORY_PROFILE,
+    build_story_scene,
+    story_profile_for_topic,
+)
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
-def _mesh_names(scene) -> set[str]:
-    return {mesh.name for mesh in scene.meshes}
+def _plan(render_name: str, config_name: str):
+    render = CreativeRenderRequest.model_validate(
+        json.loads((ROOT / "examples" / "video" / render_name).read_text(encoding="utf-8"))
+    )
+    config = load_video_production_config(ROOT / "config" / "video" / config_name)
+    return build_video_production_plan(render, config)
 
 
-def test_sequence_mode_routes_odyssey_source_to_odyssey_geometry(monkeypatch, tmp_path):
-    captured = []
-    monkeypatch.setattr(production, "render_scene_frame", lambda scene, _path: captured.append(scene))
+def test_odyssey_plan_carries_explicit_story_profile_into_every_shot_command() -> None:
+    plan = _plan("inkclaw-odyssey-witch-pigs.render.json", "cinematic-software3d.yml")
 
-    production.render_story_frame_sequence(
-        render_source=Path("examples/video/inkclaw-odyssey-witch-pigs.render.json"),
-        output_dir=tmp_path / "frames",
-        width=180,
-        height=320,
-        fps=1,
-        seconds_per_shot=1.0,
+    assert plan.topic_id == ODYSSEY_STORY_PROFILE
+    assert len(plan.generation_command_specs) == 5
+    for spec in plan.generation_command_specs:
+        profile_index = spec.args.index("--story-profile")
+        assert spec.args[profile_index + 1] == ODYSSEY_STORY_PROFILE
+
+
+def test_cow_plan_carries_explicit_story_profile_into_every_shot_command() -> None:
+    plan = _plan("inkclaw-cow-snake.render.json", "anti-polish-software3d.yml")
+
+    assert story_profile_for_topic(plan.topic_id) == COW_STORY_PROFILE
+    for spec in plan.generation_command_specs:
+        profile_index = spec.args.index("--story-profile")
+        assert spec.args[profile_index + 1] == COW_STORY_PROFILE
+
+
+def test_unknown_software3d_topic_fails_closed() -> None:
+    with pytest.raises(ValueError, match="unsupported software 3d story topic"):
+        story_profile_for_topic("future-story-without-renderer")
+
+
+def test_story_profiles_build_materially_distinct_worlds() -> None:
+    cow = build_story_scene(
+        shot_index=2,
+        progress=0.5,
+        width=160,
+        height=90,
+        story_profile=COW_STORY_PROFILE,
+    )
+    odyssey = build_story_scene(
+        shot_index=2,
+        progress=0.5,
+        width=160,
+        height=90,
+        story_profile=ODYSSEY_STORY_PROFILE,
     )
 
-    assert len(captured) == 5
-    first_names = _mesh_names(captured[0])
-    second_names = _mesh_names(captured[1])
-    fourth_names = _mesh_names(captured[3])
-    assert "witch-body" in first_names
-    assert any(name.startswith("sailor-") for name in first_names)
-    assert any(name.startswith("pig-") for name in second_names)
-    assert "hero-body" in fourth_names
-    assert "young-cow-body" not in first_names
-
-
-def test_shot_mode_reads_workspace_plan_topic_for_story_routing(monkeypatch, tmp_path):
-    plan = {
-        "schema_version": "hottop.video-plan.v1",
-        "topic_id": "odyssey-witch-pigs",
-        "shots": [{"index": 1}],
-    }
-    (tmp_path / "hottop-video-plan.json").write_text(json.dumps(plan), encoding="utf-8")
-    captured = []
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(production, "render_scene_frame", lambda scene, _path: captured.append(scene))
-
-    def fake_runner(args, **_kwargs):
-        Path(args[-1]).write_bytes(b"fake-mp4")
-        return SimpleNamespace(returncode=0, stdout="", stderr="")
-
-    output = tmp_path / "shots" / "shot-001.mp4"
-    production.render_story_shot_video(
-        shot_index=1,
-        output=output,
-        duration_seconds=1.0,
-        width=180,
-        height=320,
-        fps=2,
-        runner=fake_runner,
-    )
-
-    assert output.is_file()
-    assert captured
-    names = _mesh_names(captured[0])
-    assert "witch-body" in names
-    assert any(name.startswith("sailor-") for name in names)
-    assert "young-cow-body" not in names
-
-
-def test_unknown_topic_falls_back_to_existing_cow_story(monkeypatch, tmp_path):
-    plan = {
-        "schema_version": "hottop.video-plan.v1",
-        "topic_id": "unknown-generic-topic",
-        "shots": [{"index": 1}],
-    }
-    (tmp_path / "hottop-video-plan.json").write_text(json.dumps(plan), encoding="utf-8")
-    captured = []
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(production, "render_scene_frame", lambda scene, _path: captured.append(scene))
-
-    def fake_runner(args, **_kwargs):
-        Path(args[-1]).write_bytes(b"fake-mp4")
-        return SimpleNamespace(returncode=0, stdout="", stderr="")
-
-    production.render_story_shot_video(
-        shot_index=1,
-        output=tmp_path / "shot.mp4",
-        duration_seconds=1.0,
-        width=180,
-        height=320,
-        fps=2,
-        runner=fake_runner,
-    )
-
-    names = _mesh_names(captured[0])
-    assert "young-cow-body" in names
-    assert "witch-body" not in names
+    cow_names = {mesh.name for mesh in cow.meshes}
+    odyssey_names = {mesh.name for mesh in odyssey.meshes}
+    assert "young-cow-body" in cow_names
+    assert "hall-floor" in odyssey_names
+    assert any(name.startswith("pig-") for name in odyssey_names)
+    assert "young-cow-body" not in odyssey_names
