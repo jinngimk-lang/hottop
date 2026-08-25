@@ -66,6 +66,8 @@ def test_reference_continuity_gate_rejects_identity_drift():
 def test_reference_continuity_benchmark_verifies_reference_and_shot_bytes(tmp_path):
     benchmark = importlib.import_module("hottop.video_benchmark")
     artifacts = importlib.import_module("hottop.video_artifacts")
+    production = importlib.import_module("hottop.video_production")
+    reference = importlib.import_module("hottop.video_reference")
 
     reference_path = tmp_path / "reference.ppm"
     shot_one = tmp_path / "shot-001.mp4"
@@ -98,6 +100,41 @@ def test_reference_continuity_benchmark_verifies_reference_and_shot_bytes(tmp_pa
             ),
         ],
     )
+    plan = production.VideoProductionPlan(
+        config_name="reference-profile",
+        topic_id="topic",
+        topic_title="topic",
+        subject_name="product",
+        style_profile="cinematic",
+        generation_backend="lightx2v-operator",
+        compositor_backend="moviepy",
+        encoder_backend="ffmpeg",
+        width=720,
+        height=1280,
+        fps=24,
+        duration_seconds=4.0,
+        output_format="mp4",
+        in_asset_cta_policy="none",
+        shots=[
+            production.VideoShot(
+                index=index,
+                start_seconds=float((index - 1) * 2),
+                end_seconds=float(index * 2),
+                duration_seconds=2,
+                scene=f"hero scene {index}",
+                intent="show hero",
+                continuity_instruction="preserve hero",
+                generation_prompt="hero",
+                negative_prompt="drift",
+                reference=reference.VideoReference(
+                    image_path=str(reference_path),
+                    rights="generated-original",
+                    subject_id="hero",
+                ),
+            )
+            for index in (1, 2)
+        ],
+    )
     evidence = benchmark.ReferenceContinuityBenchmark(
         candidate_id="lightx2v-wan22-i2v",
         candidate_revision="revision",
@@ -120,6 +157,7 @@ def test_reference_continuity_benchmark_verifies_reference_and_shot_bytes(tmp_pa
         evidence,
         manifest,
         {"hero": reference_path},
+        plan=plan,
     )
 
     shot_two.write_bytes(b"tampered-shot-two")
@@ -128,8 +166,138 @@ def test_reference_continuity_benchmark_verifies_reference_and_shot_bytes(tmp_pa
             evidence,
             manifest,
             {"hero": reference_path},
+            plan=plan,
         )
     except ValueError as exc:
         assert "artifact content mismatch" in str(exc)
     else:
         raise AssertionError("tampered generated shot bytes must fail closed")
+
+
+def test_reference_continuity_rejects_cross_subject_shot_hash_reassignment(tmp_path):
+    benchmark = importlib.import_module("hottop.video_benchmark")
+    artifacts = importlib.import_module("hottop.video_artifacts")
+    production = importlib.import_module("hottop.video_production")
+    reference = importlib.import_module("hottop.video_reference")
+
+    hero_reference = tmp_path / "hero.ppm"
+    rival_reference = tmp_path / "rival.ppm"
+    hero_shot = tmp_path / "shot-001.mp4"
+    rival_shot = tmp_path / "shot-002.mp4"
+    hero_reference.write_bytes(b"hero-reference")
+    rival_reference.write_bytes(b"rival-reference")
+    hero_shot.write_bytes(b"hero-shot")
+    rival_shot.write_bytes(b"rival-shot")
+
+    hero_reference_sha = hashlib.sha256(hero_reference.read_bytes()).hexdigest()
+    rival_reference_sha = hashlib.sha256(rival_reference.read_bytes()).hexdigest()
+    hero_shot_sha = hashlib.sha256(hero_shot.read_bytes()).hexdigest()
+    rival_shot_sha = hashlib.sha256(rival_shot.read_bytes()).hexdigest()
+
+    manifest = artifacts.VideoArtifactManifest(
+        planned_generation_backend="lightx2v-operator",
+        shots=[
+            artifacts.VideoShotArtifact(
+                shot_index=1,
+                path=str(hero_shot),
+                artifact_kind="ai-generated",
+                backend="lightx2v-operator",
+                sha256=hero_shot_sha,
+                size_bytes=hero_shot.stat().st_size,
+            ),
+            artifacts.VideoShotArtifact(
+                shot_index=2,
+                path=str(rival_shot),
+                artifact_kind="ai-generated",
+                backend="lightx2v-operator",
+                sha256=rival_shot_sha,
+                size_bytes=rival_shot.stat().st_size,
+            ),
+        ],
+    )
+    plan = production.VideoProductionPlan(
+        config_name="reference-profile",
+        topic_id="topic",
+        topic_title="topic",
+        subject_name="product",
+        style_profile="cinematic",
+        generation_backend="lightx2v-operator",
+        compositor_backend="moviepy",
+        encoder_backend="ffmpeg",
+        width=720,
+        height=1280,
+        fps=24,
+        duration_seconds=4.0,
+        output_format="mp4",
+        in_asset_cta_policy="none",
+        shots=[
+            production.VideoShot(
+                index=1,
+                start_seconds=0,
+                end_seconds=2,
+                duration_seconds=2,
+                scene="hero scene",
+                intent="show hero",
+                continuity_instruction="preserve hero",
+                generation_prompt="hero",
+                negative_prompt="drift",
+                reference=reference.VideoReference(
+                    image_path=str(hero_reference),
+                    rights="generated-original",
+                    subject_id="hero",
+                ),
+            ),
+            production.VideoShot(
+                index=2,
+                start_seconds=2,
+                end_seconds=4,
+                duration_seconds=2,
+                scene="rival scene",
+                intent="show rival",
+                continuity_instruction="preserve rival",
+                generation_prompt="rival",
+                negative_prompt="drift",
+                reference=reference.VideoReference(
+                    image_path=str(rival_reference),
+                    rights="generated-original",
+                    subject_id="rival",
+                ),
+            ),
+        ],
+    )
+    evidence = benchmark.ReferenceContinuityBenchmark(
+        candidate_id="lightx2v-wan22-i2v",
+        candidate_revision="revision",
+        render_source="examples/video/reference.render.json",
+        config_name="reference-profile",
+        evaluator_id="visual-evaluator",
+        evaluator_revision="v1",
+        subjects=[
+            benchmark.SubjectContinuityEvidence(
+                subject_id="hero",
+                reference_sha256=hero_reference_sha,
+                shot_sha256s=[rival_shot_sha],
+                reference_adherence=0.9,
+                cross_shot_identity=0.9,
+            ),
+            benchmark.SubjectContinuityEvidence(
+                subject_id="rival",
+                reference_sha256=rival_reference_sha,
+                shot_sha256s=[hero_shot_sha],
+                reference_adherence=0.9,
+                cross_shot_identity=0.9,
+            ),
+        ],
+    )
+
+    try:
+        benchmark.verify_reference_continuity_artifacts(
+            evidence,
+            manifest,
+            {"hero": hero_reference, "rival": rival_reference},
+            plan=plan,
+        )
+    except ValueError as exc:
+        assert "subject" in str(exc).lower()
+    else:
+        raise AssertionError("continuity evidence must not reassign another subject's shot bytes")
