@@ -42,6 +42,7 @@ class MoviePyTimelineDialogueTrack(BaseModel):
     duration_seconds: float | None = Field(default=None, gt=0)
     character: str | None = None
     delivery: str | None = None
+    duck_bgm_db: float | None = None
 
 
 class MoviePyTimelineSfxCue(BaseModel):
@@ -106,6 +107,7 @@ def build_moviepy_timeline(
                 duration_seconds=cue.duration_seconds,
                 character=cue.character,
                 delivery=cue.delivery,
+                duck_bgm_db=cue.duck_bgm_db,
             )
             for index, cue in enumerate(dialogue_cues, start=1)
         ]
@@ -296,6 +298,43 @@ def _synthetic_bgm_array(
     return stereo, sample_rate
 
 
+def _apply_dialogue_ducking(
+    audio,
+    *,
+    sample_rate: int,
+    dialogue_tracks: list[MoviePyTimelineDialogueTrack],
+):
+    """Attenuate a BGM copy only inside dialogue windows using the strongest configured duck."""
+
+    try:
+        import numpy as np
+    except ImportError as exc:  # pragma: no cover - execution-environment guard
+        raise RuntimeError("MoviePy video execution requires the optional `video` dependencies") from exc
+
+    ducked = np.array(audio, dtype=float, copy=True)
+    if ducked.ndim == 0 or ducked.shape[0] == 0:
+        return ducked
+
+    sample_count = ducked.shape[0]
+    gains = np.ones(sample_count, dtype=float)
+    for track in dialogue_tracks:
+        if track.duck_bgm_db is None or track.duration_seconds is None:
+            continue
+        start = max(0, min(sample_count, int(track.start_seconds * sample_rate)))
+        end = max(
+            start,
+            min(sample_count, int(math.ceil((track.start_seconds + track.duration_seconds) * sample_rate))),
+        )
+        if end <= start:
+            continue
+        track_gain = 10 ** (track.duck_bgm_db / 20)
+        gains[start:end] = np.minimum(gains[start:end], track_gain)
+
+    if ducked.ndim == 1:
+        return ducked * gains
+    return ducked * gains.reshape((-1,) + (1,) * (ducked.ndim - 1))
+
+
 def _procedural_sfx_array(
     duration_seconds: float,
     cues: list[MoviePyTimelineSfxCue],
@@ -408,6 +447,11 @@ def render_moviepy_timeline(
             audio_array, sample_rate = _synthetic_bgm_array(
                 duration,
                 timeline.bgm_description,
+            )
+            audio_array = _apply_dialogue_ducking(
+                audio_array,
+                sample_rate=sample_rate,
+                dialogue_tracks=timeline.dialogue_tracks,
             )
             bgm = AudioArrayClip(audio_array, fps=sample_rate).with_duration(duration)
             audio_layers.append(bgm)
