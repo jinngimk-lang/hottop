@@ -1088,7 +1088,7 @@ def run_video_production(
     )
     artifact_manifest_paths = (
         [str((shots_dir / f"shot-{shot.index:03d}.artifact.json").resolve()) for shot in plan.shots]
-        if config.generation_backend == "zero-cost-router"
+        if config.generation_backend in {"zero-cost-router", "software3d"}
         else []
     )
     readiness = inspect_video_environment(config, project_root=root)
