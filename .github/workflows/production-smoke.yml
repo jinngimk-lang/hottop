@@ -39,7 +39,8 @@ jobs:
       - name: Install free local media dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg espeak fonts-noto-cjk
+          sudo apt-get install -y ffmpeg espeak-ng-espeak fonts-noto-cjk
+          espeak --version | grep -F "eSpeak NG"
           python -m pip install --upgrade pip
           pip install -e ".[dev,video]"
           test -f "$HOTTOP_CAPTION_FONT"
@@ -49,6 +50,38 @@ jobs:
 
           font = ImageFont.truetype(os.environ["HOTTOP_CAPTION_FONT"], 48)
           assert bytes(font.getmask("妈")) != bytes(font.getmask("傻"))
+          PY
+      - name: Probe current eSpeak-NG Mandarin dialogue budget
+        run: |
+          python - <<'PY'
+          import subprocess
+          import tempfile
+          import wave
+          from pathlib import Path
+
+          probes = [
+              (155, "哎呀，又绊我！"),
+              (155, "妈——！"),
+              (155, "用 InkClawAgent。"),
+              (155, "啊？这么直接？"),
+              (155, "别被蛇绊住。"),
+              (145, "就差一点。"),
+              (145, "先配环境。"),
+              (145, "怎么越写越大？"),
+              (145, "直接干活。"),
+              (145, "早说啊！"),
+          ]
+          with tempfile.TemporaryDirectory() as directory:
+              for index, (rate, text) in enumerate(probes, start=1):
+                  path = Path(directory) / f"probe-{index:02d}.wav"
+                  subprocess.run(
+                      ["espeak", "-v", "zh", "-s", str(rate), "-w", str(path), text],
+                      check=True,
+                  )
+                  with wave.open(str(path), "rb") as wav:
+                      duration = wav.getnframes() / wav.getframerate()
+                  print(f"HOTTOP_ESPEAK_NG_PROBE rate={rate} duration={duration:.3f}s text={text}")
+                  assert duration <= 3.25, (text, duration)
           PY
       - name: Execute checked-in anti-polish cow story
         run: |
@@ -100,6 +133,10 @@ jobs:
               assert len(result["artifact_manifest_paths"]) == 5
               for manifest in result["artifact_manifest_paths"]:
                   assert Path(manifest).is_file()
+              assert all(
+                  "Full dictionary is not installed for 'zh'" not in summary
+                  for summary in result["command_summaries"]
+              )
 
               output = case_root / "hottop-output.mp4"
               (case_root / "sha256.txt").write_text(
@@ -125,4 +162,3 @@ jobs:
             artifacts/production-smoke/odyssey/hottop-video-plan.json
             artifacts/production-smoke/odyssey/ffprobe.json
             artifacts/production-smoke/odyssey/sha256.txt
-            artifacts/production-smoke/odyssey/shots/*.artifact.json
