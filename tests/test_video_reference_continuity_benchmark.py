@@ -1,3 +1,4 @@
+import hashlib
 import importlib
 
 
@@ -60,3 +61,75 @@ def test_reference_continuity_gate_rejects_identity_drift():
 
     assert report.pass_ is False
     assert any("cross-shot identity" in reason for reason in report.reasons)
+
+
+def test_reference_continuity_benchmark_verifies_reference_and_shot_bytes(tmp_path):
+    benchmark = importlib.import_module("hottop.video_benchmark")
+    artifacts = importlib.import_module("hottop.video_artifacts")
+
+    reference_path = tmp_path / "reference.ppm"
+    shot_one = tmp_path / "shot-001.mp4"
+    shot_two = tmp_path / "shot-002.mp4"
+    reference_path.write_bytes(b"generated-original-reference")
+    shot_one.write_bytes(b"generated-shot-one")
+    shot_two.write_bytes(b"generated-shot-two")
+
+    reference_sha = hashlib.sha256(reference_path.read_bytes()).hexdigest()
+    shot_one_sha = hashlib.sha256(shot_one.read_bytes()).hexdigest()
+    shot_two_sha = hashlib.sha256(shot_two.read_bytes()).hexdigest()
+    manifest = artifacts.VideoArtifactManifest(
+        planned_generation_backend="lightx2v-operator",
+        shots=[
+            artifacts.VideoShotArtifact(
+                shot_index=1,
+                path=str(shot_one),
+                artifact_kind="ai-generated",
+                backend="lightx2v-operator",
+                sha256=shot_one_sha,
+                size_bytes=shot_one.stat().st_size,
+            ),
+            artifacts.VideoShotArtifact(
+                shot_index=2,
+                path=str(shot_two),
+                artifact_kind="ai-generated",
+                backend="lightx2v-operator",
+                sha256=shot_two_sha,
+                size_bytes=shot_two.stat().st_size,
+            ),
+        ],
+    )
+    evidence = benchmark.ReferenceContinuityBenchmark(
+        candidate_id="lightx2v-wan22-i2v",
+        candidate_revision="revision",
+        render_source="examples/video/reference.render.json",
+        config_name="reference-profile",
+        evaluator_id="visual-evaluator",
+        evaluator_revision="v1",
+        subjects=[
+            benchmark.SubjectContinuityEvidence(
+                subject_id="hero",
+                reference_sha256=reference_sha,
+                shot_sha256s=[shot_one_sha, shot_two_sha],
+                reference_adherence=0.9,
+                cross_shot_identity=0.9,
+            )
+        ],
+    )
+
+    benchmark.verify_reference_continuity_artifacts(
+        evidence,
+        manifest,
+        {"hero": reference_path},
+    )
+
+    shot_two.write_bytes(b"tampered-shot-two")
+    try:
+        benchmark.verify_reference_continuity_artifacts(
+            evidence,
+            manifest,
+            {"hero": reference_path},
+        )
+    except ValueError as exc:
+        assert "artifact content mismatch" in str(exc)
+    else:
+        raise AssertionError("tampered generated shot bytes must fail closed")
