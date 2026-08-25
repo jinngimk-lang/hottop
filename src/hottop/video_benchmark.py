@@ -70,15 +70,16 @@ def _sha256(path: pathlib.Path) -> str:
     return digest.hexdigest()
 
 
-def _subject_artifact_hashes(
+def _subject_plan_bindings(
     manifest: VideoArtifactManifest,
     plan: VideoProductionPlan,
-) -> dict[str, set[str]]:
+) -> tuple[dict[str, set[str]], dict[str, pathlib.Path]]:
     artifacts_by_index = {artifact.shot_index: artifact for artifact in manifest.shots}
     if len(artifacts_by_index) != len(manifest.shots):
         raise ValueError("continuity benchmark requires unique artifact shot indexes")
 
     hashes_by_subject: dict[str, set[str]] = {}
+    references_by_subject: dict[str, pathlib.Path] = {}
     for shot in plan.shots:
         reference = shot.reference
         if reference is None or reference.subject_id is None:
@@ -88,8 +89,14 @@ def _subject_artifact_hashes(
             raise ValueError(
                 f"artifact missing for subject {reference.subject_id} plan shot {shot.index}"
             )
-        hashes_by_subject.setdefault(reference.subject_id, set()).add(artifact.sha256)
-    return hashes_by_subject
+        subject_id = reference.subject_id
+        hashes_by_subject.setdefault(subject_id, set()).add(artifact.sha256)
+        planned_reference = pathlib.Path(reference.image_path).resolve()
+        prior_reference = references_by_subject.get(subject_id)
+        if prior_reference is not None and prior_reference != planned_reference:
+            raise ValueError(f"subject {subject_id} has conflicting references in the video plan")
+        references_by_subject[subject_id] = planned_reference
+    return hashes_by_subject, references_by_subject
 
 
 def verify_reference_continuity_artifacts(
@@ -99,10 +106,10 @@ def verify_reference_continuity_artifacts(
     *,
     plan: VideoProductionPlan,
 ) -> None:
-    """Bind visual-continuity scores to exact reference and subject-bearing shot bytes."""
+    """Bind visual-continuity scores to exact production reference and subject-shot bytes."""
 
     manifest.verify_required_byte_identity()
-    subject_hashes = _subject_artifact_hashes(manifest, plan)
+    subject_hashes, planned_references = _subject_plan_bindings(manifest, plan)
 
     for subject in evidence.subjects:
         reference_path = reference_paths.get(subject.subject_id)
@@ -110,6 +117,16 @@ def verify_reference_continuity_artifacts(
             raise ValueError(f"reference path missing for subject {subject.subject_id}")
         if not reference_path.is_file():
             raise ValueError(f"reference path is not a file: {reference_path}")
+
+        planned_reference = planned_references.get(subject.subject_id)
+        if planned_reference is None:
+            raise ValueError(
+                f"subject {subject.subject_id} has no reference-bearing shots in the video plan"
+            )
+        if reference_path.resolve() != planned_reference:
+            raise ValueError(
+                f"reference path for subject {subject.subject_id} does not match the video plan reference"
+            )
         if _sha256(reference_path) != subject.reference_sha256:
             raise ValueError(f"reference content mismatch for subject {subject.subject_id}")
 
