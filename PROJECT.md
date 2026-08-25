@@ -6,7 +6,7 @@
 
 Build a durable **hot-topic brand creative system** for marketing any user-selected brand, product, service, feature, campaign, person, idea, keyword, or tool. InkClawAgent is one example, not a permanent assumption.
 
-Hottop turns current film, entertainment, animation, technology, internet and culture into original promotional concepts that make a product's value visually memorable. Output format is flexible: a single visual metaphor, `swipe-reveal`, four-panel meme, faux still/poster, split old-vs-new comparison, short cinematic video, GIF/animation or another compact social form. Not every concept is four-panel, not every output is Anti-Polish, and the promoted subject does not have to be a hero character.
+Hottop turns current film, entertainment, animation, technology, internet and culture into original promotional concepts that make a product's value visually memorable. Output format is flexible: a single visual metaphor, `swipe-reveal`, four-panel meme, faux still/poster, split old-vs-new comparison, short cinematic video, GIF/animation or another compact social form. **Not every concept must be four-panel.** Not every output is Anti-Polish, and the promoted subject does not have to be a hero character.
 
 The durable creative goal is not `hot character + logo`. Find a natural bridge between the promoted subject and a recognizable cultural mechanism, then make the subject itself part of the action, prop, transformation, role, material, route, environment or reveal.
 
@@ -25,7 +25,7 @@ Before any final image/video generation:
 
 Default freshness is fail-closed: live research should have been observed within **6 hours**; when a trustworthy publication timestamp exists, the selected hotspot should be within **7 days**. Unknown publication time can pass only with fresh observation evidence and no invented recency claims.
 
-Historical cow/snake/Odyssey stories, four-panel layouts, Anti-Polish, low-poly 3D, cinematic realism and other successful artifacts teach reusable grammar only. They are not automatic defaults for the next request.
+**Historical examples are not defaults.** Historical cow/snake/Odyssey stories, four-panel layouts, Anti-Polish, low-poly 3D, cinematic realism and other successful artifacts teach reusable grammar only. They are not automatic defaults for the next request.
 
 ## Creative doctrine
 
