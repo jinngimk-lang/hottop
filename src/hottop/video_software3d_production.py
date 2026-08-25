@@ -88,11 +88,12 @@ def _build_cow_story_scene(*, shot_index: int, progress: float, width: int, heig
     direction = -1.0 if shot_index % 2 else 1.0
     camera_x = direction * (progress - 0.5) * 0.60
     camera_y = 0.2 + 0.035 * math.sin(progress * math.pi * 2 + shot_index)
+    camera_z = (progress - 0.5) * 0.48
     camera = Camera3D(
         width=width,
         height=height,
         focal_length=width * 0.9,
-        position=Vec3(camera_x, camera_y, 0),
+        position=Vec3(camera_x, camera_y, camera_z),
     )
 
     meshes: list[Mesh3D] = [
