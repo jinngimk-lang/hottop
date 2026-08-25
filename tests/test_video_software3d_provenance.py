@@ -4,8 +4,8 @@ import subprocess
 from pathlib import Path
 
 from hottop.rendering import CreativeRenderRequest
-from hottop.video_execution import run_video_production
-from hottop.video_production import load_video_production_config
+from hottop.video_execution import _artifact_manifest_path, run_video_production
+from hottop.video_production import ExternalCommandSpec, load_video_production_config
 from hottop.video_software3d_production import render_story_shot_video
 
 
@@ -56,8 +56,30 @@ def test_video_run_software3d_outputs_follow_moviepy_manifest_convention(tmp_pat
 
     generation = [command for command in result.runtime_commands if command.stage == "generation"]
     assert len(generation) == 5
+    expected_manifests = []
     for index, command in enumerate(generation, start=1):
         output = Path(command.args[command.args.index("--output") + 1])
         assert output == (tmp_path / "run" / "shots" / f"shot-{index:03d}.mp4").resolve()
         expected_manifest = output.with_suffix(".artifact.json")
         assert expected_manifest.name == f"shot-{index:03d}.artifact.json"
+        expected_manifests.append(str(expected_manifest))
+
+    assert result.artifact_manifest_paths == expected_manifests
+
+
+def test_runtime_discovers_software3d_sidecar_from_generation_output(tmp_path: Path):
+    output = (tmp_path / "shots" / "shot-001.mp4").resolve()
+    command = ExternalCommandSpec(
+        program="python",
+        args=[
+            "-m",
+            "hottop.video_software3d_production",
+            "--shot-index",
+            "1",
+            "--output",
+            str(output),
+        ],
+        stage="generation",
+    )
+
+    assert _artifact_manifest_path(command) == output.with_suffix(".artifact.json")
