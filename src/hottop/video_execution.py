@@ -471,29 +471,40 @@ def _external_runtime_generation_commands(
     settings = _resolve(project_root, external.settings_path).resolve()
     commands: list[ExternalCommandSpec] = []
     for shot in plan.shots:
+        args = [
+            "-m",
+            "hottop.video_wangp",
+            "--root",
+            str(root),
+            "--settings",
+            str(settings),
+            "--prompt",
+            shot.generation_prompt,
+            "--duration-seconds",
+            str(shot.duration_seconds),
+            "--fps",
+            str(config.fps),
+            "--output",
+            str((shots_dir / f"shot-{shot.index:03d}.mp4").resolve()),
+            "--profile",
+            str(external.profile),
+            "--attention",
+            external.attention,
+        ]
+        if shot.reference is not None:
+            reference_path = _resolve(project_root, shot.reference.image_path).resolve()
+            args.extend(
+                [
+                    "--reference-image",
+                    str(reference_path),
+                    "--reference-rights",
+                    shot.reference.rights,
+                ]
+            )
         commands.append(
             ExternalCommandSpec(
                 program=sys.executable,
-                args=[
-                    "-m",
-                    "hottop.video_wangp",
-                    "--root",
-                    str(root),
-                    "--settings",
-                    str(settings),
-                    "--prompt",
-                    shot.generation_prompt,
-                    "--duration-seconds",
-                    str(shot.duration_seconds),
-                    "--fps",
-                    str(config.fps),
-                    "--output",
-                    str((shots_dir / f"shot-{shot.index:03d}.mp4").resolve()),
-                    "--profile",
-                    str(external.profile),
-                    "--attention",
-                    external.attention,
-                ],
+                args=args,
                 cwd=str(project_root.resolve()),
                 stage="generation",
             )
@@ -907,13 +918,13 @@ def _verify_artifact_provenance(
         )
 
 
-def _zero_cost_reference_actions(
+def _generation_reference_actions(
     plan: VideoProductionPlan,
     config: VideoProductionConfig,
     *,
     project_root: Path,
 ) -> list[str]:
-    if config.generation_backend != "zero-cost-router":
+    if config.generation_backend not in {"zero-cost-router", "external"}:
         return []
     actions: list[str] = []
     for shot in plan.shots:
@@ -970,7 +981,7 @@ def run_video_production(
         else []
     )
     readiness = inspect_video_environment(config, project_root=root)
-    reference_actions = _zero_cost_reference_actions(
+    reference_actions = _generation_reference_actions(
         plan,
         config,
         project_root=root,
