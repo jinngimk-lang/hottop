@@ -3,6 +3,7 @@ from pathlib import Path
 
 import httpx
 import pytest
+from pydantic import ValidationError
 
 from hottop.rendering import CreativeRenderFrame, CreativeRenderRequest
 from hottop.video_comfy_api import ComfyApiError, ComfyJobRequest, execute_comfy_job
@@ -107,6 +108,20 @@ def _workflow(tmp_path: Path) -> Path:
     return workflow
 
 
+def _job_request(tmp_path: Path, *, endpoint: str) -> ComfyJobRequest:
+    return ComfyJobRequest(
+        endpoint=endpoint,
+        workflow_path=_workflow(tmp_path),
+        prompt_node_id="6",
+        prompt_input_name="text",
+        prompt="cinematic prompt",
+        output=tmp_path / "shot.mp4",
+        token="token-value",
+        poll_interval_seconds=0.01,
+        timeout_seconds=2,
+    )
+
+
 def test_comfy_video_run_dry_run_references_token_env_not_secret(monkeypatch, tmp_path):
     config = _config(tmp_path)
     monkeypatch.setenv("COMFY_API_TOKEN", "super-secret-token")
@@ -144,6 +159,14 @@ def test_comfy_readiness_fails_closed_without_token(monkeypatch, tmp_path):
     assert status.ready is False
     assert status.comfy_api is not None
     assert "COMFY_API_TOKEN" in " ".join(status.comfy_api.missing)
+
+
+def test_comfy_endpoint_rejects_deceptive_localhost_prefix(tmp_path):
+    with pytest.raises(ValidationError, match="HTTPS"):
+        _job_request(tmp_path, endpoint="http://localhost.evil.example:8188")
+
+    with pytest.raises(ValidationError, match="HTTPS"):
+        _job_request(tmp_path, endpoint="http://127.0.0.1.evil.example:8188")
 
 
 def test_comfy_api_v2_executes_api_workflow_and_downloads_video(tmp_path):
