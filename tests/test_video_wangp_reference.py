@@ -194,3 +194,55 @@ def test_video_run_wangp_missing_reference_fails_before_execute(monkeypatch, tmp
             project_root=tmp_path,
             execute=True,
         )
+
+
+def test_video_run_wangp_reference_requires_exported_placeholder_before_gpu(monkeypatch, tmp_path):
+    _prepare_operator_install(tmp_path, with_placeholder=False)
+    _patch_local_runtime(monkeypatch)
+    reference_path = tmp_path / "assets" / "hero.png"
+    reference_path.parent.mkdir(parents=True)
+    reference_path.write_bytes(b"original-reference")
+    reference = VideoReference(
+        image_path="assets/hero.png",
+        rights="generated-original",
+        subject_id="hero",
+        identity_lock=["same face"],
+    )
+    config = load_video_production_config(Path("config/video/wangp-operator.yml"))
+
+    dry_run = run_video_production(
+        _request(reference),
+        config,
+        output_dir=tmp_path / "dry-run-no-placeholder",
+        project_root=tmp_path,
+        execute=False,
+    )
+
+    assert dry_run.ready is False
+    assert any("reference placeholder" in item for item in dry_run.actions_required)
+
+    with pytest.raises(VideoExecutionError, match="reference placeholder"):
+        run_video_production(
+            _request(reference),
+            config,
+            output_dir=tmp_path / "execute-no-placeholder",
+            project_root=tmp_path,
+            execute=True,
+        )
+
+
+def test_video_run_wangp_placeholder_requires_reference_for_every_shot(monkeypatch, tmp_path):
+    _prepare_operator_install(tmp_path, with_placeholder=True)
+    _patch_local_runtime(monkeypatch)
+    config = load_video_production_config(Path("config/video/wangp-operator.yml"))
+
+    dry_run = run_video_production(
+        _request(None),
+        config,
+        output_dir=tmp_path / "dry-run-no-reference",
+        project_root=tmp_path,
+        execute=False,
+    )
+
+    assert dry_run.ready is False
+    assert any("has no reference image" in item for item in dry_run.actions_required)
