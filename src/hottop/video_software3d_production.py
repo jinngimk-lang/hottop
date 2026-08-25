@@ -17,6 +17,7 @@ Runner = Callable[..., subprocess.CompletedProcess[str]]
 
 COW_STORY_PROFILE = "cow-snake"
 ODYSSEY_STORY_PROFILE = "odyssey-witch-pigs"
+COW_STORY_TOPICS = frozenset({COW_STORY_PROFILE, "inkclaw-anti-polish-cow-snake"})
 
 
 def _box(
@@ -141,10 +142,15 @@ def _build_cow_story_scene(*, shot_index: int, progress: float, width: int, heig
     return Scene3D(camera=camera, meshes=meshes, background=(31, 24, 22))
 
 
-def _story_profile_for_topic(topic_id: object) -> str:
-    if isinstance(topic_id, str) and topic_id.strip() == ODYSSEY_STORY_PROFILE:
+def story_profile_for_topic(topic_id: object) -> str:
+    if not isinstance(topic_id, str):
+        raise ValueError(f"unsupported software 3d story topic: {topic_id!r}")
+    normalized = topic_id.strip()
+    if normalized in COW_STORY_TOPICS:
+        return COW_STORY_PROFILE
+    if normalized == ODYSSEY_STORY_PROFILE:
         return ODYSSEY_STORY_PROFILE
-    return COW_STORY_PROFILE
+    raise ValueError(f"unsupported software 3d story topic: {normalized or '<blank>'}")
 
 
 def build_story_scene(
@@ -179,19 +185,19 @@ def _load_render_source(render_source: Path) -> tuple[list[dict[str, object]], s
     frames = raw.get("frames")
     if not isinstance(frames, list) or len(frames) != 5:
         raise ValueError("software 3d flagship source requires exactly five frames")
-    return frames, _story_profile_for_topic(raw.get("topic_id"))
+    return frames, story_profile_for_topic(raw.get("topic_id"))
 
 
-def _story_profile_from_workspace_plan(path: Path = Path("hottop-video-plan.json")) -> str:
+def _story_profile_from_workspace_plan(path: Path) -> str:
     if not path.is_file():
-        return COW_STORY_PROFILE
+        raise ValueError(f"software 3d workspace plan is missing: {path}")
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise ValueError("software 3d workspace plan is unreadable") from exc
     if raw.get("schema_version") != "hottop.video-plan.v1":
         raise ValueError("software 3d workspace requires hottop.video-plan.v1")
-    return _story_profile_for_topic(raw.get("topic_id"))
+    return story_profile_for_topic(raw.get("topic_id"))
 
 
 def render_story_frame_sequence(
@@ -263,6 +269,7 @@ def render_story_shot_video(
     width: int = 360,
     height: int = 640,
     fps: int = 12,
+    story_profile: str | None = None,
     runner: Runner = subprocess.run,
 ) -> Path:
     if shot_index < 1 or shot_index > 5:
@@ -270,10 +277,16 @@ def render_story_shot_video(
     if duration_seconds <= 0 or fps <= 0:
         raise ValueError("duration_seconds and fps must be positive")
 
-    story_profile = _story_profile_from_workspace_plan()
+    resolved_output = output.resolve()
+    if story_profile is None:
+        workspace_plan = resolved_output.parent.parent / "hottop-video-plan.json"
+        story_profile = _story_profile_from_workspace_plan(workspace_plan)
+    elif story_profile not in {COW_STORY_PROFILE, ODYSSEY_STORY_PROFILE}:
+        raise ValueError(f"unsupported software 3d story profile: {story_profile}")
+
     output.parent.mkdir(parents=True, exist_ok=True)
     output.unlink(missing_ok=True)
-    manifest_path = output.resolve().with_suffix(".artifact.json")
+    manifest_path = resolved_output.with_suffix(".artifact.json")
     manifest_path.unlink(missing_ok=True)
     frames_dir = output.with_suffix(".frames")
     shutil.rmtree(frames_dir, ignore_errors=True)
@@ -338,6 +351,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir")
     parser.add_argument("--shot-index", type=int)
     parser.add_argument("--output")
+    parser.add_argument("--story-profile")
     parser.add_argument("--width", type=int, default=360)
     parser.add_argument("--height", type=int, default=640)
     parser.add_argument("--fps", type=int, default=12)
@@ -358,6 +372,7 @@ def main() -> None:
             width=args.width,
             height=args.height,
             fps=args.fps,
+            story_profile=args.story_profile,
         )
         return
     if not args.render or not args.output_dir:
