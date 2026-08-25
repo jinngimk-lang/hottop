@@ -7,6 +7,12 @@ video_production = __import__(
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+EXPECTED_IDENTITY_LOCK = [
+    "round symmetric silhouette",
+    "warm amber outer glow",
+    "pale golden center",
+    "dark navy halo",
+]
 
 
 def test_zero_cost_reference_i2v_archive_is_rights_safe_and_executable_by_contract():
@@ -25,16 +31,18 @@ def test_zero_cost_reference_i2v_archive_is_rights_safe_and_executable_by_contra
     assert render.in_asset_cta_policy == "no-destination"
     assert render.frames
     assert all(frame.reference is not None for frame in render.frames)
+
+    references = [frame.reference for frame in render.frames if frame.reference is not None]
     assert all(
-        frame.reference.image_path == "assets/generated-original/hottop-signal-orb.ppm"
-        for frame in render.frames
-        if frame.reference is not None
+        reference.image_path == "assets/generated-original/hottop-signal-orb.ppm"
+        for reference in references
     )
-    assert all(
-        frame.reference.rights == "generated-original"
-        for frame in render.frames
-        if frame.reference is not None
-    )
+    assert all(reference.rights == "generated-original" for reference in references)
+    assert {reference.subject_id for reference in references} == {"hottop-signal-orb"}
+    assert {reference.role for reference in references} == {
+        "generated-original workflow signal orb"
+    }
+    assert all(reference.identity_lock == EXPECTED_IDENTITY_LOCK for reference in references)
 
     config = video_production.load_video_production_config(
         ROOT / "config/video/cinematic-zero-cost.yml"
@@ -50,3 +58,13 @@ def test_zero_cost_reference_i2v_archive_is_rights_safe_and_executable_by_contra
         for shot in plan.shots
         if shot.reference is not None
     )
+    assert all(
+        shot.reference.subject_id == "hottop-signal-orb"
+        for shot in plan.shots
+        if shot.reference is not None
+    )
+    assert all("Identity anchor hottop-signal-orb" in shot.generation_prompt for shot in plan.shots)
+    assert all("round symmetric silhouette" in shot.generation_prompt for shot in plan.shots)
+    assert all("warm amber outer glow" in shot.generation_prompt for shot in plan.shots)
+    assert all("pale golden center" in shot.generation_prompt for shot in plan.shots)
+    assert all("dark navy halo" in shot.generation_prompt for shot in plan.shots)
