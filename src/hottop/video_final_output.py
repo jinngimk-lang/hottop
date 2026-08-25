@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 from collections.abc import Callable
 from pathlib import Path
@@ -9,6 +10,9 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from .video_production import FFmpegConfig
+
+AUDIO_ACTIVITY_FLOOR_DB = -60.0
+_MAX_VOLUME_RE = re.compile(r"max_volume:\s*(?P<value>-inf|[-+]?\d+(?:\.\d+)?)\s*dB", re.IGNORECASE)
 
 
 class FinalVideoOutputError(RuntimeError):
@@ -21,6 +25,7 @@ class FinalVideoOutputReport(BaseModel):
     video_codec: str | None = None
     pixel_format: str | None = None
     audio_codec: str | None = None
+    audio_max_volume_db: float | None = None
     reasons: list[str] = Field(default_factory=list)
 
 
@@ -31,6 +36,47 @@ def _expected_codec(configured: str) -> str:
         "libvpx-vp9": "vp9",
     }
     return aliases.get(configured, configured)
+
+
+def _inspect_audio_activity(
+    path: Path,
+    *,
+    runner: Callable[..., Any],
+) -> tuple[float | None, str | None]:
+    volume = runner(
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-nostats",
+            "-i",
+            str(path),
+            "-map",
+            "0:a:0",
+            "-af",
+            "volumedetect",
+            "-f",
+            "null",
+            "-",
+        ],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if int(getattr(volume, "returncode", 1)) != 0:
+        return None, "audio activity analysis failed"
+    match = _MAX_VOLUME_RE.search(str(getattr(volume, "stderr", "") or ""))
+    if match is None:
+        return None, "audio activity analysis returned no max volume"
+    raw = match.group("value").lower()
+    if raw == "-inf":
+        return float("-inf"), "audio is silent"
+    try:
+        max_volume_db = float(raw)
+    except ValueError:
+        return None, "audio activity analysis returned invalid max volume"
+    if max_volume_db <= AUDIO_ACTIVITY_FLOOR_DB:
+        return max_volume_db, "audio is silent"
+    return max_volume_db, None
 
 
 def inspect_final_video_output(
@@ -105,12 +151,19 @@ def inspect_final_video_output(
             f"audio codec {audio_codec or 'missing'} does not match {expected_audio_codec}"
         )
 
+    audio_max_volume_db: float | None = None
+    if audio is not None and audio_codec == expected_audio_codec:
+        audio_max_volume_db, audio_reason = _inspect_audio_activity(path, runner=runner)
+        if audio_reason is not None:
+            reasons.append(audio_reason)
+
     return FinalVideoOutputReport(
         pass_=not reasons,
         duration=duration,
         video_codec=video_codec,
         pixel_format=pixel_format,
         audio_codec=audio_codec,
+        audio_max_volume_db=audio_max_volume_db,
         reasons=reasons,
     )
 
