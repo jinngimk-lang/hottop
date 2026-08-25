@@ -6,7 +6,7 @@ from pathlib import Path
 from hottop.rendering import CreativeRenderRequest
 from hottop.video_execution import _artifact_manifest_path, run_video_production
 from hottop.video_production import ExternalCommandSpec, load_video_production_config
-from hottop.video_software3d_production import render_story_shot_video
+from hottop.video_software3d_production import COW_STORY_PROFILE, render_story_shot_video
 
 
 def test_software3d_shot_writes_byte_bound_provenance_manifest(tmp_path: Path):
@@ -25,6 +25,7 @@ def test_software3d_shot_writes_byte_bound_provenance_manifest(tmp_path: Path):
         width=160,
         height=90,
         fps=4,
+        story_profile=COW_STORY_PROFILE,
         runner=runner,
     )
 
