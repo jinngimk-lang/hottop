@@ -16,7 +16,7 @@ def _request(tmp_path: Path) -> CreativeRenderRequest:
         topic_title="LightX2V test",
         subject_name="InkClawAgent",
         expression_form="faux-film-still",
-        visual_medium="original low-poly cinematic",
+        visual_medium="animation-low-poly",
         genre_treatment="anti-polish",
         distribution_mode="motion",
         in_asset_cta_policy="no-destination",
