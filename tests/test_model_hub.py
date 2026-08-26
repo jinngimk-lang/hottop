@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import yaml
-
 from hottop.model_hub import load_model_hub, select_models
 
 
