@@ -9,55 +9,66 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current repository truth
 
-PR #89, **Gate software3d shot seam quality**, was squash-merged to `main` as `485318a9e299f212729b9b2cf71c5b8a9d47a115` after exact-head `22908f8afa8765f48033281e83b25160bd335d20` passed CI #1726 and production-smoke #184 with no unresolved review threads.
+Current `main` is `6918b40144e98a63aa0400e9a232b888cc59eca6`.
 
-The guaranteed software3d route now has both the bounded in-place cross-dissolve introduced by PR #87 and a real-artifact production gate that measures final cow + Odyssey MP4 seam deltas. Production-smoke writes `seam-quality.json`, logs `HOTTOP_SEAM_QUALITY`, and fails when `max_seam_delta > 8.0` or seam/intra-shot p95 ratio exceeds 5.5. This converts the prior one-time visual improvement into a regression contract without changing renderer/provider/provenance/cost behavior.
+Recent completed work:
 
-Post-merge production-smoke #185 for `main@485318a9...` completed successfully. PR #90 then refreshed this execution snapshot; its merge head `bf8709fe4dbc2377c941c6deab6dfaba26378ebe` passed post-merge CI #1729.
+- PR #89 made low-resolution cow + Odyssey final-MP4 seam quality a persistent production-smoke gate.
+- `docs/decisions/2026-08-26-software3d-repeatability.md` records observed byte-repeatability across production-smoke #184 and post-merge #185 for the exact checked-in workflow/source/profile scope; it does **not** claim universal cross-platform bitwise determinism.
+- PR #93, **Gate 720p cinematic delivery seam quality**, was squash-merged as `593282ea6f605968658c210837bc43ecba648fd9`. RED CI #1734 failed exactly one new workflow contract (`1 failed / 499 passed`); GREEN exact-head CI #1735 passed on Python 3.11/3.12 and cinematic-delivery-smoke #31 passed the real 720×1280/24fps Odyssey chain.
+- PR #94, **Record Qwen3-TTS serving benchmark provenance**, was squash-merged as `6918b40144e98a63aa0400e9a232b888cc59eca6` after exact-head CI #1738. It changes research/provenance expectations only; no runtime/provider/default TTS route changed.
 
-## Real artifact evidence — shot seams
+Post-merge CI #1736 for the PR #93 production merge passed. Post-merge cinematic-delivery-smoke #32 for `593282ea...` is still executing the real 720p24 Odyssey render at the time of this snapshot; do not claim its result until re-fetched.
 
-The original hard cuts exposed seam deltas around **10.5–12.3** for cow and **12.0–16.1** for Odyssey versus normal intra-shot p95 around **1.27 / 1.84**. A fade-to-black experiment was rejected despite pipeline-green because direct MP4 measurement worsened peaks to roughly **18.5–20.5 / 25.8–27.0**.
+## Real artifact evidence — software3d
 
-The accepted cross-dissolve produced:
+The guaranteed software3d route remains a real config → moving shots → Mandarin dialogue/original music/Foley → MoviePy → FFmpeg → verified MP4 path with byte-bound shot/final provenance.
 
-- production-smoke #181 (360×640/12fps): cow seams **4.54 / 5.18 / 5.53 / 5.54**; Odyssey **4.76 / 6.49 / 5.57 / 5.78**;
-- cinematic-delivery-smoke #28 (720×1280/24fps Odyssey): seams **3.46 / 4.56 / 3.79 / 4.34**;
-- production-smoke #184: the new persistent seam gate passed on both real final MP4s; archived seam evidence measured cow max delta **4.43** / ratio **3.62** and Odyssey max delta **5.20** / ratio **3.04**;
-- post-merge production-smoke #185: the same persistent gate passed again on `main`.
+### 360×640/12fps production baseline
 
-The durable lesson remains: pipeline-green is not visual-quality proof; real MP4 inspection and measured artifact contracts can reject technically valid output.
+The accepted cross-dissolve plus persistent seam gate currently enforces:
 
-## Declared local operator compute
+- max final-MP4 seam delta `<= 8.0`;
+- max seam / intra-shot p95 ratio `<= 5.5`.
 
-Canonical profile: `config/operator/dgx-spark-dual.yml`.
+Production-smoke #184 measured cow max delta **4.431528** / ratio **3.622543**, and Odyssey max delta **5.196111** / ratio **3.038082**. Post-merge #185 passed the same gate. Across those two runs, final MP4 SHA-256 values were byte-identical within the exact tested scope:
+
+- cow: `8c23e3ea76dad18d5d2092e52b944365f267df363a16e9624db08a5be0e339b5`;
+- Odyssey: `f30a15c8e146f07d2bae8416a7bae3ebe5a54cfb5cb65bac5fbb82f6ac39795c`.
+
+### 720×1280/24fps cinematic delivery
+
+Cinematic-delivery-smoke now runs the **same final-MP4 seam-quality contract continuously**, rather than relying on a one-time historical measurement.
+
+Exact-head PR #93 smoke #31 produced:
+
+- intra-shot p95: **0.933076**;
+- seam deltas: **3.225000 / 4.127847 / 3.456250 / 4.178889**;
+- max seam delta: **4.178889**;
+- max seam/intra ratio: **4.478614**;
+- final MP4 SHA-256: `a3895434d17b857f752cea05a14b46a2de6943f7e70158755c88589fe9da0222`;
+- Actions artifact digest: `sha256:292e32d69628051dff1264050191903e5f0ff206c08910c5107f15b11031179a`;
+- final media: H.264 / yuv420p, 720×1280, 24fps, AAC, 15.0s.
+
+All measured seam values retain margin under the accepted thresholds. The existing final-media verifier also requires audio duration to cover the final video within 0.25s and rejects effectively silent audio, so a separate duplicate workflow-only audio-duration gate is not required.
+
+The 720p proof remains a deterministic presentable baseline. It is not a generated/reference-conditioned identity claim and is not the cinematic quality ceiling.
+
+## Operator compute / generated-quality boundary
+
+Canonical operator profile: `config/operator/dgx-spark-dual.yml`.
 Durable operator spec: `docs/operations/dgx-spark-local-model-fabric.md`.
+Model registry: `integrations/model-hub.yml`.
 
-The declared two-node NVIDIA DGX Spark pool remains the preferred heavy-compute surface before paid SaaS, but Hottop does **not** infer runtime readiness or treat aggregate physical memory as one automatic shared GPU address space. Driver/CUDA/PyTorch, disk, model paths and inter-node networking remain unverified until `scripts/probe_dgx_spark.py` runs on the actual hosts. Private host/runtime details should stay out of Git where appropriate.
+The declared two-node DGX Spark pool is preferred before paid SaaS, but Hottop does **not** infer runtime readiness. Driver/CUDA/PyTorch, disk/model paths and inter-node networking remain unverified until probe output from the actual operator hosts exists.
 
-## One-stop multimodal model hub
-
-Canonical registry: `integrations/model-hub.yml`.
-Safe discovery surface: `hottop-models list`.
-
-Priority remains:
-
-1. LightX2V + Wan2.2 I2V A14B for reviewed local reference-conditioned motion.
-2. LightX2V Wan2.2 NVFP4 sparse Blackwell as a benchmark candidate, not an assumed speedup.
-3. Wan2.2 TI2V/Animate/S2V for real motion, character animation and speech-driven motion when separately provisioned and rights-cleared.
-4. Qwen-Image for keyframe/image work and Qwen3-TTS 1.7B CustomVoice for operator-local Mandarin delivery benchmarks.
-5. Real-ESRGAN/RIFE only for restoration/interpolation; neither may masquerade as a motion generator.
-6. ComfyUI/WanGP and other external stacks remain isolated interop candidates under their own license/runtime gates.
-
-Popularity or freshness alone is not admission evidence. Code license remains separate from weights/model/data/output rights.
+Priority generated-quality route remains reviewed local LightX2V + Wan2.2 I2V with rights-safe references, shared motion/quality/provenance gates and complete subject-bound continuity evidence. No automatic model download, GPU provisioning or paid fallback is admitted.
 
 ## Targeted ecosystem radar — 2026-08-26
 
-Fresh checks still do not justify changing tested defaults.
-
-- LightX2V `main` moved to `b220e26198fc90769114b6751236be96a3838069` on 2026-08-26 with an opt-in MiniMax-H3 memory-residency optimization that keeps DiT pre/post weights on the accelerator while transformer blocks use block offload. It does not change default behavior and is not a Hottop-measured improvement to the tested Wan2.2 route, so no freshness-only repin is admitted.
-- Wan2.2 upstream remains active, including packaging/community work, but no current change demonstrates a Hottop-measured gain over the tested local subset. A June 2026 SGLang issue documented mosaic/corrupted Wan2.2 T2V output on one native backend while Diffusers produced correct output, reinforcing Hottop's rule that successful execution is not sufficient quality proof.
-- Qwen3-TTS ecosystem work continues, including GPU-serving/optimization experiments, but there is still no operator-provisioned 1.7B same-line A/B evidence that justifies replacing the guaranteed eSpeak-family fallback or changing the reviewed Qwen adapter.
+- LightX2V `main` remains `b220e26198fc90769114b6751236be96a3838069` in the latest checked state. Its current MiniMax-H3 memory-residency optimization is opt-in and has no Hottop-measured benefit to the tested Wan2.2 route, so no freshness-only repin is admitted.
+- Qwen3-TTS upstream remains on the reviewed operator-local path; there is still no operator-provisioned 1.7B same-line Mandarin A/B evidence that justifies replacing the guaranteed eSpeak-family fallback.
+- Fresh public Qwen3-TTS serving benchmarks show that headline latency can depend on **local source patches or compatibility overrides**. `docs/research/2026-08-26-qwen3-tts-serving-provenance.md` records exact model/runtime/image/source identities for reviewed M*, vLLM-Omni and SGLang-Omni reports. Future Hottop acceleration evidence must bind patch/override identity and actual operator runtime, not only an upstream Git SHA. Those reports are primarily English throughput/latency evidence and do not prove Mandarin delivery quality.
 
 No heavy dependency, automatic model download or new paid route is admitted from this scan.
 
@@ -69,20 +80,19 @@ The software3d → local Mandarin audio → original synthetic music/Foley → M
 - measured mobile framing and subtitle line-break quality;
 - deterministic role-separated eSpeak-family dialogue and dialogue-aware ducking;
 - geometric directional-light routing for lower-roughness cinematic profiles;
-- controlled cross-shot dissolves with a persistent seam-quality gate;
+- controlled cross-shot dissolves with persistent seam-quality gates at both production-smoke and 720p cinematic-delivery surfaces;
 - shot/final byte-bound provenance, pre-composition re-verification and final H.264/AAC/yuv420p media verification.
-
-The checked-in 720×1280/24fps Odyssey delivery proof remains a deterministic presentable baseline. It is not a generated/reference-conditioned identity claim and is not the cinematic quality ceiling.
 
 ## Immediate next actions
 
-1. Inspect fresh real cow/Odyssey MP4 evidence and improve only a **measured** visual/audio defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
-2. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines.
-3. Once one reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run the first true-motion Odyssey benchmark with at least two subject-bearing I2V shots.
-4. Bind actual generator source revision, checkpoint provenance when independently available, exact reference bytes and shot hashes; require meaningful motion plus complete cross-shot continuity evidence before composition.
-5. Run the existing role-aware Mandarin/audio/post chain and final H.264/AAC verification; visually reject slideshow motion, identity drift, broken geography or weak product/hotspot mapping.
-6. Continue targeted ecosystem radar around the **measured current gap**. Do not add abstraction, freshness-only pins or large dependencies without measurable value and a rollback path.
-7. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not creative defaults.
+1. Re-fetch cinematic-delivery-smoke #32. If it succeeds, compare its 720p final MP4 SHA and `seam-quality.json` against #31; persist observed repeatability only if actually proven.
+2. Inspect fresh real cow/Odyssey MP4 evidence and improve only a **measured** visual/audio defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
+3. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines.
+4. Once one reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run the first true-motion Odyssey benchmark with at least two subject-bearing I2V shots.
+5. Bind actual generator source revision, local patch/override identity where applicable, checkpoint provenance when independently available, exact reference bytes and shot hashes; require meaningful motion plus complete cross-shot continuity evidence before composition.
+6. Run the existing role-aware Mandarin/audio/post chain and final H.264/AAC verification; visually reject slideshow motion, identity drift, broken geography or weak product/hotspot mapping.
+7. Continue targeted ecosystem radar around the **measured current gap**. Do not add abstraction, freshness-only pins or large dependencies without measurable value and a rollback path.
+8. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not creative defaults.
 
 ## Recovery order
 
