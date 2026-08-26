@@ -54,6 +54,19 @@ This proves new evidence can bind CPU identity. It does **not** prove CPU differ
 
 There is also no reason to weaken production merely to chase a universal hash. FFmpeg's own community guidance notes that real multithreaded encoders are not generally expected to emit byte-identical output across runs, and NumPy selects CPU/SIMD kernels at runtime. Hottop therefore records the material environment and enforces real artifact quality/integrity instead of forcing single-threaded or otherwise degraded execution solely for bitwise identity.
 
+### 2026-08-27 cross-CPU follow-up
+
+PR #97 exact-head cinematic-delivery-smoke #41 and its post-merge main smoke #42 provide the first immediately comparable 720p runs where CPU identity is captured on both sides.
+
+Both runs used the **same** derived `hottop-video-plan.json` SHA-256 `40d5b341e357572bfe10c4d9e0ba8bbc81038f31ba0b3b8f7467e94109b4031f`. Their recorded package versions, FFmpeg/FFprobe/eSpeak executable identities and caption-font identity are the same; the runtime-provenance diff is limited to CPU identity fields.
+
+- #41 CPU: `AMD EPYC 9V74 80-Core Processor` / `AuthenticAMD`, `/proc/cpuinfo` SHA-256 `834f99405c6a7b1f13d93fc5bf45599e669d1e1ad2fdaacfe4b61eab1fd62bed`; final MP4 SHA-256 `c1353b556cb8675b94e58bb1d41624c69b4711ad1b83c690f1e81dd60b3f58df`.
+- #42 CPU: `Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz` / `GenuineIntel`, `/proc/cpuinfo` SHA-256 `3eb16c7de185a902dff4f30e09295791d52ec77beab06b95bd942ef8dab2d6ed`; final MP4 SHA-256 `a3895434d17b857f752cea05a14b46a2de6943f7e70158755c88589fe9da0222`.
+
+All five software3d shot hashes differ between #41 and #42, yet both pass the same quality/media gates. #41 seam metrics are intra p95 `0.933903`, max delta `4.184792`, ratio `4.480971`; #42 is `0.933076`, `4.178889`, `4.478614`. A 30-frame decoded 90×160 grayscale comparison has mean absolute difference about **`0.0425/255`**, with about **`0.324%`** of sampled pixels differing by more than one level.
+
+This materially strengthens the interpretation that CPU/runtime execution identity can explain scoped byte variance while accepted visual quality remains stable. It still does **not** establish formal single-factor causality: hosted-runner execution includes details beyond the fields currently captured. The production rule therefore remains contract-first, with CPU identity retained as material provenance rather than a requirement for universal byte equality.
+
 ## Decision
 
 For Production v0.2, **repeatability is defined first by reproducible production contracts and measured final-artifact quality invariants**, not by universal byte equality.
@@ -80,3 +93,4 @@ This supersedes the earlier wording that generalized the observed #29/#32 byte m
 - PR #93 / cinematic-delivery-smoke #31 — persistent 720p seam gate, different-byte counterexample.
 - cinematic-delivery-smoke #32 — post-merge 720p evidence.
 - PR #97 / cinematic-delivery-smoke #38 — CPU-bound runtime provenance plus matching quality/hash evidence.
+- cinematic-delivery-smoke #41 / #42 — same-plan, different-CPU follow-up with different shot/final bytes but near-identical decoded output and passing gates.
