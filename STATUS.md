@@ -1,57 +1,53 @@
 # Hottop Status
 
 Last updated: 2026-08-27
-Active workstream: **Production v0.2 — measured repeatability + generated-quality readiness**
+Active workstream: **Production v0.2 — repeatable real video output + generated-quality readiness**
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
-> `PROJECT.md` is durable doctrine. This file is a short-lived execution snapshot. It records the last verified merge/evidence known when the snapshot was written; it does **not** claim that any embedded SHA is live `main`. Always re-fetch GitHub before exact head/CI claims.
+> `PROJECT.md` is durable doctrine. This file is a short-lived execution snapshot, not a self-updating `main` pointer. Always re-fetch GitHub before exact head/CI claims.
 
-## Current repository truth
+## Current verified repository truth
 
-Latest verified merge in this snapshot: PR #99 **Record post-merge production evidence**, merge commit `14bd88827feedc7db2b10600398bcc9790d5b501`. Its post-merge CI #1760 passed on Python 3.11/3.12. Re-fetch live `main` rather than treating this historical verification point as a self-updating branch pointer.
+PR #102 **Bind numeric runtime provenance in cinematic delivery evidence** was squash-merged as `05575adbbfc9b462a5744c7d3c0994458654d5b0` after its exact head `32e93ff079066e126b55811d5be8db62356779b3` passed all final gates:
 
-PR #97 exact head `8538d7b5515f7300528dd7fd82c72a52826d8e4a` passed:
+- CI #1773;
+- production-smoke #187;
+- cinematic-delivery-smoke #51.
 
-- CI #1753;
-- cinematic-delivery-smoke #41.
+Post-merge `main@05575adb...` has already passed CI #1774 on Python 3.11/3.12 and production-smoke #188. Cinematic-delivery-smoke #52 is the remaining post-merge 720×1280/24fps verification and was still executing when this snapshot was written; re-fetch it before treating that final gate as resolved.
 
-PR #97 post-merge `main@baa5888f...` CI #1754 **and cinematic-delivery-smoke #42** both passed. PR #98 exact-head CI #1755 passed, and its post-merge `main@98aa1534...` CI #1756 passed on Python 3.11/3.12. PR #98 was docs-only and did not alter renderer/runtime/provider/quality-threshold behavior.
+There were no unresolved review threads on PR #102.
 
-A direct artifact comparison of cinematic smokes #41/#42 adds new scoped repeatability evidence: both used the same plan SHA-256 `40d5b341e357572bfe10c4d9e0ba8bbc81038f31ba0b3b8f7467e94109b4031f` and the same recorded packages/media executables/font, while the captured CPU changed from AMD EPYC 9V74/`AuthenticAMD` to Intel Xeon Platinum 8370C/`GenuineIntel`. All five shot hashes and the final MP4 hash changed (`c1353b...` → `a3895434...`), yet seam metrics remained effectively identical and a 30-frame 90×160 decoded grayscale comparison averaged only about `0.0425/255` absolute difference. This strengthens—without formally proving single-factor causality—the decision to bind CPU/runtime identity and judge repeatability by quality/media/integrity contracts rather than universal byte equality.
+## Numeric runtime provenance — accepted contract
 
-There are no unresolved PR comments/review threads from #97.
+`docs/decisions/2026-08-27-numeric-runtime-provenance.md` records the new evidence contract. New 720p cinematic software3d delivery evidence now binds material numerical execution identity in addition to the existing source/plan/package/media/font/CPU provenance:
 
-## Durable repeatability correction
+- logical CPU count;
+- relevant BLAS/OpenMP thread environment;
+- human-readable `numpy.show_config()` and `numpy.show_runtime()` reports plus SHA-256 identities;
+- pinned `threadpoolctl==3.6.0` package identity.
 
-`docs/decisions/2026-08-26-software3d-repeatability.md` is the detailed evidence record. The canonical rule is also in `PROJECT.md`:
+The real PR-head cinematic artifact from #51 proves these fields are present in actual delivery evidence rather than only workflow source. It recorded Python 3.12.14, NumPy 2.5.2, `threadpoolctl 3.6.0`, AMD EPYC 9V74, 4 logical CPUs and OpenBLAS 0.3.34.0.0 / pthreads / 4 runtime threads. Its Actions artifact digest is `sha256:257ff8331775a4025f016ee073e3f566da4495fbeef0b5f421813f27e811f866`.
 
-**Production repeatability is quality-contract-first, not hash-first.**
+The accepted final Odyssey media remained H.264 720×1280 yuv420p 24fps + AAC, 15s, final SHA-256 `c1353b556cb8675b94e58bb1d41624c69b4711ad1b83c690f1e81dd60b3f58df`, with seam intra-shot p95 `0.933903`, max seam delta `4.184792` and max ratio `4.480971`.
 
-The 720×1280/24fps Odyssey evidence includes successful runs #29/#31/#32/#38. #29/#32/#38 produced the same final MP4 SHA-256 `c1353b556cb8675b94e58bb1d41624c69b4711ad1b83c690f1e81dd60b3f58df`; #31 produced different shot/final bytes while remaining visually near-identical and passing the same seam/media/integrity gates. Therefore:
-
-- reproducible visual/audio/media/integrity contracts are the hard success definition;
-- shot/final bytes remain bound on every run;
-- byte equality is useful additional **scoped observed evidence**, not a universal route-level requirement;
-- material runtime/hardware identity is bound so later differences can be interpreted;
-- Hottop does not degrade quality or throughput solely to chase a universal hash.
-
-PR #97 added CPU runtime provenance for future 720p evidence: `platform.machine()`, first-processor model/vendor and SHA-256 of complete `/proc/cpuinfo` bytes. Its successful #38 proof recorded `x86_64 / AMD EPYC 7763 64-Core Processor / AuthenticAMD` plus `/proc/cpuinfo` SHA-256 `e8c8a04bfd1dcda906a9b8e1116f3db8b87b00df7e0265072c3b0083a62a37d3`. This does not retroactively prove CPU variance caused #31 because historical #31/#32 CPU identities were not captured.
+This strengthens the existing canonical rule: **repeatability is quality/media/integrity-contract-first, not universal hash-first**. Numeric runtime identity helps interpret scoped byte differences; it is not a reason to force slower/lower-quality execution solely to preserve hashes.
 
 ## Guaranteed zero-cost baseline
 
-The software3d → local Mandarin dialogue → original synthetic music/Foley → MoviePy → FFmpeg path remains the guaranteed zero-GPU, zero-model-download, zero-paid baseline. Current production contracts include:
+The software3d → local Mandarin dialogue → original synthetic music/Foley → MoviePy → FFmpeg route remains the guaranteed zero-GPU, zero-model-download, zero-paid baseline. Current production evidence covers:
 
-- moving story-specific 3D geometry rather than slideshow placeholders;
-- mobile principal-subject scale/placement and CJK subtitle readability/line-break gates;
-- role-separated eSpeak-family dialogue plus delivery-aware cadence and BGM ducking;
+- story-specific moving 3D geometry rather than slideshow placeholders;
+- mobile subject scale/placement and CJK subtitle/line-break gates;
+- role-separated eSpeak-family dialogue, delivery-aware cadence and dialogue ducking;
 - lower-roughness directional-light routing;
-- bounded cross-shot dissolves with real-final-MP4 seam gates;
+- bounded cross-shot dissolves plus real-final-MP4 seam gates;
 - shot/final byte-bound provenance and pre-composition re-verification;
 - H.264/yuv420p + AAC final-media verification;
-- CPU/hardware runtime identity for new 720p delivery evidence.
+- CPU/hardware and numerical-runtime identity for new 720p delivery evidence.
 
-The software3d baseline is production evidence and a guaranteed fallback, not a cinematic/generated quality ceiling.
+The software3d baseline is a guaranteed fallback and production proof, not the cinematic/generated quality ceiling.
 
 ## Operator compute / generated-quality boundary
 
@@ -59,35 +55,37 @@ Canonical operator profile: `config/operator/dgx-spark-dual.yml`.
 Durable spec: `docs/operations/dgx-spark-local-model-fabric.md`.
 Model registry: `integrations/model-hub.yml`.
 
-The declared DGX Spark pool is preferred before paid SaaS, but Hottop does **not** infer readiness from declaration. Driver/CUDA/PyTorch, disk/model paths and inter-node networking remain unverified until the probe runs on the actual hosts.
+Declared DGX/local resources remain **unprobed** until the probe runs on the actual machines. Hottop does not infer driver/CUDA/PyTorch/model/network readiness from configuration.
 
-The highest-value generated-quality proof remains a rights-safe reference-conditioned LightX2V/Wan2.2 benchmark with at least two subject-bearing Odyssey I2V shots, exact generator source/model/reference/shot provenance, meaningful motion and complete subject-bound continuity evidence before composition. No automatic model download, GPU provisioning or paid fallback is admitted.
+The highest-value generated-quality proof remains a rights-safe reference-conditioned LightX2V/Wan2.2 benchmark with at least two subject-bearing Odyssey I2V shots, exact generator source/model/reference/shot provenance, meaningful motion and complete cross-shot continuity evidence before composition. Memento remains a gated continuity benchmark candidate: its released adapter weights are marked Apache-2.0, but the exact GitHub tree still lacks the README-linked root `LICENSE`, base Wan2.2 rights remain separate, and official inference guidance recommends 8×A100 80GB. No normal `video-run` download/routing is admitted.
 
 ## Mandarin TTS boundary
 
-The eSpeak-family route remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the admitted operator-owned delivery-controlled benchmark candidate; 0.6B is not allowed to silently discard `delivery`/`instruct` semantics.
+The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the admitted operator-owned delivery-controlled benchmark candidate; 0.6B must not silently discard `delivery`/`instruct` semantics.
 
-A real same-line 1.7B Mandarin A/B still requires an already-provisioned local model/runtime. Preset speaker/output publication rights remain a separate operator review boundary from repository/model licensing.
+A real same-line 1.7B Mandarin A/B still requires an already-provisioned local runtime/model and publication-rights review. No automatic multi-GB model download is allowed.
 
 ## Targeted ecosystem radar — 2026-08-27
 
 Fresh exact checks do not justify changing tested defaults:
 
-- ModelTC/LightX2V `main` is `b220e26198fc90769114b6751236be96a3838069`. The latest visible change keeps MiniMax-H3 DiT pre/post weights resident behind an opt-in setting; default behavior is unchanged and Hottop has no measured gain for the tested Wan2.2 path. **No freshness-only repin.**
-- Official Qwen3-TTS `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no upstream change removes the need for a real operator-provisioned 1.7B Mandarin benchmark.
-- Recent CosyVoice3 ecosystem correctness reports around TensorRT FP16 non-finite audio and streaming device mismatch reinforce candidate-only status; they do not justify replacing the guaranteed fallback or reviewed Qwen route without a Hottop benchmark.
+- ModelTC/LightX2V `main` remains `b220e26198fc90769114b6751236be96a3838069`; its latest opt-in MiniMax-H3 DiT residency change does not provide measured Hottop value for the tested Wan2.2 path. **No freshness-only repin.**
+- Official Qwen3-TTS `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no upstream change removes the operator-provisioned 1.7B benchmark gate.
+- `ernie-research/Memento` remains `eafe8aa6811d7f27477801c23c54faa33fa4659c`; inference code and adapter weights are public, but license packaging/hardware feasibility still block admission.
+- `threadpoolctl 3.6.0` is a small BSD-3-Clause evidence helper, pinned explicitly after a real smoke proved it cannot be assumed as a NumPy transitive dependency.
 
-No heavy dependency, automatic model download or paid route is admitted from this scan.
+No heavy dependency, automatic model download, GPU provisioning or paid fallback was admitted from this scan.
 
 ## Immediate next actions
 
-1. Inspect fresh real cow/Odyssey MP4 evidence and change deterministic visuals/audio only for a **measured** defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
-2. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines.
-3. Once a reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run the first true-motion Odyssey benchmark with at least two subject-bearing I2V shots.
-4. Bind actual generator source revision, local patch/override identity when applicable, checkpoint provenance when independently available, exact reference bytes and shot hashes; require meaningful motion plus complete cross-shot continuity evidence before composition.
-5. When the operator-local Qwen3-TTS 1.7B runtime is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
-6. Continue targeted ecosystem radar around the measured gap. Do not add abstraction, freshness-only pins or large dependencies without measurable value and a rollback path.
-7. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not creative defaults.
+1. Re-fetch post-merge cinematic-delivery-smoke #52. If it fails, repair that real regression before opening unrelated work; if it passes, close the PR #102 post-merge evidence loop in this status/decision workstream.
+2. Inspect fresh cow/Odyssey MP4s and change deterministic visuals/audio only for a **measured** defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
+3. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines.
+4. Once a reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
+5. Bind actual generator source revision, local patch/override identity when applicable, independently verifiable checkpoint provenance, exact reference bytes and shot hashes.
+6. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
+7. Continue targeted ecosystem radar around the measured gap. Do not add abstraction, freshness-only pins or large dependencies without measurable value and rollback.
+8. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not defaults.
 
 ## Recovery order
 
