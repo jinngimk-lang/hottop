@@ -48,6 +48,22 @@ def test_cinematic_delivery_runtime_provenance_binds_executable_bytes():
     assert 'runtime["executables"]["espeak"]["sha256"]' in text
 
 
+def test_cinematic_delivery_runtime_provenance_binds_cpu_identity():
+    workflow = Path(".github/workflows/cinematic-delivery-smoke.yml")
+    text = workflow.read_text(encoding="utf-8")
+
+    assert "def cpu_info()" in text
+    assert '"cpu": cpu_info(),' in text
+    assert "platform.machine()" in text
+    assert 'Path("/proc/cpuinfo")' in text
+    assert '"model_name"' in text
+    assert '"vendor_id"' in text
+    assert '"cpuinfo_sha256"' in text
+    assert 'runtime["cpu"]["machine"]' in text
+    assert 'runtime["cpu"]["model_name"]' in text
+    assert 'runtime["cpu"]["cpuinfo_sha256"]' in text
+
+
 def test_cinematic_delivery_smoke_gates_real_final_mp4_seam_quality():
     workflow = Path(".github/workflows/cinematic-delivery-smoke.yml")
     text = workflow.read_text(encoding="utf-8")
