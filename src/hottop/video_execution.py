@@ -898,18 +898,27 @@ def _runtime_audio_commands(
     dialogue = [cue for cue in plan.audio_cues if cue.kind == "dialogue"]
     commands: list[ExternalCommandSpec] = []
     if config.audio.voice_backend == "espeak":
+        from .video_espeak_style import resolve_espeak_dialogue_style
+
         _, voice_program = _resolve_espeak_executable()
         voice_program = voice_program or "espeak-ng"
         for index, cue in enumerate(dialogue, start=1):
             output = (audio_dir / f"dialogue-{index:03d}.wav").resolve()
+            style = resolve_espeak_dialogue_style(
+                character=cue.character,
+                delivery=cue.delivery,
+                base_rate_wpm=config.audio.voice_rate_wpm,
+            )
             commands.append(
                 ExternalCommandSpec(
                     program=voice_program,
                     args=[
                         "-v",
                         config.audio.voice_language,
+                        "-p",
+                        str(style.pitch),
                         "-s",
-                        str(config.audio.voice_rate_wpm),
+                        str(style.rate_wpm),
                         "-w",
                         str(output),
                         cue.text,

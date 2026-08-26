@@ -51,7 +51,7 @@ jobs:
           font = ImageFont.truetype(os.environ["HOTTOP_CAPTION_FONT"], 48)
           assert bytes(font.getmask("妈")) != bytes(font.getmask("傻"))
           PY
-      - name: Probe current eSpeak-NG Mandarin dialogue budget
+      - name: Probe current role-aware eSpeak-NG Mandarin dialogue budget
         run: |
           python - <<'PY'
           import subprocess
@@ -59,28 +59,50 @@ jobs:
           import wave
           from pathlib import Path
 
+          from hottop.video_espeak_style import resolve_espeak_dialogue_style
+
           probes = [
-              (155, "哎呀，又绊我！"),
-              (155, "妈——！"),
-              (155, "用 InkClawAgent。"),
-              (155, "啊？这么直接？"),
-              (155, "别被蛇绊住。"),
-              (145, "就差一点。"),
-              (145, "先配环境。"),
-              (145, "怎么越写越大？"),
-              (145, "直接干活。"),
-              (145, "早说啊！"),
+              (155, "young-cow", "frustrated, startled conversational Mandarin; comedic but clearly intelligible", "哎呀，又绊我！"),
+              (155, "young-cow", "brief panicked call for help in natural Mandarin; loud enough to land the comedy beat without shouting distortion", "妈——！"),
+              (155, "mother-cow", "calm deadpan maternal Mandarin; matter-of-fact and slightly unimpressed", "用 InkClawAgent。"),
+              (155, "young-cow", "surprised, skeptical conversational Mandarin with a short upward reaction", "啊？这么直接？"),
+              (155, "mother-cow", "dry compact deadpan Mandarin; quiet closing authority", "别被蛇绊住。"),
+              (145, "witch", "tense, hopeful", "就差一点。"),
+              (145, "witch", "matter-of-fact", "先配环境。"),
+              (145, "witch", "frustrated", "怎么越写越大？"),
+              (145, "witch", "relieved", "直接干活。"),
+              (145, "witch", "deadpan realization", "早说啊！"),
           ]
           with tempfile.TemporaryDirectory() as directory:
-              for index, (rate, text) in enumerate(probes, start=1):
+              for index, (base_rate, character, delivery, text) in enumerate(probes, start=1):
+                  style = resolve_espeak_dialogue_style(
+                      character=character,
+                      delivery=delivery,
+                      base_rate_wpm=base_rate,
+                  )
                   path = Path(directory) / f"probe-{index:02d}.wav"
                   subprocess.run(
-                      ["espeak", "-v", "zh", "-s", str(rate), "-w", str(path), text],
+                      [
+                          "espeak",
+                          "-v",
+                          "zh",
+                          "-p",
+                          str(style.pitch),
+                          "-s",
+                          str(style.rate_wpm),
+                          "-w",
+                          str(path),
+                          text,
+                      ],
                       check=True,
                   )
                   with wave.open(str(path), "rb") as wav:
                       duration = wav.getnframes() / wav.getframerate()
-                  print(f"HOTTOP_ESPEAK_NG_PROBE rate={rate} duration={duration:.3f}s text={text}")
+                  print(
+                      "HOTTOP_ESPEAK_NG_PROBE "
+                      f"character={character} pitch={style.pitch} rate={style.rate_wpm} "
+                      f"duration={duration:.3f}s text={text}"
+                  )
                   assert duration <= 3.25, (text, duration)
           PY
       - name: Execute checked-in anti-polish cow story
