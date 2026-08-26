@@ -6,7 +6,6 @@ from typing import Literal
 import yaml
 from pydantic import BaseModel, Field, model_validator
 
-
 ModelStatus = Literal[
     "operator_local_ready",
     "benchmark_ready",
