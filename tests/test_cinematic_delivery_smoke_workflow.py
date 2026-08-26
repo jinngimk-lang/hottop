@@ -46,3 +46,14 @@ def test_cinematic_delivery_runtime_provenance_binds_executable_bytes():
     assert 'runtime["executables"]["ffmpeg"]["sha256"]' in text
     assert 'runtime["executables"]["ffprobe"]["sha256"]' in text
     assert 'runtime["executables"]["espeak"]["sha256"]' in text
+
+
+def test_cinematic_delivery_smoke_gates_real_final_mp4_seam_quality():
+    workflow = Path(".github/workflows/cinematic-delivery-smoke.yml")
+    text = workflow.read_text(encoding="utf-8")
+
+    assert "seam-quality.json" in text
+    assert '"schema_version": "hottop.software3d-seam-quality.v1"' in text
+    assert "HOTTOP_SEAM_QUALITY" in text
+    assert "assert max_seam_delta <= 8.0" in text
+    assert "assert max_seam_ratio <= 5.5" in text
