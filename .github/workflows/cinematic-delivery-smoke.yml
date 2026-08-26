@@ -146,6 +146,7 @@ jobs:
                   "moviepy": version("moviepy"),
                   "numpy": version("numpy"),
                   "pillow": version("pillow"),
+                  "threadpoolctl": version("threadpoolctl"),
               },
               "executables": {
                   "ffmpeg": executable_info("ffmpeg", "-version"),
@@ -207,6 +208,7 @@ jobs:
           assert runtime["packages"]["moviepy"]
           assert runtime["packages"]["numpy"]
           assert runtime["packages"]["pillow"]
+          assert runtime["packages"]["threadpoolctl"]
           assert runtime["cpu"]["machine"]
           assert runtime["cpu"]["model_name"]
           assert runtime["cpu"]["vendor_id"]
