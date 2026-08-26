@@ -2,7 +2,7 @@
 
 Date: 2026-08-27
 Milestone: Production v0.2
-Status: accepted on PR head; post-merge re-verification required before this record is final
+Status: accepted and post-merge verified
 
 ## Problem
 
@@ -19,10 +19,14 @@ PR #104, `Bind loaded numeric library bytes in delivery provenance`, closed this
 - Exact-head CI #1780 passed.
 - Exact-head cinematic-delivery-smoke #54 passed.
 - PR #104 had no review threads and was squash-merged as `40dc5f4e1e7289b8f2c5c1bf7903be01a4b218ac`.
+- Post-merge `main` CI #1781 passed.
+- Post-merge cinematic-delivery-smoke #55 passed the full 720p24 production, numeric-provenance capture, media/provenance verification and artifact-upload path.
 
 No renderer math, FFmpeg/media threshold, provider routing, model download, GPU provisioning, credential or paid behavior changed.
 
-## Exact PR-head production evidence
+## Exact production evidence
+
+### PR-head smoke #54
 
 Cinematic-delivery-smoke #54 produced Actions artifact `hottop-cinematic-software3d-delivery` with digest:
 
@@ -37,9 +41,32 @@ Its `runtime-provenance.json` records one loaded BLAS library:
 - size: `25210641` bytes;
 - SHA-256: `6cad8d2ad994ddc43d2ccdb0fb5d9458373ff1b87ef7ff420f2f94406eb8f082`.
 
-The same artifact reports NumPy `2.5.2`, 4 logical CPUs, OpenBLAS/pthreads with 4 runtime threads, and `numpy_runtime_sha256 = a6892f4c6800952bafcf8d8666b3e052f725d890b5ac4613e1d53d5464658683`.
+The same artifact reports NumPy `2.5.2`, 4 logical CPUs and OpenBLAS/pthreads with 4 runtime threads.
 
-This evidence is scoped to that exact GitHub-hosted runtime. The absolute library path is diagnostic context, not a portable identity; the file size/hash is the durable byte identity.
+### Post-merge smoke #55
+
+Post-merge cinematic-delivery-smoke #55 produced artifact digest:
+
+`sha256:ff4743ed561a3f2da2fe2ca5c82e4b5ee545d68b829b50fb0f85600346559529`
+
+Direct artifact inspection confirms the same loaded native BLAS byte identity:
+
+- resolved path: `/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-61654e39.so`;
+- OpenBLAS version `0.3.34.0.0`;
+- size `25210641` bytes;
+- SHA-256 `6cad8d2ad994ddc43d2ccdb0fb5d9458373ff1b87ef7ff420f2f94406eb8f082`.
+
+The final 720p24 Odyssey MP4 SHA-256 is again:
+
+`c1353b556cb8675b94e58bb1d41624c69b4711ad1b83c690f1e81dd60b3f58df`
+
+The real final-media seam evidence remains within the accepted gate:
+
+- intra-shot p95 `0.933903`;
+- max seam delta `4.184792`;
+- max seam/intra ratio `4.480971`.
+
+This evidence is scoped to the exact GitHub-hosted runtimes and checked-in production path. The absolute library path is diagnostic context, not a portable identity; the file size/hash is the durable byte identity.
 
 ## Decision
 
