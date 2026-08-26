@@ -439,6 +439,61 @@ def _procedural_sfx_array(
     return stereo, sample_rate
 
 
+def _cross_dissolve_base_clip(timeline: MoviePyTimeline, clips, video_clip_factory):
+    """Blend deterministic shot boundaries in place without inserting black frames or changing time."""
+
+    try:
+        import numpy as np
+    except ImportError as exc:  # pragma: no cover - execution-environment guard
+        raise RuntimeError("MoviePy video execution requires the optional `video` dependencies") from exc
+
+    frame_step = 1 / timeline.fps
+
+    def _safe_frame(clip, local_seconds: float):
+        maximum = max(0.0, clip.duration - frame_step)
+        return clip.get_frame(min(max(local_seconds, 0.0), maximum))
+
+    def frame_function(t: float):
+        time_seconds = min(max(t, 0.0), max(0.0, timeline.duration_seconds - frame_step))
+        for position in range(1, len(timeline.shots)):
+            incoming = timeline.shots[position]
+            outgoing = timeline.shots[position - 1]
+            before = outgoing.fade_out_seconds
+            after = incoming.fade_in_seconds
+            total = before + after
+            if total <= 0:
+                continue
+            boundary = incoming.start_seconds
+            window_start = boundary - before
+            window_end = boundary + after
+            if window_start <= time_seconds < window_end:
+                alpha = (time_seconds - window_start) / total
+                outgoing_frame = _safe_frame(
+                    clips[position - 1],
+                    time_seconds - outgoing.start_seconds,
+                ).astype(float)
+                incoming_frame = _safe_frame(
+                    clips[position],
+                    time_seconds - incoming.start_seconds,
+                ).astype(float)
+                blended = (1 - alpha) * outgoing_frame + alpha * incoming_frame
+                return np.clip(blended, 0, 255).astype("uint8")
+
+        selected = 0
+        for position, shot in enumerate(timeline.shots):
+            if shot.start_seconds <= time_seconds:
+                selected = position
+            else:
+                break
+        shot = timeline.shots[selected]
+        return _safe_frame(clips[selected], time_seconds - shot.start_seconds)
+
+    return video_clip_factory(
+        frame_function=frame_function,
+        duration=timeline.duration_seconds,
+    ).with_fps(timeline.fps)
+
+
 def render_moviepy_timeline(
     timeline: MoviePyTimeline,
     *,
@@ -456,9 +511,9 @@ def render_moviepy_timeline(
             CompositeAudioClip,
             CompositeVideoClip,
             TextClip,
+            VideoClip,
             VideoFileClip,
             concatenate_videoclips,
-            vfx,
         )
     except ImportError as exc:  # pragma: no cover - execution-environment guard
         raise RuntimeError(
@@ -487,18 +542,14 @@ def render_moviepy_timeline(
             elif clip.duration < shot.duration_seconds:
                 clip = clip.with_effects([]).with_duration(shot.duration_seconds)
             clip = clip.resized(new_size=(timeline.width, timeline.height))
-            effects = []
-            if shot.fade_in_seconds > 0:
-                effects.append(vfx.FadeIn(shot.fade_in_seconds))
-            if shot.fade_out_seconds > 0:
-                effects.append(vfx.FadeOut(shot.fade_out_seconds))
-            if effects:
-                clip = clip.with_effects(effects)
             clips.append(clip)
 
-        base = concatenate_videoclips(clips, method="compose")
-        if base.duration > timeline.duration_seconds:
-            base = base.subclipped(0, timeline.duration_seconds)
+        if any(shot.fade_in_seconds or shot.fade_out_seconds for shot in timeline.shots):
+            base = _cross_dissolve_base_clip(timeline, clips, VideoClip)
+        else:
+            base = concatenate_videoclips(clips, method="compose")
+            if base.duration > timeline.duration_seconds:
+                base = base.subclipped(0, timeline.duration_seconds)
 
         layers = [base]
         for caption in timeline.captions:
