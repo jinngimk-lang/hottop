@@ -19,7 +19,8 @@ def _character_pitch(character: str | None) -> int:
     # Stable across processes/runs, unlike Python's randomized hash(). Keep named
     # roles in conservative spaced buckets so non-colliding characters remain
     # perceptibly distinct without pushing the guaranteed fallback into caricature.
-    bucket = hashlib.sha256(normalized.encode("utf-8")).digest()[0] % 7
+    digest_prefix = hashlib.sha256(normalized.encode("utf-8")).digest()[:8]
+    bucket = int.from_bytes(digest_prefix, "big") % 7
     return 32 + (bucket * 6)
 
 
