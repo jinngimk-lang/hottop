@@ -58,6 +58,22 @@ def test_model_hub_covers_generation_continuity_post_and_audio() -> None:
     } <= capabilities
 
 
+def test_stand_in_wan22_is_registered_only_as_unprobed_identity_benchmark_candidate() -> None:
+    hub = load_model_hub(ROOT / "integrations/model-hub.yml")
+    candidate = next(entry for entry in hub.models if entry.id == "stand-in-wan22-a14b")
+
+    assert candidate.repository == "https://github.com/WeChatCV/Stand-In"
+    assert candidate.code_license == "Apache-2.0"
+    assert candidate.cost_class == "self_owned_compute"
+    assert candidate.status == "benchmark_candidate"
+    assert candidate.integration_ready is False
+    assert candidate.runtime_status == "unprobed"
+    assert "dgx-spark-dual" in candidate.operator_profiles
+    assert "identity_conditioned_motion" in candidate.capabilities
+    assert "reference_conditioning" in candidate.capabilities
+    assert "automatic download" in candidate.runtime_boundary.lower()
+
+
 def test_dgx_cinematic_i2v_selection_prefers_integrated_zero_cost_real_motion() -> None:
     hub = load_model_hub(ROOT / "integrations/model-hub.yml")
 
