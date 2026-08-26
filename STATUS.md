@@ -9,7 +9,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current repository truth
 
-PR #86 was squash-merged to `main` as `3f04802c88027833e23b7e14a95592bfbf3ed6e3` after exact-head `f43710f3441e5c1fc3c7a45aeb367aaa9a9d8bff` passed CI #1714, production-smoke #177 and cinematic-delivery-smoke #24. No post-merge workflow run was visible at the time of this status update.
+PR #86 was squash-merged to `main` as `3f04802c88027833e23b7e14a95592bfbf3ed6e3` after exact-head `f43710f3441e5c1fc3c7a45aeb367aaa9a9d8bff` passed CI #1714, production-smoke #177 and cinematic-delivery-smoke #24. The merge head then passed main CI #1715, and the status-sync head `4555698a40624c80adc35bc1798305f0e542c9e9` passed main CI #1716. There are no open PRs at this recovery point.
 
 The merged capability is deliberately fail-closed: `integrations/model-hub.yml` is a machine-readable registry and `hottop-models list` is a read-only selector. DGX/local entries remain `unprobed` until an operator probe proves runtime readiness. The hub does not install upstream projects, download models, provision GPU, consume credits or turn paid/license-blocked entries into defaults.
 
@@ -43,19 +43,22 @@ Priority remains:
 
 Popularity or freshness alone is not admission evidence. Code license remains separate from weights/model/data/output rights.
 
+## Targeted ecosystem radar — 2026-08-26
+
+Fresh checks do not justify changing the tested defaults. LightX2V remains actively maintained, but recent visible work is concentrated in InfiniteTalk cancellation, MiniMax-H3/model requests and other paths that do not yet provide Hottop evidence for a better Wan2.2 I2V default. MiniMax-H3 reports include incorrect/blocky video and garbled audio on an experimental Intel-XPU port, so model-request activity is not admission evidence. Qwen3-TTS serving work in SGLang-Omni is producing useful H100/H200 execution evidence, including removal of a Talker `torch.compile` path after it failed to show reproducible end-to-end gain; this reinforces Hottop's benchmark-before-optimization rule. No freshness-only repin, new heavy dependency or automatic model download is admitted from this scan.
+
 ## Guaranteed zero-cost baseline
 
 The software3d → local Mandarin audio → original synthetic music/Foley → MoviePy → FFmpeg route remains the guaranteed zero-GPU, zero-download, zero-paid baseline. The checked-in 720×1280/24fps Odyssey delivery proof remains the deterministic presentable baseline with source-byte, shot-byte, final-media and codec evidence. It is not a generated/reference-conditioned identity claim and is not the cinematic quality ceiling.
 
 ## Immediate next actions
 
-1. Verify the post-merge `main@3f04802c…` CI when it appears; keep the model hub merged only on real green evidence.
-2. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines; keep private host/runtime details out of Git when appropriate.
-3. Once one reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run the first true-motion Odyssey benchmark with at least two subject-bearing I2V shots.
-4. Bind actual generator source revision, checkpoint provenance when independently available, exact reference bytes and shot hashes; require motion and complete cross-shot continuity evidence before composition.
-5. Run the existing role-aware Mandarin/audio/post chain and final H.264/AAC verification; visually reject slideshow motion, identity drift, broken geography or weak product/hotspot mapping.
-6. If operator runtime remains unavailable, continue improving only measured defects in the guaranteed software3d production path and continue targeted ecosystem radar; do not add abstraction or large dependencies without evidence.
-7. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not creative defaults.
+1. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines; keep private host/runtime details out of Git when appropriate.
+2. Once one reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run the first true-motion Odyssey benchmark with at least two subject-bearing I2V shots.
+3. Bind actual generator source revision, checkpoint provenance when independently available, exact reference bytes and shot hashes; require motion and complete cross-shot continuity evidence before composition.
+4. Run the existing role-aware Mandarin/audio/post chain and final H.264/AAC verification; visually reject slideshow motion, identity drift, broken geography or weak product/hotspot mapping.
+5. If operator runtime remains unavailable, continue improving only measured defects in the guaranteed software3d production path and continue targeted ecosystem radar; do not add abstraction or large dependencies without evidence.
+6. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not creative defaults.
 
 ## Recovery order
 
