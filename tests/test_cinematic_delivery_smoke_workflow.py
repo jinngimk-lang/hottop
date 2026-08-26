@@ -67,6 +67,7 @@ def test_cinematic_delivery_runtime_provenance_binds_cpu_identity():
 def test_cinematic_delivery_runtime_provenance_binds_numeric_execution_identity():
     workflow = Path(".github/workflows/cinematic-delivery-smoke.yml")
     text = workflow.read_text(encoding="utf-8")
+    pyproject = Path("pyproject.toml").read_text(encoding="utf-8")
 
     assert "def numeric_runtime_info()" in text
     assert '"numerics": numeric_runtime_info(),' in text
@@ -74,6 +75,7 @@ def test_cinematic_delivery_runtime_provenance_binds_numeric_execution_identity(
     assert "np.show_runtime()" in text
     assert 'version("threadpoolctl")' in text
     assert 'pip install -e ".[dev,video]" threadpoolctl' in text
+    assert '"threadpoolctl==3.6.0"' in pyproject
     assert '"logical_cpu_count": os.cpu_count()' in text
     for variable in (
         "OMP_NUM_THREADS",
