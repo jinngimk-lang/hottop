@@ -24,15 +24,26 @@ Upstream issue `QwenAudio/CosyVoice#1930`, opened 2026-08-08, reports a controll
 
 The thread contains conflicting community claims about whether a particular TensorRT package pin resolves the issue. Hottop has not independently reproduced either claim. Therefore no such pin is treated as a verified fix.
 
-**Admission consequence:** Hottop must not admit CosyVoice3 TensorRT FP16 as a production/default route from documentation or popularity alone. A future operator-local adapter must fail closed on non-finite output and require same-runtime benchmark evidence before promotion.
+**Admission consequence:** Hottop must not admit CosyVoice3 TensorRT FP16 as a production/default route from documentation or popularity alone. A future operator-local runtime must fail closed on non-finite output and require same-runtime benchmark evidence before promotion.
 
 ### 2. Streaming serving has a device-mismatch correctness failure
 
 `vllm-project/vllm-omni#6455`, opened 2026-08-21, reports CosyVoice3 streaming TTS failing at runtime because STFT input/window tensors land on different devices. The reproduction uses a local vLLM-Omni server and a normal streaming TTS request.
 
-This is a serving-path correctness issue rather than a model-quality comparison. It means a future Hottop CosyVoice3 streaming adapter cannot infer readiness merely because the model loads or the server starts.
+This is a serving-path correctness issue rather than a model-quality comparison. It means a future Hottop CosyVoice3 streaming route cannot infer readiness merely because the model loads or the server starts.
 
 **Admission consequence:** streaming must remain benchmark-gated and fail closed until the exact serving stack, device placement, generated waveform and complete Hottop dialogue/media path are verified together.
+
+## Hottop closure in this cycle
+
+The freshness review exposed a concrete bug in Hottop's existing local CosyVoice3 adapter. `_write_pcm16_wav()` previously bounded samples with Python `min/max`; for `NaN`, that expression resolves to `1.0`, silently converting a non-finite sample into full-scale positive PCM instead of rejecting the corrupt waveform.
+
+This cycle therefore does two narrow things:
+
+- registers `cosyvoice3-0b5-2512` in `integrations/model-hub.yml` only as `benchmark_candidate / integration_ready=false / runtime_status=unprobed`, with the TensorRT-FP16, streaming and finite-waveform gates encoded in the runtime boundary;
+- hardens the existing local adapter so any non-finite sample raises `CosyVoice3Error` **before** an output WAV is created.
+
+This is safety hardening, not provider promotion. It adds no CosyVoice dependency, runtime auto-install, checkpoint download, GPU provisioning or default route.
 
 ## Hottop policy
 
@@ -55,6 +66,6 @@ Until those conditions are met, CosyVoice3 must not replace the eSpeak-family gu
 
 ## Decision
 
-No integration change is justified in this cycle. The fresh evidence is negative admission evidence: it tightens the conditions under which CosyVoice3 could later enter Hottop, but does not provide a safe, measured reason to add a runtime or change the production default.
+A narrow safety integration is justified; a runtime promotion is not. Hottop now records the candidate and rejects non-finite samples, while keeping the actual CosyVoice3 runtime outside unattended/default production until operator-local benchmark evidence clears the remaining gates.
 
 This follows the durable project rule: **benchmark evidence beats optimization flags, popularity and nominal server readiness**.
