@@ -29,6 +29,8 @@ class MoviePyTimelineShot(BaseModel):
     source: str
     start_seconds: float = Field(ge=0)
     duration_seconds: float = Field(gt=0)
+    fade_in_seconds: float = Field(default=0, ge=0)
+    fade_out_seconds: float = Field(default=0, ge=0)
 
 
 class MoviePyTimelineCaption(BaseModel):
@@ -75,14 +77,21 @@ def build_moviepy_timeline(
 ) -> MoviePyTimeline:
     """Map a trusted Hottop video plan into deterministic headless compositor inputs."""
 
+    transition_seconds = 0.0
+    if plan.generation_backend == "software3d" and len(plan.shots) > 1:
+        shortest_shot = min(shot.duration_seconds for shot in plan.shots)
+        transition_seconds = min(2 / plan.fps, shortest_shot * 0.1)
+
     shots = [
         MoviePyTimelineShot(
             index=shot.index,
             source=str(shots_dir / f"shot-{shot.index:03d}.mp4"),
             start_seconds=shot.start_seconds,
             duration_seconds=shot.duration_seconds,
+            fade_in_seconds=transition_seconds if position > 0 else 0,
+            fade_out_seconds=transition_seconds if position < len(plan.shots) - 1 else 0,
         )
-        for shot in plan.shots
+        for position, shot in enumerate(plan.shots)
     ]
     captions = [
         MoviePyTimelineCaption(
@@ -449,6 +458,7 @@ def render_moviepy_timeline(
             TextClip,
             VideoFileClip,
             concatenate_videoclips,
+            vfx,
         )
     except ImportError as exc:  # pragma: no cover - execution-environment guard
         raise RuntimeError(
@@ -477,6 +487,13 @@ def render_moviepy_timeline(
             elif clip.duration < shot.duration_seconds:
                 clip = clip.with_effects([]).with_duration(shot.duration_seconds)
             clip = clip.resized(new_size=(timeline.width, timeline.height))
+            effects = []
+            if shot.fade_in_seconds > 0:
+                effects.append(vfx.FadeIn(shot.fade_in_seconds))
+            if shot.fade_out_seconds > 0:
+                effects.append(vfx.FadeOut(shot.fade_out_seconds))
+            if effects:
+                clip = clip.with_effects(effects)
             clips.append(clip)
 
         base = concatenate_videoclips(clips, method="compose")
