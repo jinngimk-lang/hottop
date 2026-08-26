@@ -210,3 +210,42 @@ def test_qwen3_render_deletes_partial_output_on_failure(monkeypatch, tmp_path):
         render_qwen3_custom_voice_dialogue(request)
 
     assert not output.exists()
+
+
+def test_qwen3_render_rejects_non_finite_audio_before_wav_creation(monkeypatch, tmp_path):
+    model_dir = _fake_model_dir(tmp_path)
+    output = tmp_path / "dialogue.wav"
+
+    class FakeModel:
+        @classmethod
+        def from_pretrained(cls, *_args, **_kwargs):
+            return cls()
+
+        def generate_custom_voice(self, **_kwargs):
+            return [[0.0, float("nan"), 0.25]], 24000
+
+    fake_qwen = SimpleNamespace(Qwen3TTSModel=FakeModel)
+    fake_torch = SimpleNamespace(bfloat16="bfloat16", float16="float16", float32="float32")
+
+    def fake_import(name: str):
+        if name == "qwen_tts":
+            return fake_qwen
+        if name == "torch":
+            return fake_torch
+        raise AssertionError(f"unexpected import: {name}")
+
+    monkeypatch.setattr("hottop.audio_qwen3_tts.importlib.util.find_spec", lambda name: object())
+    monkeypatch.setattr("hottop.audio_qwen3_tts.importlib.import_module", fake_import)
+
+    request = Qwen3TTSCustomVoiceRequest(
+        model_dir=model_dir,
+        text="你好，检查波形。",
+        speaker="Vivian",
+        language="Chinese",
+        output=output,
+    )
+
+    with pytest.raises(Qwen3TTSError, match="non-finite"):
+        render_qwen3_custom_voice_dialogue(request)
+
+    assert not output.exists()
