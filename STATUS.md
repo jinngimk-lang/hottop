@@ -9,17 +9,21 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified production baseline
 
-Latest production-code `main` at this snapshot: `ae62a5a6583956650fbf8454f9980590289c60a5` (`Prefer native eSpeak-NG in runtime fallback`, squash merge of PR #66).
+Latest production-code `main` at this snapshot: `2d11b02a35e2dbe460917bb4b15d4b6ec4e941a6` (`Make zero-cost eSpeak fallback role-aware`, squash merge of PR #67).
 
 Verified exact-head evidence:
 
 - PR #62 closed the mixed CJK/Latin orphan-line defect; its production artifact was directly inspected and `用 InkClawAgent。` remained on one line in the lower safe area;
-- later Production v0.2 work preserved the dialogue/BGM ducking, actual-voice-duration windows, clipping fail-close, mobile framing and subtitle contracts;
+- later Production v0.2 work preserved dialogue/BGM ducking, actual-voice-duration windows, clipping fail-close, mobile framing and subtitle contracts;
 - PR #65 restored both cow and Odyssey provenance archives in production smoke after a workflow regression;
-- PR #66 made normal runtime readiness/execution prefer native `espeak-ng` when available while retaining `espeak` compatibility as the guaranteed local fallback family;
-- exact-head `ae62a5a6583956650fbf8454f9980590289c60a5`: CI **1605** passed and production-smoke **150** passed.
+- PR #66 made runtime readiness/execution prefer native `espeak-ng` when available while retaining `espeak` compatibility as the guaranteed local fallback family;
+- PR #67 closed the remaining guaranteed-fallback semantics gap: eSpeak-family execution now applies stable bounded deterministic character pitch and delivery-aware bounded cadence instead of preserving `speaker + delivery` as metadata only;
+- PR #67 TDD RED CI **1607** failed only the new role/delivery contract after Ruff passed;
+- exact PR head `0d8211305f0f29a0675fd8d1e5e8f1d26590c570`: CI **1610** passed and production-smoke **153** passed the role-aware eSpeak-NG dialogue-budget probe, full cow/Odyssey production, final media verification and provenance archive;
+- direct smoke #153 artifact inspection showed canonical cow routing with stable `young-cow` pitch **44**, stable `mother-cow` pitch **46**, and young-cow delivery cadence changing **169 → 162 wpm**; Odyssey roles were likewise separated;
+- merged `main@2d11b02a35e2dbe460917bb4b15d4b6ec4e941a6`: CI **1611** passed on Python 3.11/3.12 and production-smoke **154** passed the same role-aware probe + cow + Odyssey + final media/provenance chain.
 
-`docs/decisions/2026-08-26-mobile-subject-readability.md` records the durable portrait-readability rule, covering subject placement, readable subject scale, subtitle block occupancy and line-break quality.
+`docs/decisions/2026-08-26-mobile-subject-readability.md` records the durable portrait-readability rule. `docs/research/2026-08-26-qwen3-customvoice-routing.md` records the operator-local neural TTS boundary and the deterministic role-aware fallback relationship.
 
 ## Guaranteed zero-cost software3d baseline
 
@@ -30,8 +34,8 @@ The checked-in software3d route has reproducible production evidence for:
 - mobile-first portrait placement, readable subject scale, bounded subtitle-block occupancy and non-orphaned short mixed-script captions;
 - adaptive full-copy caption fitting with a readable font floor, CJK local-font fail-closed behavior and bottom safe-area anchoring;
 - deliberate Anti-Polish cow vs brighter lower-roughness Odyssey presentation;
-- role-aware dialogue metadata (`speaker` + `delivery`) preserved into `hottop.video-plan.v1`;
-- Mandarin dialogue using the guaranteed local eSpeak family, preferring native eSpeak-NG when installed;
+- role-aware dialogue metadata (`speaker` + `delivery`) preserved into `hottop.video-plan.v1` **and operationalized by the eSpeak-family fallback** using stable bounded character pitch plus delivery-aware cadence;
+- native eSpeak-NG preferred when installed, legacy `espeak` retained as compatible guaranteed local fallback;
 - original synthetic music and procedural Foley/SFX;
 - executed dialogue-aware BGM ducking, actual-voice-duration duck windows and fail-closed materially clipped dialogue;
 - final AAC that is codec-valid, audibly active and duration-covering;
@@ -41,7 +45,7 @@ The checked-in software3d route has reproducible production evidence for:
 - final media verification;
 - zero GPU, zero model download, zero credentials and zero paid services.
 
-This is the guaranteed fallback/evidence baseline, not the cinematic quality ceiling.
+This is the guaranteed fallback/evidence baseline, not the cinematic or natural-voice quality ceiling. The compact deterministic eSpeak pitch space can collide for arbitrary role labels, so it is a best-effort role differentiation mechanism, not a universal speaker-identity guarantee.
 
 ## Operator-local Mandarin TTS
 
@@ -51,24 +55,12 @@ Qwen3-TTS CustomVoice remains integrated as an explicit non-default local route 
 - dialogue `character` maps to configured preset speakers and `delivery` maps to `--instruct`;
 - local checkout/model/runtime preflight is fail-closed and never installs packages or downloads models;
 - HF offline mode + `local_files_only=True` remain enforced in the adapter;
-- native eSpeak-NG is preferred when present; legacy `espeak` remains compatible as the deterministic local fallback.
+- current official 0.6B CustomVoice code discards `instruct`; Production role-aware routing therefore requires an instruct-capable checkpoint such as the current 1.7B path when delivery control is requested;
+- preset-speaker output/commercial-use clearance remains an operator rights gate separate from repository/model licensing.
 
-Capability boundary: current official 0.6B CustomVoice code discards `instruct`; the Production role-aware route therefore requires an instruct-capable checkpoint such as the current 1.7B path when delivery control is requested. Preset-speaker output/commercial-use clearance remains an operator rights gate separate from repository/model licensing.
+No same-dialogue neural-quality claim exists until an operator-provisioned local 1.7B runtime is actually benchmarked against the checked-in fallback evidence.
 
 Research record: `docs/research/2026-08-26-qwen3-customvoice-routing.md`.
-
-## Mobile-first readability closure
-
-Production evidence has closed four independent portrait-readability defects:
-
-1. principal subjects were too low in frame;
-2. key Odyssey characters remained too small after placement was corrected;
-3. long Odyssey subtitles were technically inside the bottom safe area but occupied more than one fifth of the portrait canvas and competed with the subject;
-4. the short mixed CJK/Latin cow caption `用 InkClawAgent。` passed safe-area/block-height gates but generic wrapping created a one-character first line.
-
-MoviePy now preserves full semantic copy, resolves a real local CJK-capable font, fits long copy within the measured mobile height budget and prefers natural-width single-line layout for short mixed-script captions. If the single line is only slightly too wide, it shrinks within the existing readable font floor before wrapped-caption fallback.
-
-Decision record: `docs/decisions/2026-08-26-mobile-subject-readability.md`.
 
 ## Generated/reference-conditioned identity gap
 
@@ -80,10 +72,10 @@ Generator source revision, model/checkpoint revision, evaluator revision and out
 
 ## Current ecosystem radar
 
-- **LightX2V** remains the primary Apache-2.0 operator inference framework for the tested Wan2.2/local path. Fresh public checks on 2026-08-26 continue to show active upstream work around InfiniteTalk and MiniMax-H3-related requests/configuration, but no Hottop measurement justifies freshness-driven repinning of the tested Wan2.2 route.
-- **MiniMax H3 via LightX2V** is visibly active upstream, but model/weights/output-rights, hardware, benchmark and local-provisioning gates remain uncleared. It stays an operator benchmark candidate, not an unattended default.
-- **Qwen3-TTS CustomVoice** remains the preferred operator-local role-aware Mandarin candidate. Real quality comparison still requires an operator-provisioned local 1.7B runtime; third-party runtimes do not supersede the reviewed official adapter without independent license/runtime/quality evidence.
-- **CosyVoice3 / cosyvoice.cpp** remain comparison candidates; no same-dialogue benchmark currently supports replacing Qwen/eSpeak routing.
+- **LightX2V** remains the primary Apache-2.0 operator inference framework for the tested Wan2.2/local path. Fresh public checks on 2026-08-26 continue to show active InfiniteTalk maintenance and MiniMax-H3 requests, but no Hottop measurement justifies freshness-driven repinning of the tested Wan2.2 route.
+- **MiniMax H3 via LightX2V** remains an operator benchmark candidate: upstream interest includes low-step LoRA/support requests, but model/weights/output-rights, hardware, benchmark and local-provisioning gates remain uncleared.
+- **Qwen3-TTS CustomVoice** remains the preferred operator-local role-aware Mandarin candidate; no newly observed runtime displaces the reviewed official adapter without local evidence.
+- **CosyVoice3** remains a comparison candidate. A current upstream correctness report describes non-finite audio with `load_trt=True + fp16=True` on the official Fun-CosyVoice3-0.5B-2512 checkpoint, reinforcing the need for configuration-specific correctness evidence rather than default promotion of an accelerated path.
 - **SigLIP 2 Base 256** remains the preferred first operator-local continuity evaluator experiment only after explicit local weights + revision/hash are supplied; no implicit download.
 - DINOv3, DreamSim, WanGP, FramePack, FastVideo, LTX, SCAIL, LongCat, InfiniteTalk and other candidates remain subject to code-license, weights/data/output-rights, hardware, hidden-download/network, cost, security, benchmark-value and rollback gates.
 
