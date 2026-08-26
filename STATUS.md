@@ -9,9 +9,9 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current repository truth
 
-`main` is currently `593282ea6f605968658c210837bc43ecba648fd9` (**Gate 720p cinematic delivery seam quality**). Exact-head CI #1736 passed. The same head's cinematic-delivery-smoke #32 is currently executing the real 720×1280/24fps Odyssey delivery and will decide the new persistent 720p seam gate; do not claim that smoke green until the run completes.
+`main` is currently `593282ea6f605968658c210837bc43ecba648fd9` (**Gate 720p cinematic delivery seam quality**). Exact-head CI #1736 passed and cinematic-delivery-smoke #32 also completed successfully on the same head.
 
-There are currently no open pull requests on `main`. The guaranteed software3d route already has the bounded in-place cross-dissolve introduced by PR #87 and the 360p production-smoke seam gate from PR #89. The current main change extends the same real-final-MP4 measurement to cinematic delivery: `seam-quality.json`, `HOTTOP_SEAM_QUALITY`, `max_seam_delta <= 8.0`, and seam/intra-shot p95 ratio `<= 5.5` are now part of `.github/workflows/cinematic-delivery-smoke.yml`.
+The guaranteed software3d route now has the bounded in-place cross-dissolve introduced by PR #87, the 360p production-smoke seam gate from PR #89, and the same real-final-MP4 seam gate on the 720×1280/24fps cinematic delivery workflow. `seam-quality.json`, `HOTTOP_SEAM_QUALITY`, `max_seam_delta <= 8.0`, and seam/intra-shot p95 ratio `<= 5.5` are persistent delivery evidence rather than one-time inspection notes.
 
 ## Real artifact evidence — shot seams
 
@@ -23,13 +23,18 @@ The accepted cross-dissolve produced:
 - cinematic-delivery-smoke #28 (720×1280/24fps Odyssey): seams **3.46 / 4.56 / 3.79 / 4.34**;
 - production-smoke #184: persistent seam gate passed on both final MP4s; archived evidence measured cow max delta **4.43** / ratio **3.62** and Odyssey max **5.20** / ratio **3.04**;
 - post-merge production-smoke #185: the persistent gate passed again on `main`;
-- current `main@593282ea...`: 720p cinematic delivery now carries the same explicit seam gate in workflow code; cinematic-delivery-smoke #32 is the exact-head real-artifact verification still in progress.
+- cinematic-delivery-smoke #32 on exact `main@593282ea...`: intra-shot p95 **0.933903**, seam deltas **3.221250 / 4.145278 / 3.467778 / 4.184792**, max seam delta **4.184792**, max seam ratio **4.480971**. Both persistent limits passed with margin.
 
 The durable lesson remains: pipeline-green is not visual-quality proof; real MP4 inspection and measured artifact contracts can reject technically valid output.
 
 ## Repeatability evidence
 
-`docs/decisions/2026-08-26-software3d-repeatability.md` records observed byte-repeatability for the checked-in cow and Odyssey software3d production runs. This is scoped evidence, not a universal cross-platform bitwise-determinism claim. Changes to render/config/runtime/toolchain that can affect bytes must establish their own evidence.
+`docs/decisions/2026-08-26-software3d-repeatability.md` now records two scoped repeatability proofs:
+
+- 360×640/12fps cow + Odyssey production-smoke repeated identical final MP4 bytes across #184 and #185;
+- 720×1280/24fps Odyssey repeated the identical final MP4 SHA-256 `c1353b556cb8675b94e58bb1d41624c69b4711ad1b83c690f1e81dd60b3f58df` across cinematic-delivery-smoke #29 and #32. The derived plan and all five shot artifact manifests were also byte-identical. Run-specific result metadata is allowed to differ and is not included in the bitwise-repeatability claim.
+
+This remains scoped evidence, not a universal cross-platform determinism claim. Changes to render/config/runtime/toolchain that can affect bytes must establish their own evidence.
 
 ## Declared local operator compute
 
@@ -71,21 +76,20 @@ The software3d → local Mandarin audio → original synthetic music/Foley → M
 - measured mobile framing and subtitle line-break quality;
 - deterministic role-separated eSpeak-family dialogue and dialogue-aware ducking;
 - geometric directional-light routing for lower-roughness cinematic profiles;
-- controlled cross-shot dissolves with persistent real-final-MP4 seam gates;
+- controlled cross-shot dissolves with persistent real-final-MP4 seam gates at both production-smoke and 720p cinematic-delivery resolutions;
 - shot/final byte-bound provenance, pre-composition re-verification and final H.264/AAC/yuv420p media verification.
 
 The checked-in 720×1280/24fps Odyssey delivery proof remains a deterministic presentable baseline. It is not a generated/reference-conditioned identity claim and is not the cinematic quality ceiling.
 
 ## Immediate next actions
 
-1. Finish cinematic-delivery-smoke #32 on exact `main@593282ea...`; if it fails, repair the measured 720p seam regression before opening unrelated work. If it passes, record the exact real-artifact metrics and keep the gate.
-2. Inspect fresh real cow/Odyssey MP4 evidence and improve only a **measured** visual/audio defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
-3. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines.
-4. Once one reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run the first true-motion Odyssey benchmark with at least two subject-bearing I2V shots.
-5. Bind actual generator source revision, checkpoint provenance when independently available, exact reference bytes and shot hashes; require meaningful motion plus complete cross-shot continuity evidence before composition.
-6. Run the existing role-aware Mandarin/audio/post chain and final H.264/AAC verification; visually reject slideshow motion, identity drift, broken geography or weak product/hotspot mapping.
-7. Continue targeted ecosystem radar around the **measured current gap**. Do not add abstraction, freshness-only pins or large dependencies without measurable value and a rollback path.
-8. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not creative defaults.
+1. Inspect fresh real cow/Odyssey MP4 evidence and improve only a **measured** visual/audio defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
+2. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines.
+3. Once one reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run the first true-motion Odyssey benchmark with at least two subject-bearing I2V shots.
+4. Bind actual generator source revision, checkpoint provenance when independently available, exact reference bytes and shot hashes; require meaningful motion plus complete cross-shot continuity evidence before composition.
+5. Run the existing role-aware Mandarin/audio/post chain and final H.264/AAC verification; visually reject slideshow motion, identity drift, broken geography or weak product/hotspot mapping.
+6. Continue targeted ecosystem radar around the **measured current gap**. Do not add abstraction, freshness-only pins or large dependencies without measurable value and a rollback path.
+7. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not creative defaults.
 
 ## Recovery order
 
