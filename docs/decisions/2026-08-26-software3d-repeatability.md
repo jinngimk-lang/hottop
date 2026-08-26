@@ -25,22 +25,34 @@ The accepted final-MP4 seam gate also repeated within limits: `max_seam_delta <=
 
 ### 720×1280 / 24fps Odyssey
 
-Three successful real cinematic-delivery runs show why byte equality must remain **observed evidence**, not the production definition of repeatability.
+Four successful real cinematic-delivery runs show why byte equality must remain **observed evidence**, not the production definition of repeatability.
 
 - #29 on `main@c0474a070e7dffa272cc46c7351c780f5c58f2fb` produced final SHA-256 `c1353b556cb8675b94e58bb1d41624c69b4711ad1b83c690f1e81dd60b3f58df`.
 - #31 on PR #93 exact head `abadcec84bab9de96e1eabb16f300b9887b91aef` produced final SHA-256 `a3895434d17b857f752cea05a14b46a2de6943f7e70158755c88589fe9da0222`.
 - #32 on post-merge `main@593282ea6f605968658c210837bc43ecba648fd9` again produced `c1353b556cb8675b94e58bb1d41624c69b4711ad1b83c690f1e81dd60b3f58df`.
+- #38 on PR #97 exact production head `420301788aa4c6a967772ffdaeb175ee48a14335` again produced `c1353b556cb8675b94e58bb1d41624c69b4711ad1b83c690f1e81dd60b3f58df` after CPU/hardware provenance capture was added.
 
-Thus #29 and #32 are byte-identical, but #31 is a counterexample to treating the 720p route itself as universally bitwise deterministic. All five software3d shot bytes in #31 differ from #32 even though the derived video plan and the then-recorded runtime-provenance JSON are byte-identical.
+Thus #29, #32 and #38 are byte-identical, but #31 is a counterexample to treating the 720p route itself as universally bitwise deterministic. All five software3d shot bytes in #31 differ from #32 even though the derived video plan and the then-recorded runtime-provenance JSON are byte-identical.
 
-The important quality result is stable across #31/#32:
+The important quality result is stable:
 
 - #31 intra-shot p95 `0.933076`, max seam delta `4.178889`, max ratio `4.478614`;
-- #32 intra-shot p95 `0.933903`, max seam delta `4.184792`, max ratio `4.480971`.
+- #32 intra-shot p95 `0.933903`, max seam delta `4.184792`, max ratio `4.480971`;
+- #38 intra-shot p95 `0.933903`, max seam delta `4.184792`, max ratio `4.480971`.
 
-Both pass the persistent seam gate with margin. A decoded 90×160 grayscale comparison between #31/#32 has mean absolute difference about `0.043/255`; only about `0.31%` of sampled pixels differ by more than one level. The outputs are visually near-identical despite different encoded/shot bytes.
+All pass the persistent seam gate with margin. A decoded 90×160 grayscale comparison between #31/#32 has mean absolute difference about `0.043/255`; only about `0.31%` of sampled pixels differ by more than one level. The outputs are visually near-identical despite different encoded/shot bytes.
 
-The two runs used the same checked runner-image version and identical recorded package/FFmpeg/FFprobe/eSpeak/font identities, but different hosted workers/regions. The old runtime-provenance record did not bind CPU model/hardware execution identity. That is an evidence gap, **not proof that CPU differences caused the byte variance**.
+The older records bound the runner image plus package/FFmpeg/FFprobe/eSpeak/font identities but not CPU/hardware execution identity. PR #97 closes that evidence gap for future 720p runs. #38 records:
+
+- machine `x86_64`;
+- CPU `AMD EPYC 7763 64-Core Processor`;
+- vendor `AuthenticAMD`;
+- `/proc/cpuinfo` SHA-256 `e8c8a04bfd1dcda906a9b8e1116f3db8b87b00df7e0265072c3b0083a62a37d3`;
+- Actions artifact digest `sha256:ec3cd28eebdb41b62ef9098f63918f0052e814879ddfa14d7a1a4cb61808869f`.
+
+This proves new evidence can bind CPU identity. It does **not** prove CPU differences caused #31 because historical #31/#32 CPU identities were not captured. Different hosted workers/regions remain only a correlation.
+
+There is also no reason to weaken production merely to chase a universal hash. FFmpeg's own community guidance notes that real multithreaded encoders are not generally expected to emit byte-identical output across runs, and NumPy selects CPU/SIMD kernels at runtime. Hottop therefore records the material environment and enforces real artifact quality/integrity instead of forcing single-threaded or otherwise degraded execution solely for bitwise identity.
 
 ## Decision
 
@@ -57,7 +69,7 @@ Therefore:
 - never weaken visual/audio/media gates merely to preserve byte identity;
 - keep neural/reference-conditioned routes behind their own real output and continuity evidence.
 
-This supersedes the earlier wording that generalized the observed #29/#32 byte match into a 720p route-level byte-repeatability claim. It does not invalidate the actual #184/#185 or #29/#32 byte-equality observations.
+This supersedes the earlier wording that generalized the observed #29/#32 byte match into a 720p route-level byte-repeatability claim. It does not invalidate the actual #184/#185 or #29/#32/#38 byte-equality observations.
 
 ## Related evidence
 
@@ -67,3 +79,4 @@ This supersedes the earlier wording that generalized the observed #29/#32 byte m
 - cinematic-delivery-smoke #29 — earlier 720p delivery.
 - PR #93 / cinematic-delivery-smoke #31 — persistent 720p seam gate, different-byte counterexample.
 - cinematic-delivery-smoke #32 — post-merge 720p evidence.
+- PR #97 / cinematic-delivery-smoke #38 — CPU-bound runtime provenance plus matching quality/hash evidence.
