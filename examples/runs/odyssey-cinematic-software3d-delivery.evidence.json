@@ -3,7 +3,9 @@
   "evidence_id": "odyssey-cinematic-software3d-delivery-2026-08-26",
   "source": {
     "render": "examples/video/inkclaw-odyssey-witch-pigs.render.json",
-    "config": "config/video/cinematic-software3d-delivery.yml"
+    "render_sha256": "10b7450dd078c8d365fff96b957114eb7a01e63b3a95135cc46d3045f30ea17a",
+    "config": "config/video/cinematic-software3d-delivery.yml",
+    "config_sha256": "993f6b118ee2792c61e7ffca653f0c7c521e602c5d80c657df8ae772856ad749"
   },
   "workflow_run": {
     "name": "cinematic-delivery-smoke",
