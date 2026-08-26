@@ -1,6 +1,7 @@
 # ruff: noqa
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -14,10 +15,22 @@ from hottop.audio_qwen3_tts import (
 )
 
 
-def _fake_model_dir(tmp_path: Path) -> Path:
-    model_dir = tmp_path / "Qwen3-TTS-12Hz-0.6B-CustomVoice"
+def _fake_model_dir(
+    tmp_path: Path,
+    *,
+    model_size: str | None = "1b7",
+    model_type: str = "qwen3_tts",
+    tts_model_type: str = "custom_voice",
+) -> Path:
+    model_dir = tmp_path / "Qwen3-TTS-CustomVoice"
     (model_dir / "speech_tokenizer").mkdir(parents=True)
-    (model_dir / "config.json").write_text('{"model_type":"qwen3_tts"}', encoding="utf-8")
+    config: dict[str, str] = {
+        "model_type": model_type,
+        "tts_model_type": tts_model_type,
+    }
+    if model_size is not None:
+        config["tts_model_size"] = model_size
+    (model_dir / "config.json").write_text(json.dumps(config), encoding="utf-8")
     (model_dir / "model.safetensors").write_bytes(b"weights")
     (model_dir / "speech_tokenizer" / "model.safetensors").write_bytes(b"tokenizer")
     return model_dir
@@ -42,6 +55,60 @@ def test_qwen3_environment_accepts_complete_local_customvoice_model(monkeypatch,
     assert status.ready is True
     assert status.missing == []
     assert status.auto_download_models is False
+
+
+def test_qwen3_environment_rejects_unknown_model_size_when_instruction_required(
+    monkeypatch, tmp_path
+):
+    model_dir = _fake_model_dir(tmp_path, model_size="mystery")
+    monkeypatch.setattr("hottop.audio_qwen3_tts.importlib.util.find_spec", lambda name: object())
+
+    status = inspect_qwen3_tts_environment(model_dir=model_dir, require_instruct=True)
+
+    assert status.ready is False
+    assert any("1.7B" in item and "instruct" in item for item in status.missing)
+
+
+def test_qwen3_environment_rejects_missing_model_size_when_instruction_required(
+    monkeypatch, tmp_path
+):
+    model_dir = _fake_model_dir(tmp_path, model_size=None)
+    monkeypatch.setattr("hottop.audio_qwen3_tts.importlib.util.find_spec", lambda name: object())
+
+    status = inspect_qwen3_tts_environment(model_dir=model_dir, require_instruct=True)
+
+    assert status.ready is False
+    assert any("1.7B" in item and "instruct" in item for item in status.missing)
+
+
+def test_qwen3_environment_allows_0b6_when_instruction_not_required(monkeypatch, tmp_path):
+    model_dir = _fake_model_dir(tmp_path, model_size="0b6")
+    monkeypatch.setattr("hottop.audio_qwen3_tts.importlib.util.find_spec", lambda name: object())
+
+    status = inspect_qwen3_tts_environment(model_dir=model_dir, require_instruct=False)
+
+    assert status.ready is True
+    assert status.missing == []
+
+
+def test_qwen3_environment_rejects_non_custom_voice_checkpoint(monkeypatch, tmp_path):
+    model_dir = _fake_model_dir(tmp_path, tts_model_type="base")
+    monkeypatch.setattr("hottop.audio_qwen3_tts.importlib.util.find_spec", lambda name: object())
+
+    status = inspect_qwen3_tts_environment(model_dir=model_dir, require_instruct=False)
+
+    assert status.ready is False
+    assert any("CustomVoice" in item for item in status.missing)
+
+
+def test_qwen3_environment_rejects_non_qwen3_tts_model(monkeypatch, tmp_path):
+    model_dir = _fake_model_dir(tmp_path, model_type="not_qwen3_tts")
+    monkeypatch.setattr("hottop.audio_qwen3_tts.importlib.util.find_spec", lambda name: object())
+
+    status = inspect_qwen3_tts_environment(model_dir=model_dir, require_instruct=False)
+
+    assert status.ready is False
+    assert any("Qwen3-TTS" in item for item in status.missing)
 
 
 def test_qwen3_request_rejects_remote_model_identifier():

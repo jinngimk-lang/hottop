@@ -110,7 +110,14 @@ def inspect_qwen3_tts_environment(
             except (OSError, json.JSONDecodeError):
                 missing.append("valid local Qwen3-TTS config.json")
             else:
-                if require_instruct and model_config.get("tts_model_size") == "0b6":
+                if model_config.get("model_type") != "qwen3_tts":
+                    missing.append("Qwen3-TTS model config with model_type=qwen3_tts")
+                if model_config.get("tts_model_type") != "custom_voice":
+                    missing.append("Qwen3-TTS CustomVoice model config")
+                model_size = model_config.get("tts_model_size")
+                if model_size not in {"0b6", "1b7"}:
+                    missing.append("supported Qwen3-TTS CustomVoice model size (0.6B or 1.7B)")
+                if require_instruct and model_size != "1b7":
                     missing.append(
                         "Qwen3-TTS CustomVoice model with instruct support (1.7B required; 0.6B ignores instruct)"
                     )
