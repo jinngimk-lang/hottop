@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 
 
@@ -15,8 +16,11 @@ def _character_pitch(character: str | None) -> int:
     normalized = (character or "").strip().casefold()
     if not normalized:
         return 50
-    # Stable across processes/runs, unlike Python's randomized hash().
-    return 44 + (sum(normalized.encode("utf-8")) % 13)
+    # Stable across processes/runs, unlike Python's randomized hash(). Keep named
+    # roles in conservative spaced buckets so non-colliding characters remain
+    # perceptibly distinct without pushing the guaranteed fallback into caricature.
+    bucket = hashlib.sha256(normalized.encode("utf-8")).digest()[0] % 7
+    return 32 + (bucket * 6)
 
 
 def _delivery_rate_offset(delivery: str | None) -> int:
