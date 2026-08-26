@@ -18,7 +18,12 @@ PR #105 **Record native runtime provenance and admit Stand-In benchmark candidat
 - Final exact head `37039ddb08bd8017dc909af412365458e0e17e03` passed PR CI #1787 and push CI #1788 on Python 3.11/3.12; review threads/comments were empty.
 - Post-merge `main` CI #1789 passed on Python 3.11/3.12.
 
-No normal execution route, model download, GPU provisioning, credential, paid behavior, renderer math or media-quality threshold changed through #105.
+PR #108 **Harden CosyVoice3 runtime correctness gates** was squash-merged as `d59fe60569cf2f4e9da8455d52ae9ea6ccde92c0` after exact head `f7ad5e6f60fa099af141a88b32db2bd80f246a23` passed CI #1795 on Python 3.11/3.12 with no review threads.
+
+- Fresh 2026-08-27 upstream evidence keeps CosyVoice3 as a correctness-gated operator benchmark candidate rather than a production/default route: TensorRT+FP16 has a reported official-checkpoint non-finite-audio failure, and a fresh streaming serving report shows an STFT device mismatch.
+- `integrations/model-hub.yml` now registers `cosyvoice3-0b5-2512` only as `benchmark_candidate / integration_ready=false / runtime_status=unprobed`, with local operator provisioning, finite-waveform, TensorRT-FP16 and streaming gates encoded in the runtime boundary.
+- The freshness review exposed a concrete Hottop adapter bug: Python `min/max` clamping could silently turn `NaN` into full-scale positive PCM. The local CosyVoice3 adapter now rejects any NaN/Inf sample before creating an output WAV, and the regression contract requires no partial output on failure.
+- This closure added no CosyVoice dependency, model download, GPU provisioning, credential, paid behavior, default provider route, renderer change or media-threshold change.
 
 ## Native numerical runtime provenance — accepted and post-merge verified
 
@@ -89,6 +94,8 @@ No newly surfaced route is allowed to auto-install, auto-download multi-GB weigh
 
 The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the admitted operator-owned delivery-controlled benchmark candidate; 0.6B must not silently discard `delivery`/`instruct` semantics.
 
+CosyVoice3 0.5B 2512 is now explicitly tracked as a separate **correctness-gated benchmark candidate**, not a fallback or default. Exact reviewed code source is `QwenAudio/CosyVoice@074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc` (Apache-2.0 code license); checkpoint/data/output/reference-audio rights remain separate. A future local benchmark must use already-provisioned runtime/model assets, reject non-finite waveforms, and keep TensorRT FP16 and streaming disabled unless the exact operator stack independently proves them correct end-to-end. Detailed note: `docs/research/2026-08-27-cosyvoice3-runtime-correctness.md`.
+
 Official Qwen3-TTS `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`. A real same-line 1.7B Mandarin A/B still requires an already-provisioned local runtime/model and publication-rights review. No automatic multi-GB model download is allowed.
 
 ## Immediate next actions
@@ -99,8 +106,9 @@ Official Qwen3-TTS `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`. A 
 4. If Stand-In's exact reviewed local source/weights are genuinely provisioned later, use it as a same-shot identity benchmark against the LightX2V/Wan2.2 base route; do not invoke its automatic downloader and do not promote it without measured continuity gain.
 5. Bind actual generator source revision, local patch/override identity when applicable, independently verifiable checkpoint provenance, exact reference bytes and shot hashes.
 6. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
-7. Continue targeted ecosystem radar around the measured gap. Do not add abstraction, freshness-only pins or large dependencies without measurable value and rollback.
-8. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not defaults.
+7. If CosyVoice3 is benchmarked later, keep it isolated and operator-local: exact source/checkpoint provenance, finite-waveform validation, rights-safe reference audio, and end-to-end actual-hardware evidence are mandatory; TensorRT FP16/streaming stay gated until independently green.
+8. Continue targeted ecosystem radar around the measured gap. Do not add abstraction, freshness-only pins or large dependencies without measurable value and rollback.
+9. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not defaults.
 
 ## Recovery order
 
