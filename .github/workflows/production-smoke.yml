@@ -73,6 +73,7 @@ jobs:
               (145, "witch", "relieved", "直接干活。"),
               (145, "witch", "deadpan realization", "早说啊！"),
           ]
+          role_pitches = {}
           with tempfile.TemporaryDirectory() as directory:
               for index, (base_rate, character, delivery, text) in enumerate(probes, start=1):
                   style = resolve_espeak_dialogue_style(
@@ -80,6 +81,8 @@ jobs:
                       delivery=delivery,
                       base_rate_wpm=base_rate,
                   )
+                  role_pitches.setdefault(character, style.pitch)
+                  assert role_pitches[character] == style.pitch, character
                   path = Path(directory) / f"probe-{index:02d}.wav"
                   subprocess.run(
                       [
@@ -104,6 +107,13 @@ jobs:
                       f"duration={duration:.3f}s text={text}"
                   )
                   assert duration <= 3.25, (text, duration)
+
+          assert abs(role_pitches["young-cow"] - role_pitches["mother-cow"]) >= 6
+          print(
+              "HOTTOP_ESPEAK_NG_ROLE_SEPARATION "
+              f"young-cow={role_pitches['young-cow']} "
+              f"mother-cow={role_pitches['mother-cow']}"
+          )
           PY
       - name: Execute checked-in anti-polish cow story
         run: |
