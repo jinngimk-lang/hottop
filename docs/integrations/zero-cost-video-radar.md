@@ -1,6 +1,6 @@
 # Zero-Cost Video Integration Radar
 
-Updated: 2026-08-26
+Updated: 2026-08-27
 
 This radar tracks candidate technologies for Hottop's **strictly zero-paid-cost** video path. A candidate listed here is not automatically production-approved. Every adapter must stay isolated, reversible, quality-gated, and compatible with Hottop's provider-neutral `hottop.render.v2 → hottop.video-plan.v1 → video-run` contract.
 
@@ -22,6 +22,7 @@ This radar tracks candidate technologies for Hottop's **strictly zero-paid-cost*
 | Lightricks LTX family / LTX-2.x | T2V/I2V and newer synchronized audio-video candidate behind a free Space or operator-owned GPU | LTX-2.x uses a Community License; current license requires a paid commercial agreement for entities at/above the stated revenue threshold, while non-commercial testing is separately defined. Never assume the model is commercially free merely because code is public. | **License-gated candidate** |
 | `Wan-Video/Wan2.2` | Preferred operator-controlled self-hosted generation family when adequate GPU exists | Repository is Apache-2.0; model/runtime assets remain operator-controlled and must be checked independently | **Adopted optional local route** |
 | `ModelTC/LightX2V` | Maintained operator-owned inference framework for Hottop's tested Wan2.2/local path | Repository is Apache-2.0; model/checkpoint rights are separate. Keep the tested pin unless a newer revision produces measured Hottop value. | **Adopted tested local framework; no freshness-only repin** |
+| `ernie-research/Memento` | Wan2.2-based long/multi-shot subject-memory candidate that directly targets cross-shot identity drift | Exact GitHub revision `eafe8aa6811d7f27477801c23c54faa33fa4659c` has inference/training code and a README Apache-2.0 badge, but the exact root tree does not contain the linked `LICENSE` file. Hugging Face Memento LoRA/KeyframeQuery weights declare Apache-2.0; base Wan2.2 rights remain separate. Upstream recommends 8×A100 80GB for inference, so dual-DGX-Spark feasibility is unproven. | **Gated continuity benchmark candidate; no download/routing yet** |
 | `DeepBeepMeep/Wan2GP` | Low-VRAM operator-side orchestration across Wan2.2/LTX-2/Qwen/Hunyuan plus queueing, headless execution, RIFE/FlashVSR and audio tooling | WanGP Community License 2.0 permits free internal/company use and output creation, but restricts selling/embedding/exposing WanGP itself as a paid product/service. Third-party model licenses remain separate. Hottop must interoperate externally, not copy/bundle WanGP. | **Adopt external operator adapter candidate** |
 | `lllyasviel/FramePack` | Low-VRAM progressive I2V / continuity candidate | Repository license verified Apache-2.0. Official README states RTX 30/40/50 support and at least 6GB VRAM; its standalone flow may automatically download large models. Hottop must not trigger that download automatically. | **Future isolated local adapter** |
 | `hao-ai-lab/FastVideo` | Future inference acceleration / training-sidecar option for operator GPU | Repository license verified Apache-2.0; useful only when a concrete self-hosted performance gap is measured | **Observe / benchmark before integration** |
@@ -31,6 +32,18 @@ This radar tracks candidate technologies for Hottop's **strictly zero-paid-cost*
 | RIFE | Optional interpolation / motion-smoothing post-process | Verify exact upstream revision/license before adapter work | **Future post-process candidate** |
 | Real-ESRGAN | Optional restoration/upscale post-process | Verify exact upstream revision/license before adapter work | **Future post-process candidate** |
 | InfiniteTalk / talking-video projects | Character dialogue / lip-sync candidate where rights-cleared reference assets exist | Code, weights, voice/likeness rights and runtime cost must all be reviewed independently | **Observe; not default** |
+
+## 2026-08-27 targeted identity-continuity check
+
+The current generated-video gap remains **real multi-shot subject continuity evidence**, so this scan focused on projects that change that mechanism rather than adding generic model coverage.
+
+- `ernie-research/Memento@eafe8aa6811d7f27477801c23c54faa33fa4659c` is directly relevant: it extends Wan2.2-A14B with subject reconstruction plus local/global keyframe queries and is designed to preserve recurring subjects across shots/scenes. The released model card declares Apache-2.0 for the Memento adapter weights and separately identifies Wan2.2 T2V/I2V base models. This is a better mechanism match to Hottop's identity gap than another ordinary I2V wrapper.
+- It **does not clear Hottop's admission gate yet**. The exact GitHub tree does not contain the README-linked root `LICENSE` file even though the README badge says Apache-2.0, and official inference guidance recommends `8× A100 80GB`. Hottop has no evidence that the current dual-DGX-Spark topology can execute it safely or efficiently.
+- Therefore Memento is tracked as a gated benchmark candidate only. Do not clone/install it from normal `video-run`, do not download its two ~3.2GB adapter weight files or Wan2.2 base checkpoints automatically, and do not claim it improves Hottop until an operator-controlled hardware/license review plus same-story continuity benchmark exists.
+- LightX2V `main` remains `b220e26198fc90769114b6751236be96a3838069`; its current opt-in MiniMax-H3 weight-residency change does not provide measured Hottop continuity gains, so the tested Wan2.2 route is not repinned merely for freshness.
+- Official Qwen3-TTS `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no upstream change removes the operator-local 1.7B A/B requirement.
+
+No candidate in this refresh is admitted for unattended execution, heavy provisioning or paid fallback.
 
 ## 2026-08-26 targeted freshness check
 
@@ -56,10 +69,11 @@ No candidate in this refresh clears the gate strongly enough to replace the guar
 ## Near-term experiments
 
 1. **Reference-conditioned operator benchmark:** when a rights-safe reference pack plus operator-provisioned LightX2V/Wan2.2 or compliant WanGP runtime exists, execute at least two subject-bearing shots and bind exact reference bytes, generator source revision, model/checkpoint provenance when independently verifiable, generated bytes and continuity-evaluator evidence.
-2. **MiniMax H3 through LightX2V:** benchmark only after the operator supplies a reviewed local checkpoint/runtime and its model/output-rights are recorded. Do not infer readiness from upstream support requests.
-3. **LTX-2 synchronized audio/video evaluation:** evaluate as a local operator backend only after the current license is accepted for the intended use; compare whether synchronized native audio materially beats Hottop's existing free local voice/music/SFX chain.
-4. **FramePack isolation benchmark:** only if an operator GPU is available, compare identity drift, motion quality, latency and installation footprint against the existing Wan/LightX2V paths. Do not auto-download its models.
-5. **Post-processing adapters:** RIFE/Real-ESRGAN enter only after a measurable failing quality case demonstrates value; do not add heavyweight dependencies speculatively.
+2. **Memento continuity benchmark:** only after exact code-license packaging is unambiguous and operator hardware feasibility is demonstrated. Compare the same Odyssey subject-bearing shot sequence against the existing LightX2V/Wan2.2 route using Hottop's continuity evaluator; keep it registry/radar-only until then.
+3. **MiniMax H3 through LightX2V:** benchmark only after the operator supplies a reviewed local checkpoint/runtime and its model/output-rights are recorded. Do not infer readiness from upstream support requests.
+4. **LTX-2 synchronized audio/video evaluation:** evaluate as a local operator backend only after the current license is accepted for the intended use; compare whether synchronized native audio materially beats Hottop's existing free local voice/music/SFX chain.
+5. **FramePack isolation benchmark:** only if an operator GPU is available, compare identity drift, motion quality, latency and installation footprint against the existing Wan/LightX2V paths. Do not auto-download its models.
+6. **Post-processing adapters:** RIFE/Real-ESRGAN enter only after a measurable failing quality case demonstrates value; do not add heavyweight dependencies speculatively.
 
 ## Rejection rules
 
