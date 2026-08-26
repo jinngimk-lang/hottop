@@ -262,4 +262,10 @@ def build_odyssey_story_scene(*, shot_index: int, progress: float, width: int, h
                 )
             )
 
-    return Scene3D(camera=camera, meshes=meshes, background=(45, 38, 42))
+    return Scene3D(
+        camera=camera,
+        meshes=meshes,
+        background=(45, 38, 42),
+        directional_shading_strength=0.45,
+        light_direction=Vec3(-0.45, 0.80, -0.38),
+    )
