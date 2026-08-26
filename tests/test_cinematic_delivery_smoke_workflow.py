@@ -27,9 +27,9 @@ def test_cinematic_delivery_smoke_archives_media_runtime_provenance():
     assert 'version("moviepy")' in text
     assert 'version("numpy")' in text
     assert 'version("pillow")' in text
-    assert '["ffmpeg", "-version"]' in text
-    assert '["ffprobe", "-version"]' in text
-    assert '["espeak", "--version"]' in text
+    assert 'executable_info("ffmpeg", "-version")' in text
+    assert 'executable_info("ffprobe", "-version")' in text
+    assert 'executable_info("espeak", "--version")' in text
     assert "HOTTOP_CAPTION_FONT" in text
     assert "hashlib.sha256(font_path.read_bytes()).hexdigest()" in text
 
