@@ -1,7 +1,7 @@
 # Hottop Status
 
 Last updated: 2026-08-26
-Active workstream: **Production v0.2 — dual-DGX local multimodal generation fabric + real cinematic-motion proof**
+Active workstream: **Production v0.2 — operator-local real cinematic-motion proof on the fail-closed multimodal model fabric**
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
@@ -9,103 +9,62 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current repository truth
 
-PR #86 (`feat/dgx-spark-local-model-hub`) is the active workstream from `main@5f80ef0c1bd39c14499c1df8cded9f5ad8e0145a`.
+PR #86 was squash-merged to `main` as `3f04802c88027833e23b7e14a95592bfbf3ed6e3` after exact-head `f43710f3441e5c1fc3c7a45aeb367aaa9a9d8bff` passed CI #1714, production-smoke #177 and cinematic-delivery-smoke #24. No post-merge workflow run was visible at the time of this status update.
 
-TDD evidence:
-
-- first test-only CI was blocked by a Ruff formatting issue and was not accepted as RED;
-- corrected test-only head `a3086b69cee5e76f4ee00332db8f974ad21daa20` passed Ruff and failed pytest on Python 3.11/3.12 because `hottop.model_hub` did not exist;
-- implementation is now adding the model hub, operator profile, probe, one-stop selector and durable local-fabric spec; exact-head GREEN remains required before merge.
+The merged capability is deliberately fail-closed: `integrations/model-hub.yml` is a machine-readable registry and `hottop-models list` is a read-only selector. DGX/local entries remain `unprobed` until an operator probe proves runtime readiness. The hub does not install upstream projects, download models, provision GPU, consume credits or turn paid/license-blocked entries into defaults.
 
 ## Declared local operator compute
 
-The user has declared **two local NVIDIA DGX Spark systems**. Hottop must treat this self-owned pool as the preferred heavy-compute execution surface before paid SaaS.
-
 Canonical profile: `config/operator/dgx-spark-dual.yml`.
 
-Known platform capability recorded for routing/planning:
+The declared two-node NVIDIA DGX Spark pool is the preferred heavy-compute surface before paid SaaS, but Hottop does **not** treat aggregate physical memory as one automatic shared GPU address space. Driver/CUDA/PyTorch, disk, local model paths and inter-node networking remain unverified until `scripts/probe_dgx_spark.py` is run on each physical host.
 
-- NVIDIA GB10 Blackwell per node;
-- 128 GB coherent unified memory per node;
-- 273 GB/s memory bandwidth per node;
-- ConnectX-7 200 Gbps capable networking;
-- 256 GB aggregate physical unified-memory capacity across two systems.
+Durable operator spec: `docs/operations/dgx-spark-local-model-fabric.md`.
 
-Do **not** treat the two-node aggregate as one automatically shared GPU memory address space.
-
-Actual operator runtime facts remain intentionally unverified until the machines are probed: hostname, DGX OS, driver, CUDA, PyTorch, free disk, local model paths and configured ConnectX/RDMA/network state. Run `python scripts/probe_dgx_spark.py` on each host. Current NVIDIA release versions are not proof of what is installed on the user's machines.
-
-## Creative/production hierarchy remains above model routing
-
-The local GPU pool changes the execution strategy, not Hottop's purpose. Every asset still follows:
+## Production hierarchy remains above model routing
 
 `fresh/supplied hotspot evidence → promotion objective → hotspot mechanism → product role/outcome change → script/beat sheet → character/world bible + identity locks → keyframes/style frames → model selection → real image/video generation → continuity review → voice/BGM/SFX → post/final media verification → campaign-effect review`
 
-Hard rules:
-
-- maximize hotspot recognition + product relevance + promotional purpose before optimizing model quality;
-- product must change the story outcome through a defensible product truth/metaphor;
-- film/live-action hotspots require original cinematic/live-action grammar; crude 3D is only valid when that roughness is the hotspot-native grammar;
-- cinematic video requires real character/environment/action motion; stills with pan/zoom/Ken-Burns movement are **not** accepted as video;
-- script, character identity, costume/props, scene geography, action continuity, image/video style and audio grammar must remain coherent;
-- paid SaaS is not a default fallback.
-
-Durable operator spec: `docs/operations/dgx-spark-local-model-fabric.md`.
+Model quality never substitutes for product relevance, hotspot mechanism, rights safety, character/world continuity or real motion. Cinematic requests cannot be satisfied by still-image pan/zoom. Anti-Polish roughness remains style-routed rather than a license for random failure.
 
 ## One-stop multimodal model hub
 
 Canonical registry: `integrations/model-hub.yml`.
-
 Safe discovery surface: `hottop-models list`.
 
-The registry unifies image generation/editing, I2V/T2V, character animation, speech-driven video, restoration, interpolation, TTS and workflow interoperability without vendoring third-party repositories or auto-downloading weights.
+Priority remains:
 
-Current priority stack:
+1. LightX2V + Wan2.2 I2V A14B for reviewed local reference-conditioned motion.
+2. LightX2V Wan2.2 NVFP4 sparse Blackwell as a benchmark candidate, not an assumed speedup.
+3. Wan2.2 TI2V/Animate/S2V for real motion, character animation and speech-driven motion when separately provisioned and rights-cleared.
+4. Qwen-Image for keyframe/image work and Qwen3-TTS 1.7B CustomVoice for operator-local Mandarin delivery benchmarks.
+5. Real-ESRGAN/RIFE only for restoration/interpolation; neither may masquerade as a motion generator.
+6. ComfyUI/WanGP and other external stacks remain isolated interop candidates under their own license/runtime gates.
 
-1. **LightX2V + Wan2.2 I2V A14B** — primary existing local cinematic reference-conditioned route.
-2. **LightX2V Wan2.2 NVFP4 sparse Blackwell path** — high-priority dual-DGX benchmark; upstream speed claims are not Hottop evidence.
-3. **Wan2.2 TI2V 5B** — 720p real-motion benchmark candidate.
-4. **Wan2.2 Animate 14B** — character animation/replacement candidate; identity still requires output-side evidence.
-5. **Wan2.2 S2V 14B** — speech-driven motion benchmark candidate.
-6. **Qwen-Image 2.x** — keyframe/image/editing candidate for high-quality style/identity lock.
-7. **Qwen3-TTS 1.7B CustomVoice** — local role/delivery Mandarin candidate behind existing rights gate.
-8. **Real-ESRGAN** — restoration/SR only; cannot satisfy motion generation.
-9. **RIFE** — interpolation only; cannot turn static-slide motion into cinematic action.
-10. **ComfyUI** — isolated GPL interoperability/orchestration; do not vendor.
+Popularity or freshness alone is not admission evidence. Code license remains separate from weights/model/data/output rights.
 
-FramePack/LTX/LongCat/SCAIL/MiniMax H3/WanGP and future candidates remain registry/radar candidates until their exact code+weights rights, local runtime, quality and rollback gates clear. Newer LTX-2.x remains license-blocked for default commercial routing until its current commercial terms are cleared for the operator entity.
+## Guaranteed zero-cost baseline
 
-Paid video SaaS is represented only as an excluded class so default selection can prove it never leaks into zero-cost routing.
-
-## Guaranteed deterministic baseline
-
-The existing software3d → local audio → MoviePy → FFmpeg route remains valuable because it is reproducible, zero-GPU and evidence-rich. It remains a **style-appropriate deterministic baseline**, not the cinematic quality ceiling and not a fallback allowed to satisfy a photorealistic-film request.
-
-The checked-in presentable deterministic delivery path remains 720×1280 / 24 fps and has real H.264/AAC evidence. Keep that proof for regression safety while the new local generative stack earns its own evidence.
+The software3d → local Mandarin audio → original synthetic music/Foley → MoviePy → FFmpeg route remains the guaranteed zero-GPU, zero-download, zero-paid baseline. The checked-in 720×1280/24fps Odyssey delivery proof remains the deterministic presentable baseline with source-byte, shot-byte, final-media and codec evidence. It is not a generated/reference-conditioned identity claim and is not the cinematic quality ceiling.
 
 ## Immediate next actions
 
-1. Finish PR #86 exact-head Ruff + full pytest on Python 3.11/3.12; review diff and merge only after GREEN.
-2. Run `scripts/probe_dgx_spark.py` separately on both physical DGX Spark systems and record the actual runtime facts outside Git when local/private details should not be committed.
-3. Provision/pin one reviewed local LightX2V/Wan2.2 route on the operator machines; Hottop itself must not silently install or download multi-GB models.
-4. Use the Odyssey/Cyclops deployment-island concept as the first **true-motion** benchmark because the previous slideshow-like attempt clearly exposed the failure boundary.
-5. Build a character/world bible + approved cinematic keyframes, then generate at least two subject-bearing real I2V shots with actual human/giant/environment motion.
-6. Bind generator source revision, checkpoint provenance, reference bytes and shot hashes; run motion + cross-shot continuity evidence before composition.
-7. Add role-aware Mandarin voice, original cinematic BGM and synchronized Foley/SFX, compose and verify the final H.264/AAC vertical short.
-8. Visually inspect the real artifact. Reject slideshow motion, identity drift, broken geography, weak hotspot/product mapping or audio that undermines the scene.
-9. Continue targeted ecosystem scans; integrate only candidates that materially improve a measured gap and clear license/cost/hardware/security/quality gates.
-10. For every future creative request, continue live hotspot research when none is supplied; a supplied hotspot is analyzed first rather than replaced by a generic trending template.
+1. Verify the post-merge `main@3f04802c…` CI when it appears; keep the model hub merged only on real green evidence.
+2. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines; keep private host/runtime details out of Git when appropriate.
+3. Once one reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run the first true-motion Odyssey benchmark with at least two subject-bearing I2V shots.
+4. Bind actual generator source revision, checkpoint provenance when independently available, exact reference bytes and shot hashes; require motion and complete cross-shot continuity evidence before composition.
+5. Run the existing role-aware Mandarin/audio/post chain and final H.264/AAC verification; visually reject slideshow motion, identity drift, broken geography or weak product/hotspot mapping.
+6. If operator runtime remains unavailable, continue improving only measured defects in the guaranteed software3d production path and continue targeted ecosystem radar; do not add abstraction or large dependencies without evidence.
+7. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not creative defaults.
 
 ## Recovery order
 
 1. `PROJECT.md`.
 2. this `STATUS.md`.
-3. `docs/operations/dgx-spark-local-model-fabric.md`.
-4. `config/operator/dgx-spark-dual.yml`.
-5. `integrations/model-hub.yml`.
-6. relevant reusable creative/video skills.
-7. newest relevant benchmark/spec/decision/research record.
-8. current `main`, open PRs and exact-head CI/production evidence.
-9. targeted ecosystem scan for the measured gap.
-10. fresh hotspot/mechanism analysis for new creative generation.
-11. continue the highest-value safe action autonomously.
+3. relevant reusable creative/video skills.
+4. `docs/operations/dgx-spark-local-model-fabric.md`, `config/operator/dgx-spark-dual.yml`, `integrations/model-hub.yml`.
+5. newest relevant benchmark/spec/decision/research record.
+6. current `main`, open PRs and exact-head CI/production evidence.
+7. targeted ecosystem scan for the measured gap.
+8. fresh hotspot/mechanism analysis for new creative generation.
+9. continue the highest-value safe action autonomously.
