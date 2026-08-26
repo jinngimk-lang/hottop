@@ -10,7 +10,7 @@ def test_repeatability_decision_prioritizes_quality_contracts_over_universal_byt
 
     assert "repeatability is defined first" in text
     assert "not by universal byte equality" in text
-    assert "byte-identical outputs remain useful additional evidence" in text
+    assert "Byte-identical outputs remain useful additional evidence" in text
     assert "#31 is a counterexample" in text
 
 
