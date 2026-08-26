@@ -20,6 +20,16 @@ The current official 1.7B CustomVoice model tree reviewed on 2026-08-26 is about
 
 The published Qwen repository/model pages declare Apache-2.0, but Hottop continues to distinguish code/model metadata from rights in generated/preset-voice usage. A current upstream issue is still asking for explicit commercial-use clarification for preset-speaker output, so operator review remains required before external commercial publication. Hottop does not infer that an Apache-2.0 model card alone clears every speaker/timbre right.
 
+### Acceleration/runtime radar refresh
+
+A targeted runtime refresh on 2026-08-26 found two materially different acceleration directions, neither of which currently clears Hottop's admission gate as a new default:
+
+- `nari-labs/nari-qwen3-tts` advertises a high-throughput Qwen3-TTS 1.7B CustomVoice serving path with sub-50 ms time-to-first-audio at 10 requests/s, but its headline path is explicitly a **single-H100** serving implementation. That can be valuable for an already-provisioned operator benchmark, but it does not reduce Hottop's current zero-cost/local provisioning boundary and is not evidence of better Mandarin quality. Do not add it to normal `video-run` without a measured latency/throughput bottleneck and exact source/runtime review.
+- SGLang-Omni's current Qwen3-TTS optimization tracker reports H100/H200 execution-path work, including removal of a Talker `torch.compile` path after crossed measurements showed no reproducible end-to-end benefit. This is useful evidence for Hottop's broader rule: acceleration claims require end-to-end measurement, not a nominal optimization switch. It remains operator-GPU infrastructure, not a guaranteed fallback.
+- Community GUI/ComfyUI wrappers commonly offer first-use or on-demand model download behavior. That conflicts with Hottop's unattended boundary even when the underlying model is acceptable. Hottop should continue using its narrow local adapter and explicit local-model preflight rather than adopting wrappers that silently fetch multi-GB weights.
+
+Decision: keep the reviewed official/local Qwen adapter as the integration surface. Treat H100/H200 serving stacks as future operator-only benchmark candidates, not as a reason to add dependencies or change the guaranteed eSpeak-family fallback.
+
 ## Admission decision
 
 Keep Qwen3 CustomVoice as an explicit non-default voice backend behind local preflight:
