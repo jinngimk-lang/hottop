@@ -54,7 +54,7 @@ def test_model_hub_covers_generation_continuity_post_and_audio() -> None:
     } <= capabilities
 
 
-def test_dgx_cinematic_i2v_selection_prefers_local_zero_cost_real_motion() -> None:
+def test_dgx_cinematic_i2v_selection_prefers_integrated_zero_cost_real_motion() -> None:
     hub = load_model_hub(ROOT / "integrations/model-hub.yml")
 
     selected = select_models(
@@ -62,13 +62,23 @@ def test_dgx_cinematic_i2v_selection_prefers_local_zero_cost_real_motion() -> No
         capability="image_to_video",
         operator_profile="dgx-spark-dual",
         zero_cost_only=True,
-        executable_only=True,
+        integration_ready_only=True,
     )
 
     ids = [entry.id for entry in selected]
     assert "lightx2v-wan22-i2v-a14b" in ids
     assert all(entry.cost_class == "self_owned_compute" for entry in selected)
+    assert all(entry.integration_ready for entry in selected)
     assert all(entry.status not in {"license_blocked", "paid_optional"} for entry in selected)
+
+
+def test_registry_never_claims_unprobed_dgx_runtime_is_ready() -> None:
+    hub = load_model_hub(ROOT / "integrations/model-hub.yml")
+    local_entries = [entry for entry in hub.models if "dgx-spark-dual" in entry.operator_profiles]
+
+    assert local_entries
+    assert all(entry.runtime_status in {"unprobed", "not_provisioned", "blocked"} for entry in local_entries)
+    assert not any(entry.runtime_status == "operator_provisioned" for entry in local_entries)
 
 
 def test_post_processing_cannot_masquerade_as_a_cinematic_generator() -> None:
@@ -79,7 +89,7 @@ def test_post_processing_cannot_masquerade_as_a_cinematic_generator() -> None:
         capability="cinematic_real_motion",
         operator_profile="dgx-spark-dual",
         zero_cost_only=True,
-        executable_only=True,
+        integration_ready_only=True,
     )
     ids = {entry.id for entry in generators}
 
@@ -95,7 +105,7 @@ def test_paid_and_license_blocked_models_are_never_default_selected() -> None:
         hub,
         operator_profile="dgx-spark-dual",
         zero_cost_only=True,
-        executable_only=True,
+        integration_ready_only=True,
     )
 
     assert all(entry.cost_class != "paid_service" for entry in selected)
