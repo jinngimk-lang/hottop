@@ -89,6 +89,7 @@ jobs:
               },
               "executables": {
                   "ffmpeg": first_line(["ffmpeg", "-version"]),
+                  "ffprobe": first_line(["ffprobe", "-version"]),
                   "espeak": first_line(["espeak", "--version"]),
               },
               "caption_font": {
@@ -144,6 +145,7 @@ jobs:
           assert runtime["packages"]["numpy"]
           assert runtime["packages"]["pillow"]
           assert runtime["executables"]["ffmpeg"]
+          assert runtime["executables"]["ffprobe"]
           assert "eSpeak NG" in runtime["executables"]["espeak"]
           assert len(runtime["caption_font"]["sha256"]) == 64
           assert runtime["caption_font"]["size_bytes"] > 0
