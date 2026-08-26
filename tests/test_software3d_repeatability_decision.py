@@ -1,3 +1,5 @@
+"""Regression contracts for scoped software3d repeatability semantics."""
+
 from pathlib import Path
 
 DECISION = Path("docs/decisions/2026-08-26-software3d-repeatability.md")
