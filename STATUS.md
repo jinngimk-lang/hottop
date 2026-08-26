@@ -1,7 +1,7 @@
 # Hottop Status
 
 Last updated: 2026-08-26
-Active workstream: **Production v0.2 — repeatable presentable zero-cost delivery; operator-local generated/TTS quality when provisioned**
+Active workstream: **Production v0.2 — dual-DGX local multimodal generation fabric + real cinematic-motion proof**
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
@@ -9,81 +9,103 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current repository truth
 
-Current `main`: `45ecfeb7d34ed32408839d780a96682c9ced1e95` (`prod: bind delivery evidence to canonical source bytes`, squash merge of PR #83).
+PR #86 (`feat/dgx-spark-local-model-hub`) is the active workstream from `main@5f80ef0c1bd39c14499c1df8cded9f5ad8e0145a`.
 
-- PR #83 exact GREEN head: `c22f5a240302351f6f746a6d7d7739535085d084`.
-- Exact-head CI **1660** passed Ruff + full pytest on Python 3.11/3.12.
-- Post-merge `main` CI **1661** passed.
-- No paid service, credential, provider-routing or media-generation behavior changed in #83.
+TDD evidence:
 
-PR #83 closes a durable provenance gap in the checked-in 720p Odyssey delivery proof. `examples/runs/odyssey-cinematic-software3d-delivery.evidence.json` now binds the canonical render and delivery config by both path **and SHA-256 bytes**, so later fixture/profile edits cannot silently make old evidence appear to prove current source files. The manifest already binds workflow/artifact/final-media/shot bytes; source bytes are now part of the same evidence chain.
+- first test-only CI was blocked by a Ruff formatting issue and was not accepted as RED;
+- corrected test-only head `a3086b69cee5e76f4ee00332db8f974ad21daa20` passed Ruff and failed pytest on Python 3.11/3.12 because `hottop.model_hub` did not exist;
+- implementation is now adding the model hub, operator profile, probe, one-stop selector and durable local-fabric spec; exact-head GREEN remains required before merge.
 
-## Guaranteed zero-cost software3d baseline
+## Declared local operator compute
 
-The lightweight repeatedly exercised smoke profiles remain intentionally small:
+The user has declared **two local NVIDIA DGX Spark systems**. Hottop must treat this self-owned pool as the preferred heavy-compute execution surface before paid SaaS.
 
-- `anti-polish-software3d.yml`: 360×640, 12 fps;
-- `cinematic-software3d.yml`: 360×640, 12 fps.
+Canonical profile: `config/operator/dgx-spark-dual.yml`.
 
-They exist to keep full config→media→provenance evidence cheap and repeatable in CI. They are **not** a cinematic delivery ceiling.
+Known platform capability recorded for routing/planning:
 
-The guaranteed route has real production evidence for checked-in render/config → actual moving 3D shots → Mandarin eSpeak-NG/eSpeak dialogue with preserved `speaker + delivery` semantics → original synthetic music/procedural Foley → dialogue-aware MoviePy composition → FFmpeg H.264/AAC/yuv420p/fast-start finalization. It carries final AAC activity/duration checks, byte-bound per-shot provenance + immediate pre-composition re-verification, perceptible-motion/mobile-framing/subtitle contracts, and zero GPU/model-download/credential/paid-service requirements.
+- NVIDIA GB10 Blackwell per node;
+- 128 GB coherent unified memory per node;
+- 273 GB/s memory bandwidth per node;
+- ConnectX-7 200 Gbps capable networking;
+- 256 GB aggregate physical unified-memory capacity across two systems.
 
-## Presentable cinematic software3d delivery evidence — PROVEN
+Do **not** treat the two-node aggregate as one automatically shared GPU memory address space.
 
-`config/video/cinematic-software3d-delivery.yml` remains the deterministic presentable-delivery profile: **720×1280, 24 fps**, `software3d → MoviePy → FFmpeg`, cinematic/lower-roughness semantics, Mandarin guaranteed local voice fallback, original synthetic score/Foley, and no URL/QR/GPU/model/credential/paid API requirement.
+Actual operator runtime facts remain intentionally unverified until the machines are probed: hostname, DGX OS, driver, CUDA, PyTorch, free disk, local model paths and configured ConnectX/RDMA/network state. Run `python scripts/probe_dgx_spark.py` on each host. Current NVIDIA release versions are not proof of what is installed on the user's machines.
 
-The scoped `cinematic-delivery-smoke` proof produced a real 15.0-second MP4. Durable checked-in evidence records:
+## Creative/production hierarchy remains above model routing
 
-- workflow head/run and GitHub artifact digest;
-- final MP4 SHA-256 and H.264/yuv420p/AAC media contract;
-- five byte-bound software3d shot records;
-- canonical render SHA-256 and delivery-config SHA-256;
-- measured motion/audio/luminance inspection and deterministic-only claim scope.
+The local GPU pool changes the execution strategy, not Hottop's purpose. Every asset still follows:
 
-Large media remains out of Git. This proof does **not** upgrade deterministic software3d into a generated/reference-conditioned identity claim.
+`fresh/supplied hotspot evidence → promotion objective → hotspot mechanism → product role/outcome change → script/beat sheet → character/world bible + identity locks → keyframes/style frames → model selection → real image/video generation → continuity review → voice/BGM/SFX → post/final media verification → campaign-effect review`
 
-## Operator-local Mandarin TTS
+Hard rules:
 
-Qwen3-TTS CustomVoice remains the preferred non-default role-aware Mandarin benchmark candidate behind fail-closed local preflight. eSpeak-NG/eSpeak remains the guaranteed zero-cost/offline fallback. Current official 0.6B CustomVoice ignores `instruct`; current 1.7B is the admitted delivery-control benchmark target. No package/model auto-install or network model fetch is allowed, and preset-speaker/output publication rights remain an operator gate separate from Apache-2.0 metadata.
+- maximize hotspot recognition + product relevance + promotional purpose before optimizing model quality;
+- product must change the story outcome through a defensible product truth/metaphor;
+- film/live-action hotspots require original cinematic/live-action grammar; crude 3D is only valid when that roughness is the hotspot-native grammar;
+- cinematic video requires real character/environment/action motion; stills with pan/zoom/Ken-Burns movement are **not** accepted as video;
+- script, character identity, costume/props, scene geography, action continuity, image/video style and audio grammar must remain coherent;
+- paid SaaS is not a default fallback.
 
-Fresh 2026-08-26 review still does not justify a default change. H100/H200 acceleration stacks remain operator benchmark infrastructure. CosyVoice3 still has recent correctness reports including TensorRT+FP16 non-finite audio and streaming device-mismatch failures, so it remains a comparison candidate rather than a default.
+Durable operator spec: `docs/operations/dgx-spark-local-model-fabric.md`.
 
-Research record: `docs/research/2026-08-26-qwen3-customvoice-routing.md`.
+## One-stop multimodal model hub
 
-## Generated/reference-conditioned identity gap
+Canonical registry: `integrations/model-hub.yml`.
 
-A real identity-preservation claim still requires an operator-owned reference-conditioned runtime plus rights-safe benchmark assets. This environment does not contain a provisioned LightX2V/Wan2.2, MiniMax-H3-through-LightX2V, WanGP or equivalent compliant GPU/model runtime.
+Safe discovery surface: `hottop-models list`.
 
-Normal unattended Hottop must not auto-download multi-GB weights, provision GPU, consume credits or weaken the evidence boundary. A production identity claim still requires exact reference bytes, stable subject IDs, complete subject-bearing shot coverage, generated-video quality gates, generator/model/evaluator provenance and byte-bound generated artifacts.
+The registry unifies image generation/editing, I2V/T2V, character animation, speech-driven video, restoration, interpolation, TTS and workflow interoperability without vendoring third-party repositories or auto-downloading weights.
 
-## Current ecosystem radar
+Current priority stack:
 
-Targeted 2026-08-26 freshness check:
+1. **LightX2V + Wan2.2 I2V A14B** — primary existing local cinematic reference-conditioned route.
+2. **LightX2V Wan2.2 NVFP4 sparse Blackwell path** — high-priority dual-DGX benchmark; upstream speed claims are not Hottop evidence.
+3. **Wan2.2 TI2V 5B** — 720p real-motion benchmark candidate.
+4. **Wan2.2 Animate 14B** — character animation/replacement candidate; identity still requires output-side evidence.
+5. **Wan2.2 S2V 14B** — speech-driven motion benchmark candidate.
+6. **Qwen-Image 2.x** — keyframe/image/editing candidate for high-quality style/identity lock.
+7. **Qwen3-TTS 1.7B CustomVoice** — local role/delivery Mandarin candidate behind existing rights gate.
+8. **Real-ESRGAN** — restoration/SR only; cannot satisfy motion generation.
+9. **RIFE** — interpolation only; cannot turn static-slide motion into cinematic action.
+10. **ComfyUI** — isolated GPL interoperability/orchestration; do not vendor.
 
-- **LightX2V:** upstream `main` moved from the previously observed `5dc5d637…` to `aa1b7b5921d73fb42a605a3f4f3519b0554bb7e6` on 2026-08-26. The new commit adds SwiftVR single-image super-resolution support, larger-input RoPE handling and related MP4/checkpoint-conversion work. This is material upstream maintenance, but Hottop currently has no measured delivery failure that requires an SR stage and no operator benchmark proving gain on the tested Wan2.2 route. **Do not freshness-only repin or add a post-process dependency.**
-- **Qwen3-TTS:** official repository `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; community H100/H200 and MLX serving work does not replace the reviewed operator-local adapter without same-dialogue A/B evidence.
-- **CosyVoice3:** recent TensorRT+FP16 NaN and streaming STFT device mismatch reports reinforce finite-audio/device correctness gates.
-- **MiniMax H3 / FramePack / FastVideo / LTX / SCAIL / LongCat / InfiniteTalk / RIFE / Real-ESRGAN:** remain behind separate code-license, weights/data/output-rights, hidden-download/network, hardware, security, cost, benchmark-value and rollback gates.
+FramePack/LTX/LongCat/SCAIL/MiniMax H3/WanGP and future candidates remain registry/radar candidates until their exact code+weights rights, local runtime, quality and rollback gates clear. Newer LTX-2.x remains license-blocked for default commercial routing until its current commercial terms are cleared for the operator entity.
 
-Durable rule remains unchanged: popularity/freshness is not admission evidence; code license is not model/weights/data/output-rights clearance.
+Paid video SaaS is represented only as an excluded class so default selection can prove it never leaks into zero-cost routing.
+
+## Guaranteed deterministic baseline
+
+The existing software3d → local audio → MoviePy → FFmpeg route remains valuable because it is reproducible, zero-GPU and evidence-rich. It remains a **style-appropriate deterministic baseline**, not the cinematic quality ceiling and not a fallback allowed to satisfy a photorealistic-film request.
+
+The checked-in presentable deterministic delivery path remains 720×1280 / 24 fps and has real H.264/AAC evidence. Keep that proof for regression safety while the new local generative stack earns its own evidence.
 
 ## Immediate next actions
 
-1. Treat the 720×1280/24fps Odyssey delivery proof, including canonical source-byte hashes, as the present deterministic zero-cost delivery baseline. Re-run the scoped workflow on relevant delivery-path changes, not every ordinary PR.
-2. Continue direct inspection of real delivery artifacts and change deterministic visuals/audio only when a measurable failure appears; do not blindly retune camera, brightness, subtitles, mix or add SR/interpolation/upscale stages after a passing sample.
-3. When an operator-provisioned Qwen3-TTS 1.7B runtime exists, run same-dialogue eSpeak-family vs Qwen A/B; no quality claim before real audio evidence.
-4. When a compliant operator-owned reference-conditioned runtime plus rights-safe assets exists, execute a real multi-shot identity/style benchmark before changing defaults or claiming identity preservation.
-5. Continue targeted ecosystem scans against measured gaps; integrate only candidates clearing source/license/weights/cost/hardware/security/reversibility/value gates.
-6. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain test fixtures, not creative defaults.
+1. Finish PR #86 exact-head Ruff + full pytest on Python 3.11/3.12; review diff and merge only after GREEN.
+2. Run `scripts/probe_dgx_spark.py` separately on both physical DGX Spark systems and record the actual runtime facts outside Git when local/private details should not be committed.
+3. Provision/pin one reviewed local LightX2V/Wan2.2 route on the operator machines; Hottop itself must not silently install or download multi-GB models.
+4. Use the Odyssey/Cyclops deployment-island concept as the first **true-motion** benchmark because the previous slideshow-like attempt clearly exposed the failure boundary.
+5. Build a character/world bible + approved cinematic keyframes, then generate at least two subject-bearing real I2V shots with actual human/giant/environment motion.
+6. Bind generator source revision, checkpoint provenance, reference bytes and shot hashes; run motion + cross-shot continuity evidence before composition.
+7. Add role-aware Mandarin voice, original cinematic BGM and synchronized Foley/SFX, compose and verify the final H.264/AAC vertical short.
+8. Visually inspect the real artifact. Reject slideshow motion, identity drift, broken geography, weak hotspot/product mapping or audio that undermines the scene.
+9. Continue targeted ecosystem scans; integrate only candidates that materially improve a measured gap and clear license/cost/hardware/security/quality gates.
+10. For every future creative request, continue live hotspot research when none is supplied; a supplied hotspot is analyzed first rather than replaced by a generic trending template.
 
 ## Recovery order
 
 1. `PROJECT.md`.
 2. this `STATUS.md`.
-3. relevant reusable skills.
-4. newest relevant spec/plan/decision/research record.
-5. current `main`, open PRs and exact-head CI/production evidence.
-6. targeted ecosystem scan for the measured gap.
-7. fresh hotspot/mechanism analysis for new creative generation.
-8. continue the highest-value safe action autonomously.
+3. `docs/operations/dgx-spark-local-model-fabric.md`.
+4. `config/operator/dgx-spark-dual.yml`.
+5. `integrations/model-hub.yml`.
+6. relevant reusable creative/video skills.
+7. newest relevant benchmark/spec/decision/research record.
+8. current `main`, open PRs and exact-head CI/production evidence.
+9. targeted ecosystem scan for the measured gap.
+10. fresh hotspot/mechanism analysis for new creative generation.
+11. continue the highest-value safe action autonomously.
