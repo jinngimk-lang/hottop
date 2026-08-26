@@ -93,6 +93,25 @@ def test_cinematic_delivery_runtime_provenance_binds_numeric_execution_identity(
     assert 'runtime["packages"]["threadpoolctl"]' in text
 
 
+def test_cinematic_delivery_runtime_provenance_binds_loaded_numeric_library_bytes():
+    workflow = Path(".github/workflows/cinematic-delivery-smoke.yml")
+    text = workflow.read_text(encoding="utf-8")
+
+    assert "from threadpoolctl import threadpool_info" in text
+    assert "def native_numeric_libraries()" in text
+    assert "threadpool_info()" in text
+    assert '"native_libraries": native_numeric_libraries()' in text
+    assert 'Path(item["filepath"]).resolve()' in text
+    assert '"internal_api": item.get("internal_api")' in text
+    assert '"user_api": item.get("user_api")' in text
+    assert '"version": item.get("version")' in text
+    assert '"size_bytes": path.stat().st_size' in text
+    assert '"sha256": hashlib.sha256(path.read_bytes()).hexdigest()' in text
+    assert 'runtime["numerics"]["native_libraries"]' in text
+    assert 'identity["size_bytes"] > 0' in text
+    assert 'len(identity["sha256"]) == 64' in text
+
+
 def test_cinematic_delivery_smoke_gates_real_final_mp4_seam_quality():
     workflow = Path(".github/workflows/cinematic-delivery-smoke.yml")
     text = workflow.read_text(encoding="utf-8")
