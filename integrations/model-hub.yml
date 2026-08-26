@@ -187,6 +187,27 @@ models:
     runtime_boundary: Hottop adapter exists; physical 1.7B checkpoint/runtime presence is unprobed. Preset timbre/output publication rights remain an operator review gate.
     priority: 20
 
+  - id: cosyvoice3-0b5-2512
+    name: CosyVoice3 0.5B 2512 benchmark candidate
+    family: cosyvoice3
+    modalities: [audio]
+    capabilities: [mandarin_tts, role_aware_tts, dialogue_generation]
+    repository: https://github.com/QwenAudio/CosyVoice
+    code_license: Apache-2.0
+    weights_license: model-specific-checkpoint-and-output-rights-review-required
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    integration_ready: false
+    runtime_status: unprobed
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: isolated_operator_benchmark_after_runtime_correctness_proof
+    runtime_boundary: Exact reviewed source 074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc. Operator-provisioned local checkpoint/runtime only; Hottop does not auto-download it. TensorRT FP16 and streaming paths remain correctness-gated by fresh upstream failures; generated waveform must be finite and pass end-to-end local audio/media verification before any route can be admitted.
+    priority: 55
+    notes:
+      - QwenAudio/CosyVoice#1930 reports official-checkpoint TensorRT plus FP16 non-finite audio in 64/64 controlled generations; community package-pin claims remain unverified by Hottop.
+      - vllm-project/vllm-omni#6455 reports a CosyVoice3 streaming STFT input/window device mismatch; server startup alone is not runtime-readiness proof.
+      - Voice-cloning/reference-audio rights remain a separate gate; this registry entry does not admit cloning or user-reference audio by default.
+
   - id: comfyui-interop
     name: ComfyUI local API interop
     family: orchestration-runtime

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import math
 import sys
 import wave
 from array import array
@@ -128,6 +129,8 @@ def _flatten_samples(value: object) -> list[float]:
 def _write_pcm16_wav(path: Path, samples: list[float], sample_rate: int) -> None:
     if not samples:
         raise CosyVoice3Error("CosyVoice3 returned empty audio")
+    if any(not math.isfinite(sample) for sample in samples):
+        raise CosyVoice3Error("CosyVoice3 returned non-finite audio samples")
     pcm = array(
         "h",
         (
