@@ -24,7 +24,8 @@ Verified evidence:
 - the first spaced-bucket implementation was independently falsified by CI **1615** because the two canonical cow roles collided at pitch **62**, preventing a false GREEN;
 - final PR #69 head `b69833884cb640d1a921e0d26c7dc2dc4cd1c504`: CI **1616** passed on Python 3.11/3.12 and production-smoke **156** passed;
 - smoke #156 measured `young-cow` pitch **32**, `mother-cow` pitch **50**, `witch` pitch **62**. Young-cow delivery cadence still changed **169 → 162 wpm** across canonical cues, while each recurring role kept a stable pitch;
-- smoke #156 also re-executed both complete production chains: checked-in render/config → software3d moving shots → Mandarin dialogue/original music/procedural SFX → MoviePy → FFmpeg → H.264/AAC/yuv420p MP4 + five byte-bound shot manifests each.
+- smoke #156 also re-executed both complete production chains: checked-in render/config → software3d moving shots → Mandarin dialogue/original music/procedural SFX → MoviePy → FFmpeg → H.264/AAC/yuv420p MP4 + five byte-bound shot manifests each;
+- direct download/inspection of the smoke #156 final MP4s found no new loudness or long-silence regression: cow mean/max volume was about **-24.8/-4.2 dB**, Odyssey about **-23.9/-4.0 dB**, close to the prior smoke baseline, and neither produced a `-35 dB` silence interval lasting at least `0.5s`.
 
 `docs/decisions/2026-08-26-mobile-subject-readability.md` records the durable portrait-readability rule. `docs/research/2026-08-26-qwen3-customvoice-routing.md` records the operator-local neural TTS boundary and the deterministic role-aware fallback relationship.
 
