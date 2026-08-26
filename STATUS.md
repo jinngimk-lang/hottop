@@ -9,24 +9,16 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-PR #104 **Bind loaded numeric library bytes in delivery provenance** was squash-merged as `40dc5f4e1e7289b8f2c5c1bf7903be01a4b218ac` after exact head `cef9dde7427b9e7ba6e3606496fde34d79a2d3e3` passed:
+PR #104 **Bind loaded numeric library bytes in delivery provenance** was squash-merged as `40dc5f4e1e7289b8f2c5c1bf7903be01a4b218ac` after exact head `cef9dde7427b9e7ba6e3606496fde34d79a2d3e3` passed CI #1780 and cinematic-delivery-smoke #54. Post-merge `main` then passed CI #1781 and cinematic-delivery-smoke #55, including 720×1280/24fps Odyssey production, numeric-runtime capture, media/provenance verification and artifact upload.
 
-- CI #1780;
-- cinematic-delivery-smoke #54;
-- no unresolved review threads.
-
-Post-merge `main` then passed:
-
-- CI #1781 on Python 3.11/3.12;
-- cinematic-delivery-smoke #55, including 720×1280/24fps Odyssey production, numeric runtime capture, media/provenance verification and artifact upload.
-
-PR #105 **Record native runtime provenance and admit Stand-In benchmark candidate** is the current safe/reversible follow-up workstream. Its Stand-In registry contract was established test-first:
+PR #105 **Record native runtime provenance and admit Stand-In benchmark candidate** established the next generated-identity benchmark candidate test-first and was squash-merged as `5e5af2552d1c9a148f372d9db81630d9a72cb922`.
 
 - RED exact `0b596a8bfaafb8e6dde5da26a64d182b24a6e135`, CI #1782: Ruff passed; pytest failed exactly because `stand-in-wan22-a14b` was absent (`1 failed / 505 passed` on Python 3.11; Python 3.12 cancelled by fail-fast).
 - GREEN implementation `f53440dda83484de59039bf31598007dfc436713`, CI #1783: full suite passed.
-- The current branch also contains finalized #104 provenance evidence and identity-continuity radar records; re-run exact-head CI after those documentation commits before merge.
+- Final exact head `37039ddb08bd8017dc909af412365458e0e17e03` passed PR CI #1787 and push CI #1788 on Python 3.11/3.12; review threads/comments were empty.
+- Post-merge `main` CI #1789 passed on Python 3.11/3.12.
 
-No normal execution route, model download, GPU provisioning, credential, paid behavior, renderer math or media-quality threshold is changed by #105.
+No normal execution route, model download, GPU provisioning, credential, paid behavior, renderer math or media-quality threshold changed through #105.
 
 ## Native numerical runtime provenance — accepted and post-merge verified
 
@@ -83,10 +75,10 @@ The highest-value generated-quality proof remains a rights-safe reference-condit
 
 ### Identity-continuity candidates
 
-Targeted 2026-08-27 review now distinguishes four mechanism-level candidates:
+Targeted 2026-08-27 review now distinguishes the mechanism-level candidates explicitly:
 
 - **LightX2V/Wan2.2** remains the existing tested operator-owned base route. LightX2V `main` remains `b220e26198fc90769114b6751236be96a3838069`; no freshness-only repin.
-- **Stand-In/Wan2.2** is now admitted to `integrations/model-hub.yml` as `benchmark_candidate / integration_ready=false / runtime_status=unprobed`. Exact reviewed source `WeChatCV/Stand-In@e351224366be169076e94af1454115d91d458313` contains Apache-2.0 `LICENSE`; its public model card declares Apache-2.0 and includes Wan2.2-compatible Stand-In weights. The upstream automatic model-download path is explicitly excluded from Hottop; base Wan2.2 checkpoint rights/runtime remain separate, and no identity claim is allowed before output-side evaluator evidence.
+- **Stand-In/Wan2.2** is admitted to `integrations/model-hub.yml` as `benchmark_candidate / integration_ready=false / runtime_status=unprobed`. Exact reviewed source `WeChatCV/Stand-In@e351224366be169076e94af1454115d91d458313` contains Apache-2.0 `LICENSE`; its public model card declares Apache-2.0 and includes Wan2.2-compatible Stand-In weights. The upstream automatic model-download path is explicitly excluded from Hottop; base Wan2.2 checkpoint rights/runtime remain separate, and no identity claim is allowed before output-side evaluator evidence.
 - **Memento** remains gated: exact GitHub source packaging lacks the README-linked root `LICENSE`, and official inference guidance is 8×A100 80GB.
 - **IPVG** remains gated despite a mechanism closely matching the identity problem: exact source `cd70f169e9a86d47e7860392b8b80c8d59a6d75a` lacks the README-linked MIT `LICENSE` and the documented path adds Qwen3-8B + HyperLoRA + Wan2.2 provisioning.
 - **WildActor** is a promising Wan2.2-5B multi-reference human-identity research candidate, but exact source `c858c2100ed14b32c36883e0570948f4c09e0d28` has no root license file in the inspected tree and introduces separate human-data/reference-rights questions. Keep it research-only.
@@ -101,15 +93,14 @@ Official Qwen3-TTS `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`. A 
 
 ## Immediate next actions
 
-1. Finish PR #105 exact-head CI after the final status/research updates. Merge only after GREEN and empty review threads.
-2. Inspect fresh real cow/Odyssey MP4 evidence and change deterministic visuals/audio only for a **measured** defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
-3. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines.
-4. Once a reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
-5. If Stand-In's exact reviewed local source/weights are already provisioned later, use it as a same-shot identity benchmark against the LightX2V/Wan2.2 base route; do not invoke its automatic downloader and do not promote it without measured continuity gain.
-6. Bind actual generator source revision, local patch/override identity when applicable, independently verifiable checkpoint provenance, exact reference bytes and shot hashes.
-7. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
-8. Continue targeted ecosystem radar around the measured gap. Do not add abstraction, freshness-only pins or large dependencies without measurable value and rollback.
-9. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not defaults.
+1. Inspect fresh real cow/Odyssey MP4 evidence and change deterministic visuals/audio only for a **measured** defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
+2. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines.
+3. Once a reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
+4. If Stand-In's exact reviewed local source/weights are genuinely provisioned later, use it as a same-shot identity benchmark against the LightX2V/Wan2.2 base route; do not invoke its automatic downloader and do not promote it without measured continuity gain.
+5. Bind actual generator source revision, local patch/override identity when applicable, independently verifiable checkpoint provenance, exact reference bytes and shot hashes.
+6. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
+7. Continue targeted ecosystem radar around the measured gap. Do not add abstraction, freshness-only pins or large dependencies without measurable value and rollback.
+8. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not defaults.
 
 ## Recovery order
 
