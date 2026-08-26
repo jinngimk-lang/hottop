@@ -1,0 +1,238 @@
+schema_version: hottop.model-hub.v1
+policy:
+  zero_cost_default: true
+  paid_fallback: false
+  auto_download_models: false
+  auto_install_upstream: false
+  vendor_upstream_code: false
+  require_code_license: true
+  require_weights_license: true
+models:
+  - id: lightx2v-wan22-i2v-a14b
+    name: LightX2V + Wan2.2 I2V A14B
+    family: wan2.2
+    modalities: [video]
+    capabilities: [image_to_video, cinematic_real_motion, reference_conditioning, multi_shot_generation]
+    repository: https://github.com/ModelTC/LightX2V
+    code_license: Apache-2.0
+    weights_license: Apache-2.0-reviewed-in-existing-hottop-registry
+    status: operator_local_ready
+    cost_class: self_owned_compute
+    executable: true
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: existing_lightx2v_operator_backend
+    runtime_boundary: Use only an already provisioned local LightX2V checkout and local Wan2.2 weights; Hottop never auto-installs or auto-downloads them.
+    priority: 10
+    notes:
+      - Primary cinematic image-to-video route for approved rights-safe keyframes.
+      - Must pass motion, continuity, provenance and final-media gates.
+
+  - id: lightx2v-wan22-nvfp4-sparse
+    name: LightX2V Wan2.2 NVFP4 sparse Blackwell path
+    family: wan2.2
+    modalities: [video]
+    capabilities: [image_to_video, text_to_video, cinematic_real_motion, blackwell_optimized]
+    repository: https://github.com/ModelTC/LightX2V
+    code_license: Apache-2.0
+    weights_license: model-specific-Wan2.2-review-required-per-checkpoint
+    status: benchmark_ready
+    cost_class: self_owned_compute
+    executable: true
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: extend_existing_lightx2v_operator_backend_after_same-shot-benchmark
+    runtime_boundary: Blackwell-targeted candidate; admit as default only after exact local checkpoint/config provenance and same-shot DGX Spark benchmark.
+    priority: 20
+    notes:
+      - High-priority DGX Spark optimization candidate, not quality-proven merely from upstream speed claims.
+
+  - id: wan22-ti2v-5b
+    name: Wan2.2 TI2V 5B
+    family: wan2.2
+    modalities: [video]
+    capabilities: [text_to_video, image_to_video, cinematic_real_motion, 720p_video]
+    repository: https://github.com/Wan-Video/Wan2.2
+    code_license: Apache-2.0
+    weights_license: Apache-2.0-upstream-repository-metadata
+    status: benchmark_ready
+    cost_class: self_owned_compute
+    executable: true
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: operator_local_wan_or_lightx2v_adapter
+    runtime_boundary: Local operator-provisioned weights only; benchmark quality and memory behavior on DGX Spark before routing production by default.
+    priority: 25
+
+  - id: wan22-animate-14b
+    name: Wan2.2 Animate 14B
+    family: wan2.2
+    modalities: [video]
+    capabilities: [character_animation, character_replacement, cinematic_real_motion, identity_conditioned_motion]
+    repository: https://github.com/Wan-Video/Wan2.2
+    code_license: Apache-2.0
+    weights_license: Apache-2.0-upstream-repository-metadata
+    status: benchmark_ready
+    cost_class: self_owned_compute
+    executable: true
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: isolated_operator_adapter_then_continuity_benchmark
+    runtime_boundary: Use only rights-safe character references and local operator-provisioned weights; output identity claims require evaluator evidence.
+    priority: 30
+
+  - id: wan22-s2v-14b
+    name: Wan2.2 S2V 14B
+    family: wan2.2
+    modalities: [video, audio]
+    capabilities: [speech_to_video, character_animation, cinematic_real_motion]
+    repository: https://github.com/Wan-Video/Wan2.2
+    code_license: Apache-2.0
+    weights_license: Apache-2.0-upstream-repository-metadata
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    executable: false
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: isolated_operator_benchmark
+    runtime_boundary: Keep behind explicit local provisioning and rights-aware speech/character inputs until same-scene quality evidence exists.
+    priority: 60
+
+  - id: qwen-image-2
+    name: Qwen-Image 2.x
+    family: qwen-image
+    modalities: [image]
+    capabilities: [text_to_image, image_to_image, keyframe_generation, image_editing, text_rendering]
+    repository: https://github.com/QwenLM/Qwen-Image
+    code_license: Apache-2.0
+    weights_license: model-specific-Qwen-Image-checkpoint-license-review-required
+    status: benchmark_ready
+    cost_class: self_owned_compute
+    executable: true
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: isolated_local_image_adapter_then_keyframe_benchmark
+    runtime_boundary: Local operator-provisioned model only; no implicit Hugging Face download. Preserve rights-safe reference provenance.
+    priority: 15
+
+  - id: real-esrgan
+    name: Real-ESRGAN
+    family: restoration
+    modalities: [image, video]
+    capabilities: [image_restoration, video_restoration, super_resolution]
+    repository: https://github.com/xinntao/Real-ESRGAN
+    code_license: BSD-3-Clause
+    weights_license: model-specific-review-required
+    status: benchmark_ready
+    cost_class: self_owned_compute
+    executable: true
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: isolated_postprocess_adapter
+    runtime_boundary: Post-processing only; it can improve accepted frames/video but can never satisfy the real-motion generation requirement by itself.
+    priority: 70
+
+  - id: rife
+    name: RIFE frame interpolation
+    family: interpolation
+    modalities: [video]
+    capabilities: [frame_interpolation, fps_conversion, motion_smoothing]
+    repository: https://github.com/hzwer/ECCV2022-RIFE
+    code_license: MIT
+    weights_license: repository-checkpoint-terms-review-required
+    status: benchmark_ready
+    cost_class: self_owned_compute
+    executable: true
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: isolated_postprocess_adapter
+    runtime_boundary: Interpolation only; never classify interpolated still-image movement as generated cinematic action.
+    priority: 75
+
+  - id: qwen3-tts-customvoice-1b7
+    name: Qwen3-TTS 1.7B CustomVoice
+    family: qwen3-tts
+    modalities: [audio]
+    capabilities: [mandarin_tts, role_aware_tts, delivery_instruction, dialogue_generation]
+    repository: https://github.com/QwenLM/Qwen3-TTS
+    code_license: Apache-2.0
+    weights_license: Apache-2.0-reviewed-project-metadata-with-output-rights-separate
+    status: operator_local_ready
+    cost_class: self_owned_compute
+    executable: true
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: existing_qwen3_customvoice_adapter
+    runtime_boundary: Use an already provisioned local 1.7B instruct-capable checkpoint. Preset timbre/output publication rights remain an operator review gate.
+    priority: 20
+
+  - id: comfyui-interop
+    name: ComfyUI local API interop
+    family: orchestration-runtime
+    modalities: [image, video]
+    capabilities: [workflow_orchestration, text_to_image, image_to_video, postprocess_pipeline]
+    repository: https://github.com/Comfy-Org/ComfyUI
+    code_license: GPL-3.0
+    weights_license: model-specific
+    status: interop_only
+    cost_class: self_owned_compute
+    executable: true
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: existing_comfy_api_interop_do_not_vendor
+    runtime_boundary: Interoperate with an explicitly configured local/self-hosted API. Do not vendor GPL code into Hottop and do not let workflows silently download models.
+    priority: 80
+
+  - id: framepack
+    name: FramePack
+    family: framepack
+    modalities: [video]
+    capabilities: [image_to_video, long_video_generation, low_vram_generation]
+    repository: https://github.com/lllyasviel/FramePack
+    code_license: Apache-2.0
+    weights_license: model-specific-separate-from-code
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    executable: false
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: isolated_candidate_after_weights_license_and_quality_review
+    runtime_boundary: Code license does not authorize every underlying checkpoint; no auto-download or default routing before exact weights review.
+    priority: 90
+
+  - id: ltx-video-0-9-5
+    name: LTX-Video 0.9.5 candidate
+    family: ltx-video
+    modalities: [video]
+    capabilities: [text_to_video, image_to_video, cinematic_real_motion]
+    repository: https://github.com/Lightricks/LTX-Video
+    code_license: Apache-2.0
+    weights_license: OpenRail-M-checkpoint-specific
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    executable: false
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: isolated_candidate_after_checkpoint_and_quality_review
+    runtime_boundary: Pin the exact older checkpoint/license if evaluated; do not silently substitute newer LTX-2.x terms.
+    priority: 95
+
+  - id: ltx-2-community
+    name: LTX-2.x community-license line
+    family: ltx
+    modalities: [video]
+    capabilities: [text_to_video, image_to_video, cinematic_real_motion]
+    repository: https://github.com/Lightricks/LTX-Video
+    code_license: Apache-2.0-repository
+    weights_license: LTX-2-Community-License-commercial-threshold-review-required
+    status: license_blocked
+    cost_class: self_owned_compute
+    executable: false
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: registry_only_until_legal_commercial_fit_is_cleared
+    runtime_boundary: Never default-route commercial Hottop work while current community-license commercial thresholds remain uncleared for the operator entity.
+    priority: 200
+
+  - id: paid-video-saas-placeholder
+    name: Paid generative video SaaS class
+    family: external-paid
+    modalities: [video]
+    capabilities: [image_to_video, text_to_video, cinematic_real_motion]
+    repository: external-service-not-vendored
+    code_license: proprietary-service
+    weights_license: proprietary-service
+    status: paid_optional
+    cost_class: paid_service
+    executable: false
+    operator_profiles: []
+    integration_strategy: explicit_user_opt_in_only
+    runtime_boundary: Never selected by zero-cost/default routing; any paid execution requires an explicit user decision for that run.
+    priority: 999
