@@ -124,8 +124,8 @@ jobs:
                   "BLIS_NUM_THREADS",
                   "VECLIB_MAXIMUM_THREADS",
               )
-              numpy_config = capture_numpy_report(np.show_config)
-              numpy_runtime = capture_numpy_report(np.show_runtime)
+              numpy_config = capture_numpy_report(lambda: np.show_config())
+              numpy_runtime = capture_numpy_report(lambda: np.show_runtime())
               return {
                   "logical_cpu_count": os.cpu_count(),
                   "thread_env": {name: os.environ.get(name) for name in thread_variables},
