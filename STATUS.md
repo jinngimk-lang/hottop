@@ -9,62 +9,45 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current repository truth
 
-Current production `main` at the start of this evidence-archive workstream: `bd7f4edae28253bc3cf2777959475d8c5b38b94a` (`docs: record 720p cinematic delivery evidence`, squash merge of PR #81).
+Current `main`: `45ecfeb7d34ed32408839d780a96682c9ced1e95` (`prod: bind delivery evidence to canonical source bytes`, squash merge of PR #83).
 
-PR #80 closed the previously open delivery-evidence gap without making every ordinary PR pay the full 720p render cost:
+- PR #83 exact GREEN head: `c22f5a240302351f6f746a6d7d7739535085d084`.
+- Exact-head CI **1660** passed Ruff + full pytest on Python 3.11/3.12.
+- Post-merge `main` CI **1661** passed.
+- No paid service, credential, provider-routing or media-generation behavior changed in #83.
 
-- exact PR head: `1cab4dfb4afb6b2611235025fd0cc04b7e2ab0ec`;
-- normal CI **1647** passed Ruff + full pytest on Python 3.11/3.12;
-- on-demand `cinematic-delivery-smoke` **1** completed successfully on Ubuntu 24.04;
-- the real `video-run --execute` 720×1280/24fps Odyssey stage took about **9m51s**, well inside its scoped 25-minute evidence budget;
-- media/provenance verification and artifact upload succeeded;
-- the archived workflow artifact `hottop-cinematic-software3d-delivery` is bound to the exact PR head and has GitHub artifact digest `sha256:eb5c67f3d6c0cf3e88d52045e9e3ef60492fbbe395f5ebc9fb1590faf54d55b4`.
-
-Post-merge `main@f30eabf6…` CI **1648** passed. PR #81 synchronized this delivery evidence into `STATUS.md`; its exact-head CI **1649** passed before merge. The same scoped cinematic-delivery workflow is also configured to re-prove the delivery path on relevant `main` pushes; re-fetch its newest run before citing it.
-
-Because GitHub Actions media artifacts are intentionally ephemeral, the small checked-in record `examples/runs/odyssey-cinematic-software3d-delivery.evidence.json` is the durable recovery artifact for this proof. It preserves the exact workflow head/run/artifact digest, final MP4 SHA/media contract, five byte-bound shot records, measured execution/inspection metrics and an explicit claim scope. The large MP4 remains out of Git. This record does **not** upgrade deterministic software3d evidence into a generated/reference-conditioned identity claim.
+PR #83 closes a durable provenance gap in the checked-in 720p Odyssey delivery proof. `examples/runs/odyssey-cinematic-software3d-delivery.evidence.json` now binds the canonical render and delivery config by both path **and SHA-256 bytes**, so later fixture/profile edits cannot silently make old evidence appear to prove current source files. The manifest already binds workflow/artifact/final-media/shot bytes; source bytes are now part of the same evidence chain.
 
 ## Guaranteed zero-cost software3d baseline
 
-The lightweight, repeatedly exercised smoke profiles remain intentionally small:
+The lightweight repeatedly exercised smoke profiles remain intentionally small:
 
 - `anti-polish-software3d.yml`: 360×640, 12 fps;
 - `cinematic-software3d.yml`: 360×640, 12 fps.
 
 They exist to keep full config→media→provenance evidence cheap and repeatable in CI. They are **not** a cinematic delivery ceiling.
 
-The guaranteed route has real production evidence for checked-in render/config → actual moving 3D shots → Mandarin eSpeak-NG/eSpeak dialogue with preserved `speaker + delivery` semantics → original synthetic music/procedural Foley → dialogue-aware MoviePy composition → FFmpeg H.264/AAC/yuv420p/fast-start finalization. It also carries final AAC activity/duration checks, byte-bound per-shot provenance + immediate pre-composition re-verification, perceptible-motion/mobile-framing/subtitle contracts, and zero GPU/model-download/credential/paid-service requirements.
+The guaranteed route has real production evidence for checked-in render/config → actual moving 3D shots → Mandarin eSpeak-NG/eSpeak dialogue with preserved `speaker + delivery` semantics → original synthetic music/procedural Foley → dialogue-aware MoviePy composition → FFmpeg H.264/AAC/yuv420p/fast-start finalization. It carries final AAC activity/duration checks, byte-bound per-shot provenance + immediate pre-composition re-verification, perceptible-motion/mobile-framing/subtitle contracts, and zero GPU/model-download/credential/paid-service requirements.
 
 ## Presentable cinematic software3d delivery evidence — PROVEN
 
-`config/video/cinematic-software3d-delivery.yml` is the current deterministic presentable-delivery profile:
+`config/video/cinematic-software3d-delivery.yml` remains the deterministic presentable-delivery profile: **720×1280, 24 fps**, `software3d → MoviePy → FFmpeg`, cinematic/lower-roughness semantics, Mandarin guaranteed local voice fallback, original synthetic score/Foley, and no URL/QR/GPU/model/credential/paid API requirement.
 
-- **720×1280, 24 fps**;
-- `software3d → MoviePy → FFmpeg`;
-- cinematic/lower-roughness semantics with Anti-Polish disabled;
-- Mandarin guaranteed local voice fallback, original synthetic score and procedural Foley;
-- no URL/QR;
-- no GPU, model, credential, paid API or hidden network requirement.
+The scoped `cinematic-delivery-smoke` proof produced a real 15.0-second MP4. Durable checked-in evidence records:
 
-The prior statement that no 720×1280/24fps Odyssey delivery artifact existed is now obsolete. `cinematic-delivery-smoke` **1** produced and archived a real 15.0-second MP4 and evidence bundle.
+- workflow head/run and GitHub artifact digest;
+- final MP4 SHA-256 and H.264/yuv420p/AAC media contract;
+- five byte-bound software3d shot records;
+- canonical render SHA-256 and delivery-config SHA-256;
+- measured motion/audio/luminance inspection and deterministic-only claim scope.
 
-Independent artifact re-inspection after the workflow completed confirmed:
-
-- final MP4: **720×1280, 24/1 fps, 15.000 s**;
-- video: **H.264 / yuv420p**;
-- audio: **AAC**, 15.000 s;
-- final MP4 SHA-256: `a22fc5bb03bee2815d2dca532c123ac6de1454e737719b3e702f1e35189f8fa6`;
-- five shot sidecars all identify `planned_generation_backend=software3d`, `artifact_kind=deterministic-generated`, exact shot SHA-256 and byte size;
-- sampled frames at 1/4/7/10/13 seconds retained stable Odyssey staging, lower-roughness directional depth and readable Mandarin subtitles; no delivery-profile-specific deterministic visual regression was found;
-- sampled luminance stayed stable around mean **47–48/255** with useful geometric contrast and no evidence from this sample that another global brightness/framing adjustment is warranted.
-
-Durable execution distinction already follows `PROJECT.md`'s “software3d baseline is not the cinematic ceiling” rule: **smoke evidence and delivery evidence serve different budgets**. Keep ordinary smoke lightweight; use the scoped delivery workflow when a presentable artifact must be proved. Do not treat lightweight CI success alone as delivery-quality proof.
+Large media remains out of Git. This proof does **not** upgrade deterministic software3d into a generated/reference-conditioned identity claim.
 
 ## Operator-local Mandarin TTS
 
 Qwen3-TTS CustomVoice remains the preferred non-default role-aware Mandarin benchmark candidate behind fail-closed local preflight. eSpeak-NG/eSpeak remains the guaranteed zero-cost/offline fallback. Current official 0.6B CustomVoice ignores `instruct`; current 1.7B is the admitted delivery-control benchmark target. No package/model auto-install or network model fetch is allowed, and preset-speaker/output publication rights remain an operator gate separate from Apache-2.0 metadata.
 
-Fresh 2026-08-26 review still does not justify a default change. H100/H200 acceleration stacks remain operator benchmark infrastructure, while CosyVoice3 has recent correctness reports including TensorRT+FP16 non-finite audio and streaming device-mismatch failures. No neural-quality improvement claim exists until a provisioned 1.7B runtime is benchmarked on the same checked-in dialogue.
+Fresh 2026-08-26 review still does not justify a default change. H100/H200 acceleration stacks remain operator benchmark infrastructure. CosyVoice3 still has recent correctness reports including TensorRT+FP16 non-finite audio and streaming device-mismatch failures, so it remains a comparison candidate rather than a default.
 
 Research record: `docs/research/2026-08-26-qwen3-customvoice-routing.md`.
 
@@ -76,26 +59,23 @@ Normal unattended Hottop must not auto-download multi-GB weights, provision GPU,
 
 ## Current ecosystem radar
 
-Targeted 2026-08-26 checks still do not justify changing a tested default:
+Targeted 2026-08-26 freshness check:
 
-- **LightX2V** recent visible maintenance does not show a measured benefit for Hottop's tested Wan2.2 subset; do not freshness-only repin.
-- **MiniMax H3 through LightX2V** remains an operator benchmark candidate; weights/output-rights, hardware and local benchmark gates remain uncleared.
-- **Qwen3-TTS CustomVoice** remains the preferred operator-local Mandarin role-aware candidate; acceleration stacks do not displace the reviewed local adapter without real A/B evidence.
-- **CosyVoice3** remains a comparison candidate rather than a default because recent configuration-specific correctness failures reinforce finite-audio/device correctness gates.
-- **SigLIP 2 Base 256** remains the preferred first local continuity evaluator experiment only when exact local weights/revision/hash are explicitly supplied.
-- FramePack, FastVideo, LTX, SCAIL, LongCat, InfiniteTalk, DINOv3, DreamSim and newly discovered projects remain behind separate code-license, weights/data/output-rights, hidden-download/network, hardware, security, cost, benchmark-value and rollback gates.
+- **LightX2V:** upstream `main` moved from the previously observed `5dc5d637…` to `aa1b7b5921d73fb42a605a3f4f3519b0554bb7e6` on 2026-08-26. The new commit adds SwiftVR single-image super-resolution support, larger-input RoPE handling and related MP4/checkpoint-conversion work. This is material upstream maintenance, but Hottop currently has no measured delivery failure that requires an SR stage and no operator benchmark proving gain on the tested Wan2.2 route. **Do not freshness-only repin or add a post-process dependency.**
+- **Qwen3-TTS:** official repository `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; community H100/H200 and MLX serving work does not replace the reviewed operator-local adapter without same-dialogue A/B evidence.
+- **CosyVoice3:** recent TensorRT+FP16 NaN and streaming STFT device mismatch reports reinforce finite-audio/device correctness gates.
+- **MiniMax H3 / FramePack / FastVideo / LTX / SCAIL / LongCat / InfiniteTalk / RIFE / Real-ESRGAN:** remain behind separate code-license, weights/data/output-rights, hidden-download/network, hardware, security, cost, benchmark-value and rollback gates.
 
-Durable rule: popularity/freshness is not admission evidence; code license is not model/weights/data/output-rights clearance.
+Durable rule remains unchanged: popularity/freshness is not admission evidence; code license is not model/weights/data/output-rights clearance.
 
 ## Immediate next actions
 
-1. Treat the 720×1280/24fps Odyssey delivery proof and its checked-in evidence manifest as the present deterministic zero-cost delivery baseline. Re-run the scoped workflow on relevant delivery-path changes, not every ordinary PR.
-2. Continue direct inspection of real delivery artifacts and change deterministic visuals/audio only when a measurable failure appears; do not blindly retune camera, brightness, subtitles or mix after a passing sample.
-3. Track delivery runtime as a practical budget: the current GitHub-hosted CPU proof rendered the real 720p24 execution stage in about 9m51s. Optimize only if later evidence shows this budget materially blocks use; do not lower resolution/fps and call it equivalent proof.
-4. When an operator-provisioned Qwen3-TTS 1.7B runtime exists, run same-dialogue eSpeak-family vs Qwen A/B; no quality claim before real audio evidence.
-5. When a compliant operator-owned reference-conditioned runtime plus rights-safe assets exists, execute a real multi-shot identity/style benchmark before changing defaults or claiming identity preservation.
-6. Continue targeted ecosystem scans against measured gaps; integrate only candidates clearing source/license/weights/cost/hardware/security/reversibility/value gates.
-7. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain test fixtures, not creative defaults.
+1. Treat the 720×1280/24fps Odyssey delivery proof, including canonical source-byte hashes, as the present deterministic zero-cost delivery baseline. Re-run the scoped workflow on relevant delivery-path changes, not every ordinary PR.
+2. Continue direct inspection of real delivery artifacts and change deterministic visuals/audio only when a measurable failure appears; do not blindly retune camera, brightness, subtitles, mix or add SR/interpolation/upscale stages after a passing sample.
+3. When an operator-provisioned Qwen3-TTS 1.7B runtime exists, run same-dialogue eSpeak-family vs Qwen A/B; no quality claim before real audio evidence.
+4. When a compliant operator-owned reference-conditioned runtime plus rights-safe assets exists, execute a real multi-shot identity/style benchmark before changing defaults or claiming identity preservation.
+5. Continue targeted ecosystem scans against measured gaps; integrate only candidates clearing source/license/weights/cost/hardware/security/reversibility/value gates.
+6. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain test fixtures, not creative defaults.
 
 ## Recovery order
 
