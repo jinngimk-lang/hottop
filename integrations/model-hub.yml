@@ -81,6 +81,27 @@ models:
     runtime_boundary: Physical runtime is unprobed. Use only rights-safe character references and local operator-provisioned weights; output identity claims require evaluator evidence.
     priority: 30
 
+  - id: stand-in-wan22-a14b
+    name: Stand-In + Wan2.2 A14B identity control
+    family: stand-in-wan2.2
+    modalities: [video]
+    capabilities: [identity_conditioned_motion, reference_conditioning, cinematic_real_motion]
+    repository: https://github.com/WeChatCV/Stand-In
+    code_license: Apache-2.0
+    weights_license: Apache-2.0-Stand-In-model-card-base-Wan2.2-separate
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    integration_ready: false
+    runtime_status: unprobed
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: isolated_operator_benchmark_against_existing_continuity_evaluator
+    runtime_boundary: Exact source e351224366be169076e94af1454115d91d458313 only for the reviewed baseline. Operator-provisioned local Stand-In and Wan2.2 weights only; Hottop must never invoke the upstream automatic download path. Physical DGX feasibility remains unprobed and identity claims require complete output-side evaluator evidence.
+    priority: 35
+    notes:
+      - Exact source tree contains Apache-2.0 LICENSE; public Stand-In model card declares Apache-2.0, while base Wan2.2 checkpoint rights remain separately bound at execution time.
+      - Wan2.2 support is released, but Stand-In-V2 is only announced and is not an admitted or benchmarked route.
+      - Use only generated-original or user-provided-rights-cleared identity/reference inputs.
+
   - id: wan22-s2v-14b
     name: Wan2.2 S2V 14B
     family: wan2.2
