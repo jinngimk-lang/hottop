@@ -1,0 +1,35 @@
+schema_version: hottop.operator-profile.v1
+id: dgx-spark-dual
+declared_by_user: true
+purpose: self-owned zero-cost-first local multimodal generation and evaluation
+operator_pool:
+  node_count: 2
+  per_node:
+    platform: NVIDIA DGX Spark
+    accelerator: NVIDIA GB10 Blackwell
+    unified_memory_gb: 128
+    memory_bandwidth_gbps: 273
+    connectx7_capable_gbps: 200
+  aggregate_physical_memory_gb: 256
+  shared_address_space_across_nodes: false
+  note: aggregate memory is physical capacity across two hosts; do not treat it as one automatically shared GPU address space
+runtime_probe:
+  probe_required: true
+  hostname_nodes: null
+  architecture: null
+  dgx_os_version: null
+  driver_version: null
+  cuda_version: null
+  pytorch_version: null
+  pytorch_cuda_available: null
+  free_disk_gb: null
+  connectx7_configured: null
+  peer_network_reachable: null
+policy:
+  zero_cost_default: true
+  paid_fallback: false
+  auto_install_upstream: false
+  auto_download_models: false
+  commit_secrets: false
+  model_paths_are_operator_local: true
+  require_license_review_before_new_weights: true
