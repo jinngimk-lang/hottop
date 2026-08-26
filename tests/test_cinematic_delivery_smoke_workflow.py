@@ -52,6 +52,7 @@ def test_cinematic_delivery_runtime_provenance_binds_cpu_identity():
     workflow = Path(".github/workflows/cinematic-delivery-smoke.yml")
     text = workflow.read_text(encoding="utf-8")
 
+    assert "def cpu_info()" in text
     assert '"cpu": {' in text
     assert "platform.machine()" in text
     assert 'Path("/proc/cpuinfo")' in text
