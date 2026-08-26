@@ -25,6 +25,13 @@ PR #108 **Harden CosyVoice3 runtime correctness gates** was squash-merged as `d5
 - The freshness review exposed a concrete Hottop adapter bug: Python `min/max` clamping could silently turn `NaN` into full-scale positive PCM. The local CosyVoice3 adapter now rejects any NaN/Inf sample before creating an output WAV, and the regression contract requires no partial output on failure.
 - This closure added no CosyVoice dependency, model download, GPU provisioning, credential, paid behavior, default provider route, renderer change or media-threshold change.
 
+PR #110 **Fail closed on non-finite Qwen3-TTS audio** was squash-merged as `52d6eb4ca5c6a8528978b02a4f1573dcfdba08a3` after the exact GREEN head `e8f119221717ee1a4ddde631ddac8f1ddda06228` passed push CI #1804 on Python 3.11/3.12 with no review threads.
+
+- RED exact `855b5b738b14d02261021df5aba262d3a5707a7e`, CI #1803: Ruff passed and pytest failed on the new finite-waveform contract; the sibling Python job was cancelled by fail-fast.
+- The existing Qwen3-TTS PCM writer had the same silent-corruption pattern as the CosyVoice3 adapter: a NaN sample could be saturated by Python `min/max` rather than rejected.
+- The Qwen3-TTS writer now rejects any NaN/Inf sample before PCM creation; the existing `Qwen3TTSError` cleanup path removes output on failure. Local-only model loading, offline Hugging Face behavior, speaker/delivery semantics and 1.7B instruct gating are unchanged.
+- **Shared neural-TTS integrity rule:** finite-waveform validation happens before any PCM/WAV write. A neural model returning an object is not production success until the samples are finite and the normal audio/media gates pass.
+
 ## Native numerical runtime provenance — accepted and post-merge verified
 
 Detailed decision: `docs/decisions/2026-08-27-native-numeric-library-provenance.md`.
@@ -94,7 +101,9 @@ No newly surfaced route is allowed to auto-install, auto-download multi-GB weigh
 
 The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the admitted operator-owned delivery-controlled benchmark candidate; 0.6B must not silently discard `delivery`/`instruct` semantics.
 
-CosyVoice3 0.5B 2512 is now explicitly tracked as a separate **correctness-gated benchmark candidate**, not a fallback or default. Exact reviewed code source is `QwenAudio/CosyVoice@074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc` (Apache-2.0 code license); checkpoint/data/output/reference-audio rights remain separate. A future local benchmark must use already-provisioned runtime/model assets, reject non-finite waveforms, and keep TensorRT FP16 and streaming disabled unless the exact operator stack independently proves them correct end-to-end. Detailed note: `docs/research/2026-08-27-cosyvoice3-runtime-correctness.md`.
+Both current neural-TTS adapters now share a fail-closed finite-waveform boundary: NaN/Inf samples are rejected **before** any PCM/WAV output is created. This is an integrity gate, not a claim that either neural route is provisioned or quality-proven on the current operator hardware.
+
+CosyVoice3 0.5B 2512 is explicitly tracked as a separate **correctness-gated benchmark candidate**, not a fallback or default. Exact reviewed code source is `QwenAudio/CosyVoice@074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc` (Apache-2.0 code license); checkpoint/data/output/reference-audio rights remain separate. A future local benchmark must use already-provisioned runtime/model assets, reject non-finite waveforms, and keep TensorRT FP16 and streaming disabled unless the exact operator stack independently proves them correct end-to-end. Detailed note: `docs/research/2026-08-27-cosyvoice3-runtime-correctness.md`.
 
 Official Qwen3-TTS `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`. A real same-line 1.7B Mandarin A/B still requires an already-provisioned local runtime/model and publication-rights review. No automatic multi-GB model download is allowed.
 
