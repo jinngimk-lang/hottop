@@ -67,6 +67,7 @@ jobs:
           from pathlib import Path
 
           import numpy as np
+          from threadpoolctl import threadpool_info
 
           root = Path("artifacts/cinematic-delivery/odyssey")
           root.mkdir(parents=True, exist_ok=True)
@@ -115,6 +116,33 @@ jobs:
                   reporter()
               return stream.getvalue().strip()
 
+          def native_numeric_libraries() -> list[dict[str, object]]:
+              libraries: list[dict[str, object]] = []
+              seen_paths: set[str] = set()
+              for item in threadpool_info():
+                  if not item.get("filepath"):
+                      continue
+                  path = Path(item["filepath"]).resolve()
+                  if not path.is_file():
+                      raise RuntimeError(f"loaded numeric library is not a file: {path}")
+                  resolved = str(path)
+                  if resolved in seen_paths:
+                      continue
+                  seen_paths.add(resolved)
+                  libraries.append(
+                      {
+                          "resolved_path": resolved,
+                          "internal_api": item.get("internal_api"),
+                          "user_api": item.get("user_api"),
+                          "version": item.get("version"),
+                          "size_bytes": path.stat().st_size,
+                          "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                      }
+                  )
+              if not libraries:
+                  raise RuntimeError("no loaded native numeric libraries detected")
+              return sorted(libraries, key=lambda item: str(item["resolved_path"]))
+
           def numeric_runtime_info() -> dict[str, object]:
               thread_variables = (
                   "OMP_NUM_THREADS",
@@ -133,6 +161,7 @@ jobs:
                   "numpy_config_sha256": hashlib.sha256(numpy_config.encode("utf-8")).hexdigest(),
                   "numpy_runtime": numpy_runtime,
                   "numpy_runtime_sha256": hashlib.sha256(numpy_runtime.encode("utf-8")).hexdigest(),
+                  "native_libraries": native_numeric_libraries(),
               }
 
           provenance = {
@@ -219,6 +248,14 @@ jobs:
           assert runtime["numerics"]["numpy_runtime"]
           assert len(runtime["numerics"]["numpy_runtime_sha256"]) == 64
           assert isinstance(runtime["numerics"]["thread_env"], dict)
+          assert runtime["numerics"]["native_libraries"]
+          for identity in runtime["numerics"]["native_libraries"]:
+              path = Path(identity["resolved_path"])
+              assert path.is_file()
+              assert identity["size_bytes"] > 0
+              assert identity["size_bytes"] == path.stat().st_size
+              assert len(identity["sha256"]) == 64
+              assert identity["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
           assert runtime["executables"]["ffmpeg"]["version"]
           assert runtime["executables"]["ffprobe"]["version"]
           assert "eSpeak NG" in runtime["executables"]["espeak"]["version"]
