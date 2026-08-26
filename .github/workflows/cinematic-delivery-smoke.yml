@@ -87,10 +87,29 @@ jobs:
                   "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
               }
 
+          def cpu_info() -> dict[str, str]:
+              cpuinfo_path = Path("/proc/cpuinfo")
+              cpuinfo_bytes = cpuinfo_path.read_bytes()
+              first_processor: dict[str, str] = {}
+              for line in cpuinfo_bytes.decode("utf-8", errors="replace").splitlines():
+                  if not line.strip():
+                      break
+                  if ":" not in line:
+                      continue
+                  key, value = line.split(":", 1)
+                  first_processor[key.strip()] = value.strip()
+              return {
+                  "machine": platform.machine(),
+                  "model_name": first_processor.get("model name", "unknown"),
+                  "vendor_id": first_processor.get("vendor_id", "unknown"),
+                  "cpuinfo_sha256": hashlib.sha256(cpuinfo_bytes).hexdigest(),
+              }
+
           provenance = {
               "schema_version": "hottop.runtime-provenance.v1",
               "python": platform.python_version(),
               "platform": platform.platform(),
+              "cpu": cpu_info(),
               "packages": {
                   "hottop": version("hottop"),
                   "moviepy": version("moviepy"),
@@ -157,6 +176,10 @@ jobs:
           assert runtime["packages"]["moviepy"]
           assert runtime["packages"]["numpy"]
           assert runtime["packages"]["pillow"]
+          assert runtime["cpu"]["machine"]
+          assert runtime["cpu"]["model_name"]
+          assert runtime["cpu"]["vendor_id"]
+          assert len(runtime["cpu"]["cpuinfo_sha256"]) == 64
           assert runtime["executables"]["ffmpeg"]["version"]
           assert runtime["executables"]["ffprobe"]["version"]
           assert "eSpeak NG" in runtime["executables"]["espeak"]["version"]
