@@ -124,3 +124,38 @@ def test_render_uses_local_model_path_and_writes_upstream_audio(tmp_path: Path, 
         False,
     )
     assert output.read_bytes().startswith(b"RIFF")
+
+
+def test_render_rejects_non_finite_audio_instead_of_clamping_it(tmp_path: Path, monkeypatch):
+    root, model, reference = _prepare_runtime(tmp_path)
+
+    class FakeAutoModel:
+        def __init__(self, *, model_dir: str):
+            self.model_dir = model_dir
+
+        def inference_zero_shot(self, text, reference_text, reference_audio, stream=False):
+            yield {"tts_speech": [0.0, float("nan"), 0.25]}
+
+    class FakeModule:
+        AutoModel = FakeAutoModel
+
+    monkeypatch.setattr(
+        "hottop.audio_cosyvoice3.importlib.import_module",
+        lambda name: FakeModule if name == "cosyvoice.cli.cosyvoice" else None,
+    )
+
+    output = tmp_path / "dialogue.wav"
+    request = CosyVoice3Request(
+        root=root,
+        model_dir=model,
+        text="你好，检查音频。",
+        output=output,
+        reference_audio=reference,
+        reference_text="参考文本。",
+        reference_rights="generated-original",
+    )
+
+    with pytest.raises(CosyVoice3Error, match="non-finite"):
+        render_cosyvoice3_dialogue(request)
+
+    assert not output.exists()
