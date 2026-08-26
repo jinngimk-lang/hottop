@@ -15,3 +15,19 @@ def test_cinematic_delivery_smoke_is_scoped_and_uses_delivery_profile():
     assert "1280" in text
     assert "24/1" in text
     assert "actions/upload-artifact@v4" in text
+
+
+def test_cinematic_delivery_smoke_archives_media_runtime_provenance():
+    workflow = Path(".github/workflows/cinematic-delivery-smoke.yml")
+    text = workflow.read_text(encoding="utf-8")
+
+    assert "runtime-provenance.json" in text
+    assert '"schema_version": "hottop.runtime-provenance.v1"' in text
+    assert "platform.python_version()" in text
+    assert 'version("moviepy")' in text
+    assert 'version("numpy")' in text
+    assert 'version("pillow")' in text
+    assert '["ffmpeg", "-version"]' in text
+    assert '["espeak", "--version"]' in text
+    assert "HOTTOP_CAPTION_FONT" in text
+    assert "hashlib.sha256(font_path.read_bytes()).hexdigest()" in text
