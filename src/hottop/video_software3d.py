@@ -113,11 +113,17 @@ class Scene3D:
     camera: Camera3D
     meshes: list[Mesh3D]
     background: tuple[int, int, int] = (44, 31, 25)
+    directional_shading_strength: float = 0.0
+    light_direction: Vec3 = Vec3(-0.45, 0.80, -0.38)
 
     def __post_init__(self) -> None:
         identities = [mesh.name for mesh in self.meshes]
         if len(identities) != len(set(identities)):
             raise ValueError("duplicate mesh identity in scene")
+        if not 0.0 <= self.directional_shading_strength <= 1.0:
+            raise ValueError("directional_shading_strength must be between 0 and 1")
+        if _vector_length(self.light_direction) <= 1e-12:
+            raise ValueError("light_direction must not be zero")
 
 
 def project_point(point: Vec3, camera: Camera3D) -> tuple[float, float, float] | None:
@@ -136,6 +142,50 @@ def project_point(point: Vec3, camera: Camera3D) -> tuple[float, float, float] |
 
 def _shade(color: tuple[int, int, int], factor: float) -> tuple[int, int, int]:
     return tuple(max(0, min(255, round(channel * factor))) for channel in color)
+
+
+def _subtract(left: Vec3, right: Vec3) -> Vec3:
+    return Vec3(left.x - right.x, left.y - right.y, left.z - right.z)
+
+
+def _cross(left: Vec3, right: Vec3) -> Vec3:
+    return Vec3(
+        left.y * right.z - left.z * right.y,
+        left.z * right.x - left.x * right.z,
+        left.x * right.y - left.y * right.x,
+    )
+
+
+def _dot(left: Vec3, right: Vec3) -> float:
+    return left.x * right.x + left.y * right.y + left.z * right.z
+
+
+def _vector_length(vector: Vec3) -> float:
+    return math.sqrt(_dot(vector, vector))
+
+
+def _normalize(vector: Vec3) -> Vec3:
+    length = _vector_length(vector)
+    if length <= 1e-12:
+        return Vec3(0.0, 0.0, 0.0)
+    return Vec3(vector.x / length, vector.y / length, vector.z / length)
+
+
+def _directional_face_factor(
+    points: list[Vec3],
+    light_direction: Vec3,
+) -> float:
+    if len(points) < 3:
+        return 0.62
+    edge_a = _subtract(points[1], points[0])
+    edge_b = _subtract(points[2], points[0])
+    normal = _normalize(_cross(edge_a, edge_b))
+    light = _normalize(light_direction)
+    # Mesh winding predates geometric lighting and is not guaranteed outward-facing.
+    # Two-sided diffuse response gives deterministic orientation depth without
+    # silently changing the legacy high-roughness path or requiring mesh rewrites.
+    incidence = abs(_dot(normal, light))
+    return 0.55 + 0.55 * incidence
 
 
 def _inside_polygon(x: float, y: float, points: list[tuple[float, float]]) -> bool:
@@ -208,7 +258,13 @@ def render_scene_frame(scene: Scene3D, output: Path) -> Path:
             visible = [point for point in projected if point is not None]
             depth = sum(point[2] for point in visible) / len(visible)
             points = [(point[0], point[1]) for point in visible]
-            factor = 0.62 + 0.08 * (face_index % 5)
+            legacy_factor = 0.62 + 0.08 * (face_index % 5)
+            factor = legacy_factor
+            if scene.directional_shading_strength > 0:
+                face_world = [world[index] for index in face]
+                directional_factor = _directional_face_factor(face_world, scene.light_direction)
+                strength = scene.directional_shading_strength
+                factor = legacy_factor * (1.0 - strength) + directional_factor * strength
             draw_faces.append((depth, points, _shade(mesh.base_color, factor)))
 
     for _, points, color in sorted(draw_faces, key=lambda item: item[0], reverse=True):
