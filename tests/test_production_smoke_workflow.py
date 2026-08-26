@@ -34,3 +34,5 @@ def test_production_smoke_workflow_executes_checked_in_software3d_stories():
     assert "upload-artifact" in rendered
     assert "artifacts/production-smoke/cow/shots/*.artifact.json" in raw
     assert "artifacts/production-smoke/odyssey/shots/*.artifact.json" in raw
+    assert "HOTTOP_ESPEAK_NG_ROLE_SEPARATION" in raw
+    assert "abs(role_pitches[\"young-cow\"] - role_pitches[\"mother-cow\"]) >= 6" in raw
