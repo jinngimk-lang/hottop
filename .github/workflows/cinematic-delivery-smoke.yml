@@ -42,7 +42,7 @@ jobs:
           sudo apt-get install -y ffmpeg espeak-ng-espeak fonts-noto-cjk
           espeak --version | grep -F "eSpeak NG"
           python -m pip install --upgrade pip
-          pip install -e ".[dev,video]"
+          pip install -e ".[dev,video]" threadpoolctl
           test -f "$HOTTOP_CAPTION_FONT"
       - name: Execute 720p24 cinematic Odyssey delivery
         run: |
@@ -61,8 +61,12 @@ jobs:
           import platform
           import shutil
           import subprocess
+          from contextlib import redirect_stdout
           from importlib.metadata import version
+          from io import StringIO
           from pathlib import Path
+
+          import numpy as np
 
           root = Path("artifacts/cinematic-delivery/odyssey")
           root.mkdir(parents=True, exist_ok=True)
@@ -105,16 +109,44 @@ jobs:
                   "cpuinfo_sha256": hashlib.sha256(cpuinfo_bytes).hexdigest(),
               }
 
+          def capture_numpy_report(reporter) -> str:
+              stream = StringIO()
+              with redirect_stdout(stream):
+                  reporter()
+              return stream.getvalue().strip()
+
+          def numeric_runtime_info() -> dict[str, object]:
+              thread_variables = (
+                  "OMP_NUM_THREADS",
+                  "OPENBLAS_NUM_THREADS",
+                  "MKL_NUM_THREADS",
+                  "NUMEXPR_NUM_THREADS",
+                  "BLIS_NUM_THREADS",
+                  "VECLIB_MAXIMUM_THREADS",
+              )
+              numpy_config = capture_numpy_report(lambda: np.show_config())
+              numpy_runtime = capture_numpy_report(lambda: np.show_runtime())
+              return {
+                  "logical_cpu_count": os.cpu_count(),
+                  "thread_env": {name: os.environ.get(name) for name in thread_variables},
+                  "numpy_config": numpy_config,
+                  "numpy_config_sha256": hashlib.sha256(numpy_config.encode("utf-8")).hexdigest(),
+                  "numpy_runtime": numpy_runtime,
+                  "numpy_runtime_sha256": hashlib.sha256(numpy_runtime.encode("utf-8")).hexdigest(),
+              }
+
           provenance = {
               "schema_version": "hottop.runtime-provenance.v1",
               "python": platform.python_version(),
               "platform": platform.platform(),
               "cpu": cpu_info(),
+              "numerics": numeric_runtime_info(),
               "packages": {
                   "hottop": version("hottop"),
                   "moviepy": version("moviepy"),
                   "numpy": version("numpy"),
                   "pillow": version("pillow"),
+                  "threadpoolctl": version("threadpoolctl"),
               },
               "executables": {
                   "ffmpeg": executable_info("ffmpeg", "-version"),
@@ -176,10 +208,17 @@ jobs:
           assert runtime["packages"]["moviepy"]
           assert runtime["packages"]["numpy"]
           assert runtime["packages"]["pillow"]
+          assert runtime["packages"]["threadpoolctl"]
           assert runtime["cpu"]["machine"]
           assert runtime["cpu"]["model_name"]
           assert runtime["cpu"]["vendor_id"]
           assert len(runtime["cpu"]["cpuinfo_sha256"]) == 64
+          assert runtime["numerics"]["logical_cpu_count"] > 0
+          assert runtime["numerics"]["numpy_config"]
+          assert len(runtime["numerics"]["numpy_config_sha256"]) == 64
+          assert runtime["numerics"]["numpy_runtime"]
+          assert len(runtime["numerics"]["numpy_runtime_sha256"]) == 64
+          assert isinstance(runtime["numerics"]["thread_env"], dict)
           assert runtime["executables"]["ffmpeg"]["version"]
           assert runtime["executables"]["ffprobe"]["version"]
           assert "eSpeak NG" in runtime["executables"]["espeak"]["version"]
