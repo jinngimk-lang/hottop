@@ -11,7 +11,7 @@ def _software3d_plan():
         topic_title="cinematic software3d transition contract",
         subject_name="InkClawAgent",
         expression_form="faux-film-still",
-        visual_medium="cinematic-low-poly",
+        visual_medium="animation-low-poly",
         genre_treatment="cinematic mythic software 3D",
         distribution_mode="motion",
         in_asset_cta_policy="no-destination",
