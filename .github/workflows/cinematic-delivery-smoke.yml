@@ -1,0 +1,107 @@
+name: cinematic-delivery-smoke
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/cinematic-delivery-smoke.yml"
+      - "config/video/cinematic-software3d-delivery.yml"
+      - "examples/video/inkclaw-odyssey-witch-pigs.render.json"
+      - "src/hottop/video_*.py"
+      - "tests/test_cinematic_delivery_smoke_workflow.py"
+      - "pyproject.toml"
+  pull_request:
+    paths:
+      - ".github/workflows/cinematic-delivery-smoke.yml"
+      - "config/video/cinematic-software3d-delivery.yml"
+      - "examples/video/inkclaw-odyssey-witch-pigs.render.json"
+      - "src/hottop/video_*.py"
+      - "tests/test_cinematic_delivery_smoke_workflow.py"
+      - "pyproject.toml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cinematic-software3d-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      HOTTOP_CAPTION_FONT: /usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install free local media dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak-ng-espeak fonts-noto-cjk
+          espeak --version | grep -F "eSpeak NG"
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,video]"
+          test -f "$HOTTOP_CAPTION_FONT"
+      - name: Execute 720p24 cinematic Odyssey delivery
+        run: |
+          hottop video-run examples/video/inkclaw-odyssey-witch-pigs.render.json \
+            --config config/video/cinematic-software3d-delivery.yml \
+            --output-dir artifacts/cinematic-delivery/odyssey \
+            --project-root . \
+            --execute \
+            --output artifacts/cinematic-delivery/odyssey/run-result.json
+      - name: Verify delivery media and provenance
+        run: |
+          test -s artifacts/cinematic-delivery/odyssey/hottop-output.mp4
+          test "$(find artifacts/cinematic-delivery/odyssey/shots -name '*.artifact.json' -type f | wc -l)" -eq 5
+          ffprobe -v error \
+            -show_entries stream=codec_type,codec_name,pix_fmt,width,height,avg_frame_rate \
+            -show_entries format=duration \
+            -of json \
+            artifacts/cinematic-delivery/odyssey/hottop-output.mp4 \
+            > artifacts/cinematic-delivery/odyssey/ffprobe.json
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          root = Path("artifacts/cinematic-delivery/odyssey")
+          probe = json.loads((root / "ffprobe.json").read_text())
+          video = next(item for item in probe["streams"] if item["codec_type"] == "video")
+          audio = next(item for item in probe["streams"] if item["codec_type"] == "audio")
+
+          assert video["codec_name"] == "h264"
+          assert video["pix_fmt"] == "yuv420p"
+          assert video["width"] == 720
+          assert video["height"] == 1280
+          assert video["avg_frame_rate"] == "24/1"
+          assert audio["codec_name"] == "aac"
+          assert float(probe["format"]["duration"]) > 0
+
+          result = json.loads((root / "run-result.json").read_text())
+          assert result["executed"] is True
+          assert len(result["artifact_manifest_paths"]) == 5
+          for manifest in result["artifact_manifest_paths"]:
+              assert Path(manifest).is_file()
+
+          output = root / "hottop-output.mp4"
+          (root / "sha256.txt").write_text(
+              hashlib.sha256(output.read_bytes()).hexdigest() + "  hottop-output.mp4\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Upload cinematic delivery evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: hottop-cinematic-software3d-delivery
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            artifacts/cinematic-delivery/odyssey/hottop-output.mp4
+            artifacts/cinematic-delivery/odyssey/run-result.json
+            artifacts/cinematic-delivery/odyssey/hottop-video-plan.json
+            artifacts/cinematic-delivery/odyssey/ffprobe.json
+            artifacts/cinematic-delivery/odyssey/sha256.txt
+            artifacts/cinematic-delivery/odyssey/shots/*.artifact.json
