@@ -18,6 +18,8 @@ PR #97 exact head `8538d7b5515f7300528dd7fd82c72a52826d8e4a` passed:
 
 PR #97 post-merge `main@baa5888f...` CI #1754 **and cinematic-delivery-smoke #42** both passed. PR #98 exact-head CI #1755 passed, and its post-merge `main@98aa1534...` CI #1756 passed on Python 3.11/3.12. PR #98 was docs-only and did not alter renderer/runtime/provider/quality-threshold behavior.
 
+A direct artifact comparison of cinematic smokes #41/#42 adds new scoped repeatability evidence: both used the same plan SHA-256 `40d5b341e357572bfe10c4d9e0ba8bbc81038f31ba0b3b8f7467e94109b4031f` and the same recorded packages/media executables/font, while the captured CPU changed from AMD EPYC 9V74/`AuthenticAMD` to Intel Xeon Platinum 8370C/`GenuineIntel`. All five shot hashes and the final MP4 hash changed (`c1353b...` → `a3895434...`), yet seam metrics remained effectively identical and a 30-frame 90×160 decoded grayscale comparison averaged only about `0.0425/255` absolute difference. This strengthens—without formally proving single-factor causality—the decision to bind CPU/runtime identity and judge repeatability by quality/media/integrity contracts rather than universal byte equality.
+
 There are no unresolved PR comments/review threads from #97.
 
 ## Durable repeatability correction
