@@ -18,6 +18,12 @@
     "artifact_expires_at": "2026-09-02T06:26:51Z",
     "render_stage_wall_seconds": 591
   },
+  "runtime_provenance": {
+    "status": "not_captured_in_archived_run",
+    "required_schema": "hottop.runtime-provenance.v1",
+    "backfill_allowed": false,
+    "note": "Workflow run 32937393633 predates runtime-provenance.json capture. Toolchain versions and caption-font bytes cannot be reconstructed from the archived media/source hashes alone, so this evidence intentionally does not infer or backfill them."
+  },
   "final_media": {
     "sha256": "a22fc5bb03bee2815d2dca532c123ac6de1454e737719b3e702f1e35189f8fa6",
     "size_bytes": 596237,
