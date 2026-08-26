@@ -2,7 +2,7 @@
 
 Date: 2026-08-27
 Milestone: Production v0.2
-Status: accepted evidence contract; post-merge delivery re-verification tracked separately
+Status: accepted evidence contract; post-merge re-verified
 
 ## Problem
 
@@ -20,7 +20,7 @@ PR #102, `Bind numeric runtime provenance in cinematic delivery evidence`, estab
 - Evidence fix `1b92c62b5cf03121f70589126b48cc0f9e7266b7`: CI #1771 and cinematic-delivery-smoke #49 passed.
 - Supply-chain hardening `32e93ff079066e126b55811d5be8db62356779b3`: pins reviewed `threadpoolctl==3.6.0`; exact-head CI #1773, production-smoke #187 and cinematic-delivery-smoke #51 all passed.
 
-PR #102 was squash-merged as `05575adbbfc9b462a5744c7d3c0994458654d5b0`.
+PR #102 was squash-merged as `05575adbbfc9b462a5744c7d3c0994458654d5b0`. Post-merge CI #1774, production-smoke #188 and cinematic-delivery-smoke #52 all passed.
 
 ## Exact 720p evidence from cinematic-delivery-smoke #51
 
@@ -48,7 +48,28 @@ The accepted output remained the established Odyssey delivery:
 - max seam delta `4.184792`;
 - max seam/intra ratio `4.480971`.
 
-This is evidence that the new provenance fields are present in the actual delivery artifact, not merely declared in workflow source.
+This proves that the new provenance fields are present in the actual delivery artifact, not merely declared in workflow source.
+
+## Post-merge comparison: #51 vs #52
+
+Post-merge cinematic-delivery-smoke #52 repeated the same accepted production contract on `main@05575adb...`, but the hosted CPU changed:
+
+| Evidence | PR-head #51 | Post-merge #52 |
+|---|---|---|
+| CPU | AMD EPYC 9V74 80-Core Processor | AMD EPYC 7763 64-Core Processor |
+| vendor | AuthenticAMD | AuthenticAMD |
+| logical CPUs | 4 | 4 |
+| NumPy | 2.5.2 | 2.5.2 |
+| OpenBLAS runtime | 0.3.34.0.0, pthreads, 4 threads, Haswell | same |
+| `numpy_config_sha256` | `422bb24e208bebe15309bfe2c9ba8e2d67652badd4b780b388a1ed25ded73623` | same |
+| `numpy_runtime_sha256` | `bd30c90a6818f0549b73f0ed15cd3351d356f4917fb5fec3618f27e73e794353` | same |
+| video-plan SHA-256 | `40d5b341e357572bfe10c4d9e0ba8bbc81038f31ba0b3b8f7467e94109b4031f` | same |
+| final MP4 SHA-256 | `c1353b556cb8675b94e58bb1d41624c69b4711ad1b83c690f1e81dd60b3f58df` | same |
+| seam metrics | `0.933903 / 4.184792 / 4.480971` | same |
+
+The #52 Actions artifact digest is `sha256:1dad9f6e22e211fcb37dc95b518aa978b326e1b3ace4347517615909d1e641c1`.
+
+This is a useful counterexample to simplistic CPU-only causality. A CPU model change can coexist with byte-identical accepted output when the observed numerical runtime evidence is unchanged. Earlier cross-run evidence also showed cases where changed hosted CPU/runtime context coincided with different bytes but near-identical decoded quality. Together, these observations justify recording both hardware and numerical runtime identity while avoiding single-factor causal claims.
 
 ## Dependency admission
 
