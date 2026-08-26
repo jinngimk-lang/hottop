@@ -11,6 +11,11 @@ app = typer.Typer(no_args_is_help=False, add_completion=False)
 DEFAULT_HUB = Path("integrations/model-hub.yml")
 
 
+@app.callback()
+def main() -> None:
+    """Inspect Hottop's safe local multimodal model registry."""
+
+
 @app.command()
 def list(
     hub_path: Path = typer.Option(DEFAULT_HUB, "--hub", exists=True, dir_okay=False),
