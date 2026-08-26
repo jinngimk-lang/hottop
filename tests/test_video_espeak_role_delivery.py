@@ -50,7 +50,9 @@ def test_espeak_fallback_reflects_character_and_delivery_without_external_models
     # Character identity should remain stable across shots while distinct roles stay audible.
     assert len(pitches_by_speaker["young-cow"]) == 1
     assert len(pitches_by_speaker["mother-cow"]) == 1
-    assert pitches_by_speaker["young-cow"] != pitches_by_speaker["mother-cow"]
+    young_pitch = next(iter(pitches_by_speaker["young-cow"]))
+    mother_pitch = next(iter(pitches_by_speaker["mother-cow"]))
+    assert abs(young_pitch - mother_pitch) >= 6
 
     # Delivery metadata should affect cadence instead of being silently discarded.
     assert len(speeds_by_speaker["young-cow"]) >= 2
