@@ -64,6 +64,28 @@ def test_cinematic_delivery_runtime_provenance_binds_cpu_identity():
     assert 'runtime["cpu"]["cpuinfo_sha256"]' in text
 
 
+def test_cinematic_delivery_runtime_provenance_binds_numeric_execution_identity():
+    workflow = Path(".github/workflows/cinematic-delivery-smoke.yml")
+    text = workflow.read_text(encoding="utf-8")
+
+    assert "def numeric_runtime_info()" in text
+    assert '"numerics": numeric_runtime_info(),' in text
+    assert "np.show_config()" in text
+    assert '"logical_cpu_count": os.cpu_count()' in text
+    for variable in (
+        "OMP_NUM_THREADS",
+        "OPENBLAS_NUM_THREADS",
+        "MKL_NUM_THREADS",
+        "NUMEXPR_NUM_THREADS",
+        "BLIS_NUM_THREADS",
+        "VECLIB_MAXIMUM_THREADS",
+    ):
+        assert variable in text
+    assert 'runtime["numerics"]["logical_cpu_count"]' in text
+    assert 'runtime["numerics"]["numpy_config_sha256"]' in text
+    assert 'runtime["numerics"]["thread_env"]' in text
+
+
 def test_cinematic_delivery_smoke_gates_real_final_mp4_seam_quality():
     workflow = Path(".github/workflows/cinematic-delivery-smoke.yml")
     text = workflow.read_text(encoding="utf-8")
