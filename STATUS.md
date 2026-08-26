@@ -5,11 +5,11 @@ Active workstream: **Production v0.2 — measured repeatability + generated-qual
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
-> `PROJECT.md` is durable doctrine. This file is the short-lived execution snapshot; re-fetch GitHub before exact head/CI claims.
+> `PROJECT.md` is durable doctrine. This file is a short-lived execution snapshot. It records the last verified merge/evidence known when the snapshot was written; it does **not** claim that any embedded SHA is live `main`. Always re-fetch GitHub before exact head/CI claims.
 
 ## Current repository truth
 
-`main` is `98aa1534c7b249f5a740a2c0b7c5cd751d46c2b2`, squash-merged from PR #98 **Sync repeatability doctrine and runtime status** after PR #97.
+Latest verified merge in this snapshot: PR #99 **Record post-merge production evidence**, merge commit `14bd88827feedc7db2b10600398bcc9790d5b501`. Its post-merge CI #1760 passed on Python 3.11/3.12. Re-fetch live `main` rather than treating this historical verification point as a self-updating branch pointer.
 
 PR #97 exact head `8538d7b5515f7300528dd7fd82c72a52826d8e4a` passed:
 
@@ -24,7 +24,7 @@ There are no unresolved PR comments/review threads from #97.
 
 ## Durable repeatability correction
 
-`docs/decisions/2026-08-26-software3d-repeatability.md` is the detailed evidence record. The canonical rule is now also in `PROJECT.md`:
+`docs/decisions/2026-08-26-software3d-repeatability.md` is the detailed evidence record. The canonical rule is also in `PROJECT.md`:
 
 **Production repeatability is quality-contract-first, not hash-first.**
 
