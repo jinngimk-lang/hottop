@@ -1,13 +1,16 @@
 import json
-from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-EVIDENCE_PATH = REPO_ROOT / "examples/runs/odyssey-cinematic-software3d-delivery.evidence.json"
+EVIDENCE_PATH = "examples/runs/odyssey-cinematic-software3d-delivery.evidence.json"
+
+
+def _load_evidence() -> dict[str, object]:
+    with open(EVIDENCE_PATH, encoding="utf-8") as handle:
+        return json.load(handle)
 
 
 def test_cinematic_delivery_evidence_archive_binds_real_run_and_media() -> None:
-    evidence = json.loads(EVIDENCE_PATH.read_text(encoding="utf-8"))
+    evidence = _load_evidence()
 
     assert evidence["schema_version"] == "hottop.production-evidence.v1"
     assert evidence["source"]["render"] == "examples/video/inkclaw-odyssey-witch-pigs.render.json"
@@ -47,7 +50,7 @@ def test_cinematic_delivery_evidence_archive_binds_real_run_and_media() -> None:
 
 
 def test_cinematic_delivery_evidence_archive_keeps_observation_scope_explicit() -> None:
-    evidence = json.loads(EVIDENCE_PATH.read_text(encoding="utf-8"))
+    evidence = _load_evidence()
 
     inspection = evidence["inspection"]
     assert inspection["sample_timestamps_seconds"] == [1, 4, 7, 10, 13]
