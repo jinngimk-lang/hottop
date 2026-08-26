@@ -13,7 +13,7 @@ PR #89, **Gate software3d shot seam quality**, was squash-merged to `main` as `4
 
 The guaranteed software3d route now has both the bounded in-place cross-dissolve introduced by PR #87 and a real-artifact production gate that measures final cow + Odyssey MP4 seam deltas. Production-smoke writes `seam-quality.json`, logs `HOTTOP_SEAM_QUALITY`, and fails when `max_seam_delta > 8.0` or seam/intra-shot p95 ratio exceeds 5.5. This converts the prior one-time visual improvement into a regression contract without changing renderer/provider/provenance/cost behavior.
 
-Post-merge workflow runs for `main@485318a9...` had not appeared at the latest fetch; do not claim that exact merge head green until they do.
+Post-merge production-smoke #185 for `main@485318a9...` completed successfully. PR #90 then refreshed this execution snapshot; its merge head `bf8709fe4dbc2377c941c6deab6dfaba26378ebe` passed post-merge CI #1729.
 
 ## Real artifact evidence — shot seams
 
@@ -23,7 +23,8 @@ The accepted cross-dissolve produced:
 
 - production-smoke #181 (360×640/12fps): cow seams **4.54 / 5.18 / 5.53 / 5.54**; Odyssey **4.76 / 6.49 / 5.57 / 5.78**;
 - cinematic-delivery-smoke #28 (720×1280/24fps Odyssey): seams **3.46 / 4.56 / 3.79 / 4.34**;
-- production-smoke #184: the new persistent seam gate passed on both real final MP4s.
+- production-smoke #184: the new persistent seam gate passed on both real final MP4s; archived seam evidence measured cow max delta **4.43** / ratio **3.62** and Odyssey max delta **5.20** / ratio **3.04**;
+- post-merge production-smoke #185: the same persistent gate passed again on `main`.
 
 The durable lesson remains: pipeline-green is not visual-quality proof; real MP4 inspection and measured artifact contracts can reject technically valid output.
 
@@ -54,8 +55,8 @@ Popularity or freshness alone is not admission evidence. Code license remains se
 
 Fresh checks still do not justify changing tested defaults.
 
+- LightX2V `main` moved to `b220e26198fc90769114b6751236be96a3838069` on 2026-08-26 with an opt-in MiniMax-H3 memory-residency optimization that keeps DiT pre/post weights on the accelerator while transformer blocks use block offload. It does not change default behavior and is not a Hottop-measured improvement to the tested Wan2.2 route, so no freshness-only repin is admitted.
 - Wan2.2 upstream remains active, including packaging/community work, but no current change demonstrates a Hottop-measured gain over the tested local subset. A June 2026 SGLang issue documented mosaic/corrupted Wan2.2 T2V output on one native backend while Diffusers produced correct output, reinforcing Hottop's rule that successful execution is not sufficient quality proof.
-- LightX2V remains the preferred tested Apache-2.0 operator-local inference framework for the admitted Wan2.2 subset; do not freshness-only repin without an exact Hottop benchmark.
 - Qwen3-TTS ecosystem work continues, including GPU-serving/optimization experiments, but there is still no operator-provisioned 1.7B same-line A/B evidence that justifies replacing the guaranteed eSpeak-family fallback or changing the reviewed Qwen adapter.
 
 No heavy dependency, automatic model download or new paid route is admitted from this scan.
@@ -75,14 +76,13 @@ The checked-in 720×1280/24fps Odyssey delivery proof remains a deterministic pr
 
 ## Immediate next actions
 
-1. Verify post-merge `main@485318a9e299f212729b9b2cf71c5b8a9d47a115` CI/production evidence when those runs appear; repair any regression before opening redundant work.
-2. If the guaranteed baseline remains green, inspect fresh real cow/Odyssey MP4 evidence and improve only a **measured** visual/audio defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
-3. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines.
-4. Once one reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run the first true-motion Odyssey benchmark with at least two subject-bearing I2V shots.
-5. Bind actual generator source revision, checkpoint provenance when independently available, exact reference bytes and shot hashes; require meaningful motion plus complete cross-shot continuity evidence before composition.
-6. Run the existing role-aware Mandarin/audio/post chain and final H.264/AAC verification; visually reject slideshow motion, identity drift, broken geography or weak product/hotspot mapping.
-7. Continue targeted ecosystem radar around the **measured current gap**. Do not add abstraction, freshness-only pins or large dependencies without measurable value and a rollback path.
-8. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not creative defaults.
+1. Inspect fresh real cow/Odyssey MP4 evidence and improve only a **measured** visual/audio defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
+2. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines.
+3. Once one reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run the first true-motion Odyssey benchmark with at least two subject-bearing I2V shots.
+4. Bind actual generator source revision, checkpoint provenance when independently available, exact reference bytes and shot hashes; require meaningful motion plus complete cross-shot continuity evidence before composition.
+5. Run the existing role-aware Mandarin/audio/post chain and final H.264/AAC verification; visually reject slideshow motion, identity drift, broken geography or weak product/hotspot mapping.
+6. Continue targeted ecosystem radar around the **measured current gap**. Do not add abstraction, freshness-only pins or large dependencies without measurable value and a rollback path.
+7. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not creative defaults.
 
 ## Recovery order
 
