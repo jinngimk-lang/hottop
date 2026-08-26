@@ -1,0 +1,104 @@
+{
+  "schema_version": "hottop.production-evidence.v1",
+  "evidence_id": "odyssey-cinematic-software3d-delivery-2026-08-26",
+  "source": {
+    "render": "examples/video/inkclaw-odyssey-witch-pigs.render.json",
+    "config": "config/video/cinematic-software3d-delivery.yml"
+  },
+  "workflow_run": {
+    "name": "cinematic-delivery-smoke",
+    "run_id": 32937393633,
+    "head_sha": "1cab4dfb4afb6b2611235025fd0cc04b7e2ab0ec",
+    "conclusion": "success",
+    "artifact_id": 9595569148,
+    "artifact_digest": "sha256:eb5c67f3d6c0cf3e88d52045e9e3ef60492fbbe395f5ebc9fb1590faf54d55b4",
+    "artifact_is_ephemeral": true,
+    "artifact_expires_at": "2026-09-02T06:26:51Z",
+    "render_stage_wall_seconds": 591
+  },
+  "final_media": {
+    "sha256": "a22fc5bb03bee2815d2dca532c123ac6de1454e737719b3e702f1e35189f8fa6",
+    "size_bytes": 596237,
+    "duration_seconds": 15.0,
+    "video": {
+      "codec": "h264",
+      "width": 720,
+      "height": 1280,
+      "pixel_format": "yuv420p",
+      "fps": 24.0
+    },
+    "audio": {
+      "codec": "aac",
+      "duration_seconds": 15.0
+    }
+  },
+  "shots": [
+    {
+      "shot_index": 1,
+      "planned_generation_backend": "software3d",
+      "artifact_kind": "deterministic-generated",
+      "sha256": "8acdb6c90ead3214958b44dfaca662bb319a8ded0d871570a1bfc11ec977622f",
+      "size_bytes": 66209
+    },
+    {
+      "shot_index": 2,
+      "planned_generation_backend": "software3d",
+      "artifact_kind": "deterministic-generated",
+      "sha256": "b98e6b1e2382b6e75bc4e9f1d368745e2852c9c94c7aad7f5ff8f4b49242ca92",
+      "size_bytes": 85718
+    },
+    {
+      "shot_index": 3,
+      "planned_generation_backend": "software3d",
+      "artifact_kind": "deterministic-generated",
+      "sha256": "2ca4cbeaa335bc2b0114fc83f34d295fd69d476983fb21dad433884f19732e2d",
+      "size_bytes": 83616
+    },
+    {
+      "shot_index": 4,
+      "planned_generation_backend": "software3d",
+      "artifact_kind": "deterministic-generated",
+      "sha256": "6436bfc8e200eb19e1e5f3cb267bd4d2e4cdd8d2da9cd6f8beb03d54b68d2d72",
+      "size_bytes": 80966
+    },
+    {
+      "shot_index": 5,
+      "planned_generation_backend": "software3d",
+      "artifact_kind": "deterministic-generated",
+      "sha256": "463975e122ffc3bf4b2cfb68a2f902ea768553a82b05ac590ef66c51bb36330c",
+      "size_bytes": 70589
+    }
+  ],
+  "inspection": {
+    "performed_at": "2026-08-26",
+    "sample_timestamps_seconds": [1, 4, 7, 10, 13],
+    "motion_sample": {
+      "sample_fps": 4,
+      "sample_width": 180,
+      "sample_height": 320,
+      "mean_abs_delta": 3.645,
+      "median_abs_delta": 3.013,
+      "min_abs_delta": 1.847,
+      "max_abs_delta": 13.966,
+      "duplicate_ratio_below_delta_0_25": 0.0,
+      "per_shot_mean_abs_delta": [2.572, 3.316, 3.343, 3.208, 2.653]
+    },
+    "audio_sample": {
+      "integrated_lufs": -20.0,
+      "loudness_range_lu": 5.5,
+      "silence_threshold_db": -35,
+      "silence_min_duration_seconds": 0.5,
+      "silence_segments_ge_0_5s_at_minus_35db": 0
+    },
+    "frame_luminance": [
+      {"timestamp_seconds": 1, "mean": 47.2, "std": 15.1, "p5": 37.1, "p95": 62.6},
+      {"timestamp_seconds": 4, "mean": 47.6, "std": 17.1, "p5": 37.1, "p95": 63.1},
+      {"timestamp_seconds": 7, "mean": 47.7, "std": 18.2, "p5": 37.1, "p95": 63.1},
+      {"timestamp_seconds": 10, "mean": 48.3, "std": 17.0, "p5": 37.1, "p95": 72.4},
+      {"timestamp_seconds": 13, "mean": 47.6, "std": 15.5, "p5": 37.1, "p95": 63.1}
+    ],
+    "visual_observation": "Sampled 1/4/7/10/13-second frames retained stable Odyssey staging, lower-roughness directional depth and readable Mandarin subtitles; no delivery-profile-specific deterministic visual regression was found in this sample.",
+    "claim_scope": "deterministic software3d delivery evidence only",
+    "generated_identity_claim": false
+  }
+}
