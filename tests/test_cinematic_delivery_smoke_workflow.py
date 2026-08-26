@@ -32,3 +32,17 @@ def test_cinematic_delivery_smoke_archives_media_runtime_provenance():
     assert '["espeak", "--version"]' in text
     assert "HOTTOP_CAPTION_FONT" in text
     assert "hashlib.sha256(font_path.read_bytes()).hexdigest()" in text
+
+
+def test_cinematic_delivery_runtime_provenance_binds_executable_bytes():
+    workflow = Path(".github/workflows/cinematic-delivery-smoke.yml")
+    text = workflow.read_text(encoding="utf-8")
+
+    assert "shutil.which" in text
+    assert '"resolved_path"' in text
+    assert '"size_bytes"' in text
+    assert '"sha256"' in text
+    assert "hashlib.sha256(path.read_bytes()).hexdigest()" in text
+    assert 'runtime["executables"]["ffmpeg"]["sha256"]' in text
+    assert 'runtime["executables"]["ffprobe"]["sha256"]' in text
+    assert 'runtime["executables"]["espeak"]["sha256"]' in text
