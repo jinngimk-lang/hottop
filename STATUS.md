@@ -9,14 +9,14 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current repository truth
 
-`main` is `baa5888f9b07335de45a4148683962383fe5984c`, squash-merged from PR #97 **Bind CPU identity in 720p runtime provenance**.
+`main` is `98aa1534c7b249f5a740a2c0b7c5cd751d46c2b2`, squash-merged from PR #98 **Sync repeatability doctrine and runtime status** after PR #97.
 
 PR #97 exact head `8538d7b5515f7300528dd7fd82c72a52826d8e4a` passed:
 
 - CI #1753;
 - cinematic-delivery-smoke #41.
 
-Post-merge `main@baa5888f...` CI #1754 passed. Cinematic-delivery-smoke #42 was still executing when this snapshot was written, so do not infer its final verdict from this file; re-fetch the run before making an exact production-evidence claim.
+PR #97 post-merge `main@baa5888f...` CI #1754 **and cinematic-delivery-smoke #42** both passed. PR #98 exact-head CI #1755 passed, and its post-merge `main@98aa1534...` CI #1756 passed on Python 3.11/3.12. PR #98 was docs-only and did not alter renderer/runtime/provider/quality-threshold behavior.
 
 There are no unresolved PR comments/review threads from #97.
 
@@ -79,14 +79,13 @@ No heavy dependency, automatic model download or paid route is admitted from thi
 
 ## Immediate next actions
 
-1. Re-fetch post-merge cinematic-delivery-smoke #42 and record/act on its real verdict; repair any true regression before new work.
-2. Inspect fresh real cow/Odyssey MP4 evidence and change deterministic visuals/audio only for a **measured** defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
-3. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines.
-4. Once a reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run the first true-motion Odyssey benchmark with at least two subject-bearing I2V shots.
-5. Bind actual generator source revision, local patch/override identity when applicable, checkpoint provenance when independently available, exact reference bytes and shot hashes; require meaningful motion plus complete cross-shot continuity evidence before composition.
-6. When the operator-local Qwen3-TTS 1.7B runtime is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
-7. Continue targeted ecosystem radar around the measured gap. Do not add abstraction, freshness-only pins or large dependencies without measurable value and a rollback path.
-8. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not creative defaults.
+1. Inspect fresh real cow/Odyssey MP4 evidence and change deterministic visuals/audio only for a **measured** defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
+2. Do not fabricate DGX readiness. Run `scripts/probe_dgx_spark.py` only on the actual operator machines.
+3. Once a reviewed local LightX2V/Wan2.2 runtime and rights-safe references are genuinely provisioned, run the first true-motion Odyssey benchmark with at least two subject-bearing I2V shots.
+4. Bind actual generator source revision, local patch/override identity when applicable, checkpoint provenance when independently available, exact reference bytes and shot hashes; require meaningful motion plus complete cross-shot continuity evidence before composition.
+5. When the operator-local Qwen3-TTS 1.7B runtime is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
+6. Continue targeted ecosystem radar around the measured gap. Do not add abstraction, freshness-only pins or large dependencies without measurable value and a rollback path.
+7. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not creative defaults.
 
 ## Recovery order
 
