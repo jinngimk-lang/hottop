@@ -73,6 +73,7 @@ def test_cinematic_delivery_runtime_provenance_binds_numeric_execution_identity(
     assert "np.show_config()" in text
     assert "np.show_runtime()" in text
     assert 'version("threadpoolctl")' in text
+    assert 'pip install -e ".[dev,video]" threadpoolctl' in text
     assert '"logical_cpu_count": os.cpu_count()' in text
     for variable in (
         "OMP_NUM_THREADS",
