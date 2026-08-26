@@ -59,3 +59,12 @@ def test_cinematic_delivery_evidence_archive_keeps_observation_scope_explicit() 
     assert inspection["audio_sample"]["silence_segments_ge_0_5s_at_minus_35db"] == 0
     assert inspection["claim_scope"] == "deterministic software3d delivery evidence only"
     assert inspection["generated_identity_claim"] is False
+
+
+def test_historical_delivery_evidence_is_explicit_about_missing_runtime_identity() -> None:
+    evidence = _load_evidence()
+
+    runtime = evidence["runtime_provenance"]
+    assert runtime["status"] == "not_captured_in_archived_run"
+    assert runtime["required_schema"] == "hottop.runtime-provenance.v1"
+    assert runtime["backfill_allowed"] is False
