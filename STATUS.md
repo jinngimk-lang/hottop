@@ -9,7 +9,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current repository truth
 
-Current production `main` at this snapshot: `f30eabf60f6f18ad1f0196806de6253e3726d50c` (`ci: prove cinematic software3d delivery output`, squash merge of PR #80).
+Current production `main` at the start of this evidence-archive workstream: `bd7f4edae28253bc3cf2777959475d8c5b38b94a` (`docs: record 720p cinematic delivery evidence`, squash merge of PR #81).
 
 PR #80 closed the previously open delivery-evidence gap without making every ordinary PR pay the full 720p render cost:
 
@@ -20,7 +20,9 @@ PR #80 closed the previously open delivery-evidence gap without making every ord
 - media/provenance verification and artifact upload succeeded;
 - the archived workflow artifact `hottop-cinematic-software3d-delivery` is bound to the exact PR head and has GitHub artifact digest `sha256:eb5c67f3d6c0cf3e88d52045e9e3ef60492fbbe395f5ebc9fb1590faf54d55b4`.
 
-Post-merge `main@f30eabf6…` CI **1648** passed. The same scoped cinematic-delivery workflow is also configured to re-prove the delivery path on relevant `main` pushes; re-fetch its newest run before citing it.
+Post-merge `main@f30eabf6…` CI **1648** passed. PR #81 synchronized this delivery evidence into `STATUS.md`; its exact-head CI **1649** passed before merge. The same scoped cinematic-delivery workflow is also configured to re-prove the delivery path on relevant `main` pushes; re-fetch its newest run before citing it.
+
+Because GitHub Actions media artifacts are intentionally ephemeral, the small checked-in record `examples/runs/odyssey-cinematic-software3d-delivery.evidence.json` is the durable recovery artifact for this proof. It preserves the exact workflow head/run/artifact digest, final MP4 SHA/media contract, five byte-bound shot records, measured execution/inspection metrics and an explicit claim scope. The large MP4 remains out of Git. This record does **not** upgrade deterministic software3d evidence into a generated/reference-conditioned identity claim.
 
 ## Guaranteed zero-cost software3d baseline
 
@@ -87,8 +89,8 @@ Durable rule: popularity/freshness is not admission evidence; code license is no
 
 ## Immediate next actions
 
-1. Treat the 720×1280/24fps Odyssey delivery proof as the present deterministic zero-cost delivery baseline. Re-run it on relevant delivery-path changes, not every ordinary PR.
-2. Continue direct inspection of the real 720p artifact and change deterministic visuals/audio only when a measurable failure appears; do not blindly retune camera, brightness, subtitles or mix after a passing sample.
+1. Treat the 720×1280/24fps Odyssey delivery proof and its checked-in evidence manifest as the present deterministic zero-cost delivery baseline. Re-run the scoped workflow on relevant delivery-path changes, not every ordinary PR.
+2. Continue direct inspection of real delivery artifacts and change deterministic visuals/audio only when a measurable failure appears; do not blindly retune camera, brightness, subtitles or mix after a passing sample.
 3. Track delivery runtime as a practical budget: the current GitHub-hosted CPU proof rendered the real 720p24 execution stage in about 9m51s. Optimize only if later evidence shows this budget materially blocks use; do not lower resolution/fps and call it equivalent proof.
 4. When an operator-provisioned Qwen3-TTS 1.7B runtime exists, run same-dialogue eSpeak-family vs Qwen A/B; no quality claim before real audio evidence.
 5. When a compliant operator-owned reference-conditioned runtime plus rights-safe assets exists, execute a real multi-shot identity/style benchmark before changing defaults or claiming identity preservation.
