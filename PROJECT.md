@@ -259,3 +259,154 @@ Routine safe/reversible/evidence-backed repository decisions proceed without rep
 Do not treat an hourly/scheduled run boundary as a work boundary. Continue all currently unblocked safe work that materially advances the milestone.
 
 Pause only for materially higher-risk boundaries: destructive/irreversible action, secret/credential changes/disclosure, paid actions/credits, legal commitments, sensitive external publication or similarly uncontainable consequences. Autonomy never weakens evidence standards.
+
+## Continuous ecosystem radar
+
+Every production cycle performs targeted freshness checks against the **current measured gap**, not generic popularity.
+
+Track T2V/I2V/reference consistency, low-VRAM/local inference, verified free routes, image-first/reference conditioning, interpolation/restoration/upscaling, temporal consistency, Mandarin/multilingual TTS, original audio, orchestration/composition, QA, licenses and breaking security/runtime changes.
+
+Current watchlist includes Wan2.2/WanGP, ModelTC/LightX2V, FramePack, FastVideo, LTX, MiniMax H3, SCAIL, LongCat, Stand-In, Memento, ComfyUI/Diffusers, RIFE, Real-ESRGAN, InfiniteTalk, CosyVoice, Qwen TTS and later measurably stronger candidates.
+
+### Admission gate
+
+Integrate only when applicable checks pass:
+
+1. exact source/project identity and tested revision;
+2. code license and model/weights/data license reviewed separately;
+3. commercial/geographic/use restrictions understood;
+4. true zero-cost/operator-owned execution, no hidden paid fallback;
+5. practical hardware/runtime profile;
+6. acceptable install/runtime/network/security behavior;
+7. concrete measured Hottop gap;
+8. testable/reversible narrow integration;
+9. benchmark/production evidence showing value.
+
+AGPL/incompatible code may teach architecture/behavior but is not copied into Hottop. Prefer narrow adapters over vendoring huge repositories. No auto-install of unreviewed code or hidden multi-GB downloads in CI/normal `video-run`. When a candidate clears the gate, integrate the smallest useful capability rather than stopping at a research note.
+
+## Persistent project memory protocol
+
+Long-running work must not depend on chat memory. `PROJECT.md` is the **living project charter**; `STATUS.md` is the execution snapshot.
+
+### Context recovery
+
+Recovery order:
+
+1. `PROJECT.md`;
+2. `STATUS.md`;
+3. active reusable skills;
+4. newest relevant spec/plan/decision/research record;
+5. current `main`, open PRs and exact-head CI/production evidence;
+6. targeted ecosystem freshness check for the current gap.
+
+Do not ask the user to repeat stable direction recoverable from the repository.
+
+A **material direction change** must be challenged against doctrine/evidence and classified durable vs experiment-specific. If durable, **update the charter** and relevant skill/spec in the same workstream, note the stale assumption it supersedes when useful, then update `STATUS.md`. Do not silently stack contradictory doctrine. Periodically compact stale duplication while preserving current canonical rules and decision log.
+
+For Hottop-related generation in Chat, current GitHub state—not stale chat memory—is the source of truth. Recover current doctrine/status/skills/examples/config/rights/provenance, then perform the mandatory fresh hotspot pass/preflight.
+
+## Repository operating rules
+
+- feature branches + PRs for normal changes;
+- keep `PROJECT.md`, `STATUS.md`, relevant specs/plans/skills current;
+- existing suitable capability wins over duplicate installation;
+- prefer narrow adapters over vendoring large upstreams;
+- keep credentials/cookies/API keys out of Git/CI logs;
+- respect site terms/access/rate limits;
+- factual comparisons require evidence;
+- visual references are analysis evidence, not automatic generation source material;
+- record external capability provenance/license/runtime/cost in durable repository state when practical.
+
+## Non-goals
+
+- no permanent InkClawAgent/AI-tool/mascot/character/four-panel requirement;
+- no requirement that the product is personified as winner;
+- no copying protected film frames, actor likenesses, official characters/posters, logos/trade dress, proprietary UI, source footage/soundtrack or finished ads without rights-cleared input;
+- no unsupported superiority claims;
+- no mandatory vector DB/browser-agent/GPU stack before measured need;
+- no static mandatory questionnaire;
+- no assumption more polish is always better;
+- no assumption Anti-Polish fits every hotspot;
+- no dependency/model integration merely because it is popular/open;
+- no identity-preservation claim from prompt/reference locks alone;
+- no claim that creative reference retrieval is RL or permission to reuse prior visual templates.
+
+## Durable output contract
+
+A mature package/archive preserves enough to reproduce/audit the creative and production decision:
+
+- intent + inference provenance;
+- promotion semantics/comparison context;
+- hotspot + timestamp + evidence;
+- recognition/causal/visual/dialogue/audio grammar;
+- product role + story-outcome change;
+- reference manifest + rights/provenance;
+- retrieved creative-memory mechanisms/guardrails when material, without copied templates;
+- category default/deleted constraint/new axis;
+- bridge + expression/platform/style/roughness;
+- motion/continuity/CTA policy;
+- beats/captions/dialogue/punchlines;
+- hard/contextual reviews;
+- prompts/exclusions/risk flags/claim status;
+- `hottop.render.v2`;
+- for motion: route choice + `hottop.video-plan.v1`, ordered shots, identity/reference data, role-aware audio, backend specs, generator/model/evaluator provenance, artifact hashes, final encoding/media verification and outcome evidence.
+
+## Decision log
+
+- **2026-08-28 — Identity fidelity and motion fidelity become separate continuity evidence dimensions.** A recognizable subject with wrong/frozen/degenerate motion is not a successful motion-conditioned result, while strong motion cannot substitute for subject identity. Routes that claim both controls must persist and pass both dimensions independently before promotion.
+- **2026-08-27 — Creative reference memory becomes canonical retrieval/preference memory, not template reuse or RL.** Successful and failed Hottop work may be retrieved for causal mechanism, native visual/dialogue/audio grammar, product-role logic, user feedback, promotion lessons, platform packaging and negative guardrails. Fresh current hotspot evidence remains authoritative; retrieval happens after current hotspot analysis and before ideation when useful. Past images/layouts/characters/scenes/punchlines are not default templates. Training work is deferred until a clean rights-safe labeled corpus and measured value justify it. This supersedes the weaker state where reusable creative lessons lived only in examples/chat/decision docs instead of the canonical charter.
+- **2026-08-27 — Neural-TTS silence is judged on serialized PCM, not only model-returned float samples.** Non-zero sub-LSB floats can quantize to int16 digital silence. Qwen3-TTS/CosyVoice3 quantize first and reject all-zero PCM before WAV/temp-file creation; broad RMS/VAD remains separate.
+- **2026-08-27 — Neural-TTS waveform integrity is non-empty + finite + serialized-PCM non-silent before serialization.** Model return is not production success; duration, intelligibility, delivery and final-media checks remain separate.
+- **2026-08-26 — Production repeatability is quality-contract-first; byte equality is scoped evidence.** Reproducible visual/audio/media/integrity contracts plus bound source/provenance/runtime identity are authoritative; universal bitwise determinism is not required.
+- **2026-08-26 — Guaranteed local speech fallback operationalizes role/delivery when safe controls exist.** Stable bounded pitch + cadence make preserved role/delivery metadata operational without claiming neural/natural identity.
+- **2026-08-26 — Mobile subtitle readability includes line-break quality.** Safe-area containment alone is insufficient; avoid one-character orphan lines when readable single-line layout fits.
+- **2026-08-26 — Qwen delivery control is checkpoint-capability gated.** Do not infer `instruct` support from API surface; current reviewed 0.6B and 1.7B capabilities remain distinct.
+- **2026-08-26 — Mobile-first framing requires readable principal-subject scale and placement.** Thresholds are measured/style/backend specific.
+- **2026-08-25 — Deterministic story routing is fail-closed.** Unsupported/missing stories never silently reuse another historical template.
+- **2026-08-25 — CJK subtitle rendering is fail-closed.** CJK text requires a real local CJK-capable font.
+- **2026-08-25 — Generator source provenance is part of continuity evidence.** Actual executed source, model/checkpoint when independently verifiable, evaluator revision and output bytes are separate dimensions.
+- **2026-08-25 — Continuity evidence is subject-bound and complete within evaluated scope.** No cherry-picked shot subset can prove cross-shot identity.
+- **2026-08-25 — Hotspot mechanism mapping is canonical; image-first is quality recovery, not a template.** Product changes the story outcome; slideshows do not count as successful video.
+- **2026-08-25 — Fresh hotspot research is a mandatory generation gate.** Historical creative never silently becomes the new default.
+- **2026-08-25 — GitHub is Chat generation source of truth; existing capability wins over duplicate installation.**
+- **2026-08-25 — Autonomous operation + continuous ecosystem radar are canonical.**
+- **2026-08-25 — Software 3D is the guaranteed zero-cost motion baseline, not the quality ceiling.**
+- **2026-08-24 — Zero-cost hybrid video is the unattended default.**
+- **2026-08-24 — Video roughness is style-routed and audio is first-class.**
+- **2026-08-24 — Anti-Polish / Controlled Badness is first-class selectable strategy.**
+- **2026-08-24 — Social creative is ad-light by default; motion-native ideas stay motion-native.**
+
+## Reusable skills
+
+- `skills/brand-metaphor-creative/SKILL.md` — intent, reframing, mechanism-first hotspot mapping, bridge search, format/medium routing, Controlled Badness, image-first recovery and creative review.
+- `skills/creative-reference-research/SKILL.md` — provenance-first grammar-only visual-reference research.
+- `skills/creative-reference-memory/SKILL.md` — prior success/failure retrieval, user-feedback/preference memory, negative guardrails and no-template/no-RL reuse rules.
+- `skills/hottop-meme/SKILL.md` — hotspot acquisition/analysis, evidence-aware comparisons, medium routing and four-panel execution when selected.
+
+Use existing suitable capabilities first; add external/operator skills/MCPs/plugins only after a concrete gap and admission review.
+
+## Current milestone
+
+**Production v0.2 — repeatable real video output**
+
+Acceptance target: playable vertical shorts generated from checked-in render/config sources with coherent moving imagery, stable original subject identity, continuous geography/action, intelligible Mandarin dialogue, original BGM/SFX, natural transitions, product benefit emerging through story, quality/provenance gates and H.264/AAC-compatible final delivery.
+
+Priority order:
+
+1. produce/verify end-to-end config → moving shots → audio → MoviePy → FFmpeg → final MP4 evidence;
+2. keep software3d guaranteed zero-cost while benchmarking stronger operator-owned/open reference-conditioned routes;
+3. improve output-side identity/reference evidence and reject failures before composition;
+4. improve Mandarin dialogue through reviewed local Qwen3-TTS/CosyVoice routes while preserving rights gates/eSpeak fallback;
+5. archive render/config, generator/model/evaluator provenance, artifact hashes and final-media verification;
+6. turn successful runs into reusable production baselines and creative-memory lessons instead of accumulating unproven provider abstraction.
+
+## Session recovery
+
+1. Read `PROJECT.md`.
+2. Read `STATUS.md`.
+3. Read relevant reusable skills, including `creative-reference-memory` when prior Hottop cases can help.
+4. Read the newest relevant spec/plan or decision/research record.
+5. Inspect current `main`, open PRs and exact-head CI/production-smoke.
+6. Perform targeted ecosystem freshness checks for the current measured Production gap.
+7. For new creative generation, perform fresh/supplied-hotspot mechanism analysis before any memory retrieval or generation.
+8. Continue the highest-value safe action autonomously; do not stop for routine approval or a scheduled-run boundary.
