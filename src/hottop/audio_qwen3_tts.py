@@ -39,6 +39,9 @@ Qwen3Language = Literal[
 ]
 Qwen3DType = Literal["bfloat16", "float16", "float32"]
 
+QWEN3_TTS_CODEC_FRAMES_PER_SECOND = 12.5
+QWEN3_TTS_DEFAULT_MAX_NEW_TOKENS = 2048
+
 
 class Qwen3TTSError(RuntimeError):
     """Raised when a local Qwen3-TTS request cannot complete safely."""
@@ -202,6 +205,13 @@ def _write_pcm16_wav(
         temporary.unlink(missing_ok=True)
 
 
+def _generation_max_new_tokens(max_duration_seconds: float | None) -> int | None:
+    if max_duration_seconds is None:
+        return None
+    planned_codec_frames = math.ceil(max_duration_seconds * QWEN3_TTS_CODEC_FRAMES_PER_SECOND)
+    return min(QWEN3_TTS_DEFAULT_MAX_NEW_TOKENS, planned_codec_frames + 1)
+
+
 def render_qwen3_custom_voice_dialogue(request: Qwen3TTSCustomVoiceRequest) -> Path:
     """Render one line with a preinstalled local Qwen3-TTS CustomVoice model."""
 
@@ -225,17 +235,21 @@ def render_qwen3_custom_voice_dialogue(request: Qwen3TTSCustomVoiceRequest) -> P
         }
         if request.attn_implementation is not None:
             load_kwargs["attn_implementation"] = request.attn_implementation
+        generation_kwargs: dict[str, object] = {
+            "text": request.text,
+            "language": request.language,
+            "speaker": request.speaker,
+            "instruct": request.instruct,
+        }
+        max_new_tokens = _generation_max_new_tokens(request.max_duration_seconds)
+        if max_new_tokens is not None:
+            generation_kwargs["max_new_tokens"] = max_new_tokens
         with _offline_huggingface_environment():
             model = qwen_tts.Qwen3TTSModel.from_pretrained(
                 str(request.model_dir),
                 **load_kwargs,
             )
-            wavs, sample_rate = model.generate_custom_voice(
-                text=request.text,
-                language=request.language,
-                speaker=request.speaker,
-                instruct=request.instruct,
-            )
+            wavs, sample_rate = model.generate_custom_voice(**generation_kwargs)
         if not isinstance(wavs, (list, tuple)) or len(wavs) != 1:
             raise Qwen3TTSError("Qwen3-TTS must return exactly one dialogue waveform")
         samples = _flatten_samples(wavs[0])
