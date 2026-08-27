@@ -170,6 +170,8 @@ def _write_pcm16_wav(path: Path, samples: list[float], sample_rate: int) -> None
         raise Qwen3TTSError("Qwen3-TTS returned invalid sample rate")
     if any(not math.isfinite(sample) for sample in samples):
         raise Qwen3TTSError("Qwen3-TTS returned non-finite audio samples")
+    if not any(sample != 0.0 for sample in samples):
+        raise Qwen3TTSError("Qwen3-TTS returned silent audio")
     pcm = array(
         "h",
         (int(max(-1.0, min(1.0, sample)) * 32767) for sample in samples),

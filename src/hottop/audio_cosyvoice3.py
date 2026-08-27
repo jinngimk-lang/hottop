@@ -131,6 +131,8 @@ def _write_pcm16_wav(path: Path, samples: list[float], sample_rate: int) -> None
         raise CosyVoice3Error("CosyVoice3 returned empty audio")
     if any(not math.isfinite(sample) for sample in samples):
         raise CosyVoice3Error("CosyVoice3 returned non-finite audio samples")
+    if not any(sample != 0.0 for sample in samples):
+        raise CosyVoice3Error("CosyVoice3 returned silent audio")
     pcm = array(
         "h",
         (
