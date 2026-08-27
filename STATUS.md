@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified `main` before this status sync is `c64b4af9155445edf439ed891d7307d25677bd6c`. It includes the merged MV-S2V admission review. Exact-head CI **#1886** passed on 2026-08-27 in Python 3.11 and 3.12. No pull request was open immediately after that merge.
+Latest verified `main` before this status sync is `79d771bfa0aceba54eb709974fad063f9ffd9e81`. It includes the merged MV-S2V admission review/status sync. Exact-head CI **#1888** passed on 2026-08-27 in Python 3.11 and 3.12. No pull request was open immediately before this status sync.
 
 ## Canonical Production v0.2 baseline
 
@@ -38,7 +38,8 @@ Current routes/candidates:
 - **Stand-In/Wan2.2** — admitted registry-only continuity benchmark candidate; local runtime still unprobed and upstream auto-download paths remain excluded.
 - **Memento** — mechanism-relevant but gated by unresolved exact-source license packaging and very heavy published runtime guidance.
 - **Identity-as-Presence** — research-only: source license unresolved, multi-subject unreleased, eight-process documented path and MMAudio non-commercial checkpoint dependency.
-- **MV-S2V** — newly reviewed research-only continuity candidate. Exact source `Szy-Young/MV-S2V@ccbc80944b36600b1dd39cb6bf671c285b9a1ebc` directly targets multi-view subject consistency, but the reviewed GitHub root has no `LICENSE`, the Hugging Face model card exposes no license metadata, and the public path is a 14B BF16 multi-GPU runtime with separately provisioned Wan2.1 base + MV-S2V weights. No code/weights ingestion, auto-download, `video-run` route or readiness claim is allowed. See `docs/research/2026-08-27-mv-s2v-admission.md`.
+- **MV-S2V** — research-only continuity candidate. Exact source `Szy-Young/MV-S2V@ccbc80944b36600b1dd39cb6bf671c285b9a1ebc` directly targets multi-view subject consistency, but the reviewed GitHub root has no `LICENSE`, the Hugging Face model card exposes no license metadata, and the public path is a 14B BF16 multi-GPU runtime with separately provisioned Wan2.1 base + MV-S2V weights. No code/weights ingestion, auto-download, `video-run` route or readiness claim is allowed. See `docs/research/2026-08-27-mv-s2v-admission.md`.
+- **ReWorld** — newly reviewed research-only long-horizon consistency candidate at exact source `zhifeichen097/ReWorld@fce2895ad8cbaa1b0b9e688675f51d052373cb4b`. Its bounded KV cache plus pose-indexed landmark bank is directly relevant to persistent scene/viewpoint memory on a Wan2.2 backbone, but the project is CC BY-NC-SA 4.0 (non-commercial/share-alike) and its ReWorld generator + DMD LoRA checkpoints are explicitly not released yet. The published path also requires CUDA/PyTorch, FlashAttention and separately provisioned Wan2.2 assets. Do not copy code, vendor it, add a production route, auto-download assets or claim runtime readiness; architecture may inform future permissive implementations after independent review.
 
 Do not fabricate DGX/GPU readiness. Driver/CUDA/PyTorch/model/reference state must be probed on actual operator machines before any generated-quality claim.
 
@@ -46,11 +47,12 @@ Do not fabricate DGX/GPU readiness. Driver/CUDA/PyTorch/model/reference state mu
 
 Targeted checks remain gap-driven rather than popularity-driven.
 
-- `Szy-Young/MV-S2V` is newly recorded because its multi-view conditioning directly attacks unseen-view subject drift. Admission remains blocked by unresolved source/checkpoint licensing plus heavy unprobed multi-GPU requirements.
+- `zhifeichen097/ReWorld@fce2895ad8cbaa1b0b9e688675f51d052373cb4b` is newly recorded because its bounded recent+landmark memory directly attacks long-horizon scene/viewpoint drift. It is **not admissible for Hottop production**: exact source is CC BY-NC-SA 4.0 and the project states its generator/DMD checkpoints are still coming soon. Treat the memory architecture as research input only; do not ingest code or fabricate benchmarkability.
+- `Szy-Young/MV-S2V` remains recorded because its multi-view conditioning directly attacks unseen-view subject drift. Admission remains blocked by unresolved source/checkpoint licensing plus heavy unprobed multi-GPU requirements.
 - `Wan-AI/Wan2.1-T2V-14B` base assets are separately published under Apache-2.0; that does **not** resolve MV-S2V source/checkpoint licensing.
 - LightX2V/Wan2.2 has no newly measured Hottop continuity/runtime gain that justifies freshness-only repinning.
 - Community Wan2.2 HIGH/LOW expert-LoRA routing remains a correctness caution, not a dependency reason for the tested Hottop subset.
-- Qwen3-TTS serving wrappers that auto-download multi-GB models remain inadmissible for unattended Hottop; 1.7B promotion still requires real operator-local A/B evidence.
+- Qwen3-TTS serving evidence continues to favor benchmark-first admission: recent H100/H200 work removed a Talker `torch.compile` path after it failed to show reproducible end-to-end gain. Serving wrappers or alternate runtimes remain inadmissible without exact runtime/model/hardware/output evidence and must not auto-download multi-GB models in unattended Hottop.
 
 No new candidate clears the admission gate strongly enough to replace the guaranteed software3d baseline or the current tested operator routes.
 
@@ -59,9 +61,10 @@ No new candidate clears the admission gate strongly enough to replace the guaran
 1. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
 3. Re-evaluate MV-S2V only if exact source/checkpoint licensing becomes explicit **and** an operator provides the already-provisioned multi-GPU runtime/checkpoints plus a rights-safe multi-view reference pack; compare it against the current LightX2V/Wan2.2 route using the same subject sequence and continuity evaluator.
-4. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
-5. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
-6. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
+4. Keep ReWorld research-only unless a future permissively licensed implementation/weights path appears; if that happens, evaluate its bounded pose-indexed memory behavior independently rather than copying CC BY-NC-SA code.
+5. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
+6. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
+7. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
 
 ## Recovery order
 
