@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-27
+Last updated: 2026-08-28
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified `main` before this status sync is `79d771bfa0aceba54eb709974fad063f9ffd9e81`. It includes the merged MV-S2V admission review/status sync. Exact-head CI **#1888** passed on 2026-08-27 in Python 3.11 and 3.12. No pull request was open immediately before this status sync.
+Latest verified `main` before this status sync is `f9bca090270a144429be87dae02ed95b35621ea6`. It includes the merged durable ReWorld and Latent Spatial Memory continuity admission records. Exact-head CI **#1892** passed on 2026-08-28 in Python 3.11 and 3.12. No pull request was open immediately before this status sync.
 
 ## Canonical Production v0.2 baseline
 
@@ -39,15 +39,17 @@ Current routes/candidates:
 - **Memento** — mechanism-relevant but gated by unresolved exact-source license packaging and very heavy published runtime guidance.
 - **Identity-as-Presence** — research-only: source license unresolved, multi-subject unreleased, eight-process documented path and MMAudio non-commercial checkpoint dependency.
 - **MV-S2V** — research-only continuity candidate. Exact source `Szy-Young/MV-S2V@ccbc80944b36600b1dd39cb6bf671c285b9a1ebc` directly targets multi-view subject consistency, but the reviewed GitHub root has no `LICENSE`, the Hugging Face model card exposes no license metadata, and the public path is a 14B BF16 multi-GPU runtime with separately provisioned Wan2.1 base + MV-S2V weights. No code/weights ingestion, auto-download, `video-run` route or readiness claim is allowed. See `docs/research/2026-08-27-mv-s2v-admission.md`.
-- **ReWorld** — newly reviewed research-only long-horizon consistency candidate at exact source `zhifeichen097/ReWorld@fce2895ad8cbaa1b0b9e688675f51d052373cb4b`. Its bounded KV cache plus pose-indexed landmark bank is directly relevant to persistent scene/viewpoint memory on a Wan2.2 backbone, but the project is CC BY-NC-SA 4.0 (non-commercial/share-alike) and its ReWorld generator + DMD LoRA checkpoints are explicitly not released yet. The published path also requires CUDA/PyTorch, FlashAttention and separately provisioned Wan2.2 assets. Do not copy code, vendor it, add a production route, auto-download assets or claim runtime readiness; architecture may inform future permissive implementations after independent review.
+- **ReWorld** — research-only long-horizon consistency candidate at exact source `zhifeichen097/ReWorld@fce2895ad8cbaa1b0b9e688675f51d052373cb4b`. Its bounded KV cache plus pose-indexed landmark bank is directly relevant to persistent scene/viewpoint memory on a Wan2.2 backbone, but the project is CC BY-NC-SA 4.0 (non-commercial/share-alike) and its ReWorld generator + DMD LoRA checkpoints are explicitly not released yet. The published path also requires CUDA/PyTorch, FlashAttention and separately provisioned Wan2.2 assets. Do not copy code, vendor it, add a production route, auto-download assets or claim runtime readiness. Durable review: `docs/research/2026-08-28-reworld-admission.md`.
+- **Microsoft Latent Spatial Memory** — permissive research/benchmark candidate at exact source `microsoft/LatentSpatialMemory@be530516a8b8c79ae5d5dff543b4d1640f59bd54`. The reviewed source includes an MIT license and its persistent latent 3D scene-memory lifecycle is relevant to long-horizon geography/view consistency. However, public inference expects separately provisioned Wan2.2-TI2V-5B plus project-specific VACE/LoRA checkpoint paths, and Hottop has not independently verified a published trained-checkpoint revision/rights record. No production route or auto-provisioning is allowed until those assets and an operator runtime are independently admitted. Durable review: `docs/research/2026-08-28-latent-spatial-memory-admission.md`.
 
 Do not fabricate DGX/GPU readiness. Driver/CUDA/PyTorch/model/reference state must be probed on actual operator machines before any generated-quality claim.
 
-## Fresh ecosystem radar — 2026-08-27
+## Fresh ecosystem radar — 2026-08-28
 
 Targeted checks remain gap-driven rather than popularity-driven.
 
-- `zhifeichen097/ReWorld@fce2895ad8cbaa1b0b9e688675f51d052373cb4b` is newly recorded because its bounded recent+landmark memory directly attacks long-horizon scene/viewpoint drift. It is **not admissible for Hottop production**: exact source is CC BY-NC-SA 4.0 and the project states its generator/DMD checkpoints are still coming soon. Treat the memory architecture as research input only; do not ingest code or fabricate benchmarkability.
+- `zhifeichen097/ReWorld@fce2895ad8cbaa1b0b9e688675f51d052373cb4b` remains relevant because bounded recent memory plus pose-indexed landmark retrieval directly attacks long-horizon scene/viewpoint drift. Its CC BY-NC-SA 4.0 source license and unreleased ReWorld generator/DMD checkpoints keep it research-only; the architecture may inform a future clean permissive implementation, but current code must not be ingested.
+- `microsoft/LatentSpatialMemory@be530516a8b8c79ae5d5dff543b4d1640f59bd54` is a newly recorded permissive candidate. Exact source includes MIT `LICENSE` and upstream remained active on 2026-08-27. Its latent-memory lifecycle avoids a repeated RGB render/re-encode detour and complements ReWorld's pose-indexed landmark memory. Production admission is still blocked by unverified project-specific trained-checkpoint provenance/rights plus unprobed operator runtime; do not confuse clear source licensing with admitted model assets.
 - `Szy-Young/MV-S2V` remains recorded because its multi-view conditioning directly attacks unseen-view subject drift. Admission remains blocked by unresolved source/checkpoint licensing plus heavy unprobed multi-GPU requirements.
 - `Wan-AI/Wan2.1-T2V-14B` base assets are separately published under Apache-2.0; that does **not** resolve MV-S2V source/checkpoint licensing.
 - LightX2V/Wan2.2 has no newly measured Hottop continuity/runtime gain that justifies freshness-only repinning.
@@ -62,9 +64,10 @@ No new candidate clears the admission gate strongly enough to replace the guaran
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
 3. Re-evaluate MV-S2V only if exact source/checkpoint licensing becomes explicit **and** an operator provides the already-provisioned multi-GPU runtime/checkpoints plus a rights-safe multi-view reference pack; compare it against the current LightX2V/Wan2.2 route using the same subject sequence and continuity evaluator.
 4. Keep ReWorld research-only unless a future permissively licensed implementation/weights path appears; if that happens, evaluate its bounded pose-indexed memory behavior independently rather than copying CC BY-NC-SA code.
-5. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
-6. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
-7. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
+5. Re-evaluate Microsoft Latent Spatial Memory for a narrow operator-owned adapter only after exact project-trained checkpoint revisions/rights are independently verifiable and an operator has already provisioned the source, Wan2.2 assets and required checkpoints; compare it on the same Odyssey continuity sequence rather than adopting from paper metrics.
+6. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
+7. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
+8. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
 
 ## Recovery order
 
