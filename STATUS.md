@@ -8,82 +8,60 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified `main` before this status sync is `62bbc829d08d411110e7fae6abb52ef7d3f7d1f6`. It contains the canonical creative-reference-memory doctrine plus the refreshed zero-cost video radar, including the gated Identity-as-Presence admission review. Exact-head CI **#1883** passed on 2026-08-27. No pull request was open at the start of this status-sync workstream.
+Latest verified `main` before this status sync is `c64b4af9155445edf439ed891d7307d25677bd6c`. It includes the merged MV-S2V admission review. Exact-head CI **#1886** passed on 2026-08-27 in Python 3.11 and 3.12. No pull request was open immediately after that merge.
 
-The reusable creative-memory capability remains canonical in `PROJECT.md`. Hottop explicitly treats it as **retrieval + few-shot/preference memory, not RL**:
-
-- fresh supplied/live hotspot evidence stays authoritative;
-- current recognition hook + causal/visual/dialogue/audio grammar is resolved before memory retrieval;
-- memory retrieves mechanisms, native grammar, product roles, real user/promotion lessons and negative guardrails;
-- historical layouts, characters, scenes, punchlines and visual templates are never implicit generation defaults;
-- SFT/DPO/reward-model/RL remains deferred until a sufficiently large clean rights-safe labeled corpus and measured value exist.
-
-Canonical memory artifacts include `integrations/creative-reference-library.yml`, `src/hottop/creative_memory.py`, `src/hottop/creative_memory_cli.py`, `skills/creative-reference-memory/SKILL.md`, `docs/creative/creative-reference-memory.md` and `docs/decisions/2026-08-27-creative-reference-memory.md`.
-
-## Guaranteed zero-cost production baseline
+## Canonical Production v0.2 baseline
 
 The unattended guarantee remains:
 
 `checked-in render/config → software3d moving shots → Mandarin eSpeak-family dialogue + original synthetic music + procedural Foley → MoviePy → FFmpeg → verified H.264/AAC/yuv420p MP4`
 
-It remains free of GPU/model requirements, paid fallback, credentials and implicit multi-GB downloads. Production evidence enforces meaningful pixel motion, mobile framing/subtitle readability, dialogue/audio coverage, transition/seam quality, byte-bound shot provenance, composition-time byte verification, runtime provenance and final-media verification.
+This path remains free of GPU/model requirements, paid fallback, credentials and implicit multi-GB downloads. Production evidence already covers meaningful motion, mobile framing/subtitle readability, dialogue/audio coverage, transition/seam quality, shot-byte provenance, composition-time byte verification, runtime provenance and final-media verification.
 
-Latest directly inspected 720p Odyssey evidence remains cinematic-delivery-smoke **#64** at `main@d53a472ab5fea2a0c0dde8e302762486cb1e20d8`; subsequent work through `main@62bbc829…` changed creative-memory/docs/radar only, so the media pipeline is unchanged. The downloaded final artifact measured:
+Latest directly inspected 720p Odyssey evidence remains healthy: 15 s H.264/yuv420p at 720×1280/24 fps with stereo AAC, accepted seam margins, no long-silence detection and no newly measured framing/subtitle/transition/lighting defect. Do not retune deterministic visuals/audio without a measured regression.
 
-- 15.000 s H.264/yuv420p video at 720×1280 / 24 fps;
-- 15.000 s stereo AAC at 44.1 kHz;
-- seam max delta **4.184792**, max seam/intra ratio **4.480971**;
-- no `-35 dB / 0.5 s` long-silence detection;
-- integrated loudness about **-20.0 LUFS**, true peak about **-3.9 dBFS**;
-- 1/3/5/7/9/11/13 s visual inspection found no new measurable framing, subtitle, transition or lighting regression.
+## Neural-TTS boundary
 
-Therefore no deterministic production tuning is justified from this evidence.
+The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the admitted operator-owned delivery-controlled benchmark candidate; current reviewed 0.6B does not preserve role-aware `instruct` semantics. CosyVoice3 remains correctness-gated rather than default.
 
-## Neural-TTS quality boundary
-
-The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the admitted operator-owned delivery-controlled benchmark candidate; current reviewed 0.6B does not preserve role-aware `instruct` semantics. CosyVoice3 remains correctness-gated rather than a default route.
-
-Shared local neural-TTS integrity remains fail-closed on **non-empty + finite + serialized-PCM non-silent** output before WAV creation. Routed Qwen dialogue also uses a planned-duration generation token ceiling as resource protection and an exact produced-PCM duration gate as the authoritative slot-fit contract.
+Shared neural-TTS integrity is fail-closed on non-empty + finite + serialized-int16-PCM non-silent output before WAV creation. Routed Qwen dialogue also uses a planned-duration generation-token ceiling as resource protection and produced-PCM duration as the authoritative slot-fit gate.
 
 A real same-line Qwen3-TTS 1.7B Mandarin A/B still requires an already-provisioned local model/runtime plus publication-rights review. No automatic model download or GPU provisioning is allowed.
 
 ## Generated/reference-conditioned quality boundary
 
-The highest-value generated-quality proof remains a rights-safe reference-conditioned multi-shot identity benchmark. Input identity/reference locks are constraints, not proof.
+The highest-value generated-quality proof remains a rights-safe reference-conditioned multi-shot identity benchmark. Input locks are constraints, not proof; output-side continuity evidence must cover every subject-bearing shot and bind exact reference bytes, generated bytes, generator source/model provenance when independently verifiable and evaluator revision.
 
-- LightX2V/Wan2.2 remains the tested operator-owned local base route; no freshness-only repin without measured Hottop value.
-- Stand-In/Wan2.2 and Memento-style continuity routes remain benchmark candidates, not automatically installed defaults.
-- Identity-as-Presence is research-only: the reviewed source tree lacks a root license, multi-subject remains unreleased, its documented joint A/V path requires eight local processes and manually provisioned checkpoints, and the required MMAudio checkpoint is non-commercial. Do not ingest code/weights or route it from normal production.
-- actual generator source revision, model/checkpoint identity when independently verifiable, exact reference bytes, generated shot bytes and evaluator revision remain separate provenance dimensions;
-- complete subject-bearing shot coverage is required for any cross-shot identity claim.
+Current routes/candidates:
 
-Do not fabricate DGX readiness. GPU/driver/CUDA/PyTorch/model/reference state must be probed on actual operator machines before a generated-quality claim.
+- **LightX2V/Wan2.2** — tested operator-owned local base route; keep the tested pin unless newer upstream produces measured Hottop value.
+- **Stand-In/Wan2.2** — admitted registry-only continuity benchmark candidate; local runtime still unprobed and upstream auto-download paths remain excluded.
+- **Memento** — mechanism-relevant but gated by unresolved exact-source license packaging and very heavy published runtime guidance.
+- **Identity-as-Presence** — research-only: source license unresolved, multi-subject unreleased, eight-process documented path and MMAudio non-commercial checkpoint dependency.
+- **MV-S2V** — newly reviewed research-only continuity candidate. Exact source `Szy-Young/MV-S2V@ccbc80944b36600b1dd39cb6bf671c285b9a1ebc` directly targets multi-view subject consistency, but the reviewed GitHub root has no `LICENSE`, the Hugging Face model card exposes no license metadata, and the public path is a 14B BF16 multi-GPU runtime with separately provisioned Wan2.1 base + MV-S2V weights. No code/weights ingestion, auto-download, `video-run` route or readiness claim is allowed. See `docs/research/2026-08-27-mv-s2v-admission.md`.
+
+Do not fabricate DGX/GPU readiness. Driver/CUDA/PyTorch/model/reference state must be probed on actual operator machines before any generated-quality claim.
 
 ## Fresh ecosystem radar — 2026-08-27
 
-Targeted checks against the two measured operator-quality gaps did not justify a provider switch or freshness-only repin.
+Targeted checks remain gap-driven rather than popularity-driven.
 
-### Qwen3-TTS
+- `Szy-Young/MV-S2V` is newly recorded because its multi-view conditioning directly attacks unseen-view subject drift. Admission remains blocked by unresolved source/checkpoint licensing plus heavy unprobed multi-GPU requirements.
+- `Wan-AI/Wan2.1-T2V-14B` base assets are separately published under Apache-2.0; that does **not** resolve MV-S2V source/checkpoint licensing.
+- LightX2V/Wan2.2 has no newly measured Hottop continuity/runtime gain that justifies freshness-only repinning.
+- Community Wan2.2 HIGH/LOW expert-LoRA routing remains a correctness caution, not a dependency reason for the tested Hottop subset.
+- Qwen3-TTS serving wrappers that auto-download multi-GB models remain inadmissible for unattended Hottop; 1.7B promotion still requires real operator-local A/B evidence.
 
-Official `QwenLM/Qwen3-TTS` `main` remains at the reviewed `022e286b98fbec7e1e916cb940cdf532cd9f488e` evidence point. No verified official source change in this workstream alters Hottop's reviewed 1.7B operator-local gate.
-
-Recent H100/H200 Qwen3-TTS benchmark evidence continues to support benchmark-first admission: an optional Talker `torch.compile` path failed to show reproducible end-to-end improvement under the fixed protocol and was removed. Community wrappers that auto-download models on first use remain inadmissible for normal unattended Hottop execution.
-
-### Wan2.2 / LightX2V / continuity candidates
-
-`ModelTC/LightX2V` was last reviewed at `680d9be199a69ebe4a02f86bdd653f23298ac02d` after path/config normalization and retired-model cleanup. Those changes did not provide Hottop-measured quality/runtime improvement for the tested Wan2.2 I2V subset, so there is still **no freshness-only repin**.
-
-Wan2.2 ecosystem reports continue to expose correctness-sensitive details such as HIGH/LOW A14B LoRA expert routing. The tested Hottop subset does not rely on those community LoRA pairs; this remains a provenance/quality caution rather than a reason to add a dependency.
-
-The newest continuity admission review is `WeChatCV/Identity-as-Presence@e905e6ef67df77aa4b969a2ddc02c488505f2eea`. Its appearance + voice identity mechanism is directly relevant, but it does **not** clear Hottop's admission gate: exact-source licensing is unresolved, multi-subject is not released, documented runtime is heavy, and the required MMAudio checkpoint is CC BY-NC 4.0/non-commercial. Keep it research-only unless a future permissive, separable visual-identity path survives independent review.
+No new candidate clears the admission gate strongly enough to replace the guaranteed software3d baseline or the current tested operator routes.
 
 ## Immediate next actions
 
-1. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
-2. Once a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
-3. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
-4. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
-5. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved, and archive real feedback/performance lessons when evidence exists.
+1. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
+2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
+3. Re-evaluate MV-S2V only if exact source/checkpoint licensing becomes explicit **and** an operator provides the already-provisioned multi-GPU runtime/checkpoints plus a rights-safe multi-view reference pack; compare it against the current LightX2V/Wan2.2 route using the same subject sequence and continuity evaluator.
+4. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
+5. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
+6. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
 
 ## Recovery order
 
