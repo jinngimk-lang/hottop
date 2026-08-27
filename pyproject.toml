@@ -30,6 +30,7 @@ dev = [
 [project.scripts]
 hottop = "hottop.cli:app"
 hottop-models = "hottop.model_hub_cli:app"
+hottop-references = "hottop.creative_memory_cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]

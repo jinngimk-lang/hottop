@@ -1,0 +1,195 @@
+schema_version: hottop.creative-reference-library.v1
+learning_mode: retrieval_plus_few_shot_preference_memory
+reinforcement_learning: false
+policy:
+  store_failures: true
+  store_user_feedback: true
+  store_platform_performance_when_available: true
+  retrieve_before_generation_when_useful: true
+  fresh_hotspot_research_still_required: true
+  copy_old_visual_templates: false
+  third_party_assets_metadata_only_by_default: true
+references:
+  - id: odyssey-witch-pigs-mechanism
+    title: Odyssey-style transformation and rescue mechanism
+    learning_kind: positive
+    reuse_mode: mechanism_and_grammar_only
+    hotspot:
+      title: Odyssey witch-transformation story grammar
+      category: film_or_mythic_live_action
+      recognition_hook: Sailors enter a dangerous island, are transformed/disabled, then a capable rescuer intervenes so the journey can continue.
+      mechanism: A hostile rule changes the crew's state; the protagonist breaks or reverses that rule and restores forward motion.
+      mechanism_terms: [transformation, rescue, restoration, breakout, continue_journey]
+    product_bridge: Map deployment/tooling complexity to the hostile transformation rule; InkClawAgent becomes the practical way to restore developers from blocked workflow back to productive work.
+    product_role: [rescue, antidote, breakout, route]
+    story_outcome_change: The crew changes from trapped/degraded by workflow complexity to restored and able to continue the journey/work.
+    visual_grammar: [photorealistic, cinematic, live_action, mythic, torchlit]
+    dialogue_grammar: [brief_dramatic_exchange, escalating_problem, rescuer_entry, concise_resolution]
+    audio_grammar: [cinematic_score, torch_crackle, low_rumble, dialogue_first, restrained_brand_sting]
+    format_grammar: [four_panel_when_useful, film_still_sequence, short_cinematic_video]
+    why_it_works:
+      - The product is inside the causal chain instead of pasted beside the hotspot.
+      - Audience first recognizes the story mechanism, then decodes the development metaphor, then sees the product consequence.
+      - "The product has a non-replaceable job: reverse the blocked state and let the journey continue."
+    user_feedback:
+      - Strong reference quality comes from high story fit, logical product insertion and non-awkward audience immersion.
+      - Film/movie hotspots should preserve cinematic scene grammar rather than use a generic meme template.
+    what_not_to_copy: [actor_likeness, exact_film_frame, official_poster, protected_character_design, copyrighted_soundtrack]
+    negative_patterns: [logo_paste, feature_list_without_story_role, generic_four_panel_template]
+    promotion_lessons:
+      - Benefits should emerge as story consequences before feature labels.
+      - Keep InkClawAgent visually legible at the resolution/reveal moment so the audience understands what changed the outcome.
+    tags: [film, odyssey, transformation, rescue, cinematic, product_as_story_function]
+    assets:
+      - media_type: image/png
+        sha256: 88f35a35cc36b96bc817df5dbb7a51e2e27a52a518868a5e6a2a8f409d76e32f
+        storage: metadata_only
+        source_kind: user_provided_reference
+        rights_mode: user_authorized_hottop_reference_use_grammar_only
+        note: Current conversation reference; binary intentionally not committed until an approved Git-LFS/object-store ingest path is used.
+
+  - id: niulai-native-rough3d-dialogue
+    title: Niulai-style native rough-3D family dialogue mechanism
+    learning_kind: positive
+    reuse_mode: mechanism_and_grammar_only
+    hotspot:
+      title: Viral low-budget 3D rural-family dialogue grammar
+      category: internet_native_rough3d
+      recognition_hook: A small child returns upset, a parent asks what happened, and a modern technical problem is answered with blunt folk wisdom.
+      mechanism: Child complaint -> parent question -> absurd modern problem -> deadpan simple solution, with humor produced by the collision between rural low-budget 3D language and technical vocabulary.
+      mechanism_terms: [child_complains, parent_questions, folk_solution, tech_rural_contrast, deadpan_resolution]
+    product_bridge: The product is the parent's matter-of-fact solution to unnecessary workflow pain; the joke lands because advanced agent terminology is spoken as ordinary household wisdom.
+    product_role: [simple_solution, parent_advice, pain_remover]
+    story_outcome_change: The user moves from being tripped up by a workflow/tool to understanding there is a simpler direct route.
+    visual_grammar: [rough3d, low_budget_3d, rural_workshop, warm_sunset, deliberately_imperfect_animation]
+    dialogue_grammar: [child_complaint, parent_question, short_setup, deadpan_answer, tech_terms_in_folk_speech]
+    audio_grammar: [plainspoken_voice, awkward_pause, rustic_foley, intentionally_simple_music, dialogue_first]
+    format_grammar: [four_panel, short_rough3d_video, reaction_meme]
+    why_it_works:
+      - The roughness is part of the native hotspot grammar rather than a quality accident.
+      - Technical terms inside a simple family conversation create the core contrast joke.
+      - The product arrives as a natural answer in the relationship structure, not as an ad interruption.
+    user_feedback:
+      - High-performing references should feel native to the source meme's visual and language style.
+      - Do not polish rough-native memes into cinematic advertising because that destroys the joke.
+    what_not_to_copy: [protected_character_design, third_party_exact_model, copied_dialogue_from_source]
+    negative_patterns: [overpolished_cg, corporate_ad_voice, generic_tech_dashboard]
+    promotion_lessons:
+      - Product explanation can be simple when the role is obvious from the dialogue.
+      - Preserve the native low-cost look only when the hotspot itself depends on it.
+    tags: [internet_meme, rough3d, family_dialogue, deadpan, native_style]
+    assets:
+      - media_type: image/png
+        sha256: 8e44d395234ce40d000037e30e9023bac65df9c8e856eb42b42c93f755958df2
+        storage: metadata_only
+        source_kind: user_provided_reference
+        rights_mode: user_authorized_hottop_reference_use_grammar_only
+        note: Current conversation reference; binary intentionally not committed until an approved Git-LFS/object-store ingest path is used.
+
+  - id: cinematic-slideshow-is-not-video
+    title: Still-image pan/zoom must never satisfy cinematic-video delivery
+    learning_kind: negative
+    reuse_mode: guardrail_only
+    hotspot:
+      title: Cinematic video quality failure
+      category: production_failure
+      recognition_hook: High-quality still frames were moved with camera push/pull and presented as a finished video.
+      mechanism: Static imagery plus editorial movement was mistaken for generated physical performance.
+      mechanism_terms: [fake_motion, slideshow, static_stills, failed_video_delivery]
+    product_bridge: ""
+    product_role: []
+    story_outcome_change: ""
+    visual_grammar: [cinematic_still, pan_zoom, ken_burns]
+    dialogue_grammar: []
+    audio_grammar: []
+    format_grammar: [invalid_cinematic_video]
+    why_it_works: []
+    user_feedback:
+      - A slideshow made from images is not a real video even if the images look cinematic.
+    what_not_to_copy: []
+    negative_patterns: [slideshow, pan_zoom, ken_burns, static_character, fake_motion]
+    promotion_lessons:
+      - Film-style video needs real character, prop and environment motion; fail closed when the runtime cannot produce it.
+    tags: [failure, video, cinematic, motion_gate]
+
+  - id: paired-meme-plus-product-explainer
+    title: Publish a meme hook together with a clear product explainer
+    learning_kind: packaging
+    reuse_mode: packaging_pattern
+    hotspot:
+      title: Two-asset social publishing package
+      category: distribution_packaging
+      recognition_hook: First asset earns attention with a hotspot-native joke; second asset explains the product clearly enough that the audience understands what is being promoted.
+      mechanism: Hook first -> product clarity second -> platform-native caption/title/hashtags complete the package.
+      mechanism_terms: [hook_then_explain, two_asset_sequence, meme_first_product_second, clarity_after_attention]
+    product_bridge: The meme demonstrates the pain/product consequence; the explainer card makes InkClawAgent's actual job and benefits explicit without overloading the meme itself.
+    product_role: [attention_to_clarity, explainer_followup]
+    story_outcome_change: Audience moves from curiosity/laughter to clear product understanding and recall.
+    visual_grammar: [paired_post, meme_plus_product_card, strong_product_salience]
+    dialogue_grammar: [meme_copy_first, concise_explainer_second]
+    audio_grammar: []
+    format_grammar: [two_image_post, carousel, platform_publish_pack]
+    why_it_works:
+      - The first image does not have to carry every product detail.
+      - The second image reduces the risk that a successful joke leaves the audience unsure what the product is.
+    user_feedback:
+      - A meme image plus a product-introduction image is clearer and should be prepared as a pair when useful.
+      - Titles, body copy and hashtag sets should be delivered together for the target platforms.
+    what_not_to_copy: []
+    negative_patterns: [meme_only_with_unclear_product, explainer_only_without_hook]
+    promotion_lessons:
+      - Default publishing deliverable should include recommended asset order, platform title, body copy and hashtags when the user is preparing to post.
+    tags: [packaging, social, carousel, product_clarity, distribution]
+
+  - id: internal-production-labels-are-not-audience-copy
+    title: Internal production labels must not appear in audience-facing creative
+    learning_kind: negative
+    reuse_mode: guardrail_only
+    hotspot:
+      title: Audience-facing copy hygiene failure
+      category: copy_failure
+      recognition_hook: Internal labels such as '热点梗图' describe the production process instead of participating in the joke.
+      mechanism: Creator-facing workflow vocabulary leaks into the finished asset and breaks immersion.
+      mechanism_terms: [internal_jargon_leak, immersion_break]
+    product_bridge: ""
+    product_role: []
+    story_outcome_change: ""
+    visual_grammar: []
+    dialogue_grammar: []
+    audio_grammar: []
+    format_grammar: []
+    why_it_works: []
+    user_feedback:
+      - Do not print labels like '热点梗图' on the image; the audience should see the content, not our internal workflow name.
+    what_not_to_copy: []
+    negative_patterns: [internal_label, hotspot_meme_label, production_jargon_in_asset]
+    promotion_lessons:
+      - Internal taxonomy belongs in metadata, not the creative surface.
+    tags: [failure, copy, immersion]
+
+  - id: product-salience-needs-clear-contrast
+    title: The joke cannot visually bury InkClawAgent
+    learning_kind: mixed
+    reuse_mode: mechanism_and_grammar_only
+    hotspot:
+      title: Product salience inside hotspot creative
+      category: promotion_quality
+      recognition_hook: A topical meme can attract attention while still failing if the promoted product is visually too small or weakly contrasted.
+      mechanism: Attention from the hotspot must resolve into a clearly legible product reveal and consequence.
+      mechanism_terms: [attention_to_product, reveal, contrast, attribution]
+    product_bridge: Preserve the native hotspot scene, then make the decisive InkClawAgent intervention/reveal visually stronger without turning the whole image into a generic product poster.
+    product_role: [decisive_reveal, outcome_owner]
+    story_outcome_change: The audience can tell both what changed the story and which product caused that change.
+    visual_grammar: [clear_brand_contrast, decisive_product_frame, readable_mobile_scale]
+    dialogue_grammar: [short_product_reveal]
+    audio_grammar: [restrained_brand_sting]
+    format_grammar: [meme_with_clear_resolution, paired_explainer_when_needed]
+    why_it_works:
+      - Strong product salience protects promotional purpose after the hotspot earns attention.
+    user_feedback:
+      - InkClawAgent should be more prominent and the before/after contrast should be clearer.
+    what_not_to_copy: []
+    negative_patterns: [product_too_small, weak_brand_contrast, joke_overwhelms_product]
+    promotion_lessons:
+      - Optimize for both meme immersion and unmistakable product attribution; neither should erase the other.
+    tags: [promotion, salience, mobile, product_clarity]
