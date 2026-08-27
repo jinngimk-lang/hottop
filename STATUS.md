@@ -8,9 +8,9 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified `main` at this update is `ca74c568fad9b05fbebfba538f91eb153d57f2be`. It contains the canonical creative-reference-memory doctrine plus the follow-up status sync; exact-head CI **#1877** passed on Python 3.11/3.12. No pull request was open at the start of this status-sync workstream.
+Latest verified `main` before this status sync is `62bbc829d08d411110e7fae6abb52ef7d3f7d1f6`. It contains the canonical creative-reference-memory doctrine plus the refreshed zero-cost video radar, including the gated Identity-as-Presence admission review. Exact-head CI **#1883** passed on 2026-08-27. No pull request was open at the start of this status-sync workstream.
 
-The reusable creative-memory capability is canonical in `PROJECT.md`. Hottop explicitly treats it as **retrieval + few-shot/preference memory, not RL**:
+The reusable creative-memory capability remains canonical in `PROJECT.md`. Hottop explicitly treats it as **retrieval + few-shot/preference memory, not RL**:
 
 - fresh supplied/live hotspot evidence stays authoritative;
 - current recognition hook + causal/visual/dialogue/audio grammar is resolved before memory retrieval;
@@ -28,7 +28,7 @@ The unattended guarantee remains:
 
 It remains free of GPU/model requirements, paid fallback, credentials and implicit multi-GB downloads. Production evidence enforces meaningful pixel motion, mobile framing/subtitle readability, dialogue/audio coverage, transition/seam quality, byte-bound shot provenance, composition-time byte verification, runtime provenance and final-media verification.
 
-Latest directly inspected 720p Odyssey evidence remains cinematic-delivery-smoke **#64** at `main@d53a472ab5fea2a0c0dde8e302762486cb1e20d8`; subsequent work through `main@ca74c568…` changed creative-memory/docs only, so the media pipeline is unchanged. The downloaded final artifact measured:
+Latest directly inspected 720p Odyssey evidence remains cinematic-delivery-smoke **#64** at `main@d53a472ab5fea2a0c0dde8e302762486cb1e20d8`; subsequent work through `main@62bbc829…` changed creative-memory/docs/radar only, so the media pipeline is unchanged. The downloaded final artifact measured:
 
 - 15.000 s H.264/yuv420p video at 720×1280 / 24 fps;
 - 15.000 s stereo AAC at 44.1 kHz;
@@ -37,7 +37,7 @@ Latest directly inspected 720p Odyssey evidence remains cinematic-delivery-smoke
 - integrated loudness about **-20.0 LUFS**, true peak about **-3.9 dBFS**;
 - 1/3/5/7/9/11/13 s visual inspection found no new measurable framing, subtitle, transition or lighting regression.
 
-Therefore no deterministic production tuning is justified from this run.
+Therefore no deterministic production tuning is justified from this evidence.
 
 ## Neural-TTS quality boundary
 
@@ -53,6 +53,7 @@ The highest-value generated-quality proof remains a rights-safe reference-condit
 
 - LightX2V/Wan2.2 remains the tested operator-owned local base route; no freshness-only repin without measured Hottop value.
 - Stand-In/Wan2.2 and Memento-style continuity routes remain benchmark candidates, not automatically installed defaults.
+- Identity-as-Presence is research-only: the reviewed source tree lacks a root license, multi-subject remains unreleased, its documented joint A/V path requires eight local processes and manually provisioned checkpoints, and the required MMAudio checkpoint is non-commercial. Do not ingest code/weights or route it from normal production.
 - actual generator source revision, model/checkpoint identity when independently verifiable, exact reference bytes, generated shot bytes and evaluator revision remain separate provenance dimensions;
 - complete subject-bearing shot coverage is required for any cross-shot identity claim.
 
@@ -64,15 +65,17 @@ Targeted checks against the two measured operator-quality gaps did not justify a
 
 ### Qwen3-TTS
 
-Official `QwenLM/Qwen3-TTS` `main` remains at `022e286b98fbec7e1e916cb940cdf532cd9f488e`. No new official source change alters Hottop's reviewed 1.7B operator-local gate.
+Official `QwenLM/Qwen3-TTS` `main` remains at the reviewed `022e286b98fbec7e1e916cb940cdf532cd9f488e` evidence point. No verified official source change in this workstream alters Hottop's reviewed 1.7B operator-local gate.
 
 Recent H100/H200 Qwen3-TTS benchmark evidence continues to support benchmark-first admission: an optional Talker `torch.compile` path failed to show reproducible end-to-end improvement under the fixed protocol and was removed. Community wrappers that auto-download models on first use remain inadmissible for normal unattended Hottop execution.
 
-### Wan2.2 / LightX2V
+### Wan2.2 / LightX2V / continuity candidates
 
-`ModelTC/LightX2V` `main` advanced again on 2026-08-27 to `680d9be199a69ebe4a02f86bdd653f23298ac02d` with `cleanup: remove retired model remnants (#1449)`, immediately after the earlier path-normalization cleanup. This confirms active maintenance, but the delta is repository cleanup rather than a Hottop-measured quality/runtime improvement for the tested Wan2.2 I2V subset, so there is still **no freshness-only repin**.
+`ModelTC/LightX2V` was last reviewed at `680d9be199a69ebe4a02f86bdd653f23298ac02d` after path/config normalization and retired-model cleanup. Those changes did not provide Hottop-measured quality/runtime improvement for the tested Wan2.2 I2V subset, so there is still **no freshness-only repin**.
 
 Wan2.2 ecosystem reports continue to expose correctness-sensitive details such as HIGH/LOW A14B LoRA expert routing. The tested Hottop subset does not rely on those community LoRA pairs; this remains a provenance/quality caution rather than a reason to add a dependency.
+
+The newest continuity admission review is `WeChatCV/Identity-as-Presence@e905e6ef67df77aa4b969a2ddc02c488505f2eea`. Its appearance + voice identity mechanism is directly relevant, but it does **not** clear Hottop's admission gate: exact-source licensing is unresolved, multi-subject is not released, documented runtime is heavy, and the required MMAudio checkpoint is CC BY-NC 4.0/non-commercial. Keep it research-only unless a future permissive, separable visual-identity path survives independent review.
 
 ## Immediate next actions
 
