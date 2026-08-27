@@ -15,7 +15,7 @@ PR #115 **Fail closed on invalid or overlong neural TTS audio** was squash-merge
 - cinematic-delivery-smoke #57 — 720×1280/24fps Odyssey delivery and provenance verification passed;
 - inline review threads were empty and the PR was mergeable.
 
-Post-merge `main@98dfc943…` has passed CI #1837 and production-smoke #191. Cinematic-delivery-smoke #58 is still running at this snapshot and remains the final post-merge 720p regression check; do not infer its result before GitHub reports completion.
+Post-merge `main@98dfc943…` also passed the complete verification set: CI #1837, production-smoke #191 and cinematic-delivery-smoke #58 all completed successfully. There are no open PRs at this snapshot.
 
 ## Neural-TTS integrity closure
 
@@ -78,12 +78,11 @@ Targeted 2026-08-27 freshness checks did not justify a provider switch or freshn
 
 ## Immediate next actions
 
-1. Verify post-merge cinematic-delivery-smoke #58 on exact `main@98dfc943…`; if green, remove this pending note and retain the merge as fully post-merge verified.
-2. Inspect fresh real cow/Odyssey MP4 evidence and change deterministic visuals/audio only for a **measured** defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
-3. Once a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
-4. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
-5. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
-6. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not defaults.
+1. Inspect fresh real cow/Odyssey MP4 evidence and change deterministic visuals/audio only for a **measured** defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
+2. Once a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
+3. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
+4. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
+5. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not defaults.
 
 ## Recovery order
 
