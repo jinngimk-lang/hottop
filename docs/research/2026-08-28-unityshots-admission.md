@@ -33,9 +33,9 @@ The reviewed repository declares **CC BY-NC 4.0** and explicitly scopes release/
 
 The README also states that **model checkpoints, training code and the agent system are not released yet**. There is therefore no executable checkpoint revision to admit, hash, benchmark or bind to generated artifacts.
 
-UnityShotsBench is a separate published benchmark with reference identity images and voice clips. Its dataset/media rights must be reviewed independently before any ingestion; this review does not admit or copy benchmark assets.
+UnityShotsBench is separately published under **CC BY-NC 4.0**, and its reference identities/voices are described for academic research and benchmarking only. Hottop does not ingest or copy those benchmark assets into production.
 
-LTX-2.3 base-model code/weights/output terms remain a separate dependency gate. A UnityShots paper/demo claim cannot substitute for exact base-model and checkpoint provenance.
+The reviewed LTX-2.3 distribution uses the **LTX-2 community license**, not an Apache/MIT-style permissive weight license. Its exact model terms, any derivative UnityShots checkpoint terms and output/publication rights remain separate gates even if UnityShots later releases code or weights.
 
 ### Runtime / cost / hidden behavior
 
