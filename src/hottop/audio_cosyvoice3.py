@@ -140,6 +140,8 @@ def _write_pcm16_wav(path: Path, samples: list[float], sample_rate: int) -> None
             for sample in samples
         ),
     )
+    if not any(sample != 0 for sample in pcm):
+        raise CosyVoice3Error("CosyVoice3 returned silent audio")
     temporary = path.with_suffix(path.suffix + ".part")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.unlink(missing_ok=True)
