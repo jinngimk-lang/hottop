@@ -8,17 +8,16 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-The recovery baseline for this workstream was `main@8d20c5cb7d84909e083096bcf51a234a1ae673dd`; CI #1839 passed Python 3.11/3.12 Ruff + full pytest and there were no open PRs before the current Qwen generation-bound work began.
+PR #117 **Bound Qwen TTS generation by planned duration** was squash-merged to `main` as `a3b14c2191fc37447f27d77754ab650c9c0bbbf8` after exact head `1d038af7a12b43553678f8e9641483c0983631ef` passed CI #1843 on Python 3.11/3.12 with Ruff + full pytest. Post-merge `main@a3b14c21…` then passed CI #1844 on both Python versions.
 
-Current draft PR #117 **Bound Qwen TTS generation by planned duration** closes a resource-safety gap without changing provider routing or the guaranteed eSpeak fallback:
+The closure adds a Qwen-specific pre-generation resource guard without changing provider routing or the guaranteed eSpeak fallback:
 
 - RED exact `8c012eec4328f2a11cb71fcdfef0332acc69e065`, CI #1840 — Ruff passed; Python 3.12 pytest finished **1 failed / 515 passed**. The sole failure proved that a bounded 2.0-second Qwen dialogue request still called `generate_custom_voice(...)` without `max_new_tokens`.
 - GREEN implementation `1bd3187043739ec0b2fb467497312a86500ef601`, CI #1841 — Python 3.11 and 3.12 both passed Ruff + full pytest.
-- A bounded Qwen request now computes `min(2048, ceil(max_duration_seconds × 12.5) + 1)` and passes that ceiling to upstream generation before inference. The existing output-side exact PCM duration gate remains independently mandatory.
+- For bounded dialogue, Qwen now receives `min(2048, ceil(max_duration_seconds × 12.5) + 1)` before inference. The upstream default ceiling is never increased, and unbounded requests preserve prior behavior.
+- The existing output-side exact PCM duration gate remains independently mandatory. A token ceiling limits runaway compute; it is not proof that final speech fits the slot.
 
-The token ceiling is a resource guard against missing-EOS/runaway inference, not proof that final speech fits the slot. No model download, GPU provisioning, credential, network TTS or paid-path behavior is introduced.
-
-Detailed record: `docs/research/2026-08-27-neural-tts-duration-bound.md`.
+No model download, GPU provisioning, credential, network TTS, serving-stack or paid-path behavior was introduced. Detailed record: `docs/research/2026-08-27-neural-tts-duration-bound.md`.
 
 ## Neural-TTS integrity closure
 
@@ -49,7 +48,7 @@ The unattended guarantee remains:
 
 The baseline remains free of GPU/model requirements, paid fallback, credentials and implicit multi-GB downloads. Production evidence continues to enforce meaningful pixel motion, mobile framing/subtitle readability, dialogue/audio coverage, transition/seam quality, byte-bound shot provenance, composition-time byte verification, runtime provenance and final-media verification.
 
-Fresh production-smoke inspection before this workstream found no new measured deterministic defect: cow max seam delta/ratio remained `4.431528 / 3.622543`, Odyssey `5.196111 / 3.038082`, both within the existing fail-closed gates. No framing, lighting, transition or loudness change is justified from aesthetics alone.
+Fresh production-smoke inspection before the Qwen resource-bound workstream found no new measured deterministic defect: cow max seam delta/ratio remained `4.431528 / 3.622543`, Odyssey `5.196111 / 3.038082`, both within the existing fail-closed gates. No framing, lighting, transition or loudness change is justified from aesthetics alone.
 
 Anti-Polish may remain intentionally crude; lower-roughness cinematic profiles must remain presentable. Roughness never relaxes continuity, timing, Mandarin intelligibility, product semantics, rights/evidence safety or encoding integrity.
 
@@ -78,16 +77,15 @@ Targeted 2026-08-27 freshness checks did not justify a provider switch or freshn
 
 - Official Qwen3-TTS `generate_custom_voice(...)` accepts generic generation kwargs including `max_new_tokens`, with an upstream default ceiling of 2048; the published 12Hz tokenizer runs at 12.5 codec frames/s.
 - Public Qwen missing-EOS/codec-repetition reports show generation can run far beyond useful dialogue length. This justifies a bounded-generation resource guard when Hottop already knows the dialogue slot, while the final PCM duration gate remains authoritative.
-- LightX2V/Wan2.2 activity did not provide a Hottop-measured improvement to the already-tested I2V route, so the tested local subset remains pinned until a real operator benchmark shows value.
+- Current LightX2V/Wan2.2 public activity still does not provide a Hottop-measured improvement to the already-tested I2V route, so the tested local subset remains pinned until a real operator benchmark shows value.
 
 ## Immediate next actions
 
-1. Finish PR #117 exact-head verification, review the diff/threads, and merge only if the final head remains green; then verify post-merge `main` and remove this short-lived PR recovery item.
-2. Inspect fresh real cow/Odyssey MP4 evidence and change deterministic visuals/audio only for a **measured** defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
-3. Once a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
-4. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
-5. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
-6. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not defaults.
+1. Inspect fresh real cow/Odyssey MP4 evidence and change deterministic visuals/audio only for a **measured** defect; do not tune framing, lighting, transitions or loudness from aesthetics alone.
+2. Once a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
+3. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
+4. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
+5. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not defaults.
 
 ## Recovery order
 
