@@ -30,7 +30,15 @@ PR #110 **Fail closed on non-finite Qwen3-TTS audio** was squash-merged as `52d6
 - RED exact `855b5b738b14d02261021df5aba262d3a5707a7e`, CI #1803: Ruff passed and pytest failed on the new finite-waveform contract; the sibling Python job was cancelled by fail-fast.
 - The existing Qwen3-TTS PCM writer had the same silent-corruption pattern as the CosyVoice3 adapter: a NaN sample could be saturated by Python `min/max` rather than rejected.
 - The Qwen3-TTS writer now rejects any NaN/Inf sample before PCM creation; the existing `Qwen3TTSError` cleanup path removes output on failure. Local-only model loading, offline Hugging Face behavior, speaker/delivery semantics and 1.7B instruct gating are unchanged.
-- **Shared neural-TTS integrity rule:** finite-waveform validation happens before any PCM/WAV write. A neural model returning an object is not production success until the samples are finite and the normal audio/media gates pass.
+
+PR #113 **Fail closed on silent neural TTS output** was squash-merged as `897d31fc14852bb19b22a69b5c857bdb13d17ee1` after exact GREEN head `3309f03085af7c01f3f3dfe7cca68407e3323a52` passed CI #1819 on Python 3.11/3.12 with no review threads.
+
+- Fresh upstream evidence includes `QwenAudio/CosyVoice#1800`, which reports some inputs producing 0-second audio and some outputs with unnecessary trailing silence. The issue was stale-closed without a documented root-cause fix; Hottop treats it as a correctness signal rather than proof that every CosyVoice runtime is defective.
+- RED exact `de056fde5c997777f4463e130775771e0e9ba190`, CI #1815: Ruff passed and pytest failed on the shared Qwen3-TTS/CosyVoice3 all-zero-waveform contract.
+- GREEN exact `3309f03085af7c01f3f3dfe7cca68407e3323a52`, CI #1819: both Python versions passed Ruff + full pytest.
+- Both local neural-TTS writers now reject a non-empty **all-zero** waveform before WAV creation. The gate is intentionally exact-zero only; Hottop does not introduce a broad RMS/VAD/loudness heuristic that could reject quiet but valid speech.
+- **Shared neural-TTS integrity rule:** a waveform must be non-empty, finite and non-silent before any PCM/WAV write. Higher-level duration, intelligibility, delivery and final-media gates remain separate.
+- Detailed evidence: `docs/research/2026-08-27-neural-tts-silent-output-correctness.md`.
 
 ## Native numerical runtime provenance — accepted and post-merge verified
 
@@ -101,9 +109,9 @@ No newly surfaced route is allowed to auto-install, auto-download multi-GB weigh
 
 The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the admitted operator-owned delivery-controlled benchmark candidate; 0.6B must not silently discard `delivery`/`instruct` semantics.
 
-Both current neural-TTS adapters now share a fail-closed finite-waveform boundary: NaN/Inf samples are rejected **before** any PCM/WAV output is created. This is an integrity gate, not a claim that either neural route is provisioned or quality-proven on the current operator hardware.
+Both current neural-TTS adapters now share a fail-closed waveform-integrity boundary: samples must be **non-empty, finite and non-silent** before any PCM/WAV output is created. “Non-silent” is currently the narrow exact-zero contract, not a general loudness/VAD threshold. This is an integrity gate, not a claim that either neural route is provisioned or quality-proven on the current operator hardware.
 
-CosyVoice3 0.5B 2512 is explicitly tracked as a separate **correctness-gated benchmark candidate**, not a fallback or default. Exact reviewed code source is `QwenAudio/CosyVoice@074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc` (Apache-2.0 code license); checkpoint/data/output/reference-audio rights remain separate. A future local benchmark must use already-provisioned runtime/model assets, reject non-finite waveforms, and keep TensorRT FP16 and streaming disabled unless the exact operator stack independently proves them correct end-to-end. Detailed note: `docs/research/2026-08-27-cosyvoice3-runtime-correctness.md`.
+CosyVoice3 0.5B 2512 is explicitly tracked as a separate **correctness-gated benchmark candidate**, not a fallback or default. Exact reviewed code source is `QwenAudio/CosyVoice@074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc` (Apache-2.0 code license); checkpoint/data/output/reference-audio rights remain separate. A future local benchmark must use already-provisioned runtime/model assets, reject invalid waveforms, and keep TensorRT FP16 and streaming disabled unless the exact operator stack independently proves them correct end-to-end. Detailed notes: `docs/research/2026-08-27-cosyvoice3-runtime-correctness.md` and `docs/research/2026-08-27-neural-tts-silent-output-correctness.md`.
 
 Official Qwen3-TTS `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`. A real same-line 1.7B Mandarin A/B still requires an already-provisioned local runtime/model and publication-rights review. No automatic multi-GB model download is allowed.
 
@@ -115,7 +123,7 @@ Official Qwen3-TTS `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`. A 
 4. If Stand-In's exact reviewed local source/weights are genuinely provisioned later, use it as a same-shot identity benchmark against the LightX2V/Wan2.2 base route; do not invoke its automatic downloader and do not promote it without measured continuity gain.
 5. Bind actual generator source revision, local patch/override identity when applicable, independently verifiable checkpoint provenance, exact reference bytes and shot hashes.
 6. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
-7. If CosyVoice3 is benchmarked later, keep it isolated and operator-local: exact source/checkpoint provenance, finite-waveform validation, rights-safe reference audio, and end-to-end actual-hardware evidence are mandatory; TensorRT FP16/streaming stay gated until independently green.
+7. If CosyVoice3 is benchmarked later, keep it isolated and operator-local: exact source/checkpoint provenance, non-empty/finite/non-silent waveform validation, rights-safe reference audio, and end-to-end actual-hardware evidence are mandatory; TensorRT FP16/streaming stay gated until independently green.
 8. Continue targeted ecosystem radar around the measured gap. Do not add abstraction, freshness-only pins or large dependencies without measurable value and rollback.
 9. For fresh creative output, continue live hotspot research + mechanism mapping + generation preflight; historical cow/Odyssey cases remain fixtures, not defaults.
 
