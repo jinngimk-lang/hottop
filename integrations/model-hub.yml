@@ -126,6 +126,26 @@ models:
       - The reviewed inference path is explicitly described upstream as unofficial while official code remains under institutional review.
       - Use only generated-original or user-provided-rights-cleared subject references.
 
+  - id: aura-wan22-a14b
+    name: Aura + Wan2.2 A14B multi-subject reference grounding
+    family: aura-wan2.2
+    modalities: [video]
+    capabilities: [reference_conditioning, multi_subject_reference, identity_conditioned_motion, scene_conditioning, cinematic_real_motion]
+    repository: https://github.com/Camellia997/Aura
+    code_license: Apache-2.0
+    weights_license: unresolved-public-Aura-weight-card-license-metadata
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    integration_ready: false
+    runtime_status: unprobed
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: registry_only_until_weight_rights_and_operator_benchmark_clear
+    runtime_boundary: Exact reviewed source 0fd72c355069cbe0ea53569ad1b6a84f72749266 and observed public weight revision 32f139552c8b60c546f9491b4b4c3d39d2181b7d. Aura expert weights are roughly 77 GB and public license metadata is unresolved. The Wan2.2/Qwen2.5-VL/CUDA/PyTorch/FlashAttention stack must be operator-provisioned locally; Hottop must never run upstream auto-download/installer helpers, provision GPU resources or claim readiness before same-sequence output evidence passes shared identity, motion, geography and provenance gates.
+    priority: 45
+    notes:
+      - Structured PERSON/OBJECT/SCENE reference grounding is directly relevant to Hottop subject binding but remains an upstream claim until reproduced on rights-safe output.
+      - Source Apache-2.0 does not establish Aura expert-weight, Wan/Qwen asset, reference-input or output-publication rights.
+
   - id: wan22-s2v-14b
     name: Wan2.2 S2V 14B
     family: wan2.2
