@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-PR #133 (`docs: review SMRABooth continuity candidate`) passed exact-head CI **#1902** at `707dd757a7a50c3dfc67beb428b7d9068eacaefc` and was squash-merged to `main` as `f2abd49fa24ba1a0ec0f0bfd98e081f687586ad3`. At the time of this status sync, GitHub had not yet exposed a post-merge workflow run for that merge head; re-fetch before claiming post-merge CI success.
+PR #133 (`docs: review SMRABooth continuity candidate`) passed exact-head CI **#1902** at `707dd757a7a50c3dfc67beb428b7d9068eacaefc` and was squash-merged as `f2abd49fa24ba1a0ec0f0bfd98e081f687586ad3`. PR #134 then promoted the resulting continuity lesson into canonical `PROJECT.md`; its exact head `df09a4401893e598b0ea39b31c25bcf3ffc2d96b` passed CI **#1905**, was squash-merged to `main` as `a75e172f65ee56d4646d50944fd65568257212df`, and post-merge CI **#1906** passed in Python 3.11 and 3.12.
 
 ## Canonical Production v0.2 baseline
 
@@ -52,7 +52,7 @@ Do not fabricate DGX/GPU readiness. Driver/CUDA/PyTorch/model/reference state mu
 
 Targeted checks remain gap-driven rather than popularity-driven.
 
-- `xuxuancheng0208/SMRABooth@46ae0a59a6041fc22884123a3042ab95b99a2774` is now durably recorded as a research/benchmark candidate. Its separate subject/motion representations are directly relevant, but its documented path is training-heavy and operator-provisioned; permissive source licensing does not establish dataset/checkpoint/base-weight/trained-LoRA/output rights.
+- `xuxuancheng0208/SMRABooth@46ae0a59a6041fc22884123a3042ab95b99a2774` is durably recorded as a research/benchmark candidate. Its separate subject/motion representations are directly relevant, but its documented path is training-heavy and operator-provisioned; permissive source licensing does not establish dataset/checkpoint/base-weight/trained-LoRA/output rights.
 - LightX2V/Wan2.2 has no newly measured Hottop continuity/runtime gain that justifies freshness-only repinning. Recent visible activity remains model requests/maintenance rather than a measured improvement to Hottop's tested Wan2.2 I2V subset.
 - Recent Qwen3-TTS serving work still favors benchmark-first admission: a measured H100/H200 branch removed Talker `torch.compile` after no reproducible end-to-end gain. Community wrappers that auto-download models remain incompatible with unattended Hottop.
 - `HKUST-C4G/DomainShuttle@ba7a7a3b275dcdb9896ca43ede3587b6c1dc6060` remains registry-only because of conflicting public weight-license metadata and a very heavy operator stack.
@@ -65,18 +65,17 @@ No new candidate clears the admission gate strongly enough to replace the guaran
 
 ## Immediate next actions
 
-1. Re-fetch `main` and post-merge CI for `f2abd49f…`; repair any real failure before opening new work.
-2. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
-3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
-4. For any route claiming motion customization as well as identity preservation, score and persist **identity fidelity and motion fidelity separately**; neither dimension may stand in for the other.
-5. Re-evaluate SMRABooth only after an operator has already provisioned its exact source/runtime/base/checkpoint assets and a rights-safe subject+motion benchmark pack; compare it against LightX2V/Wan2.2 on the same sequence before any executable route.
-6. Re-evaluate DomainShuttle only after an operator has already provisioned the exact local stack and the weight-license metadata mismatch has been re-checked; compare the same rights-safe subject sequence against LightX2V/Wan2.2 with Hottop's existing continuity/provenance evaluator before adding any executable route.
-7. Re-evaluate MV-S2V only if exact source/checkpoint licensing becomes explicit **and** an operator provides the already-provisioned multi-GPU runtime/checkpoints plus a rights-safe multi-view reference pack.
-8. Keep ReWorld research-only unless a future permissively licensed implementation/weights path appears; evaluate architecture independently rather than copying CC BY-NC-SA code.
-9. Re-evaluate Microsoft Latent Spatial Memory only after exact project-trained checkpoint revisions/rights are independently verifiable and an operator has already provisioned the stack.
-10. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
-11. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
-12. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
+1. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
+2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
+3. For any route claiming motion customization as well as identity preservation, score and persist **identity fidelity and motion fidelity separately**; neither dimension may stand in for the other.
+4. Re-evaluate SMRABooth only after an operator has already provisioned its exact source/runtime/base/checkpoint assets and a rights-safe subject+motion benchmark pack; compare it against LightX2V/Wan2.2 on the same sequence before any executable route.
+5. Re-evaluate DomainShuttle only after an operator has already provisioned the exact local stack and the weight-license metadata mismatch has been re-checked; compare the same rights-safe subject sequence against LightX2V/Wan2.2 with Hottop's existing continuity/provenance evaluator before adding any executable route.
+6. Re-evaluate MV-S2V only if exact source/checkpoint licensing becomes explicit **and** an operator provides the already-provisioned multi-GPU runtime/checkpoints plus a rights-safe multi-view reference pack.
+7. Keep ReWorld research-only unless a future permissively licensed implementation/weights path appears; evaluate architecture independently rather than copying CC BY-NC-SA code.
+8. Re-evaluate Microsoft Latent Spatial Memory only after exact project-trained checkpoint revisions/rights are independently verifiable and an operator has already provisioned the stack.
+9. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
+10. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
+11. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
 
 ## Recovery order
 
