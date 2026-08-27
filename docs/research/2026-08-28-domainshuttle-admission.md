@@ -31,7 +31,7 @@ The reviewed quick-start path:
 - launches `torchrun` for a 14B 480p/720p inference path;
 - identifies the inference implementation as unofficial while official code is under institutional review.
 
-Those facts make automatic installation/download inappropriate for `ZERO_COST_MODE=true` unattended operation. **No auto-download**, no automatic dependency installation, no GPU provisioning and no paid fallback are admitted.
+Those facts make automatic installation/download inappropriate for `ZERO_COST_MODE=true` unattended operation. The execution boundary is explicit: **no auto-download**, no automatic dependency installation, no GPU provisioning and no paid fallback are admitted.
 
 ## Hottop admission state
 
