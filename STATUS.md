@@ -77,13 +77,17 @@ Targeted scan against the current two measured gaps did not justify a provider s
 
 ### Qwen3-TTS
 
+Official `QwenLM/Qwen3-TTS` `main` remained at `022e286b98fbec7e1e916cb940cdf532cd9f488e` in this run (upstream commit dated 2026-03-17), so there is no new official source change that alters Hottop's reviewed 1.7B operator-local gate.
+
 SGLang-Omni's Aug. 23 Qwen3-TTS benchmark work reports that Talker `torch.compile` produced no reproducible end-to-end gain under the fixed protocol and was removed; CUDA Graph remained enabled. This reinforces Hottop's existing rule that acceleration/admission requires measured end-to-end evidence, not an optimization toggle or popularity claim.
 
 Community self-hosted Qwen wrappers continue to exist, but at least some auto-download models on first use; that behavior is incompatible with normal unattended Hottop execution and is not admitted into `video-run`.
 
 ### Wan2.2 / LightX2V
 
-Recent Wan2.2 ecosystem work continues to expose correctness-sensitive runtime details such as HIGH/LOW A14B LoRA expert routing. Hottop's currently tested route does not rely on those community LoRA pairs, so this is a cautionary quality/provenance signal, not evidence for a repin or new dependency.
+`ModelTC/LightX2V` `main` advanced to `79842681ae93ff2bff3b72e7fa7316b381050a09` on 2026-08-27 with `config: normalize paths and clean up fields (#1448)`. This is active maintenance but supplies no Hottop-measured quality/runtime improvement to the tested Wan2.2 I2V subset, so it does **not** justify a freshness-only repin.
+
+Recent Wan2.2 ecosystem work also continues to expose correctness-sensitive runtime details such as HIGH/LOW A14B LoRA expert routing. Hottop's currently tested route does not rely on those community LoRA pairs, so this is a cautionary quality/provenance signal, not evidence for a new dependency.
 
 No scanned candidate supplied a measured Hottop improvement strong enough to justify a new runtime, large dependency or model download in this run.
 
