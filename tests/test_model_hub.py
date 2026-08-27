@@ -74,6 +74,41 @@ def test_stand_in_wan22_is_registered_only_as_unprobed_identity_benchmark_candid
     assert "automatic download" in candidate.runtime_boundary.lower()
 
 
+def test_aura_is_registered_only_as_unprobed_multi_subject_benchmark_candidate() -> None:
+    hub = load_model_hub(ROOT / "integrations/model-hub.yml")
+    candidate = next(entry for entry in hub.models if entry.id == "aura-wan22-a14b")
+
+    assert candidate.repository == "https://github.com/Camellia997/Aura"
+    assert candidate.code_license == "Apache-2.0"
+    assert "unresolved" in candidate.weights_license.lower()
+    assert candidate.cost_class == "self_owned_compute"
+    assert candidate.status == "benchmark_candidate"
+    assert candidate.integration_ready is False
+    assert candidate.runtime_status == "unprobed"
+    assert "dgx-spark-dual" in candidate.operator_profiles
+    assert "reference_conditioning" in candidate.capabilities
+    assert "multi_subject_reference" in candidate.capabilities
+    boundary = candidate.runtime_boundary.lower()
+    assert "77" in boundary
+    assert "auto-download" in boundary
+
+    integration_ready = select_models(
+        hub,
+        capability="multi_subject_reference",
+        operator_profile="dgx-spark-dual",
+        integration_ready_only=True,
+    )
+    runtime_ready = select_models(
+        hub,
+        capability="multi_subject_reference",
+        operator_profile="dgx-spark-dual",
+        integration_ready_only=False,
+        runtime_ready_only=True,
+    )
+    assert candidate not in integration_ready
+    assert candidate not in runtime_ready
+
+
 def test_cosyvoice3_is_registered_only_as_unprobed_correctness_gated_benchmark_candidate() -> None:
     hub = load_model_hub(ROOT / "integrations/model-hub.yml")
     candidate = next(entry for entry in hub.models if entry.id == "cosyvoice3-0b5-2512")
