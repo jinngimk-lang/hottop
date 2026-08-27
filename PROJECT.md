@@ -6,7 +6,7 @@
 
 Build a durable **hot-topic brand creative system** for marketing any user-selected brand, product, service, feature, campaign, person, idea, keyword or tool. InkClawAgent is one example, not a permanent assumption.
 
-Hottop turns current film, entertainment, animation, technology, internet and culture into original promotional concepts that make a product's value visually memorable. Output format is flexible: single visual metaphor, swipe-reveal, four-panel, faux still/poster, split old-vs-new, short cinematic video, GIF/animation or another compact social form. **Not every concept is four-panel.** Not every output is Anti-Polish. The promoted subject does not have to be a hero character.
+Hottop turns current film, entertainment, animation, technology, internet and culture into original promotional concepts that make a product's value visually memorable. Output format is flexible: single visual metaphor, swipe-reveal, four-panel, faux still/poster, split old-vs-new, short cinematic video, GIF/animation or another compact social form. **Not every concept must be four-panel.** Not every output is Anti-Polish. The promoted subject does not have to be a hero character.
 
 The durable goal is not `hot character + logo`. Find a natural bridge between the promoted subject and a recognizable cultural mechanism, then make the subject part of the action, prop, transformation, role, material, route, environment or reveal.
 
@@ -284,7 +284,9 @@ AGPL/incompatible code may teach architecture/behavior but is not copied into Ho
 
 ## Persistent project memory protocol
 
-Long-running work must not depend on chat memory. `PROJECT.md` is the living charter; `STATUS.md` is the execution snapshot.
+Long-running work must not depend on chat memory. `PROJECT.md` is the **living project charter**; `STATUS.md` is the execution snapshot.
+
+### Context recovery
 
 Recovery order:
 
@@ -297,7 +299,7 @@ Recovery order:
 
 Do not ask the user to repeat stable direction recoverable from the repository.
 
-A material direction change must be challenged against doctrine/evidence and classified durable vs experiment-specific. If durable, update `PROJECT.md` and relevant skill/spec in the same workstream, note the stale assumption it supersedes when useful, then update `STATUS.md`. Do not silently stack contradictory doctrine. Periodically compact stale duplication while preserving current canonical rules and decision log.
+A **material direction change** must be challenged against doctrine/evidence and classified durable vs experiment-specific. If durable, **update the charter** and relevant skill/spec in the same workstream, note the stale assumption it supersedes when useful, then update `STATUS.md`. Do not silently stack contradictory doctrine. Periodically compact stale duplication while preserving current canonical rules and decision log.
 
 For Hottop-related generation in Chat, current GitHub state—not stale chat memory—is the source of truth. Recover current doctrine/status/skills/examples/config/rights/provenance, then perform the mandatory fresh hotspot pass/preflight.
 
