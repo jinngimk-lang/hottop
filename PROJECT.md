@@ -228,6 +228,8 @@ Output-side continuity claims bind evaluator evidence to:
 
 Partial cherry-picked coverage fails closed. Input locks are constraints, not proof of generated identity. A route becomes identity-preserving only after real generated output passes the evidence contract.
 
+**Identity fidelity and motion fidelity are separate evidence dimensions.** A subject can remain recognizable while the requested motion is incorrect, frozen or degenerate; strong motion can also coexist with subject drift. When a route claims to control both, benchmark and persist both dimensions independently before describing the result as successful subject-and-motion continuity.
+
 ### Image-first quality recovery
 
 Use image-first recovery only when **direct video** misses the selected style/identity bar and a rights-safe accepted keyframe/reference can improve the route. Reuse existing **reference-conditioned I2V** rather than inventing a duplicate backend. Final output must still contain meaningful motion and pass continuity, audio, motion/duplicate, provenance and final-media gates; it is **not a slideshow**. A still/pan/zoom/slideshow is not successful video.
@@ -351,6 +353,7 @@ A mature package/archive preserves enough to reproduce/audit the creative and pr
 
 ## Decision log
 
+- **2026-08-28 — Identity fidelity and motion fidelity become separate continuity evidence dimensions.** A recognizable subject with wrong/frozen/degenerate motion is not a successful motion-conditioned result, while strong motion cannot substitute for subject identity. Routes that claim both controls must persist and pass both dimensions independently before promotion.
 - **2026-08-27 — Creative reference memory becomes canonical retrieval/preference memory, not template reuse or RL.** Successful and failed Hottop work may be retrieved for causal mechanism, native visual/dialogue/audio grammar, product-role logic, user feedback, promotion lessons, platform packaging and negative guardrails. Fresh current hotspot evidence remains authoritative; retrieval happens after current hotspot analysis and before ideation when useful. Past images/layouts/characters/scenes/punchlines are not default templates. Training work is deferred until a clean rights-safe labeled corpus and measured value justify it. This supersedes the weaker state where reusable creative lessons lived only in examples/chat/decision docs instead of the canonical charter.
 - **2026-08-27 — Neural-TTS silence is judged on serialized PCM, not only model-returned float samples.** Non-zero sub-LSB floats can quantize to int16 digital silence. Qwen3-TTS/CosyVoice3 quantize first and reject all-zero PCM before WAV/temp-file creation; broad RMS/VAD remains separate.
 - **2026-08-27 — Neural-TTS waveform integrity is non-empty + finite + serialized-PCM non-silent before serialization.** Model return is not production success; duration, intelligibility, delivery and final-media checks remain separate.
