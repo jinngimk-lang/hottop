@@ -60,6 +60,7 @@ class Qwen3TTSCustomVoiceRequest(BaseModel):
     device: str = Field(default="cuda:0", min_length=1)
     dtype: Qwen3DType = "bfloat16"
     attn_implementation: str | None = "flash_attention_2"
+    max_duration_seconds: float | None = Field(default=None, gt=0)
 
     @model_validator(mode="after")
     def validate_local_request(self) -> Qwen3TTSCustomVoiceRequest:
@@ -163,7 +164,13 @@ def _flatten_samples(value: object) -> list[float]:
         raise Qwen3TTSError("Qwen3-TTS returned invalid audio samples") from exc
 
 
-def _write_pcm16_wav(path: Path, samples: list[float], sample_rate: int) -> None:
+def _write_pcm16_wav(
+    path: Path,
+    samples: list[float],
+    sample_rate: int,
+    *,
+    max_duration_seconds: float | None = None,
+) -> None:
     if not samples:
         raise Qwen3TTSError("Qwen3-TTS returned empty audio")
     if sample_rate <= 0:
@@ -176,6 +183,10 @@ def _write_pcm16_wav(path: Path, samples: list[float], sample_rate: int) -> None
         "h",
         (int(max(-1.0, min(1.0, sample)) * 32767) for sample in samples),
     )
+    if not any(sample != 0 for sample in pcm):
+        raise Qwen3TTSError("Qwen3-TTS returned silent audio")
+    if max_duration_seconds is not None and len(pcm) / sample_rate > max_duration_seconds:
+        raise Qwen3TTSError("Qwen3-TTS audio exceeds planned duration")
     temporary = path.with_suffix(path.suffix + ".part")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.unlink(missing_ok=True)
@@ -228,7 +239,12 @@ def render_qwen3_custom_voice_dialogue(request: Qwen3TTSCustomVoiceRequest) -> P
         if not isinstance(wavs, (list, tuple)) or len(wavs) != 1:
             raise Qwen3TTSError("Qwen3-TTS must return exactly one dialogue waveform")
         samples = _flatten_samples(wavs[0])
-        _write_pcm16_wav(output, samples, int(sample_rate))
+        _write_pcm16_wav(
+            output,
+            samples,
+            int(sample_rate),
+            max_duration_seconds=request.max_duration_seconds,
+        )
     except Qwen3TTSError:
         output.unlink(missing_ok=True)
         raise
@@ -251,6 +267,7 @@ def main() -> None:
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--dtype", default="bfloat16")
     parser.add_argument("--attn-implementation", default="flash_attention_2")
+    parser.add_argument("--max-duration-seconds", type=float)
     args = parser.parse_args()
     request = Qwen3TTSCustomVoiceRequest(
         model_dir=args.model_dir,
@@ -262,6 +279,7 @@ def main() -> None:
         device=args.device,
         dtype=args.dtype,
         attn_implementation=args.attn_implementation,
+        max_duration_seconds=args.max_duration_seconds,
     )
     render_qwen3_custom_voice_dialogue(request)
 

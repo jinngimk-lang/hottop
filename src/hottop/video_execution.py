@@ -958,6 +958,8 @@ def _runtime_audio_commands(
             "--dtype",
             adapter.dtype,
         ]
+        if cue.duration_seconds is not None:
+            args.extend(["--max-duration-seconds", str(cue.duration_seconds)])
         if adapter.attn_implementation is not None:
             args.extend(["--attn-implementation", adapter.attn_implementation])
         commands.append(
