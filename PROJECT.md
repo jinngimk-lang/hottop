@@ -12,7 +12,7 @@ The durable goal is not `hot character + logo`. Find a natural bridge between th
 
 ## Mandatory fresh-generation entry gate
 
-Every new image/video generation request is a fresh creative run, including Chat generation.
+Every new image or video generation request is a fresh creative run, including Chat generation.
 
 Before final generation:
 
@@ -25,7 +25,7 @@ Before final generation:
 
 Default freshness is fail-closed: live research should have been observed within **6 hours**; when a trustworthy publication timestamp exists, the selected hotspot should normally be within **7 days**. Unknown publication time can pass only with fresh observation evidence and no invented recency claim.
 
-Historical cow/snake/Odyssey stories, four-panel layouts, Anti-Polish, software3d, cinematic realism and prior successful assets teach grammar only. They are not automatic defaults.
+**Historical examples are not defaults.** Historical cow/snake/Odyssey stories, four-panel layouts, Anti-Polish, software3d, cinematic realism and prior successful assets teach grammar only. They are not automatic defaults.
 
 ## Creative doctrine
 
@@ -44,9 +44,9 @@ Identify the **category default** competitors are optimizing, then test constrai
 
 Prefer `old premise → deleted constraint → new axis` when it is more truthful, surprising and ownable than incremental comparison. Strategic hypotheses remain hypotheses until evidence supports them.
 
-### Borrow the mechanism, not the skin
+### Cultural mechanism mapping
 
-For each selected hotspot extract:
+**Borrow the mechanism, not the skin.** For each selected hotspot extract:
 
 1. recognition hook;
 2. causal/relationship mechanism;
@@ -135,11 +135,13 @@ A concept is ready only if it passes:
 6. evidence safety;
 7. original execution.
 
-Contextual review (platform/style/goal/ambition/project-shape/hotspot-native/humor fit) ranks only concepts that already pass the hard gate. It cannot rescue a generic or unsafe concept.
+**Contextual review** (platform/style/goal/ambition/project-shape/hotspot-native/humor fit) ranks only concepts that already pass the hard gate. It cannot rescue a generic or unsafe concept.
 
 ## Adaptive guided intake
 
 Hottop behaves like a creative director, not a static questionnaire. Resolve what the user already said, infer conservative defaults with provenance/confidence and ask only questions that materially change the output. Typical budget: **0–3 questions**, usually zero or one. Explicit user choices override inference.
+
+The durable interaction controls include campaign goal, platform, style, **creative ambition**, **product visibility** and optional audience. Output should be **platform-native** before rendering, and **project-shape** is a routing signal rather than a fixed meme grammar.
 
 ## Core pipeline
 
@@ -171,7 +173,7 @@ Hottop behaves like a creative director, not a static questionnaire. Resolve wha
 - no paid fallback, credits, overage, card enrollment or hidden billing;
 - free capacity exhaustion bounded-retries, waits, fails or degrades to an explicitly deterministic route;
 - multi-GB model downloads, GPU provisioning and large optional runtimes are operator-controlled;
-- generated/deterministic shots pass quality + byte/provenance gates before composition;
+- generated/deterministic shots pass a **quality gate** plus byte/provenance gates before composition;
 - quality failure is never rebranded as Anti-Polish.
 
 ### Guaranteed software 3D baseline
@@ -228,7 +230,7 @@ Partial cherry-picked coverage fails closed. Input locks are constraints, not pr
 
 ### Image-first quality recovery
 
-Use image-first recovery only when direct video misses the selected style/identity bar and a rights-safe accepted keyframe/reference can improve the route. Reuse existing reference-conditioned I2V rather than inventing a duplicate backend. Final output must still contain meaningful motion and pass continuity, audio, motion/duplicate, provenance and final-media gates; a still/pan/zoom/slideshow is not successful video.
+Use image-first recovery only when **direct video** misses the selected style/identity bar and a rights-safe accepted keyframe/reference can improve the route. Reuse existing **reference-conditioned I2V** rather than inventing a duplicate backend. Final output must still contain meaningful motion and pass continuity, audio, motion/duplicate, provenance and final-media gates; it is **not a slideshow**. A still/pan/zoom/slideshow is not successful video.
 
 ### Audio is first-class
 
@@ -246,7 +248,7 @@ Preserve `speaker + delivery`, `voice_profile`, `music_profile`, `sfx_profile` t
 
 ### Composition/finalization
 
-MoviePy is the deterministic unattended compositor. Motion Canvas remains optional for advanced vector/interactive work. FFmpeg finalizes H.264/AAC/yuv420p/fast-start output and final-media verification. `video-run` is dry-run by default; only explicit `--execute` may spawn trusted configured stages after readiness passes. Runtime never silently installs packages, downloads models, provisions GPU, enables paid services or fetches protected source footage.
+MoviePy is the deterministic unattended **headless** compositor. Motion Canvas remains optional for advanced vector/interactive work. FFmpeg finalizes H.264/AAC/yuv420p/fast-start output and final-media verification. `video-run` is dry-run by default; only explicit `--execute` may spawn trusted configured stages after readiness passes. Runtime never silently installs packages, downloads models, provisions GPU, enables paid services or fetches protected source footage.
 
 ## Autonomous operating mandate
 
@@ -398,7 +400,7 @@ Priority order:
 1. Read `PROJECT.md`.
 2. Read `STATUS.md`.
 3. Read relevant reusable skills, including `creative-reference-memory` when prior Hottop cases can help.
-4. Read the newest relevant spec/plan/decision/research record.
+4. Read the newest relevant spec/plan or decision/research record.
 5. Inspect current `main`, open PRs and exact-head CI/production-smoke.
 6. Perform targeted ecosystem freshness checks for the current measured Production gap.
 7. For new creative generation, perform fresh/supplied-hotspot mechanism analysis before any memory retrieval or generation.
