@@ -8,9 +8,9 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-PR #122, **Make creative reference memory canonical**, was squash-merged into `main` as `b86f6785b5f9a95d2b9312b81455558fd9ef2900` after exact-head CI **#1874** passed on Python 3.11/3.12. Post-merge `main` CI **#1875** also passed both Python versions.
+Latest verified `main` at this update is `ca74c568fad9b05fbebfba538f91eb153d57f2be`. It contains the canonical creative-reference-memory doctrine plus the follow-up status sync; exact-head CI **#1877** passed on Python 3.11/3.12. No pull request was open at the start of this status-sync workstream.
 
-The previously merged reusable creative-memory capability is now canonical in `PROJECT.md` rather than living only in implementation/decision docs. Hottop explicitly treats it as **retrieval + few-shot/preference memory, not RL**:
+The reusable creative-memory capability is canonical in `PROJECT.md`. Hottop explicitly treats it as **retrieval + few-shot/preference memory, not RL**:
 
 - fresh supplied/live hotspot evidence stays authoritative;
 - current recognition hook + causal/visual/dialogue/audio grammar is resolved before memory retrieval;
@@ -28,7 +28,7 @@ The unattended guarantee remains:
 
 It remains free of GPU/model requirements, paid fallback, credentials and implicit multi-GB downloads. Production evidence enforces meaningful pixel motion, mobile framing/subtitle readability, dialogue/audio coverage, transition/seam quality, byte-bound shot provenance, composition-time byte verification, runtime provenance and final-media verification.
 
-Latest directly inspected 720p Odyssey evidence remains cinematic-delivery-smoke **#64** at `main@d53a472ab5fea2a0c0dde8e302762486cb1e20d8`; PR #122 changed docs only, so the media pipeline is unchanged. The downloaded final artifact measured:
+Latest directly inspected 720p Odyssey evidence remains cinematic-delivery-smoke **#64** at `main@d53a472ab5fea2a0c0dde8e302762486cb1e20d8`; subsequent work through `main@ca74c568…` changed creative-memory/docs only, so the media pipeline is unchanged. The downloaded final artifact measured:
 
 - 15.000 s H.264/yuv420p video at 720×1280 / 24 fps;
 - 15.000 s stereo AAC at 44.1 kHz;
@@ -64,13 +64,13 @@ Targeted checks against the two measured operator-quality gaps did not justify a
 
 ### Qwen3-TTS
 
-Official `QwenLM/Qwen3-TTS` `main` remained at `022e286b98fbec7e1e916cb940cdf532cd9f488e` in this run. No new official source change altered Hottop's reviewed 1.7B operator-local gate.
+Official `QwenLM/Qwen3-TTS` `main` remains at `022e286b98fbec7e1e916cb940cdf532cd9f488e`. No new official source change alters Hottop's reviewed 1.7B operator-local gate.
 
 Recent H100/H200 Qwen3-TTS benchmark evidence continues to support benchmark-first admission: an optional Talker `torch.compile` path failed to show reproducible end-to-end improvement under the fixed protocol and was removed. Community wrappers that auto-download models on first use remain inadmissible for normal unattended Hottop execution.
 
 ### Wan2.2 / LightX2V
 
-`ModelTC/LightX2V` `main` advanced on 2026-08-27 to `79842681ae93ff2bff3b72e7fa7316b381050a09` with `config: normalize paths and clean up fields (#1448)`. This demonstrates active maintenance but no Hottop-measured quality/runtime gain for the tested Wan2.2 I2V subset, so there is no freshness-only repin.
+`ModelTC/LightX2V` `main` advanced again on 2026-08-27 to `680d9be199a69ebe4a02f86bdd653f23298ac02d` with `cleanup: remove retired model remnants (#1449)`, immediately after the earlier path-normalization cleanup. This confirms active maintenance, but the delta is repository cleanup rather than a Hottop-measured quality/runtime improvement for the tested Wan2.2 I2V subset, so there is still **no freshness-only repin**.
 
 Wan2.2 ecosystem reports continue to expose correctness-sensitive details such as HIGH/LOW A14B LoRA expert routing. The tested Hottop subset does not rely on those community LoRA pairs; this remains a provenance/quality caution rather than a reason to add a dependency.
 
