@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified `main` before this status sync is `f9bca090270a144429be87dae02ed95b35621ea6`. It includes the merged durable ReWorld and Latent Spatial Memory continuity admission records. Exact-head CI **#1892** passed on 2026-08-28 in Python 3.11 and 3.12. No pull request was open immediately before this status sync.
+Latest verified `main` before this status sync is `732b2b56619b8d96e2aeb2f5c01a36a37f957502`. It includes the merged continuity-radar status sync plus the gated DomainShuttle admission record and machine-readable model-hub entry. Exact-head CI **#1899** passed on 2026-08-28 in Python 3.11 and 3.12. No pull request was open immediately before this status sync.
 
 ## Canonical Production v0.2 baseline
 
@@ -36,6 +36,7 @@ Current routes/candidates:
 
 - **LightX2V/Wan2.2** — tested operator-owned local base route; keep the tested pin unless newer upstream produces measured Hottop value.
 - **Stand-In/Wan2.2** — admitted registry-only continuity benchmark candidate; local runtime still unprobed and upstream auto-download paths remain excluded.
+- **DomainShuttle/Wan2.2 A14B** — newly admitted registry-only benchmark candidate at exact source `HKUST-C4G/DomainShuttle@ba7a7a3b275dcdb9896ca43ede3587b6c1dc6060` and reviewed weight revision `CNcreator0331/DomainShuttle_weight@418962e4db32ecce6c1542d536c0ab7326417938`. Source code is Apache-2.0; public weight metadata is inconsistent (`MIT` on Hugging Face versus `Apache-2.0` in the repository README), so exact terms must be re-checked before execution/redistribution. The published stack is roughly 70 GB DomainShuttle weights plus roughly 126 GB Wan2.2 base assets and defaults to an eight-process `torchrun` path. `integration_ready=false`, runtime remains unprobed, and no executable Hottop route/auto-download is admitted. Durable review: `docs/research/2026-08-28-domainshuttle-admission.md`.
 - **Memento** — mechanism-relevant but gated by unresolved exact-source license packaging and very heavy published runtime guidance.
 - **Identity-as-Presence** — research-only: source license unresolved, multi-subject unreleased, eight-process documented path and MMAudio non-commercial checkpoint dependency.
 - **MV-S2V** — research-only continuity candidate. Exact source `Szy-Young/MV-S2V@ccbc80944b36600b1dd39cb6bf671c285b9a1ebc` directly targets multi-view subject consistency, but the reviewed GitHub root has no `LICENSE`, the Hugging Face model card exposes no license metadata, and the public path is a 14B BF16 multi-GPU runtime with separately provisioned Wan2.1 base + MV-S2V weights. No code/weights ingestion, auto-download, `video-run` route or readiness claim is allowed. See `docs/research/2026-08-27-mv-s2v-admission.md`.
@@ -48,8 +49,9 @@ Do not fabricate DGX/GPU readiness. Driver/CUDA/PyTorch/model/reference state mu
 
 Targeted checks remain gap-driven rather than popularity-driven.
 
+- `HKUST-C4G/DomainShuttle@ba7a7a3b275dcdb9896ca43ede3587b6c1dc6060` is newly admitted as a **registry-only benchmark candidate** because it directly targets open-domain subject fidelity/editability on Wan2.2-A14B. Its root source license is Apache-2.0, but reviewed public weight metadata conflicts between MIT (Hugging Face) and Apache-2.0 (repository README). The public path is also very heavy: roughly 70 GB DomainShuttle + 126 GB base assets, CUDA/FlashAttention-family dependencies and an eight-process `torchrun` default. Preserve the mismatch, do not auto-download, and do not create an executable route until an operator-provisioned same-subject benchmark proves value against LightX2V/Wan2.2.
 - `zhifeichen097/ReWorld@fce2895ad8cbaa1b0b9e688675f51d052373cb4b` remains relevant because bounded recent memory plus pose-indexed landmark retrieval directly attacks long-horizon scene/viewpoint drift. Its CC BY-NC-SA 4.0 source license and unreleased ReWorld generator/DMD checkpoints keep it research-only; the architecture may inform a future clean permissive implementation, but current code must not be ingested.
-- `microsoft/LatentSpatialMemory@be530516a8b8c79ae5d5dff543b4d1640f59bd54` is a newly recorded permissive candidate. Exact source includes MIT `LICENSE` and upstream remained active on 2026-08-27. Its latent-memory lifecycle avoids a repeated RGB render/re-encode detour and complements ReWorld's pose-indexed landmark memory. Production admission is still blocked by unverified project-specific trained-checkpoint provenance/rights plus unprobed operator runtime; do not confuse clear source licensing with admitted model assets.
+- `microsoft/LatentSpatialMemory@be530516a8b8c79ae5d5dff543b4d1640f59bd54` remains a permissive candidate. Exact source includes MIT `LICENSE`; production admission is still blocked by unverified project-specific trained-checkpoint provenance/rights plus unprobed operator runtime.
 - `Szy-Young/MV-S2V` remains recorded because its multi-view conditioning directly attacks unseen-view subject drift. Admission remains blocked by unresolved source/checkpoint licensing plus heavy unprobed multi-GPU requirements.
 - `Wan-AI/Wan2.1-T2V-14B` base assets are separately published under Apache-2.0; that does **not** resolve MV-S2V source/checkpoint licensing.
 - LightX2V/Wan2.2 has no newly measured Hottop continuity/runtime gain that justifies freshness-only repinning.
@@ -62,12 +64,13 @@ No new candidate clears the admission gate strongly enough to replace the guaran
 
 1. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
-3. Re-evaluate MV-S2V only if exact source/checkpoint licensing becomes explicit **and** an operator provides the already-provisioned multi-GPU runtime/checkpoints plus a rights-safe multi-view reference pack; compare it against the current LightX2V/Wan2.2 route using the same subject sequence and continuity evaluator.
-4. Keep ReWorld research-only unless a future permissively licensed implementation/weights path appears; if that happens, evaluate its bounded pose-indexed memory behavior independently rather than copying CC BY-NC-SA code.
-5. Re-evaluate Microsoft Latent Spatial Memory for a narrow operator-owned adapter only after exact project-trained checkpoint revisions/rights are independently verifiable and an operator has already provisioned the source, Wan2.2 assets and required checkpoints; compare it on the same Odyssey continuity sequence rather than adopting from paper metrics.
-6. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
-7. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
-8. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
+3. Re-evaluate DomainShuttle only after an operator has already provisioned the exact local stack and the weight-license metadata mismatch has been re-checked; compare the same rights-safe subject sequence against LightX2V/Wan2.2 with Hottop's existing continuity/provenance evaluator before adding any executable route.
+4. Re-evaluate MV-S2V only if exact source/checkpoint licensing becomes explicit **and** an operator provides the already-provisioned multi-GPU runtime/checkpoints plus a rights-safe multi-view reference pack; compare it against the current LightX2V/Wan2.2 route using the same subject sequence and continuity evaluator.
+5. Keep ReWorld research-only unless a future permissively licensed implementation/weights path appears; if that happens, evaluate its bounded pose-indexed memory behavior independently rather than copying CC BY-NC-SA code.
+6. Re-evaluate Microsoft Latent Spatial Memory for a narrow operator-owned adapter only after exact project-trained checkpoint revisions/rights are independently verifiable and an operator has already provisioned the source, Wan2.2 assets and required checkpoints; compare it on the same Odyssey continuity sequence rather than adopting from paper metrics.
+7. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback and promote it only on measured intelligibility/delivery/naturalness evidence plus publication-rights review.
+8. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
+9. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
 
 ## Recovery order
 
