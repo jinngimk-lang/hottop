@@ -2,8 +2,10 @@ from pathlib import Path
 
 import pytest
 
-from hottop.audio_cosyvoice3 import CosyVoice3Error, _write_pcm16_wav as write_cosy_wav
-from hottop.audio_qwen3_tts import Qwen3TTSError, _write_pcm16_wav as write_qwen_wav
+from hottop.audio_cosyvoice3 import CosyVoice3Error
+from hottop.audio_cosyvoice3 import _write_pcm16_wav as write_cosy_wav
+from hottop.audio_qwen3_tts import Qwen3TTSError
+from hottop.audio_qwen3_tts import _write_pcm16_wav as write_qwen_wav
 
 
 @pytest.mark.parametrize(
