@@ -102,6 +102,30 @@ models:
       - Wan2.2 support is released, but Stand-In-V2 is only announced and is not an admitted or benchmarked route.
       - Use only generated-original or user-provided-rights-cleared identity/reference inputs.
 
+  - id: domainshuttle-wan22-a14b
+    name: DomainShuttle + Wan2.2 A14B subject consistency
+    family: domainshuttle-wan2.2
+    modalities: [video]
+    capabilities: [subject_driven_video, reference_conditioning, identity_conditioned_motion, cinematic_real_motion]
+    repository: https://github.com/HKUST-C4G/DomainShuttle
+    source_revision_reviewed: ba7a7a3b275dcdb9896ca43ede3587b6c1dc6060
+    weights: CNcreator0331/DomainShuttle_weight
+    weights_revision_reviewed: 418962e4db32ecce6c1542d536c0ab7326417938
+    code_license: Apache-2.0
+    weights_license: MIT-HuggingFace-metadata-vs-Apache-2.0-repository-README-mismatch
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    integration_ready: false
+    runtime_status: unprobed
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: registry_only_until_operator_same_subject_benchmark
+    runtime_boundary: Exact reviewed source ba7a7a3b275dcdb9896ca43ede3587b6c1dc6060. The public weight metadata has a license metadata mismatch (MIT on Hugging Face versus Apache-2.0 in the repository README); re-check exact terms before execution or redistribution. The published stack is roughly 70 GB DomainShuttle weights plus roughly 126 GB Wan2.2 base assets and defaults to an 8-process torchrun path. Operator-provisioned local assets only; no auto-download, no auto-install, no GPU provisioning and no production route until same-subject continuity evidence passes Hottop gates.
+    priority: 40
+    notes:
+      - Directly targets open-domain subject fidelity/editability on a Wan2.2-A14B backbone.
+      - The reviewed inference path is explicitly described upstream as unofficial while official code remains under institutional review.
+      - Use only generated-original or user-provided-rights-cleared subject references.
+
   - id: wan22-s2v-14b
     name: Wan2.2 S2V 14B
     family: wan2.2
