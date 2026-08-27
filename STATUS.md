@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Live recovery on 2026-08-27 verified `main@d1aba06fe7814420b774903bf471f3591d2a8038` with CI #1846 successful on Python 3.11/3.12 and no open PRs at recovery time.
+Latest owner closure: PR #119 **Refresh Production v0.2 media evidence and radar** passed exact-head CI #1847 at `a9509b6ad0c8102b8778c5967969921a575b1f0c`, was squash-merged as `33753c39ecd6ebf9347ce58bcbeb552fbe6ec8d6`, and the resulting `main` push passed CI #1848 on Python 3.11/3.12. Re-fetch GitHub before treating that SHA as the live head.
 
 PR #117 **Bound Qwen TTS generation by planned duration** was squash-merged to `main` as `a3b14c2191fc37447f27d77754ab650c9c0bbbf8` after exact head `1d038af7a12b43553678f8e9641483c0983631ef` passed CI #1843 on Python 3.11/3.12 with Ruff + full pytest. Post-merge `main@a3b14c21…` then passed CI #1844 on both Python versions.
 
