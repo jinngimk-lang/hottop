@@ -176,6 +176,8 @@ def _write_pcm16_wav(path: Path, samples: list[float], sample_rate: int) -> None
         "h",
         (int(max(-1.0, min(1.0, sample)) * 32767) for sample in samples),
     )
+    if not any(sample != 0 for sample in pcm):
+        raise Qwen3TTSError("Qwen3-TTS returned silent audio")
     temporary = path.with_suffix(path.suffix + ".part")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.unlink(missing_ok=True)
