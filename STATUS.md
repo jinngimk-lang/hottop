@@ -8,15 +8,15 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-The most recent fully verified production evidence point is `main@6178964392d3dccc36a61734b69f8b861cf1dcb6`.
+Live recovery on 2026-08-28 found `main@668372e7ed5276df46af7997d5f5aa204f68d5b5`, the squash merge of PR #145 **fix: reject punctuation-only dialogue before TTS**.
 
-That head passed all three post-merge gates after PR #143:
+Verified post-merge gates so far:
 
-- CI **#1931**: Ruff + full pytest passed on Python 3.11 and 3.12.
-- production-smoke **#199**: the checked-in cow + Odyssey software3d production paths completed successfully.
-- cinematic-delivery-smoke **#66**: 720p24 Odyssey delivery completed, then runtime provenance capture, final media/provenance verification and evidence upload all passed.
+- CI **#1936**: Ruff + full pytest passed.
+- production-smoke **#201**: checked-in cow + Odyssey software3d production paths passed.
+- cinematic-delivery-smoke **#68**: still in progress at the latest check; do not claim the 720p post-merge gate until this exact run completes successfully.
 
-PR #143 exact head `cca8346ad7333937d34ed8e04904bcedd11e0544` had already passed CI **#1930**, production-smoke **#198** and cinematic-delivery-smoke **#65** with no review threads before squash merge. The merge commit is `6178964392d3dccc36a61734b69f8b861cf1dcb6`.
+PR #145 exact GREEN head `e262f1119e60d4a8f4f22bcfca2b345b74124106` had already passed CI **#1935**, production-smoke **#200** and 720p cinematic-delivery-smoke **#67** before squash merge. Its RED head `427517bda8c9f086e726375d5b7cba709965433a` passed Ruff and failed the newly added dialogue speech-content contract.
 
 ## Canonical Production v0.2 baseline
 
@@ -26,29 +26,33 @@ The unattended guarantee remains:
 
 This path remains free of GPU/model requirements, paid fallback, credentials and implicit multi-GB downloads. Production evidence covers meaningful motion, mobile framing/subtitle readability, dialogue/audio coverage, transition/seam quality, shot-byte provenance, composition-time byte verification, runtime provenance and final-media verification.
 
-Latest 720p Odyssey evidence remains healthy. Do not retune deterministic visuals/audio without a measured regression.
+Latest accepted cow/Odyssey deterministic evidence remains healthy. Do not retune deterministic visuals/audio without a measured regression.
 
-## Neural-TTS and audio-input boundary
+## Dialogue / neural-TTS integrity boundary
 
 The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the admitted operator-owned delivery-controlled benchmark candidate; CosyVoice3 remains correctness-gated rather than default.
 
-Shared neural-TTS integrity remains fail-closed on non-empty + finite + serialized-int16-PCM non-silent output before WAV creation. Routed Qwen dialogue also uses a planned-duration generation-token ceiling as resource protection and produced-PCM duration as the authoritative slot-fit gate.
+Input integrity now fails closed before speech runtime:
 
-**New production closure:** `AudioCue.text` is now normalized at the `hottop.video-plan.v1` model boundary. Leading/trailing whitespace is stripped and blank/whitespace-only cue text is rejected before any TTS/runtime work.
+- every `AudioCue.text` is trimmed and must be nonblank;
+- `kind=dialogue` additionally must contain at least one Unicode letter or number;
+- punctuation/symbol-only text may remain valid for SFX/Foley descriptions but cannot consume eSpeak/Qwen/CosyVoice speech runtime as dialogue.
 
-The change was evidence-driven rather than cosmetic. `vllm-project/vllm-omni` issue #3706 reproduces a Qwen3-TTS offline path accepting whitespace-only text and entering inference while the HTTP path rejects it; upstream PR #3739 proposes the same class of lightweight offline preflight and remained open at the latest check. Hottop keeps its own fail-closed plan-boundary validation regardless of upstream serving behavior.
+PR #145 made this second rule concrete after PR #143 had already closed blank/whitespace-only input. The gate is deliberately semantic and provider-neutral; it does **not** claim punctuation-only prompts are the root cause of upstream Qwen failures.
 
-PR #143 followed TDD:
+Neural-TTS output integrity remains a separate fail-closed stack:
 
-- RED exact head `7dffd493dd184d07e7fba5c69b6e21572484321d`, CI **#1929**: Ruff passed; pytest failed exactly the new canonicalization/blank-input contracts.
-- GREEN exact head `cca8346ad7333937d34ed8e04904bcedd11e0544`: CI **#1930**, production-smoke **#198** and 720p cinematic-delivery-smoke **#65** all passed.
-- Post-merge `main@6178964392d3dccc36a61734b69f8b861cf1dcb6`: CI **#1931**, production-smoke **#199** and cinematic-delivery-smoke **#66** all passed.
+- model waveform must be non-empty and finite;
+- the exact int16 PCM destined for WAV must be non-silent before WAV/temp creation;
+- bounded Qwen dialogue uses a planned-duration-derived `max_new_tokens` ceiling as resource protection;
+- produced PCM duration remains the authoritative slot-fit gate;
+- final audio/media verification remains authoritative for delivered artifacts.
 
-No provider, model, GPU, dependency, download, credential or paid behavior changed.
+Fresh upstream evidence reinforces keeping these layers separate. `vllm-project/vllm-omni` issue #4576 reports very short Chinese inputs such as `1次` / `2次` intermittently producing roughly 10–36 seconds of garbled Qwen3-TTS output. Lexical input validation therefore does not replace token or produced-duration gates.
 
-**Operator benchmark rule remains unchanged:** serving topology and execution shape are part of the measured system. Future Qwen3-TTS 1.7B A/B evidence must bind model/checkpoint, runtime/patch/container identity, hardware, topology, cache/execution-shape policy, traffic/concurrency shape, cold-first-use vs warmed repeated state, seed/repetition count, throughput/TTFA/failures, Mandarin quality and publication rights.
+**Operator benchmark rule remains unchanged:** future Qwen3-TTS 1.7B A/B evidence binds model/checkpoint, runtime/patch/container identity, hardware, serving topology, execution/cache policy, traffic/concurrency shape, cold-first-use versus warmed repeated trials, seed/repetition count, throughput/TTFA/failures, Mandarin intelligibility/delivery/naturalness and publication rights. Throughput gains never stand in for speech-quality gains.
 
-Do not treat throughput gains as model-quality gains. Do not accept one same-seed cold generation as reproducibility evidence. A real same-line Qwen3-TTS 1.7B Mandarin A/B still requires an already-provisioned local model/runtime plus publication-rights review. No automatic model download, serving-stack install or GPU provisioning is allowed.
+A real same-line Qwen3-TTS 1.7B Mandarin A/B still requires an already-provisioned local model/runtime plus publication-rights review. No automatic model download, serving-stack install or GPU provisioning is allowed.
 
 ## Generated/reference-conditioned quality boundary
 
@@ -56,7 +60,7 @@ The highest-value generated-quality proof remains a rights-safe reference-condit
 
 **Identity fidelity and motion fidelity are separate evidence dimensions.** A recognizable subject with wrong/frozen/degenerate motion is not successful subject-and-motion continuity; strong motion does not prove subject identity. Routes claiming both must persist and pass both dimensions independently.
 
-Primary tested/operator route remains **LightX2V/Wan2.2**. Gated continuity research/benchmark candidates remain documented in their durable records, including Stand-In, DomainShuttle, Aura, SMRABooth, ID-V2V, UnityShots, Memento, Identity-as-Presence, MV-S2V, ReWorld and Microsoft Latent Spatial Memory.
+Primary tested/operator route remains **LightX2V/Wan2.2**. Gated continuity research/benchmark candidates remain documented in durable records, including Stand-In, DomainShuttle, Aura, SMRABooth, ID-V2V, UnityShots, Memento, Identity-as-Presence, MV-S2V, ReWorld and Microsoft Latent Spatial Memory.
 
 Do not fabricate DGX/GPU readiness. Driver/CUDA/PyTorch/model/reference state must be probed on actual operator machines before any generated-quality claim.
 
@@ -64,22 +68,22 @@ Do not fabricate DGX/GPU readiness. Driver/CUDA/PyTorch/model/reference state mu
 
 Targeted checks remain gap-driven rather than popularity-driven.
 
-- **Qwen3-TTS official source** remains `QwenLM/Qwen3-TTS@022e286b98fbec7e1e916cb940cdf532cd9f488e`; no official source change removes the 1.7B operator-local benchmark gate.
-- **Qwen3-TTS offline validation:** upstream `vllm-project/vllm-omni` #3706 documents whitespace-only offline requests entering inference; follow-up PR #3739 remains open and proposes lightweight offline validation. Hottop now rejects this input earlier at the plan boundary.
-- **SGLang-Omni #1418/#1428** continue to show that Qwen3-TTS throughput/reproducibility depends on serving topology and cache/execution shape. Those are benchmark variables, not evidence of model-quality improvement.
 - **LightX2V `main`** remains `680d9be199a69ebe4a02f86bdd653f23298ac02d`; the latest visible change is retired-model cleanup and does not demonstrate measurable value for Hottop's tested Wan2.2 I2V subset. Do not freshness-only repin.
+- **Qwen3-TTS official source** remains `QwenLM/Qwen3-TTS@022e286b98fbec7e1e916cb940cdf532cd9f488e`; no official source change removes the 1.7B operator-local benchmark gate.
+- **Qwen offline input/runtime correctness:** whitespace-only validation remains an upstream concern, and issue #4576 adds a distinct short-Chinese runaway-output example. Hottop now blocks blank/punctuation-only dialogue before routing and retains independent token/duration/output integrity gates.
 
 No newly reviewed candidate clears the admission gate strongly enough to replace the guaranteed software3d baseline or the current tested operator routes.
 
 ## Immediate next actions
 
-1. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
-2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
-3. For any route claiming motion customization as well as identity preservation, score and persist **identity fidelity and motion fidelity separately**; neither dimension may stand in for the other.
-4. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback on one explicitly bound topology/execution-shape policy; label cold-first-use separately, use repeated warmed trials for conclusions, and promote only on measured intelligibility/delivery/naturalness plus publication-rights evidence.
-5. Re-evaluate gated continuity candidates only when their exact source/checkpoint rights are compatible **and** an operator has already provisioned the required runtime/assets; benchmark Hottop's own rights-safe sequence rather than copying benchmark media.
-6. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
-7. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
+1. Finish exact post-merge verification for `main@668372e7…`: cinematic-delivery-smoke **#68** must succeed before the 720p gate is called green.
+2. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
+3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
+4. For any route claiming motion customization as well as identity preservation, score and persist **identity fidelity and motion fidelity separately**; neither dimension may stand in for the other.
+5. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback on one explicitly bound topology/execution-shape policy; label cold-first-use separately, use repeated warmed trials for conclusions, and promote only on measured intelligibility/delivery/naturalness plus publication-rights evidence.
+6. Re-evaluate gated continuity candidates only when exact source/checkpoint rights are compatible **and** an operator has already provisioned the required runtime/assets; benchmark Hottop's own rights-safe sequence rather than copying benchmark media.
+7. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
+8. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
 
 ## Recovery order
 
