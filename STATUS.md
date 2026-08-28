@@ -8,11 +8,20 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Recovery on 2026-08-28 found one active PR, #161 `Bind motion fidelity to requested plan actions`, based on `main@db4fc49fb0d35423b21bcb6ec9a95630f0f0456b`.
+PR #161 `Bind motion fidelity to requested plan actions` exact head `12421f4da397bf945c811fa5475f693c0870e156` passed **CI #1976**, **production-smoke #207** and **cinematic-delivery-smoke #74**, had no review threads and was mergeable. It was squash-merged as `81e5fdb0a8b87976d6c6e970263a38bfadb042d3`.
 
-PR #161 exact head `12421f4da397bf945c811fa5475f693c0870e156` passed **CI #1976**, **production-smoke #207** and **cinematic-delivery-smoke #74**, had no review threads and was mergeable. It was squash-merged as `81e5fdb0a8b87976d6c6e970263a38bfadb042d3`.
+On that exact merge head, **CI #1977**, **production-smoke #208** and **cinematic-delivery-smoke #75** all passed.
 
-Post-merge **CI #1977 passed**. Post-merge production-smoke #208 and cinematic-delivery-smoke #75 were still executing when this snapshot was written; do not promote those runs to success without re-fetching their final conclusions.
+The #208 downloadable production artifact was independently re-inspected in this owner cycle:
+
+- cow final MP4: 15.0 s, H.264/yuv420p + AAC, SHA-256 `8c23e3ea76dad18d5d2092e52b944365f267df363a16e9624db08a5be0e339b5`, seam max delta `4.431528`, max seam/intra ratio `3.622543`;
+- Odyssey final MP4: 15.0 s, H.264/yuv420p + AAC, SHA-256 `f30a15c8e146f07d2bae8416a7bae3ebe5a54cfb5cb65bac5fbb82f6ac39795c`, seam max delta `5.196111`, max seam/intra ratio `3.038082`.
+
+Both final hashes match the previously verified deterministic smoke baseline; `-35 dB / 0.5 s` inspection found no long silence in either file. Direct 1/5/9/13 s frame inspection found no new measured framing/subtitle/lighting regression that justifies retuning the guaranteed path.
+
+The #75 downloadable 720p24 Odyssey artifact was also independently inspected: **720×1280 / 24 fps / 15.0 s H.264/yuv420p + AAC**, final SHA-256 `c1353b556cb8675b94e58bb1d41624c69b4711ad1b83c690f1e81dd60b3f58df`, seam max delta `4.184792`, max seam/intra ratio `4.480971`. It captured bound runtime provenance including Python 3.12.14, AMD EPYC 7763 CPU identity, NumPy/OpenBLAS runtime/native-library bytes, FFmpeg/FFprobe/eSpeak-NG bytes and caption-font bytes. The final MP4 hash matches the previously observed scoped 720p deterministic evidence on the same verified route; this remains an observation, not a universal cross-runtime bitwise guarantee.
+
+PR #162 `Research PersonaShot narrative-continuity dimensions` exact head `83a95edfad7a2331a5247f1239a6dc62731ded11` passed **CI #1979**, had no review threads and was mergeable. It was squash-merged as `0559d21d2338fe58cb47646d5a0aceffe7889f9c`; post-merge **CI #1980 passed**.
 
 ## Canonical guaranteed baseline
 
@@ -48,13 +57,12 @@ No reviewed candidate in this run clears admission strongly enough to replace th
 
 ## Immediate next actions
 
-1. Re-fetch and close the post-merge #161 production-smoke #208 and 720p cinematic-delivery-smoke #75 evidence; if either fails, repair the regression before unrelated work.
-2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound identity + requested-action motion evidence before composition.
-4. For real multi-shot narratives, do not collapse all continuity into one generic score. When story semantics require it, separately consider physical-state continuity, affective trajectory and cinematic relations in addition to identity/motion; do not claim PersonaShot-compatible evaluation until an admissible release or independently specified evaluator exists.
-5. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback with bound runtime/hardware provenance and repeated cold/warm trials.
-6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound identity + requested-action motion evidence before composition.
+3. For real multi-shot narratives, do not collapse all continuity into one generic score. When story semantics require it, separately consider physical-state continuity, affective trajectory and cinematic relations in addition to identity/motion; do not claim PersonaShot-compatible evaluation until an admissible release or independently specified evaluator exists.
+4. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback with bound runtime/hardware provenance and repeated cold/warm trials.
+5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+6. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
