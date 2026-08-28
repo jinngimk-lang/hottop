@@ -23,12 +23,53 @@ When the user supplies the hotspot, title, news item, meme, scene, image, quotat
 
 When no hotspot is supplied, perform fresh live discovery for the current generation request and select from current recognizable candidates using the project evidence/freshness gates. A previous chat hotspot is never an implicit substitute for this discovery pass.
 
+### Hotspot depth rule: event + derivative meme
+
+A hotspot is **not fully explored** merely because a current headline or trending name was found. For creative work, research at least two layers whenever public evidence allows:
+
+1. **source event** — what actually happened, when, and which claims are verified, alleged, satirical or explicitly fictional;
+2. **active derivative meme** — what viewers are actually repeating, screenshotting, remixing, quoting or joking about right now.
+
+The derivative meme is often the stronger creative entry point. Extract, when present:
+
+- the shortest native one-liner people repeat;
+- the decisive number, object, action or before/after contrast;
+- the relationship/role structure that makes the joke work;
+- the native reaction phrase, blame phrase, callback or visual symbol;
+- the platform-native wording rather than newsroom wording.
+
+Do not treat long-lived recognition as current heat. A famous IP, celebrity, product or old meme is not automatically a current hotspot. Verify that the relevant event or derivative meme is actively circulating now.
+
+When the active derivative differs from the original news framing, preserve both: factual context comes from the source-event layer; the creative hook may come from the derivative-meme layer. Never turn an unverified meme claim into a factual assertion.
+
+### Hook-compression rule
+
+Before finalizing a social title, compress the hotspot into the **smallest high-information hook** that still carries the meme. Prefer concrete consequence, number, action or reversal over a descriptive headline.
+
+Good hook behavior:
+
+- sounds like something a real viewer would repost or say aloud;
+- reveals enough to create curiosity without explaining the whole story;
+- uses the hotspot's native language/rhythm;
+- is short enough to read instantly on mobile;
+- makes the product bridge easier to understand after the click/view.
+
+Weak behavior:
+
+- `今天热搜：...` / `热点梗图` / `某某事件解析` style internal or newsroom labels;
+- naming several entities but hiding the actual joke;
+- summarizing the news instead of surfacing the meme;
+- generic clickbait unrelated to the hotspot's native phrase or mechanism.
+
+Canonical lesson from the 2026-08-28 user review: for a viral AI-decision story whose derivative meme centered on a two-word refusal and a USD 50M consequence, **`俩字，省了5000W`** is a stronger social hook than a long title listing the people, AI product and dispute. The lesson is the compression pattern — short utterance + concrete consequence — not the specific people or layout. The source story itself was publicly marked as fictional/satirical, so future reuse must preserve that factual boundary rather than present the relationship narrative as verified fact.
+
 Prefer current, recognizable topics with a clear visual conflict or cultural action. Collect enough evidence to know what the topic is and why it is current; do not turn a headline fragment into a factual claim.
 
 Prioritize:
 
 - recognizability;
 - freshness;
+- derivative-meme activity and native hook strength;
 - conflict/role clarity;
 - visual potential;
 - fit with the promoted subject's real pain point/differentiator;
@@ -68,12 +109,16 @@ Match the way people recognize the hotspot without copying protected production 
 
 Default to concise Chinese when the active campaign is Chinese. Captions must work on a phone. Objective claims such as `10x faster`, `cheapest`, `safer than X`, `X cannot do Y`, market leadership or numeric performance require evidence. Otherwise mark the concept `satire` or `needs_evidence`.
 
+Audience-facing creative must not display internal workflow labels such as `热点梗图`, `今日热搜 TOP1`, research notes, production taxonomy or evidence-status labels unless that text is itself genuinely part of the joke. Keep research metadata in the archive, not on the finished asset.
+
 ## Archive contract
 
 A ready hotspot concept should retain:
 
 - promotion context;
-- topic, timestamp and evidence;
+- source event, timestamp and evidence;
+- active derivative meme / circulating callback when present;
+- meme-native title hook / compressed social hook;
 - hotspot recognition cue + causal/relationship mechanism;
 - native visual/dialogue/audio grammar;
 - comparison candidates / chosen target;
