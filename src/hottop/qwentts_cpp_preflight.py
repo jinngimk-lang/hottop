@@ -8,6 +8,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 GGUF_MAGIC = b"GGUF"
+GGUF_HEADER_BYTES = 24
 HASH_CHUNK_BYTES = 1024 * 1024
 
 
@@ -36,10 +37,19 @@ def _stream_sha256_and_header(path: Path) -> tuple[str, bytes]:
     header = b""
     with path.open("rb") as handle:
         while chunk := handle.read(HASH_CHUNK_BYTES):
-            if not header:
-                header = chunk[: len(GGUF_MAGIC)]
+            if len(header) < GGUF_HEADER_BYTES:
+                missing = GGUF_HEADER_BYTES - len(header)
+                header += chunk[:missing]
             digest.update(chunk)
     return digest.hexdigest(), header
+
+
+def _gguf_header_blockers(header: bytes, *, path: Path, label: str) -> list[str]:
+    if not header.startswith(GGUF_MAGIC):
+        return [f"{label} has invalid GGUF header: {path}"]
+    if len(header) < GGUF_HEADER_BYTES:
+        return [f"{label} has truncated GGUF header: {path}"]
+    return []
 
 
 def _identity(
@@ -62,8 +72,8 @@ def _identity(
         blockers.append(f"{label} is not executable: {path}")
 
     sha256, header = _stream_sha256_and_header(path)
-    if require_gguf and size_bytes > 0 and header != GGUF_MAGIC:
-        blockers.append(f"{label} has invalid GGUF header: {path}")
+    if require_gguf and size_bytes > 0:
+        blockers.extend(_gguf_header_blockers(header, path=path, label=label))
 
     identity = LocalArtifactIdentity(
         path=str(path.resolve()),
