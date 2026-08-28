@@ -8,13 +8,13 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Live recovery on 2026-08-28 found `main@3bbe41886007e8b9257f4374cb607f986f7e0292`, with no open PRs at recovery time.
+Live recovery on 2026-08-28 found `main@b795589cd06817275e715e16e8a7dc08559dbf90`, with no open PRs at recovery time.
 
 Verified exact-head gate:
 
-- CI **#1939**: Ruff + full pytest passed on Python 3.11 and 3.12.
+- CI **#1941**: Ruff + full pytest passed on Python 3.11 and 3.12.
 
-The parent production merge `main@668372e7ed5276df46af7997d5f5aa204f68d5b5` had already passed CI **#1936**, production-smoke **#201**, and cinematic-delivery-smoke **#68**. The current head is a doctrine/status-only follow-up that did not change renderer, audio runtime, provider routing or media thresholds.
+This head is the merged short-onset benchmark coverage/status update. It did not change renderer, audio runtime, provider routing or media thresholds. Treat this SHA as a verified historical evidence point only; future recovery must re-fetch live `main` rather than assuming this file self-updates.
 
 ## Canonical Production v0.2 baseline
 
@@ -61,9 +61,9 @@ Primary tested/operator route remains **LightX2V/Wan2.2**. Gated continuity cand
 
 Targeted checks remain gap-driven rather than popularity-driven.
 
-- **LightX2V/Wan2.2:** no fresh Hottop-measured improvement was found that justifies a freshness-only repin or a new default route.
-- **Qwen3-TTS:** SGLang-Omni's current Qwen3-TTS benchmark work continues to support benchmark-first admission; a Talker `torch.compile` path was removed after it failed to show reproducible end-to-end benefit under a fixed protocol.
-- **Qwen short-onset risk:** official-repo issue #343 is now tracked as a future A/B coverage requirement, not as evidence that Hottop's preset CustomVoice path is defective.
+- **LightX2V/Wan2.2:** upstream `main` is still `680d9be199a69ebe4a02f86bdd653f23298ac02d` (2026-08-27, `cleanup: remove retired model remnants (#1449)`). No Hottop-measured continuity/runtime improvement was found that justifies a freshness-only repin or new default route.
+- **Qwen3-TTS:** official `QwenLM/Qwen3-TTS` `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; there is no new official source change that removes the 1.7B operator-local benchmark gate. SGLang-Omni's current Qwen3-TTS benchmark work continues to support benchmark-first admission: a Talker `torch.compile` path was removed after it failed to show reproducible end-to-end benefit under a fixed protocol.
+- **Qwen short-onset risk:** official-repo issue #343 remains tracked as a future A/B coverage requirement, not as evidence that Hottop's preset CustomVoice path is defective.
 - **MV-S2V and other continuity candidates:** impressive demos remain gated when source/checkpoint license, multi-GPU runtime or operator assets are unresolved. Popularity alone is not evidence.
 
 No newly reviewed candidate clears the admission gate strongly enough to replace the guaranteed software3d baseline or current tested operator routes.
