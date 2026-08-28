@@ -399,3 +399,24 @@ models:
     integration_strategy: explicit_user_opt_in_only
     runtime_boundary: Never selected by zero-cost/default routing; any paid execution requires an explicit user decision for that run.
     priority: 999
+
+  - id: qwen3-tts-qwentts-cpp-1b7
+    name: Qwen3-TTS 1.7B CustomVoice qwentts.cpp GGUF benchmark candidate
+    family: qwen3-tts-qwentts-cpp
+    modalities: [audio]
+    capabilities: [mandarin_tts, role_aware_tts, dialogue_generation, cpu_inference, cuda_inference, vulkan_inference]
+    repository: https://github.com/ServeurpersoCom/qwentts.cpp
+    source_revision_reviewed: a8a7716b530e49fed537c57711247c12fbbb903c
+    code_license: MIT
+    weights_license: Apache-2.0-upstream-Qwen-assets-exact-GGUF-review-required-output-rights-separate
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    integration_ready: false
+    runtime_status: unprobed
+    operator_profiles: []
+    integration_strategy: registry_only_until_operator_1b7_same_line_mandarin_benchmark
+    runtime_boundary: Exact reviewed source a8a7716b530e49fed537c57711247c12fbbb903c exposes Qwen3-TTS 1.7B CustomVoice through local GGUF on CPU/CUDA/Metal/Vulkan. Upstream conversion invokes checkpoints.sh and public quick-starts rely on separately downloaded GGUF assets; Hottop must not invoke any auto-download, build, Docker-pull or dependency-fetch path. Only operator-provisioned source/build and locally bound 1.7B talker/tokenizer GGUF bytes may be benchmarked. Start with preset CustomVoice only; voice cloning remains separately rights-gated. Existing semantic-input, token-ceiling, serialized-PCM integrity and final-duration gates remain mandatory.
+    priority: 46
+    notes:
+      - This candidate directly targets the unresolved 1.7B Mandarin A/B with a lighter local runtime surface than a Python/H100 serving stack, but Hottop has not reproduced naturalness, onset stability, speaker consistency, instruction control or latency.
+      - Bind source/build/backend, exact GGUF SHA-256 and byte sizes, input line, speaker, seed/sampling, generated WAV bytes, latency/RTF and publication-rights posture before making any quality claim.
