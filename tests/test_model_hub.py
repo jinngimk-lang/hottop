@@ -128,6 +128,39 @@ def test_cosyvoice3_is_registered_only_as_unprobed_correctness_gated_benchmark_c
     assert "finite" in boundary
 
 
+def test_qwen3_tts_ncnn_is_cpu_vulkan_benchmark_only_and_never_auto_provisioned() -> None:
+    hub = load_model_hub(ROOT / "integrations/model-hub.yml")
+    candidate = next(entry for entry in hub.models if entry.id == "qwen3-tts-ncnn-0b6")
+
+    assert candidate.repository == "https://github.com/mingshi2333/Qwen3-TTS-ncnn"
+    assert candidate.code_license == "Apache-2.0"
+    assert candidate.cost_class == "self_owned_compute"
+    assert candidate.status == "benchmark_candidate"
+    assert candidate.integration_ready is False
+    assert candidate.runtime_status == "unprobed"
+    assert "mandarin_tts" in candidate.capabilities
+    assert "cpu_inference" in candidate.capabilities
+    assert "vulkan_inference" in candidate.capabilities
+    boundary = candidate.runtime_boundary.lower()
+    assert "7c58a6756367e38abe19b0fc2639e56aa1e8bf74" in boundary
+    assert "auto" in boundary and "download" in boundary
+    assert "0.6b" in boundary
+
+    integration_ready = select_models(
+        hub,
+        capability="mandarin_tts",
+        integration_ready_only=True,
+    )
+    runtime_ready = select_models(
+        hub,
+        capability="mandarin_tts",
+        runtime_ready_only=True,
+        integration_ready_only=False,
+    )
+    assert candidate not in integration_ready
+    assert candidate not in runtime_ready
+
+
 def test_dgx_cinematic_i2v_selection_prefers_integrated_zero_cost_real_motion() -> None:
     hub = load_model_hub(ROOT / "integrations/model-hub.yml")
 
