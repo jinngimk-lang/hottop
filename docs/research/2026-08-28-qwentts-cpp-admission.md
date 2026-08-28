@@ -24,6 +24,22 @@ Source-code permission does not automatically settle model, tokenizer, converted
 
 The reviewed upstream head still remains `a8a7716b530e49fed537c57711247c12fbbb903c` in this owner cycle. Its commit message reports end-to-end synthesis on a GTX 1070 Max-Q at roughly RTF 0.4 while validating CUDA 12.8/12.9 build compatibility. Treat that only as upstream runtime evidence for that exact setup, not as Hottop Mandarin naturalness, speaker-consistency or runtime-readiness evidence.
 
+## Exact-pin runtime correctness risks — 2026-08-29
+
+Open upstream issues on the exact reviewed revision add important benchmark constraints without changing admission status:
+
+- **Issue #29 — checkpoint capability confusion / speaker shadowing.** The server correctly rejects WAV reference registration on CustomVoice because reference/cloning conditioning belongs to Base, but pre-encoded `.spk/.rvq` registration can incorrectly return success on CustomVoice. Synthesis then fails because the CustomVoice model still requires a preset speaker. If the registered latent uses the name of a built-in speaker, it can shadow/break that built-in speaker until the registration is deleted or the process restarts. Hottop must therefore treat reference/cloning registration as a separate Base-only, rights-gated capability and must never use it as a substitute for a CustomVoice preset speaker.
+- **Issue #31 — CPU server connection/OpenMP sensitivity.** Buffered synthesis can accumulate OpenMP teams across HTTP connections and collapse effective parallelism in reported CPU server runs; lower `--max-batch` mitigated the measured case. Any future Hottop benchmark must bind topology, server/CLI mode, connection strategy and concurrency rather than treating a model/backend label as sufficient latency provenance.
+- **Issue #32 — reference-extraction path sensitivity.** WAV voice registration can perform reference extraction on the HTTP thread and degrade later CPU synthesis in the reported server setup, while pre-encoded latent registration avoids that specific extraction cost. This is performance-path evidence only; it does not override the capability restriction above or authorize CustomVoice latent registration.
+
+These are runtime-specific open issues, not model-family claims. They strengthen Hottop's existing rules: checkpoint/runtime capability validation before synthesis, exact execution-shape provenance, and output-side evidence after generation. They do **not** justify a qwentts.cpp execution adapter while the runtime remains `unprobed`.
+
+Upstream issues:
+
+- https://github.com/ServeurpersoCom/qwentts.cpp/issues/29
+- https://github.com/ServeurpersoCom/qwentts.cpp/issues/31
+- https://github.com/ServeurpersoCom/qwentts.cpp/issues/32
+
 ## Zero-cost and provisioning boundary
 
 `qwentts.cpp` is compatible with **self-owned compute**, not with Hottop's unattended auto-provisioning path.
@@ -85,14 +101,16 @@ Bind at minimum:
 3. GGML/GGUF runtime/library identity;
 4. talker GGUF path, SHA-256 and byte size;
 5. tokenizer/codec GGUF path, SHA-256 and byte size;
-6. exact input text, language, preset speaker, seed/sampling parameters and generation ceiling;
-7. produced WAV SHA-256, sample rate/channels, duration and serialized-PCM integrity;
-8. latency and real-time factor;
-9. repeated-run speaker consistency;
-10. short-onset stability and whole-line intelligibility/naturalness;
-11. output-publication rights posture.
+6. exact checkpoint capability mode (`Base`, `CustomVoice`, `VoiceDesign`) and requested conditioning mode;
+7. exact input text, language, valid preset speaker or separately rights-cleared Base reference conditioning, seed/sampling parameters and generation ceiling;
+8. server/CLI mode, connection strategy, batch/concurrency/topology and cold/warm trial state;
+9. produced WAV SHA-256, sample rate/channels, duration and serialized-PCM integrity;
+10. latency and real-time factor;
+11. repeated-run speaker consistency;
+12. short-onset stability and whole-line intelligibility/naturalness;
+13. output-publication rights posture.
 
-Voice cloning remains separately rights-gated and is outside the initial benchmark. Start with preset CustomVoice only.
+Voice cloning remains separately rights-gated and is outside the initial benchmark. Start with preset CustomVoice only. Do not register Base-only voice references/latents on a CustomVoice checkpoint, and do not create registered speaker names that can collide with built-in preset speakers.
 
 ## Re-admission gate
 
@@ -102,5 +120,6 @@ Promote beyond `benchmark_candidate` only after all of the following are true:
 - checkpoint/model/tokenizer rights are explicitly reviewed;
 - no hidden network/model-fetch behavior is required at runtime;
 - same-line Mandarin A/B shows measurable quality or practicality value without weakening Hottop audio integrity gates;
+- checkpoint/runtime capability validation rejects unsupported conditioning before synthesis;
 - any executable adapter remains `shell=False` / argv-oriented and fail-closed;
 - eSpeak remains the guaranteed local fallback.
