@@ -8,11 +8,11 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified live-main evidence in this snapshot: **`main@6c881f2969d64ae0c7b26f45fc6a75046d86249b` → CI #2014 passed** on Python 3.11/3.12. That commit is the squash merge of PR #173 after exact-head CI #2013 passed.
+Latest verified live-main evidence in this snapshot: **`main@91ce4980cfe1f36b16cc2a6b4341c54bc9f64d2c` → CI #2016 passed** on Python 3.11/3.12. That commit is the squash merge of PR #174 after exact-head CI #2015 passed.
 
-PR #173 persisted a fresh third-party Qwen3-TTS runtime repeatability report. Follow-up inspection of merged MLX-Audio PR #895 clarified the root cause: the reported `Qwen3-TTS-12Hz-1.7B-Base-bf16 --voice Chelsie` path was not valid preset-speaker conditioning. Base checkpoints expose no preset-speaker table; MLX-Audio silently ignored the unsupported `--voice` and generated unconditioned speech. Upstream fixed this by rejecting unsupported voices on Base checkpoints and correcting examples to use real CustomVoice preset speakers.
+PR #174 corrected the durable interpretation of MLX-Audio issue #892 after inspecting merged upstream PR #895. The reported `Qwen3-TTS-12Hz-1.7B-Base-bf16 --voice Chelsie` path was not valid preset-speaker conditioning: Base checkpoints expose no preset-speaker table, MLX-Audio silently ignored the unsupported `--voice`, and synthesis proceeded unconditioned. Upstream fixed the runtime by rejecting unsupported voice conditioning on Base checkpoints and correcting examples to use real CustomVoice preset speakers.
 
-Current doctrine therefore keeps **two independent TTS gates**:
+Canonical doctrine therefore keeps **two independent TTS gates**:
 
 1. capability binding before execution — requested preset speaker/voice/instruction/reference conditioning must be supported by the exact runtime/checkpoint; unsupported conditioning fails closed rather than silently degrading to unconditioned speech;
 2. output evidence after execution — repeated trials still verify speaker consistency, onset stability, intelligibility, naturalness, PCM integrity/duration and exact WAV provenance.
@@ -67,7 +67,9 @@ Future 1.7B A/B must bind exact runtime/build/backend, checkpoint capability mod
 - **LightX2V:** upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6` (2026-08-28, `Update scripts (#1452)`). The change only replaces private hard-coded paths with `/path/to/...` examples in a Wan-Animate-2 distillation script. No Hottop-measured continuity, quality or runtime gain for the tested Wan2.2 I2V subset; keep the tested pin and **do not freshness-only repin**.
 - **Qwen3-TTS official:** upstream `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no official change removes the operator-local 1.7B benchmark gate.
 - **qwentts.cpp:** upstream `master` remains `a8a7716b530e49fed537c57711247c12fbbb903c`; no newer commit was observed. Existing seedable sampling, `max_new_tokens`, 1.7B CustomVoice GGUF and CPU/CUDA/Metal/Vulkan support improve benchmark practicality but do not alter Hottop admission.
-- **MLX-Audio #892/#895:** the reported repeated-voice issue was caused by an unsupported Base-model preset speaker being silently ignored. Upstream now rejects this invalid conditioning. Hottop retains repeated speaker consistency as a post-generation quality gate while adding fail-closed capability binding before synthesis.
+- **qwentts.cpp issue #29 (exact pin correctness):** on `a8a7716`, the server correctly rejects WAV reference registration on CustomVoice as Base-only, but pre-encoded `.spk/.rvq` registration can incorrectly return success, then fail at synthesis; a colliding registered name can also shadow a built-in speaker until deletion/restart. Future Hottop CustomVoice benchmarks must use valid checkpoint-supported preset speakers. Reference/cloning registration is a separate Base-only, rights-gated capability and must fail closed on incompatible checkpoints.
+- **qwentts.cpp issues #31/#32 (server-mode performance):** CPU HTTP serving can be sensitive to connection/OpenMP-team accumulation and reference-extraction path; this reinforces existing topology, execution-shape and cold/warm provenance requirements. These issues do not justify an execution adapter while the runtime remains unprobed.
+- **MLX-Audio #892/#895:** the reported repeated-voice issue was caused by an unsupported Base-model preset speaker being silently ignored. Upstream now rejects this invalid conditioning. Hottop retains repeated speaker consistency as a post-generation quality gate while requiring fail-closed capability binding before synthesis.
 
 No reviewed candidate in this run clears admission strongly enough to replace the guaranteed software3d route or the current tested operator video route.
 
@@ -76,10 +78,11 @@ No reviewed candidate in this run clears admission strongly enough to replace th
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound identity + requested-action motion evidence before composition.
 3. If an operator provisions qwentts.cpp plus exact 1.7B CustomVoice GGUF assets locally, run `hottop-models probe-qwentts-cpp` first; only after byte/structure preflight passes may a separate explicit same-line Mandarin A/B execute.
-4. Before any neural-TTS benchmark execution, fail closed if the requested speaker/voice/instruction/reference-conditioning mode is unsupported by the exact checkpoint/runtime. Never silently drop conditioning.
-5. In real Qwen 1.7B A/B, preserve repeated speaker consistency, short-onset stability, intelligibility/naturalness, latency/RTF, PCM duration/integrity and exact runtime/model/output provenance as separate evidence dimensions.
-6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+4. For the qwentts.cpp CustomVoice A/B, use only checkpoint-supported preset speaker conditioning; do not use Base-only latent/reference registration on a CustomVoice checkpoint, and avoid registered names that could collide with built-in speakers.
+5. Before any neural-TTS benchmark execution, fail closed if the requested speaker/voice/instruction/reference-conditioning mode is unsupported by the exact checkpoint/runtime. Never silently drop conditioning.
+6. In real Qwen 1.7B A/B, preserve repeated speaker consistency, short-onset stability, intelligibility/naturalness, latency/RTF, PCM duration/integrity and exact runtime/model/output provenance as separate evidence dimensions.
+7. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+8. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
