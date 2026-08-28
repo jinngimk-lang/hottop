@@ -8,7 +8,9 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified production merge in this snapshot: **PR #168 `prod: add qwentts.cpp benchmark input preflight`**, squash-merged as `9bac5ea9c32e4a70ec2229b39e87d6454fbdab78`.
+Latest verified live-main evidence in this snapshot: **`main@80c95d2d4705ac1c0a63cd79fff9cc57f8910d92` → CI #2005 passed** on Python 3.11/3.12. That commit is the post-#168 status sync; there are no open PRs at this recovery point.
+
+Latest production capability merge remains **PR #168 `prod: add qwentts.cpp benchmark input preflight`**, squash-merged as `9bac5ea9c32e4a70ec2229b39e87d6454fbdab78`.
 
 TDD evidence for #168:
 
@@ -68,9 +70,9 @@ Speech execution remains fail-closed across independent layers: semantic dialogu
 
 ## Fresh ecosystem radar — 2026-08-28
 
-- **LightX2V:** current observed upstream work still does not provide Hottop-measured benefit for the tested Wan2.2 I2V subset. Keep the tested Hottop pin; no freshness-only repin.
+- **LightX2V:** current observed upstream work still does not provide Hottop-measured benefit for the tested Wan2.2 I2V subset. Keep the tested Hottop pin; no freshness-only repin. Current public surfaces emphasize broader model/service support, but that is not evidence for the tested route.
 - **Qwen3-TTS:** no official upstream change observed in this cycle removes the operator-local 1.7B benchmark gate.
-- **qwentts.cpp:** reviewed source remains `a8a7716b530e49fed537c57711247c12fbbb903c`. Upstream reports real end-to-end synthesis on a GTX 1070 Max-Q at roughly RTF 0.4 for its tested setup; treat that only as upstream runtime evidence, not Hottop runtime readiness or Mandarin-quality proof.
+- **qwentts.cpp:** exact GitHub `master` remains `a8a7716b530e49fed537c57711247c12fbbb903c`. Its documented local surface includes seedable sampling, `max_new_tokens`, 1.7B CustomVoice GGUF, CPU/CUDA/Metal/Vulkan and streaming/C ABI support. Those features improve benchmark practicality but do not alter Hottop admission: local exact bytes and real same-line Mandarin output evidence are still required.
 - **Qwen3-TTS serving:** recent H100/H200 work continues to reinforce benchmark-first admission; optimization toggles without repeatable end-to-end gain are not integration evidence.
 
 No reviewed candidate in this run clears admission strongly enough to replace the guaranteed software3d route or the current tested operator video route.
