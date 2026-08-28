@@ -146,6 +146,29 @@ models:
       - Structured PERSON/OBJECT/SCENE reference grounding is directly relevant to Hottop subject binding but remains an upstream claim until reproduced on rights-safe output.
       - Source Apache-2.0 does not establish Aura expert-weight, Wan/Qwen asset, reference-input or output-publication rights.
 
+  - id: unityvideo-wan22-ti2v-5b
+    name: UnityVideo Wan2.2 TI2V 5B multimodal motion control
+    family: unityvideo-wan2.2
+    modalities: [video]
+    capabilities: [motion_conditioning, depth_conditioning, optical_flow_conditioning, pose_conditioning, modality_to_video]
+    repository: https://github.com/JIA-Lab-research/UnityVideo
+    source_revision_reviewed: e79e9b6bd1c498dd919dceb4cdea47e20417bf70
+    weights: KlingTeam/UnityVideo
+    weights_revision_reviewed: published-model-card-2026-08-28
+    code_license: MIT
+    weights_license: Apache-2.0-model-card-base-Wan2.2-separate
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    integration_ready: false
+    runtime_status: unprobed
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: registry_only_until_operator_motion_fidelity_benchmark
+    runtime_boundary: Exact reviewed source e79e9b6bd1c498dd919dceb4cdea47e20417bf70. Public inference checkpoint is 10,020,954,352 bytes with published SHA-256 0df3909e312526c46f68097958afa055868f73354fe4276d693f7ebc398e6a39. The upstream CLI can auto-download UnityVideo and Wan2.2 assets on first use; Hottop must not invoke that path. The released model was evaluated at 256 x 256 with 33 frames, so higher-resolution/longer production use requires independent operator benchmark and shared motion, continuity, rights and provenance gates.
+    priority: 50
+    notes:
+      - Depth, DensePose, RAFT optical flow, segmentation and skeleton conditions make this a motion/geometry-control candidate, not identity proof.
+      - Source MIT, UnityVideo checkpoint Apache-2.0 metadata and base Wan2.2/reference/output rights remain separately bound.
+
   - id: wan22-s2v-14b
     name: Wan2.2 S2V 14B
     family: wan2.2
