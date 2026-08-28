@@ -54,7 +54,7 @@ This deterministic route remains a synthetic fallback: the compact pitch space m
 
 ## TDD / implementation evidence
 
-PR #57 RED head `94023c05abe0557aef21b306df1911112f7ff4d26305` added the focused config→runtime-command contract. CI run 1550 passed Ruff and failed pytest, proving the normal production config/runtime surface did not yet accept or route `qwen3-customvoice`.
+PR #57 RED head `94023c05abe0557aef21bda804c3cfa3a43c7d59` added the focused config→runtime-command contract. CI run 1550 passed Ruff and failed pytest, proving the normal production config/runtime surface did not yet accept or route `qwen3-customvoice`.
 
 GREEN head `7ffde866e16fdda3a877f54a5a162f102e90ba7c` added the typed Qwen3 CustomVoice audio config, local readiness routing, role→preset-speaker mapping, `delivery→--instruct`, and Qwen `--output` fresh-output handling. CI run 1552 passed.
 
