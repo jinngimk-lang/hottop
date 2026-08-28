@@ -58,6 +58,17 @@ Then map a real product truth into a functional role: route, key, antidote, obst
 
 The **product must change the story outcome** through a product truth or defensible metaphor. If an unrelated brand can replace it without changing the logic, rebuild the concept. Prefer decoding order: **hotspot recognition → mapping → product consequence → punchline**.
 
+### Hotspot depth and meme-native hook compression
+
+A current headline or trending name is not enough creative research. When public evidence allows, resolve **two layers** before ideation:
+
+1. **source event** — what actually happened, when, and which claims are verified, alleged, satirical or explicitly fictional;
+2. **active derivative meme** — what people are currently repeating, remixing, quoting, screenshotting or joking about.
+
+The derivative meme may be the stronger creative entry point, but factual context remains bound to the source event. Extract the shortest native one-liner, decisive number/object/action, relationship structure, reaction/blame phrase, callback or visual symbol that is actually circulating. Long-lived recognition alone is not current heat.
+
+Before finalizing a social title, apply **meme-native hook compression**: prefer the smallest high-information hook that carries the current joke—often a short utterance plus a concrete consequence, number, action or reversal—over a newsroom summary or internal workflow label. Reuse the compression pattern, never the historical people, exact event, layout or protected surface. If the source story is fictional/satirical or a circulating claim is unverified, keep that boundary explicit even when the derivative meme is genuinely active.
+
 ### Bridge search
 
 Search shape/material, action/motion, role, function, emotion/ritual and language/symbol bridges. The link should be understandable before explanation. Product-as-action is stronger than product-beside-reference.
@@ -148,8 +159,8 @@ The durable interaction controls include campaign goal, platform, style, **creat
 1. Resolve interaction intent.
 2. Resolve promotion semantics.
 3. Discover comparisons when useful.
-4. Analyze the supplied hotspot or discover fresh hotspots.
-5. Extract recognition hook + causal/visual/dialogue/audio grammar.
+4. Analyze the supplied hotspot or discover fresh hotspots; separate the source event from the active derivative meme when public evidence allows.
+5. Extract the meme-native recognition hook plus causal/visual/dialogue/audio grammar; compress social wording into the smallest high-information native hook before ideation.
 6. Research visual references when useful, grammar-only.
 7. Normalize evidence/reference records.
 8. Retrieve relevant creative-memory mechanisms/grammars/guardrails when useful; fresh hotspot evidence stays authoritative.
@@ -162,7 +173,7 @@ The durable interaction controls include campaign goal, platform, style, **creat
 15. Guardrail claims/copyright/likeness/trademark/competitor framing.
 16. Run fresh-generation preflight.
 17. For motion choose the strongest admissible route, including image-first reference-conditioned recovery when justified, then `hottop.render.v2 → VideoProductionConfig → hottop.video-plan.v1 → generation → audio → compositor → encoder → media verification`.
-18. Archive intent, provenance, evidence, hotspot mechanism, references, retrieved-memory influence/guardrails when material, rejected assumptions, selected bridge, product role/outcome, format, reviews, prompts, risks and outcome evidence.
+18. Archive intent, provenance, evidence, source event, active derivative meme/hook when material, hotspot mechanism, references, retrieved-memory influence/guardrails when material, rejected assumptions, selected bridge, product role/outcome, format, reviews, prompts, risks and outcome evidence.
 
 ## Motion production doctrine
 
@@ -339,7 +350,8 @@ A mature package/archive preserves enough to reproduce/audit the creative and pr
 
 - intent + inference provenance;
 - promotion semantics/comparison context;
-- hotspot + timestamp + evidence;
+- hotspot source event + timestamp + evidence;
+- active derivative meme/circulating callback + compressed meme-native hook when material;
 - recognition/causal/visual/dialogue/audio grammar;
 - product role + story-outcome change;
 - reference manifest + rights/provenance;
@@ -355,6 +367,7 @@ A mature package/archive preserves enough to reproduce/audit the creative and pr
 
 ## Decision log
 
+- **2026-08-28 — Meme-native hotspot research separates source event from derivative meme and compresses the social hook.** A current headline is not sufficient creative research. Hottop now preserves factual source-event context separately from the active derivative phrase/action/number/callback people are actually circulating. Social hooks prefer the smallest native high-information phrase—often `short utterance + concrete consequence`—over newsroom summaries or internal workflow labels. Satirical/fictional/unverified boundaries remain explicit. This supersedes the weaker state where derivative-meme depth and hook compression lived only in hotspot/memory skills.
 - **2026-08-28 — Dialogue TTS input integrity is semantic and fail-closed before runtime.** Audio cue text is normalized/nonblank at the plan boundary; dialogue additionally requires at least one Unicode letter or number so punctuation/symbol-only requests never consume eSpeak/Qwen/CosyVoice speech runtime. This input gate is independent of, and does not replace, Qwen token ceilings, produced-PCM duration checks or final audio integrity gates.
 - **2026-08-28 — Operator neural-TTS benchmark provenance binds topology, execution shape and trial state.** Same model/checkpoint can show materially different throughput under single-instance versus same-card multi-replica/MPS topology, and cache/kernel execution shape can produce different same-seed waveforms. Future operator Qwen benchmarks therefore bind topology/cache/deterministic policy, separate cold-first-use from warmed repeated trials, and keep throughput/latency evidence separate from Mandarin quality.
 - **2026-08-28 — Identity fidelity and motion fidelity become separate continuity evidence dimensions.** A recognizable subject with wrong/frozen/degenerate motion is not a successful motion-conditioned result, while strong motion cannot substitute for subject identity. Routes that claim both controls must persist and pass both dimensions independently before promotion.
@@ -385,7 +398,7 @@ A mature package/archive preserves enough to reproduce/audit the creative and pr
 - `skills/brand-metaphor-creative/SKILL.md` — intent, reframing, mechanism-first hotspot mapping, bridge search, format/medium routing, Controlled Badness, image-first recovery and creative review.
 - `skills/creative-reference-research/SKILL.md` — provenance-first grammar-only visual-reference research.
 - `skills/creative-reference-memory/SKILL.md` — prior success/failure retrieval, user-feedback/preference memory, negative guardrails and no-template/no-RL reuse rules.
-- `skills/hottop-meme/SKILL.md` — hotspot acquisition/analysis, evidence-aware comparisons, medium routing and four-panel execution when selected.
+- `skills/hottop-meme/SKILL.md` — hotspot acquisition/analysis, source-event + derivative-meme depth, meme-native hook compression, evidence-aware comparisons, medium routing and four-panel execution when selected.
 
 Use existing suitable capabilities first; add external/operator skills/MCPs/plugins only after a concrete gap and admission review.
 
@@ -412,5 +425,5 @@ Priority order:
 4. Read the newest relevant spec/plan or decision/research record.
 5. Inspect current `main`, open PRs and exact-head CI/production-smoke.
 6. Perform targeted ecosystem freshness checks for the current measured Production gap.
-7. For new creative generation, perform fresh/supplied-hotspot mechanism analysis before any memory retrieval or generation.
+7. For new creative generation, perform fresh source-event + derivative-meme/mechanism analysis before any memory retrieval or generation.
 8. Continue the highest-value safe action autonomously; do not stop for routine approval or a scheduled-run boundary.

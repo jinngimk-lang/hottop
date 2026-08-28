@@ -8,15 +8,9 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Live recovery on 2026-08-28 advanced `main` through Wan-Animate-2 admission and model-hub registration. The latest merge head observed in this workstream is `main@53fc25fd56f778438ed090e684919f5ca81abb10`; future recovery must re-fetch GitHub rather than assume this file remains current.
+Live recovery on 2026-08-28 observed `main@88a64edbcb8cce9e184c14918e2ddcf40ba69aa2`; CI **#1958** passed. There were no open pull requests at recovery time. This head added durable meme-native hotspot discovery rules to `skills/hottop-meme/SKILL.md` and corresponding creative-memory lessons, but the repository charter still needed the same durable direction reflected canonically.
 
-Verified exact-head gates:
-
-- PR #151 GREEN head `25592190f40352fec988430f64a8f3e9b60fbdda`: CI **#1950** passed Ruff + full pytest on Python 3.11 and 3.12, then the admission record was squash-merged as `5dfdca9a91ca5d0d5445b7e308e2e90db3c38584`.
-- PR #152 RED head `fed08ea7301672255ae24a5dde3d744739ce4718`: CI **#1952** passed Ruff but failed pytest because `wan-animate-2` was not yet present in the model hub; the other Python job was cancelled by fail-fast.
-- PR #152 GREEN head `d833e59dfdbb8873486670d85a521f732369ee48`: CI **#1953** passed Ruff + full pytest on Python 3.11 and 3.12, then the registry admission was squash-merged as `53fc25fd56f778438ed090e684919f5ca81abb10`.
-
-This workstream does not change renderer, audio runtime, default provider routing, media thresholds, model downloads, GPU provisioning or paid-service policy. Treat recorded SHAs as verified historical evidence points only; future recovery must re-fetch live `main` and exact-head CI.
+Treat recorded SHAs as verified historical evidence points only; future recovery must re-fetch live `main` and exact-head CI.
 
 ## Canonical Production v0.2 baseline
 
@@ -27,6 +21,17 @@ The unattended guarantee remains:
 `ZERO_COST_MODE=true` remains canonical for unattended work. This route requires no GPU/model, paid fallback, credentials or implicit multi-GB downloads. Existing production evidence covers meaningful motion, mobile framing/subtitle readability, dialogue/audio coverage, transition/seam quality, shot-byte provenance, composition-time byte verification, runtime provenance and final-media verification.
 
 Latest accepted cow/Odyssey deterministic evidence remains healthy. Do not retune deterministic visuals/audio without a measured regression.
+
+## Creative hotspot / meme-native discovery boundary
+
+Fresh creative work now explicitly separates two evidence layers when public evidence allows:
+
+1. **source event** — what actually happened, when, and which claims are verified, alleged, satirical or fictional;
+2. **active derivative meme** — what people are currently repeating, remixing, quoting, screenshotting or joking about.
+
+The creative hook may come from the derivative meme while factual context remains bound to the source event. Social titles should use **meme-native hook compression** rather than newsroom summaries: prefer the shortest native phrase, number, action, reversal or concrete consequence that carries the current joke. Internal workflow labels such as `热点梗图` or `今日热搜 TOP1` stay out of audience-facing creative unless they are genuinely part of the joke.
+
+The 2026-08-28 accepted lesson is the reusable compression pattern `short utterance + concrete consequence`, not the specific people, event, or layout from the historical example. If a source story is fictional/satirical or a circulating derivative claim is unverified, that boundary remains explicit even when the derivative meme is genuinely active.
 
 ## Dialogue / neural-TTS integrity boundary
 
@@ -67,26 +72,27 @@ Wan-Animate-2 is now also present in `integrations/model-hub.yml` only as `bench
 
 Targeted checks remain gap-driven rather than popularity-driven.
 
-- **Wan-Animate-2:** admitted into the discovery registry only after RED→GREEN model-hub tests. Its reference-image + driving-video shape is directly relevant to identity + motion evidence, but it remains non-executable until local operator provisioning, checkpoint-rights review and output-side benchmark evidence exist.
+- **Wan-Animate-2:** admitted into the discovery registry only after RED→GREEN model-hub tests. Its reference-image + driving-video shape is directly relevant to identity + motion evidence, but it remains non-executable until local operator provisioning, checkpoint-rights review and output-side benchmark evidence exist. Diffusers support remains upstream work rather than a reason to change Hottop routing.
 - **UnityVideo:** reviewed source `e79e9b6bd1c498dd919dceb4cdea47e20417bf70` provides depth, DensePose, RAFT optical-flow, segmentation and skeleton conditioning on Wan2.2-TI2V-5B. It remains relevant to Hottop's independently measured **motion fidelity** dimension, but it is not identity proof and is not admitted for unattended execution.
-- **LightX2V/Wan2.2:** upstream remains an operator-owned tested framework rather than a freshness-driven pin. No Hottop-measured continuity/runtime improvement was found in this cycle that justifies repinning or replacing the primary tested route.
-- **Qwen3-TTS:** current serving evidence continues to support benchmark-first admission: acceleration toggles without reproducible end-to-end benefit do not justify a runtime change. No official open-source checkpoint change observed in this cycle removes the 1.7B operator-local benchmark gate.
-- **Qwen-Audio-3.0-TTS:** Alibaba Cloud made `qwen-audio-3.0-tts-plus` and `qwen-audio-3.0-tts-flash` available as Model Studio hosted services on 2026-07-14. Current international pricing is metered per input characters, and current documentation requires a regional API key for real-time use. The July technical report describes strong multilingual/dialect/control results, but no reviewed operator-local open checkpoint/source route was found in this cycle. It therefore does **not** qualify for Hottop's unattended ZERO_COST route and is not added to the model hub.
+- **LightX2V/Wan2.2:** no new Hottop-measured continuity/runtime improvement was found in this cycle that justifies repinning or replacing the primary tested route. Existing community/runtime reports continue to reinforce that successful execution alone is not quality proof.
+- **Qwen3-TTS:** SGLang-Omni's current H100/H200 reproduction tracker reports that Talker `torch.compile` had no reproducible end-to-end gain under its fixed protocol and was removed. This continues to support Hottop's benchmark-first admission rule rather than acceleration-toggle-driven routing.
+- **Qwen-Audio-3.0-TTS:** Alibaba Cloud's hosted route remains metered/API-key dependent and therefore outside unattended ZERO_COST admission until a reviewed operator-local open route exists.
 - **MV-S2V and other continuity candidates:** impressive demos remain gated when source/checkpoint license, multi-GPU runtime or operator assets are unresolved. Popularity alone is not evidence.
 
 No newly reviewed candidate clears the admission gate strongly enough to replace the guaranteed software3d baseline or current tested operator routes.
 
 ## Immediate next actions
 
-1. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
-2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
-3. Persist **identity fidelity and motion fidelity separately** for routes claiming both; neither dimension may stand in for the other.
-4. If Wan-Animate-2 is locally provisioned by the operator, benchmark its reference-image + driving-performance route on the same rights-safe subject sequence used by the existing continuity evaluator. Promote nothing unless identity and motion/performance both measurably pass without weakening geography, provenance, cost or final-media gates.
-5. If UnityVideo is locally provisioned by the operator, benchmark one or more explicit depth/flow/pose conditions against the same rights-safe subject-bearing sequence used by the existing Wan2.2/LightX2V route. Promote nothing unless motion/action adherence measurably improves without weakening identity, geography, provenance or final-media gates.
-6. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run a same-line Mandarin A/B against the guaranteed fallback. Include both short production-like utterances with separate first-1–2-second onset review and normal production-length lines; label cold-first-use separately, use repeated warmed trials, and promote only on measured intelligibility/speaker consistency/delivery/naturalness plus publication-rights evidence.
-7. Re-evaluate gated continuity candidates only when exact source/checkpoint rights are compatible and the required operator runtime/assets are already provisioned; benchmark Hottop's own rights-safe sequence rather than copied benchmark media.
-8. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
-9. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
+1. Keep `PROJECT.md`, hotspot/meme skill, creative-memory skill and future creative archives aligned on **source-event + derivative-meme discovery** and **meme-native hook compression**; fresh current evidence remains authoritative.
+2. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
+3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
+4. Persist **identity fidelity and motion fidelity separately** for routes claiming both; neither dimension may stand in for the other.
+5. If Wan-Animate-2 is locally provisioned by the operator, benchmark its reference-image + driving-performance route on the same rights-safe subject sequence used by the existing continuity evaluator. Promote nothing unless identity and motion/performance both measurably pass without weakening geography, provenance, cost or final-media gates.
+6. If UnityVideo is locally provisioned by the operator, benchmark one or more explicit depth/flow/pose conditions against the same rights-safe subject-bearing sequence used by the existing Wan2.2/LightX2V route. Promote nothing unless motion/action adherence measurably improves without weakening identity, geography, provenance or final-media gates.
+7. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run a same-line Mandarin A/B against the guaranteed fallback. Include both short production-like utterances with separate first-1–2-second onset review and normal production-length lines; label cold-first-use separately, use repeated warmed trials, and promote only on measured intelligibility/speaker consistency/delivery/naturalness plus publication-rights evidence.
+8. Re-evaluate gated continuity candidates only when exact source/checkpoint rights are compatible and the required operator runtime/assets are already provisioned; benchmark Hottop's own rights-safe sequence rather than copied benchmark media.
+9. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
+10. For fresh creative output, perform live/supplied **source-event + derivative-meme** analysis first; consult creative memory only after current context is resolved, compress social hooks into the smallest meme-native high-information wording, and archive real feedback/performance lessons when evidence exists.
 
 ## Recovery order
 
@@ -96,6 +102,6 @@ No newly reviewed candidate clears the admission gate strongly enough to replace
 4. newest relevant spec/plan/decision/research record.
 5. current `main`, open PRs and exact-head CI/production evidence.
 6. targeted ecosystem scan for the measured gap.
-7. fresh hotspot/mechanism analysis for new creative generation.
+7. fresh source-event + derivative-meme/mechanism analysis for new creative generation.
 8. creative-memory retrieval when useful, after current context is resolved.
 9. continue the highest-value safe action autonomously.
