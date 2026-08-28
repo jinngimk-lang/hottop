@@ -8,14 +8,15 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-The most recent verified evidence point is `main@65c84fcdc857a146e9fe679cd433b46c32d3692b`, whose post-merge CI **#1926** passed Ruff + full pytest in Python 3.11 and 3.12.
+The most recent fully verified production evidence point is `main@6178964392d3dccc36a61734b69f8b861cf1dcb6`.
 
-Two Qwen3-TTS benchmark-integrity workstreams closed immediately before that point:
+That head passed all three post-merge gates after PR #143:
 
-- PR #140 exact head `96b01b710be6e86e2c4509804119a841a2f40a7b` passed CI **#1923** and squash-merged as `860e171666c42c104b614258941f67572b19d07d`; post-merge CI **#1924** passed.
-- PR #141 exact head `470bc2cb87b2274b564b11b79f74f7b90796acfb` passed CI **#1925** and squash-merged as `65c84fcdc857a146e9fe679cd433b46c32d3692b`; post-merge CI **#1926** passed.
+- CI **#1931**: Ruff + full pytest passed on Python 3.11 and 3.12.
+- production-smoke **#199**: the checked-in cow + Odyssey software3d production paths completed successfully.
+- cinematic-delivery-smoke **#66**: 720p24 Odyssey delivery completed, then runtime provenance capture, final media/provenance verification and evidence upload all passed.
 
-PR #140 added `docs/research/2026-08-28-qwen3-tts-serving-topology.md`; PR #141 promoted the durable rule into canonical `PROJECT.md`. No runtime/provider/dependency/model download/GPU/credentials/paid behavior changed.
+PR #143 exact head `cca8346ad7333937d34ed8e04904bcedd11e0544` had already passed CI **#1930**, production-smoke **#198** and cinematic-delivery-smoke **#65** with no review threads before squash merge. The merge commit is `6178964392d3dccc36a61734b69f8b861cf1dcb6`.
 
 ## Canonical Production v0.2 baseline
 
@@ -23,21 +24,31 @@ The unattended guarantee remains:
 
 `checked-in render/config → software3d moving shots → Mandarin eSpeak-family dialogue + original synthetic music + procedural Foley → MoviePy → FFmpeg → verified H.264/AAC/yuv420p MP4`
 
-This path remains free of GPU/model requirements, paid fallback, credentials and implicit multi-GB downloads. Production evidence already covers meaningful motion, mobile framing/subtitle readability, dialogue/audio coverage, transition/seam quality, shot-byte provenance, composition-time byte verification, runtime provenance and final-media verification.
+This path remains free of GPU/model requirements, paid fallback, credentials and implicit multi-GB downloads. Production evidence covers meaningful motion, mobile framing/subtitle readability, dialogue/audio coverage, transition/seam quality, shot-byte provenance, composition-time byte verification, runtime provenance and final-media verification.
 
-Latest directly inspected 720p Odyssey evidence remains healthy: 15 s H.264/yuv420p at 720×1280/24 fps with stereo AAC, accepted seam margins, no long-silence detection and no newly measured framing/subtitle/transition/lighting defect. Do not retune deterministic visuals/audio without a measured regression.
+Latest 720p Odyssey evidence remains healthy. Do not retune deterministic visuals/audio without a measured regression.
 
-## Neural-TTS boundary
+## Neural-TTS and audio-input boundary
 
-The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the admitted operator-owned delivery-controlled benchmark candidate; current reviewed 0.6B does not preserve role-aware `instruct` semantics. CosyVoice3 remains correctness-gated rather than default.
+The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the admitted operator-owned delivery-controlled benchmark candidate; CosyVoice3 remains correctness-gated rather than default.
 
 Shared neural-TTS integrity remains fail-closed on non-empty + finite + serialized-int16-PCM non-silent output before WAV creation. Routed Qwen dialogue also uses a planned-duration generation-token ceiling as resource protection and produced-PCM duration as the authoritative slot-fit gate.
 
-**New canonical operator benchmark rule:** serving topology and execution shape are part of the measured system. Future Qwen3-TTS 1.7B A/B evidence must bind at least model/checkpoint, runtime/patch/container identity, hardware, single-instance vs same-card multi-replica/MPS/DP topology, cache/deterministic execution-shape policy, traffic/concurrency shape, cold-first-use vs warmed repeated trial state, seed/repetition count, throughput/TTFA/failures, Mandarin quality and publication rights.
+**New production closure:** `AudioCue.text` is now normalized at the `hottop.video-plan.v1` model boundary. Leading/trailing whitespace is stripped and blank/whitespace-only cue text is rejected before any TTS/runtime work.
 
-Do not treat throughput gains as model-quality gains. Do not accept one same-seed cold generation as reproducibility evidence. If cache state is deliberately varied, report it as a cache-invariance experiment rather than mixing it into ordinary repeatability statistics.
+The change was evidence-driven rather than cosmetic. `vllm-project/vllm-omni` issue #3706 reproduces a Qwen3-TTS offline path accepting whitespace-only text and entering inference while the HTTP path rejects it; upstream PR #3739 proposes the same class of lightweight offline preflight and remained open at the latest check. Hottop keeps its own fail-closed plan-boundary validation regardless of upstream serving behavior.
 
-A real same-line Qwen3-TTS 1.7B Mandarin A/B still requires an already-provisioned local model/runtime plus publication-rights review. No automatic model download, serving-stack install or GPU provisioning is allowed.
+PR #143 followed TDD:
+
+- RED exact head `7dffd493dd184d07e7fba5c69b6e21572484321d`, CI **#1929**: Ruff passed; pytest failed exactly the new canonicalization/blank-input contracts.
+- GREEN exact head `cca8346ad7333937d34ed8e04904bcedd11e0544`: CI **#1930**, production-smoke **#198** and 720p cinematic-delivery-smoke **#65** all passed.
+- Post-merge `main@6178964392d3dccc36a61734b69f8b861cf1dcb6`: CI **#1931**, production-smoke **#199** and cinematic-delivery-smoke **#66** all passed.
+
+No provider, model, GPU, dependency, download, credential or paid behavior changed.
+
+**Operator benchmark rule remains unchanged:** serving topology and execution shape are part of the measured system. Future Qwen3-TTS 1.7B A/B evidence must bind model/checkpoint, runtime/patch/container identity, hardware, topology, cache/execution-shape policy, traffic/concurrency shape, cold-first-use vs warmed repeated state, seed/repetition count, throughput/TTFA/failures, Mandarin quality and publication rights.
+
+Do not treat throughput gains as model-quality gains. Do not accept one same-seed cold generation as reproducibility evidence. A real same-line Qwen3-TTS 1.7B Mandarin A/B still requires an already-provisioned local model/runtime plus publication-rights review. No automatic model download, serving-stack install or GPU provisioning is allowed.
 
 ## Generated/reference-conditioned quality boundary
 
@@ -45,7 +56,7 @@ The highest-value generated-quality proof remains a rights-safe reference-condit
 
 **Identity fidelity and motion fidelity are separate evidence dimensions.** A recognizable subject with wrong/frozen/degenerate motion is not successful subject-and-motion continuity; strong motion does not prove subject identity. Routes claiming both must persist and pass both dimensions independently.
 
-Primary tested/operator route remains **LightX2V/Wan2.2**. Gated continuity research/benchmark candidates remain documented in their durable records, including Stand-In, DomainShuttle, Aura, SMRABooth, ID-V2V, UnityShots, Memento, Identity-as-Presence, MV-S2V, ReWorld and Microsoft Latent Spatial Memory. Their exact license/runtime/checkpoint gates remain authoritative in `docs/research/*` and `docs/integrations/zero-cost-video-radar.md`; this short-lived status file does not duplicate every historical admission detail.
+Primary tested/operator route remains **LightX2V/Wan2.2**. Gated continuity research/benchmark candidates remain documented in their durable records, including Stand-In, DomainShuttle, Aura, SMRABooth, ID-V2V, UnityShots, Memento, Identity-as-Presence, MV-S2V, ReWorld and Microsoft Latent Spatial Memory.
 
 Do not fabricate DGX/GPU readiness. Driver/CUDA/PyTorch/model/reference state must be probed on actual operator machines before any generated-quality claim.
 
@@ -54,10 +65,9 @@ Do not fabricate DGX/GPU readiness. Driver/CUDA/PyTorch/model/reference state mu
 Targeted checks remain gap-driven rather than popularity-driven.
 
 - **Qwen3-TTS official source** remains `QwenLM/Qwen3-TTS@022e286b98fbec7e1e916cb940cdf532cd9f488e`; no official source change removes the 1.7B operator-local benchmark gate.
-- **SGLang-Omni #1418** reports Qwen3-TTS 1.7B on one H100 at roughly 10.26 QPS single-instance versus 15.26 QPS with two same-card replicas under DP2 + MPS, with similar reported English WER. Later H100 calibration is roughly 10.59 / 14.86 / 15.61 QPS for baseline single / optimized single / DP2. The same work records an intermittent H200 overload device-side assert. These are topology/stability observations, not Hottop model-quality proof.
-- **SGLang-Omni #1428** reports a reproducible first-use same-seed waveform divergence when radix-cache state changes Qwen3-TTS execution shape and FlashInfer FA2 specialization. Future Hottop evidence therefore binds cache/deterministic policy and separates cold-first-use from warmed repeated trials.
+- **Qwen3-TTS offline validation:** upstream `vllm-project/vllm-omni` #3706 documents whitespace-only offline requests entering inference; follow-up PR #3739 remains open and proposes lightweight offline validation. Hottop now rejects this input earlier at the plan boundary.
+- **SGLang-Omni #1418/#1428** continue to show that Qwen3-TTS throughput/reproducibility depends on serving topology and cache/execution shape. Those are benchmark variables, not evidence of model-quality improvement.
 - **LightX2V `main`** remains `680d9be199a69ebe4a02f86bdd653f23298ac02d`; the latest visible change is retired-model cleanup and does not demonstrate measurable value for Hottop's tested Wan2.2 I2V subset. Do not freshness-only repin.
-- Recent third-party Qwen/Wan serving issues continue to show that runtime success is not quality proof; Hottop keeps final output quality/provenance gates authoritative rather than admitting a new serving stack from popularity alone.
 
 No newly reviewed candidate clears the admission gate strongly enough to replace the guaranteed software3d baseline or the current tested operator routes.
 
