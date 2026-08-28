@@ -75,6 +75,28 @@ def test_qwentts_cpp_preflight_rejects_non_gguf_model_bytes(tmp_path: Path) -> N
     assert any("talker GGUF has invalid GGUF header" in reason for reason in result.blockers)
 
 
+def test_qwentts_cpp_preflight_streams_artifact_hashing(tmp_path: Path, monkeypatch) -> None:
+    executable = _write(tmp_path / "qwentts-cli", b"binary")
+    executable.chmod(0o755)
+    talker = _write(tmp_path / "talker.gguf", VALID_GGUF + b"-talker")
+    tokenizer = _write(tmp_path / "tokenizer.gguf", VALID_GGUF + b"-tokenizer")
+
+    def forbid_read_bytes(self: Path) -> bytes:
+        raise AssertionError(f"whole-file read is not allowed for benchmark artifacts: {self}")
+
+    monkeypatch.setattr(Path, "read_bytes", forbid_read_bytes)
+
+    result = inspect_qwentts_cpp_inputs(
+        executable=executable,
+        talker_gguf=talker,
+        tokenizer_gguf=tokenizer,
+    )
+
+    assert result.ready is True
+    assert result.talker_gguf is not None
+    assert result.talker_gguf.sha256 == hashlib.sha256(VALID_GGUF + b"-talker").hexdigest()
+
+
 def test_model_hub_cli_exposes_read_only_qwentts_cpp_preflight(tmp_path: Path) -> None:
     executable = _write(tmp_path / "qwentts-cli", b"binary")
     executable.chmod(0o755)
