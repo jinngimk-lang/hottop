@@ -169,6 +169,26 @@ models:
       - Depth, DensePose, RAFT optical flow, segmentation and skeleton conditions make this a motion/geometry-control candidate, not identity proof.
       - Source MIT, UnityVideo checkpoint Apache-2.0 metadata and base Wan2.2/reference/output rights remain separately bound.
 
+  - id: wan-animate-2
+    name: Wan-Animate-2 reference + driving-performance animation
+    family: wan-animate-2
+    modalities: [video]
+    capabilities: [character_animation, reference_conditioning, identity_conditioned_motion, motion_conditioning, performance_transfer, viewpoint_control, cinematic_real_motion]
+    repository: https://github.com/Wan-Video/Wan-Animate-2
+    code_license: Apache-2.0
+    weights_license: model-specific-Wan-Animate-2-checkpoint-review-required
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    integration_ready: false
+    runtime_status: unprobed
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: registry_only_until_operator_identity_motion_benchmark
+    runtime_boundary: Exact reviewed source 3ad2fef7d61d6200c9c653e0fe47be7616b323f3. Upstream documents 720p tuned for 8 x A800 and 480p tested on 2 x A800 and provides download helpers for checkpoints; Hottop must not invoke any upstream auto-download path. Use only operator-provisioned local runtime/checkpoints plus rights-safe reference images and driving-performance videos. Runtime success is not identity or motion proof; output must pass independent identity, motion/performance, provenance and final-media gates.
+    priority: 55
+    notes:
+      - Source code is Apache-2.0 at the reviewed revision; checkpoint, reference, driving-performance and output rights remain separately bound.
+      - Benchmark-only discovery entry. There is no executable adapter or unattended production route.
+
   - id: wan22-s2v-14b
     name: Wan2.2 S2V 14B
     family: wan2.2
