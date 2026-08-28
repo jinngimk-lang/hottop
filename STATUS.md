@@ -10,7 +10,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 PR #161 `Bind motion fidelity to requested plan actions` exact head `12421f4da397bf945c811fa5475f693c0870e156` passed **CI #1976**, **production-smoke #207** and **cinematic-delivery-smoke #74**, had no review threads and was mergeable. It was squash-merged as `81e5fdb0a8b87976d6c6e970263a38bfadb042d3`.
 
-On that exact merge head, **CI #1977**, **production-smoke #208** and **cinematic-delivery-smoke #75** all passed. #75 completed the real 720p24 Odyssey delivery, captured runtime provenance, verified media/provenance and uploaded the evidence artifact.
+On that exact merge head, **CI #1977**, **production-smoke #208** and **cinematic-delivery-smoke #75** all passed.
 
 The #208 downloadable production artifact was independently re-inspected in this owner cycle:
 
@@ -18,6 +18,8 @@ The #208 downloadable production artifact was independently re-inspected in this
 - Odyssey final MP4: 15.0 s, H.264/yuv420p + AAC, SHA-256 `f30a15c8e146f07d2bae8416a7bae3ebe5a54cfb5cb65bac5fbb82f6ac39795c`, seam max delta `5.196111`, max seam/intra ratio `3.038082`.
 
 Both final hashes match the previously verified deterministic smoke baseline; `-35 dB / 0.5 s` inspection found no long silence in either file. Direct 1/5/9/13 s frame inspection found no new measured framing/subtitle/lighting regression that justifies retuning the guaranteed path.
+
+The #75 downloadable 720p24 Odyssey artifact was also independently inspected: **720×1280 / 24 fps / 15.0 s H.264/yuv420p + AAC**, final SHA-256 `c1353b556cb8675b94e58bb1d41624c69b4711ad1b83c690f1e81dd60b3f58df`, seam max delta `4.184792`, max seam/intra ratio `4.480971`. It captured bound runtime provenance including Python 3.12.14, AMD EPYC 7763 CPU identity, NumPy/OpenBLAS runtime/native-library bytes, FFmpeg/FFprobe/eSpeak-NG bytes and caption-font bytes. The final MP4 hash matches the previously observed scoped 720p deterministic evidence on the same verified route; this remains an observation, not a universal cross-runtime bitwise guarantee.
 
 PR #162 `Research PersonaShot narrative-continuity dimensions` exact head `83a95edfad7a2331a5247f1239a6dc62731ded11` passed **CI #1979**, had no review threads and was mergeable. It was squash-merged as `0559d21d2338fe58cb47646d5a0aceffe7889f9c`; post-merge **CI #1980 passed**.
 
