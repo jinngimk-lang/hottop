@@ -290,6 +290,14 @@ class AudioCue(BaseModel):
     voice_profile: str | None = None
     duck_bgm_db: float | None = None
 
+    @field_validator("text")
+    @classmethod
+    def normalize_text(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("audio cue text must be nonblank")
+        return normalized
+
 
 class ExternalCommandSpec(BaseModel):
     program: str
