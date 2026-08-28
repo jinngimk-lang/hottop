@@ -10,11 +10,11 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 Live recovery on 2026-08-28 found `main@668372e7ed5276df46af7997d5f5aa204f68d5b5`, the squash merge of PR #145 **fix: reject punctuation-only dialogue before TTS**.
 
-Verified post-merge gates so far:
+Verified post-merge gates:
 
 - CI **#1936**: Ruff + full pytest passed.
 - production-smoke **#201**: checked-in cow + Odyssey software3d production paths passed.
-- cinematic-delivery-smoke **#68**: still in progress at the latest check; do not claim the 720p post-merge gate until this exact run completes successfully.
+- cinematic-delivery-smoke **#68**: 720p24 Odyssey delivery, runtime provenance, final media/provenance verification and evidence upload passed.
 
 PR #145 exact GREEN head `e262f1119e60d4a8f4f22bcfca2b345b74124106` had already passed CI **#1935**, production-smoke **#200** and 720p cinematic-delivery-smoke **#67** before squash merge. Its RED head `427517bda8c9f086e726375d5b7cba709965433a` passed Ruff and failed the newly added dialogue speech-content contract.
 
@@ -76,14 +76,13 @@ No newly reviewed candidate clears the admission gate strongly enough to replace
 
 ## Immediate next actions
 
-1. Finish exact post-merge verification for `main@668372e7…`: cinematic-delivery-smoke **#68** must succeed before the 720p gate is called green.
-2. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
-3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
-4. For any route claiming motion customization as well as identity preservation, score and persist **identity fidelity and motion fidelity separately**; neither dimension may stand in for the other.
-5. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback on one explicitly bound topology/execution-shape policy; label cold-first-use separately, use repeated warmed trials for conclusions, and promote only on measured intelligibility/delivery/naturalness plus publication-rights evidence.
-6. Re-evaluate gated continuity candidates only when exact source/checkpoint rights are compatible **and** an operator has already provisioned the required runtime/assets; benchmark Hottop's own rights-safe sequence rather than copying benchmark media.
-7. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
-8. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
+1. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
+2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
+3. For any route claiming motion customization as well as identity preservation, score and persist **identity fidelity and motion fidelity separately**; neither dimension may stand in for the other.
+4. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback on one explicitly bound topology/execution-shape policy; label cold-first-use separately, use repeated warmed trials for conclusions, and promote only on measured intelligibility/delivery/naturalness plus publication-rights evidence.
+5. Re-evaluate gated continuity candidates only when exact source/checkpoint rights are compatible **and** an operator has already provisioned the required runtime/assets; benchmark Hottop's own rights-safe sequence rather than copying benchmark media.
+6. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
+7. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
 
 ## Recovery order
 
