@@ -71,8 +71,12 @@ The preflight:
 - requires the executable, talker GGUF and tokenizer GGUF to exist as local files;
 - requires the executable to be executable and all three files to be non-empty;
 - records the resolved local path, byte size and SHA-256 for every supplied artifact;
+- validates the GGUF magic bytes for the talker and tokenizer assets;
+- computes exact SHA-256 with bounded 1 MiB streaming reads rather than materializing multi-GB benchmark artifacts in memory;
 - returns `ready=false` with explicit blockers when the local inputs are incomplete;
 - **never executes qwentts.cpp**, opens a network connection, downloads a model, builds dependencies, changes model-hub runtime status or claims audio quality.
+
+The streaming-hash contract was added after a TDD RED showed that the original preflight used `Path.read_bytes()` and would load an entire operator-provisioned GGUF into memory before a benchmark could start. Bounded-memory hashing is an artifact-binding property, not a model-quality claim.
 
 `ready=true` means only that the supplied local benchmark inputs are structurally present and byte-bound. It does **not** mean the runtime has successfully synthesized audio, that the GGUFs have correct publication rights, or that Mandarin quality has passed Hottop's benchmark gates.
 
