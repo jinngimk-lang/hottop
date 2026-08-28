@@ -63,3 +63,16 @@ Fresh upstream review then invalidated one assumption in that first GREEN: 0.6B 
 PR #67 then closed the guaranteed-fallback half of the same semantic gap. RED CI 1607 proved the eSpeak-family runtime still discarded role/delivery controls. Exact final head `0d8211305f0f29a0675fd8d1e5e8f1d26590c570` passed CI 1610 and production-smoke 153. Artifact inspection showed stable role pitch for the canonical cow case (`young-cow=44`, `mother-cow=46`) while different young-cow deliveries produced different rates (169/162 wpm); Odyssey roles were likewise separated. The PR merged as `2d11b02a35e2dbe460917bb4b15d4b6ec4e941a6`.
 
 PR #72 closed the remaining local capability fail-open. RED head `9b1afd141de14eb19ab1d849d68ef2f2585389cf` passed Ruff and failed pytest in CI 1623 because missing/unknown model-size metadata and wrong model/model-type configs were not rejected. GREEN implementation head `0d969d3cf76b20950f29b7a0d4ca2f678d022a01` requires a proven Qwen3-TTS CustomVoice config, admits only the known 0.6B/1.7B size identities, and requires 1.7B whenever `instruct` is needed. CI 1624 passed on Python 3.11 and 3.12. This change performs local metadata validation only; it does not download weights, provision a GPU, contact Hugging Face, or weaken the eSpeak fallback.
+
+## 2026-08-28 dialogue-input integrity follow-up
+
+Fresh Production review tightened the input contract before any TTS backend is selected.
+
+- PR #143 established that all `AudioCue.text` is trimmed and blank/whitespace-only text fails at the `hottop.video-plan.v1` model boundary.
+- PR #145 added a dialogue-specific lexical-content gate: `kind=dialogue` must contain at least one Unicode alphanumeric character. Punctuation-only strings such as `……？！` fail before eSpeak/Qwen/CosyVoice runtime work, while symbolic text remains valid for SFX/Foley descriptions.
+- PR #145 TDD evidence: RED `427517bda8c9f086e726375d5b7cba709965433a` failed the new contract; GREEN exact head `e262f1119e60d4a8f4f22bcfca2b345b74124106` passed CI #1935, production-smoke #200 and 720p cinematic-delivery-smoke #67 before merge.
+- Post-merge `main@668372e7ed5276df46af7997d5f5aa204f68d5b5` passed CI #1936 and production-smoke #201; the 720p post-merge smoke is tracked separately until complete.
+
+The rule is intentionally input-semantic, not provider-specific. It does **not** claim punctuation-only prompts are the root cause of upstream Qwen failures. It prevents Hottop from spending any speech runtime on a dialogue cue with no lexical speech content.
+
+Fresh upstream evidence supports retaining the existing runtime protections as separate layers. `vllm-project/vllm-omni` issue #4576 reports short Chinese inputs such as `1次`/`2次` intermittently producing 10–36 seconds of garbled Qwen3-TTS output. Hottop therefore keeps both the duration-derived generation-token ceiling (resource protection) and produced-PCM duration gate (artifact truth); lexical input validation does not replace either one.
