@@ -8,7 +8,9 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified live-main evidence in this snapshot: **`main@b6cf2410ff6ee14ecb4c20dd5a8e1a12f6d88683` → CI #2019 passed** on Python 3.11/3.12. That commit is the squash merge of PR #175 after PR #174 established fail-closed Qwen checkpoint/runtime capability binding and PR #175 synchronized the resulting qwentts.cpp exact-pin runtime risks.
+Latest verified live-main evidence in this snapshot: **`main@7b4022ea9c98fa7c6f8208072fb8043fa49abcb4` → CI #2024 passed** on Python 3.11/3.12. That commit is the squash merge of PR #177 after PR #176 synchronized the post-Qwen-capability status snapshot.
+
+PR #177 closed a practical operator-artifact preflight gap. RED exact head `520999224f79aa137df2c6ac1a150f0c455d8d7d` → CI #2021 passed Ruff and failed pytest because the qwentts binder still used whole-file `Path.read_bytes()`. GREEN exact head `8a31e800b3207d4576b3eb98a887e97843621772` → CI #2023 passed on Python 3.11/3.12; the binder now computes exact SHA-256 and GGUF header identity with bounded 1 MiB streaming reads. Post-merge `main@7b4022ea…` → CI #2024 also passed. This prevents multi-GB operator-provisioned GGUF preflight from materializing an entire model in memory while preserving exact-byte provenance.
 
 PR #174 corrected the durable interpretation of MLX-Audio issue #892 after inspecting merged upstream PR #895. The reported `Qwen3-TTS-12Hz-1.7B-Base-bf16 --voice Chelsie` path was not valid preset-speaker conditioning: Base checkpoints expose no preset-speaker table, MLX-Audio silently ignored the unsupported `--voice`, and synthesis proceeded unconditioned. Upstream fixed the runtime by rejecting unsupported voice conditioning on Base checkpoints and correcting examples to use real CustomVoice preset speakers.
 
@@ -58,7 +60,7 @@ hottop-models probe-qwentts-cpp \
   --tokenizer-gguf /local/path/tokenizer.gguf
 ```
 
-It requires local non-empty files, executable binary permission, official `GGUF` magic on both model files, and records resolved path + byte size + SHA-256. It never executes qwentts.cpp, opens a network connection, downloads/builds anything, provisions hardware, changes model-hub runtime status or claims Mandarin quality. `ready=true` means only that supplied benchmark inputs are structurally GGUF-like and byte-bound.
+It requires local non-empty files, executable binary permission, official `GGUF` magic on both model files, and records resolved path + byte size + exact SHA-256 using bounded 1 MiB streaming reads. It never executes qwentts.cpp, opens a network connection, downloads/builds anything, provisions hardware, changes model-hub runtime status or claims Mandarin quality. `ready=true` means only that supplied benchmark inputs are structurally GGUF-like and byte-bound.
 
 Future 1.7B A/B must bind exact runtime/build/backend, checkpoint capability mode, exact model/tokenizer/GGUF bytes, exact Mandarin line, valid preset speaker or separately rights-cleared reference conditioning, seed/sampling/generation ceiling, cold/warm trial identity, every WAV's bytes/duration/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture.
 
@@ -77,7 +79,7 @@ No reviewed candidate in this run clears admission strongly enough to replace th
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound identity + requested-action motion evidence before composition.
-3. If an operator provisions qwentts.cpp plus exact 1.7B CustomVoice GGUF assets locally, run `hottop-models probe-qwentts-cpp` first; only after byte/structure preflight passes may a separate explicit same-line Mandarin A/B execute.
+3. If an operator provisions qwentts.cpp plus exact 1.7B CustomVoice GGUF assets locally, run `hottop-models probe-qwentts-cpp` first; only after bounded-memory byte/structure preflight passes may a separate explicit same-line Mandarin A/B execute.
 4. For the qwentts.cpp CustomVoice A/B, use only checkpoint-supported preset speaker conditioning; do not use Base-only latent/reference registration on a CustomVoice checkpoint, and avoid registered names that could collide with built-in speakers.
 5. Before any neural-TTS benchmark execution, fail closed if the requested speaker/voice/instruction/reference-conditioning mode is unsupported by the exact checkpoint/runtime. Never silently drop conditioning.
 6. In real Qwen 1.7B A/B, preserve repeated speaker consistency, short-onset stability, intelligibility/naturalness, latency/RTF, PCM duration/integrity and exact runtime/model/output provenance as separate evidence dimensions.
