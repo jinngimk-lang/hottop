@@ -98,6 +98,18 @@ def test_motion_spec_digest_binds_requested_action_fields_in_plan_order(tmp_path
     )
 
 
+def test_motion_evidence_accepts_digest_for_exact_requested_action(tmp_path):
+    evidence, manifest, plan, reference = _motion_case(tmp_path)
+    evidence.subjects[0].motion_spec_sha256 = motion_spec_sha256_for_subject(plan, "hero")
+
+    verify_reference_continuity_artifacts(
+        evidence,
+        manifest,
+        {"hero": reference},
+        plan=plan,
+    )
+
+
 def test_motion_evidence_requires_requested_action_binding(tmp_path):
     evidence, manifest, plan, reference = _motion_case(tmp_path)
 
