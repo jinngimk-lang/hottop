@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified live-main evidence before the current docs sync: **`main@d8f80cb5f0141ddf019588779e7f7b6096763d46` → CI #2026 passed** on Python 3.11/3.12. PR #179 then closed the qwentts GGUF-structure preflight gap: RED exact head `07b16d5210ceeb11213e11305923b3398f3fd5d7` → CI #2027 passed Ruff and failed pytest because a `GGUF`-prefixed truncated file was still accepted; GREEN exact head `a8467f4e069f9e79954e9465fbb8d683346ed6ba` → CI #2030 passed on Python 3.11/3.12. PR #179 was squash-merged as `caeea70d39f7998f47825196d1b02fbedc888932`; re-fetch live GitHub state before treating that merge head as post-merge verified.
+Latest verified live-main evidence before the current docs sync: **`main@caeea70d39f7998f47825196d1b02fbedc888932` → CI #2031 passed** on Python 3.11/3.12. PR #179 closed the qwentts GGUF-structure preflight gap: RED exact head `07b16d5210ceeb11213e11305923b3398f3fd5d7` → CI #2027 passed Ruff and failed pytest because a `GGUF`-prefixed truncated file was still accepted; GREEN exact head `a8467f4e069f9e79954e9465fbb8d683346ed6ba` → CI #2030 passed on Python 3.11/3.12; PR #179 was squash-merged as `caeea70d39f7998f47825196d1b02fbedc888932`, and post-merge CI #2031 passed.
 
 The qwentts preflight now keeps bounded-memory exact hashing while retaining the first 24 bytes required for the fixed GGUF header surface. It rejects magic-only/truncated model bytes before any benchmark execution. The gate intentionally remains shallow and version-tolerant: it does not parse metadata, prove checkpoint identity, settle rights or claim Mandarin quality.
 
