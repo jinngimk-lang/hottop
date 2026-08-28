@@ -75,6 +75,22 @@ def test_qwentts_cpp_preflight_rejects_non_gguf_model_bytes(tmp_path: Path) -> N
     assert any("talker GGUF has invalid GGUF header" in reason for reason in result.blockers)
 
 
+def test_qwentts_cpp_preflight_rejects_magic_only_or_truncated_gguf_header(tmp_path: Path) -> None:
+    executable = _write(tmp_path / "qwentts-cli", b"binary")
+    executable.chmod(0o755)
+    truncated_talker = _write(tmp_path / "talker.gguf", b"GGUF\x03\x00\x00\x00")
+    tokenizer = _write(tmp_path / "tokenizer.gguf", VALID_GGUF)
+
+    result = inspect_qwentts_cpp_inputs(
+        executable=executable,
+        talker_gguf=truncated_talker,
+        tokenizer_gguf=tokenizer,
+    )
+
+    assert result.ready is False
+    assert any("talker GGUF has truncated GGUF header" in reason for reason in result.blockers)
+
+
 def test_qwentts_cpp_preflight_streams_artifact_hashing(tmp_path: Path, monkeypatch) -> None:
     executable = _write(tmp_path / "qwentts-cli", b"binary")
     executable.chmod(0o755)
