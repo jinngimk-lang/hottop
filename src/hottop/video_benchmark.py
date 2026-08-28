@@ -16,6 +16,9 @@ class ReferenceContinuityPolicy(pydantic.BaseModel):
     min_reference_adherence: float = pydantic.Field(default=0.75, ge=0, le=1)
     min_cross_shot_identity: float = pydantic.Field(default=0.75, ge=0, le=1)
     min_evaluated_shots: int = pydantic.Field(default=2, ge=2)
+    require_motion_fidelity: bool = False
+    min_motion_fidelity: float = pydantic.Field(default=0.65, ge=0, le=1)
+    min_reference_pose_diversity: float = pydantic.Field(default=0.20, ge=0, le=1)
 
 
 class SubjectContinuityEvidence(pydantic.BaseModel):
@@ -24,6 +27,8 @@ class SubjectContinuityEvidence(pydantic.BaseModel):
     shot_sha256s: list[Sha256] = pydantic.Field(min_length=1)
     reference_adherence: float = pydantic.Field(ge=0, le=1)
     cross_shot_identity: float = pydantic.Field(ge=0, le=1)
+    motion_fidelity: float | None = pydantic.Field(default=None, ge=0, le=1)
+    reference_pose_diversity: float | None = pydantic.Field(default=None, ge=0, le=1)
 
     @pydantic.field_validator("shot_sha256s")
     @classmethod
@@ -179,7 +184,7 @@ def evaluate_reference_continuity(
     evidence: ReferenceContinuityBenchmark,
     policy: ReferenceContinuityPolicy | None = None,
 ) -> ReferenceContinuityReport:
-    """Evaluate byte-bound visual identity evidence without choosing an evaluator implementation."""
+    """Evaluate byte-bound identity and explicit motion evidence without choosing an evaluator."""
 
     policy = policy or ReferenceContinuityPolicy()
     subject_reports: list[SubjectContinuityReport] = []
@@ -202,6 +207,22 @@ def evaluate_reference_continuity(
                 "cross-shot identity "
                 f"{subject.cross_shot_identity:.3f} below {policy.min_cross_shot_identity:.3f}"
             )
+
+        if policy.require_motion_fidelity:
+            if subject.motion_fidelity is None or subject.reference_pose_diversity is None:
+                subject_reasons.append("motion evidence missing for identity + motion claim")
+            else:
+                if subject.motion_fidelity < policy.min_motion_fidelity:
+                    subject_reasons.append(
+                        "motion fidelity "
+                        f"{subject.motion_fidelity:.3f} below {policy.min_motion_fidelity:.3f}"
+                    )
+                if subject.reference_pose_diversity < policy.min_reference_pose_diversity:
+                    subject_reasons.append(
+                        "reference-pose diversity "
+                        f"{subject.reference_pose_diversity:.3f} below "
+                        f"{policy.min_reference_pose_diversity:.3f}"
+                    )
 
         subject_reports.append(
             SubjectContinuityReport(
