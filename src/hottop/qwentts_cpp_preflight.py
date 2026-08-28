@@ -9,7 +9,6 @@ from pydantic import BaseModel
 
 GGUF_MAGIC = b"GGUF"
 GGUF_HEADER_BYTES = 24
-SUPPORTED_GGUF_VERSIONS = frozenset({2, 3})
 HASH_CHUNK_BYTES = 1024 * 1024
 
 
@@ -50,11 +49,6 @@ def _gguf_header_blockers(header: bytes, *, path: Path, label: str) -> list[str]
         return [f"{label} has invalid GGUF header: {path}"]
     if len(header) < GGUF_HEADER_BYTES:
         return [f"{label} has truncated GGUF header: {path}"]
-
-    version = int.from_bytes(header[4:8], byteorder="little", signed=False)
-    if version not in SUPPORTED_GGUF_VERSIONS:
-        supported = ", ".join(str(item) for item in sorted(SUPPORTED_GGUF_VERSIONS))
-        return [f"{label} has unsupported GGUF version {version}; supported: {supported}: {path}"]
     return []
 
 
