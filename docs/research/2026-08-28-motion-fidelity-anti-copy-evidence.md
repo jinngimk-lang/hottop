@@ -57,6 +57,14 @@ The policy fails closed when either value is missing or below the configured pol
 
 The current default thresholds (`0.65` motion fidelity, `0.20` reference-pose diversity) are **Hottop policy defaults**, not MuSS-derived calibrated thresholds. Future real operator benchmarks may revise them only with representative rights-safe evidence and documented evaluator semantics.
 
+### Requested-action binding closure
+
+A later Production v0.2 closure found that byte-bound motion scores were still not cryptographically bound to the **requested action semantics** in `hottop.video-plan.v1`. The same evaluated shot bytes could therefore carry a generic motion score while a different plan/action claim was presented later.
+
+PR #161 closes that gap without choosing a motion evaluator. When a subject carries `motion_fidelity` or `reference_pose_diversity`, its evidence must also carry `motion_spec_sha256`. Hottop derives the expected digest from the ordered subject-bearing shots and their exact `scene`, `intent`, `continuity_instruction`, `generation_prompt` and `negative_prompt`. Artifact verification fails closed if the digest is missing or mismatched.
+
+This preserves historical identity-only evidence: the motion-spec digest is required only when the evidence actually makes a motion/anti-copy claim. The digest does not prove the evaluator is correct; it proves which exact requested-action specification the evaluator result claims to assess.
+
 ## Evidence rules for future operator benchmarks
 
 A route that claims reference-conditioned identity **and** motion quality must bind all of the following:
@@ -66,7 +74,7 @@ A route that claims reference-conditioned identity **and** motion quality must b
 3. exact candidate/source/model provenance when independently verifiable;
 4. evaluator identity and evaluator revision;
 5. reference adherence and cross-shot identity;
-6. requested-action / performance fidelity;
+6. requested-action / performance fidelity **plus the exact subject motion-spec digest from the production plan**;
 7. reference-pose diversity or equivalent anti-copy evidence;
 8. generic media/motion quality, scene geography and final-media integrity through the existing gates.
 

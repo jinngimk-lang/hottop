@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import pathlib
 import typing
 
@@ -29,6 +30,7 @@ class SubjectContinuityEvidence(pydantic.BaseModel):
     cross_shot_identity: float = pydantic.Field(ge=0, le=1)
     motion_fidelity: float | None = pydantic.Field(default=None, ge=0, le=1)
     reference_pose_diversity: float | None = pydantic.Field(default=None, ge=0, le=1)
+    motion_spec_sha256: Sha256 | None = None
 
     @pydantic.field_validator("shot_sha256s")
     @classmethod
@@ -73,6 +75,35 @@ def _sha256(path: pathlib.Path) -> str:
         while chunk := stream.read(1024 * 1024):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def motion_spec_sha256_for_subject(plan: VideoProductionPlan, subject_id: str) -> str:
+    """Hash the exact requested-action instructions for one subject in plan order."""
+
+    motion_spec = []
+    for shot in plan.shots:
+        reference = shot.reference
+        if reference is None or reference.subject_id != subject_id:
+            continue
+        motion_spec.append(
+            {
+                "shot_index": shot.index,
+                "scene": shot.scene,
+                "intent": shot.intent,
+                "continuity_instruction": shot.continuity_instruction,
+                "generation_prompt": shot.generation_prompt,
+                "negative_prompt": shot.negative_prompt,
+            }
+        )
+    if not motion_spec:
+        raise ValueError(f"subject {subject_id} has no motion spec in the video plan")
+    canonical = json.dumps(
+        motion_spec,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+    return hashlib.sha256(canonical).hexdigest()
 
 
 def _subject_plan_bindings(
@@ -178,6 +209,20 @@ def verify_reference_continuity_artifacts(
             )
         evaluated_artifacts = [artifacts_by_hash[shot_hash] for shot_hash in subject.shot_sha256s]
         _verify_candidate_provenance(evidence, evaluated_artifacts)
+
+        has_motion_evidence = (
+            subject.motion_fidelity is not None or subject.reference_pose_diversity is not None
+        )
+        if has_motion_evidence:
+            if subject.motion_spec_sha256 is None:
+                raise ValueError(
+                    f"motion spec digest missing for subject {subject.subject_id} motion evidence"
+                )
+            expected_motion_spec = motion_spec_sha256_for_subject(plan, subject.subject_id)
+            if subject.motion_spec_sha256 != expected_motion_spec:
+                raise ValueError(
+                    f"motion spec digest mismatch for subject {subject.subject_id} motion evidence"
+                )
 
 
 def evaluate_reference_continuity(
