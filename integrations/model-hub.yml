@@ -274,6 +274,26 @@ models:
     runtime_boundary: Hottop adapter exists; physical 1.7B checkpoint/runtime presence is unprobed. Preset timbre/output publication rights remain an operator review gate.
     priority: 20
 
+  - id: qwen3-tts-ncnn-0b6
+    name: Qwen3-TTS 0.6B CustomVoice ncnn CPU/Vulkan port
+    family: qwen3-tts-ncnn
+    modalities: [audio]
+    capabilities: [mandarin_tts, role_aware_tts, dialogue_generation, cpu_inference, vulkan_inference]
+    repository: https://github.com/mingshi2333/Qwen3-TTS-ncnn
+    code_license: Apache-2.0
+    weights_license: Apache-2.0-Qwen-0.6B-CustomVoice-model-card-output-rights-separate
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    integration_ready: false
+    runtime_status: unprobed
+    operator_profiles: []
+    integration_strategy: registry_only_until_operator_cpu_vulkan_same_line_benchmark
+    runtime_boundary: Exact reviewed source 7c58a6756367e38abe19b0fc2639e56aa1e8bf74 targets Qwen3-TTS 0.6B CustomVoice. Upstream CMake can auto-fetch ncnn and conversion instructions explicitly download the official Qwen checkpoint/source; Hottop must not invoke those paths. Only operator-provisioned local ncnn build plus locally converted/bound 0.6B assets may be benchmarked, with runtime/model/audio-byte provenance and existing PCM integrity gates.
+    priority: 45
+    notes:
+      - Upstream reports token-for-token greedy parity versus PyTorch for CustomVoice in the same numeric domain and CPU/Vulkan paths, but Hottop has not reproduced audio quality or Mandarin production-line performance.
+      - This candidate lowers the hardware barrier for a future local neural-TTS benchmark; it does not replace the guaranteed eSpeak-family fallback or the Qwen3-TTS 1.7B quality target.
+
   - id: cosyvoice3-0b5-2512
     name: CosyVoice3 0.5B 2512 benchmark candidate
     family: cosyvoice3
