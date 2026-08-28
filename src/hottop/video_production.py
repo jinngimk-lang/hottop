@@ -298,6 +298,12 @@ class AudioCue(BaseModel):
             raise ValueError("audio cue text must be nonblank")
         return normalized
 
+    @model_validator(mode="after")
+    def validate_dialogue_has_speech_content(self) -> AudioCue:
+        if self.kind == "dialogue" and not any(character.isalnum() for character in self.text):
+            raise ValueError("dialogue audio cue must contain a letter or number")
+        return self
+
 
 class ExternalCommandSpec(BaseModel):
     program: str
