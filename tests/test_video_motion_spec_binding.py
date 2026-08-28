@@ -6,6 +6,7 @@ from hottop.video_artifacts import VideoArtifactManifest, VideoShotArtifact
 from hottop.video_benchmark import (
     ReferenceContinuityBenchmark,
     SubjectContinuityEvidence,
+    motion_spec_sha256_for_subject,
     verify_reference_continuity_artifacts,
 )
 from hottop.video_production import VideoProductionPlan, VideoShot
@@ -87,6 +88,14 @@ def _motion_case(tmp_path, *, motion_spec_sha256=None):
         subjects=[subject],
     )
     return evidence, manifest, plan, reference
+
+
+def test_motion_spec_digest_binds_requested_action_fields_in_plan_order(tmp_path):
+    _, _, plan, _ = _motion_case(tmp_path)
+
+    assert motion_spec_sha256_for_subject(plan, "hero") == (
+        "d0357d95fff57b84cd1f2b2578dc6c5e6b889b379f1ee6774a9c08bc4d73fa42"
+    )
 
 
 def test_motion_evidence_requires_requested_action_binding(tmp_path):
