@@ -2,30 +2,43 @@
 
 ## Why this matters
 
-Production v0.2 treats neural-TTS quality as output evidence, not as a property inherited from a model name. A fresh third-party runtime report reinforces that boundary: the same Qwen3-TTS 1.7B Base model invoked repeatedly with a named `--voice` was reported to emit different voices across runs in MLX-Audio. This is runtime-specific evidence, not proof of an official Qwen3-TTS CustomVoice defect.
+Production v0.2 treats neural-TTS quality as output evidence, not as a property inherited from a model name. A fresh third-party runtime report initially looked like repeated speaker drift: the same Qwen3-TTS 1.7B Base model invoked repeatedly with `--voice Chelsie` emitted different-sounding voices across runs in MLX-Audio.
+
+The merged upstream fix makes the root cause more precise and more useful for Hottop: **Qwen3-TTS Base checkpoints do not expose the preset-speaker table used by CustomVoice**. MLX-Audio accepted an unsupported `--voice`, silently dropped the conditioning, and generated unconditioned speech. The correct behavior is fail-closed capability validation, not pretending that an unsupported speaker request was honored.
 
 ## Evidence boundary
 
-- Public report: `Blaizzy/mlx-audio` issue #892, opened 2026-08-17 and closed by #895.
+- Public report: `Blaizzy/mlx-audio` issue #892, opened 2026-08-17 and closed by merged PR #895 on 2026-08-20.
 - Reported surface: `Qwen3-TTS-12Hz-1.7B-Base-bf16` through MLX-Audio CLI with `--voice Chelsie`.
-- Expected by reporter: repeated generation uses the same selected voice.
-- Observed by reporter: repeated generations used different voices.
-- Do **not** generalize this to Hottop's official Qwen adapter, qwentts.cpp, Qwen3-TTS-ncnn, or preset CustomVoice without reproducing it on the exact runtime/model path.
+- Reporter expectation: repeated generation uses the selected voice.
+- Observed behavior: repeated generations sounded like different random voices.
+- Upstream root cause from #895: Base checkpoints ship an empty preset-speaker table; `--voice` was silently ignored and generation proceeded with no speaker embedding. Base voice conditioning is instead via rights-gated `ref_audio` + `ref_text` cloning, while preset speakers belong to CustomVoice checkpoints.
+- Upstream fix: reject unsupported `voice` on Base models and correct examples to use real CustomVoice preset speakers instead of silently degrading to unconditioned speech.
+- Do **not** generalize #892 to Hottop's official Qwen CustomVoice adapter, qwentts.cpp, Qwen3-TTS-ncnn, or the Qwen model family without reproduction on the exact runtime/checkpoint path.
 
-Source: https://github.com/Blaizzy/mlx-audio/issues/892
+Sources:
+
+- https://github.com/Blaizzy/mlx-audio/issues/892
+- https://github.com/Blaizzy/mlx-audio/pull/895
 
 ## Hottop consequence
 
-Future operator-local Mandarin A/B must treat **repeat speaker consistency** as a first-class output gate, not a one-shot listening note. Bind at minimum:
+Future operator-local Mandarin A/B must enforce two independent gates:
+
+1. **capability binding before execution** — a requested preset speaker/voice, instruction mode or cloning mode must be supported by the exact checkpoint/runtime path; unsupported conditioning fails closed rather than being silently dropped;
+2. **repeat speaker consistency after execution** — even when the capability is valid, repeated trials must verify output-side speaker stability rather than relying on one successful WAV.
+
+Bind at minimum:
 
 1. exact runtime/source revision and backend/build identity;
 2. exact model/tokenizer/GGUF/checkpoint bytes where locally inspectable;
-3. exact Mandarin text, language, preset speaker/voice selection, seed and sampling controls;
-4. generation ceiling and cold/warm trial identity;
-5. every produced WAV's SHA-256, duration and serialized-PCM integrity result;
-6. repeated-trial speaker consistency plus short-onset stability, intelligibility and naturalness.
+3. exact checkpoint capability mode (`Base`, `CustomVoice`, cloning/reference mode, etc.);
+4. exact Mandarin text, language, preset speaker/voice selection or rights-cleared reference conditioning, seed and sampling controls;
+5. generation ceiling and cold/warm trial identity;
+6. every produced WAV's SHA-256, duration and serialized-PCM integrity result;
+7. repeated-trial speaker consistency plus short-onset stability, intelligibility and naturalness.
 
-A single successful WAV does not prove stable speaker identity. Runtime-specific regressions also must not be promoted into model-family claims without reproduction.
+A single successful WAV does not prove stable speaker identity. More importantly, a runtime must never report success for a conditioning request it did not actually apply. Runtime-specific regressions also must not be promoted into model-family claims without reproduction.
 
 ## Admission impact
 
