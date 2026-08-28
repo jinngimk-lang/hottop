@@ -57,7 +57,7 @@ An operator may separately provision an exact reviewed source checkout, build/ru
 
 ## Read-only local benchmark preflight
 
-Hottop now exposes a **read-only artifact-binding preflight** for an already provisioned qwentts.cpp benchmark setup:
+Hottop exposes a **read-only artifact-binding preflight** for an already provisioned qwentts.cpp benchmark setup:
 
 ```text
 hottop-models probe-qwentts-cpp \
@@ -71,14 +71,17 @@ The preflight:
 - requires the executable, talker GGUF and tokenizer GGUF to exist as local files;
 - requires the executable to be executable and all three files to be non-empty;
 - records the resolved local path, byte size and SHA-256 for every supplied artifact;
-- validates the GGUF magic bytes for the talker and tokenizer assets;
+- requires the talker and tokenizer files to contain the complete 24-byte fixed GGUF header surface — `GGUF` magic plus version, tensor-count and metadata-count fields — rather than accepting magic-only/truncated bytes;
+- deliberately does **not** parse model metadata, validate checkpoint identity, freeze future GGUF versions or claim that a structurally complete header proves a usable model;
 - computes exact SHA-256 with bounded 1 MiB streaming reads rather than materializing multi-GB benchmark artifacts in memory;
 - returns `ready=false` with explicit blockers when the local inputs are incomplete;
 - **never executes qwentts.cpp**, opens a network connection, downloads a model, builds dependencies, changes model-hub runtime status or claims audio quality.
 
 The streaming-hash contract was added after a TDD RED showed that the original preflight used `Path.read_bytes()` and would load an entire operator-provisioned GGUF into memory before a benchmark could start. Bounded-memory hashing is an artifact-binding property, not a model-quality claim.
 
-`ready=true` means only that the supplied local benchmark inputs are structurally present and byte-bound. It does **not** mean the runtime has successfully synthesized audio, that the GGUFs have correct publication rights, or that Mandarin quality has passed Hottop's benchmark gates.
+A second TDD closure on 2026-08-29 showed that checking only the four-byte `GGUF` magic allowed a magic-prefixed truncated file to pass as `ready=true`. The GREEN now retains the first 24 bytes while streaming the exact hash and rejects incomplete fixed headers. The fixed header layout is grounded in the upstream GGUF specification; the gate intentionally remains shallow and version-tolerant.
+
+`ready=true` means only that the supplied local benchmark inputs are structurally GGUF-like and byte-bound. It does **not** mean the runtime has successfully synthesized audio, that the GGUFs contain the expected Qwen checkpoint, that publication rights are settled, or that Mandarin quality has passed Hottop's benchmark gates.
 
 ## Why this is not a production route yet
 
