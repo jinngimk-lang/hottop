@@ -8,6 +8,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 GGUF_MAGIC = b"GGUF"
+HASH_CHUNK_BYTES = 1024 * 1024
 
 
 class LocalArtifactIdentity(BaseModel):
@@ -30,6 +31,17 @@ class QwenTtsCppPreflight(BaseModel):
     blockers: list[str]
 
 
+def _stream_sha256_and_header(path: Path) -> tuple[str, bytes]:
+    digest = hashlib.sha256()
+    header = b""
+    with path.open("rb") as handle:
+        while chunk := handle.read(HASH_CHUNK_BYTES):
+            if not header:
+                header = chunk[: len(GGUF_MAGIC)]
+            digest.update(chunk)
+    return digest.hexdigest(), header
+
+
 def _identity(
     path: Path,
     *,
@@ -49,14 +61,14 @@ def _identity(
     if require_executable and not os.access(path, os.X_OK):
         blockers.append(f"{label} is not executable: {path}")
 
-    payload = path.read_bytes()
-    if require_gguf and size_bytes > 0 and payload[: len(GGUF_MAGIC)] != GGUF_MAGIC:
+    sha256, header = _stream_sha256_and_header(path)
+    if require_gguf and size_bytes > 0 and header != GGUF_MAGIC:
         blockers.append(f"{label} has invalid GGUF header: {path}")
 
     identity = LocalArtifactIdentity(
         path=str(path.resolve()),
         size_bytes=size_bytes,
-        sha256=hashlib.sha256(payload).hexdigest(),
+        sha256=sha256,
     )
     return identity, blockers
 
