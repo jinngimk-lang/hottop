@@ -23,3 +23,23 @@ def test_audio_cue_rejects_whitespace_only_text_before_tts():
             text="  \t\n  ",
             character="cow",
         )
+
+
+def test_dialogue_audio_cue_requires_speech_bearing_text():
+    with pytest.raises(ValidationError, match="dialogue audio cue must contain a letter or number"):
+        AudioCue(
+            kind="dialogue",
+            start_seconds=0,
+            text="……？！",
+            character="cow",
+        )
+
+
+def test_non_dialogue_audio_cue_may_use_symbolic_text():
+    cue = AudioCue(
+        kind="sfx",
+        start_seconds=0,
+        text="……？！",
+    )
+
+    assert cue.text == "……？！"
