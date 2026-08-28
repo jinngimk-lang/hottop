@@ -8,14 +8,15 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Live recovery on 2026-08-28 found `main@1c7c286aee67848243bd9d72f83804a8746c69ff`, with no open PRs after UnityVideo admission merge.
+Live recovery on 2026-08-28 advanced `main` through Wan-Animate-2 admission and model-hub registration. The latest merge head observed in this workstream is `main@53fc25fd56f778438ed090e684919f5ca81abb10`; future recovery must re-fetch GitHub rather than assume this file remains current.
 
 Verified exact-head gates:
 
-- PR #149 GREEN head `d054f62f93e1ffd5108f8b8d297a24ea7658ebd8`: CI **#1946** passed Ruff + full pytest on Python 3.11 and 3.12.
-- merged `main@1c7c286aee67848243bd9d72f83804a8746c69ff`: CI **#1947** passed Ruff + full pytest on Python 3.11 and 3.12.
+- PR #151 GREEN head `25592190f40352fec988430f64a8f3e9b60fbdda`: CI **#1950** passed Ruff + full pytest on Python 3.11 and 3.12, then the admission record was squash-merged as `5dfdca9a91ca5d0d5445b7e308e2e90db3c38584`.
+- PR #152 RED head `fed08ea7301672255ae24a5dde3d744739ce4718`: CI **#1952** passed Ruff but failed pytest because `wan-animate-2` was not yet present in the model hub; the other Python job was cancelled by fail-fast.
+- PR #152 GREEN head `d833e59dfdbb8873486670d85a521f732369ee48`: CI **#1953** passed Ruff + full pytest on Python 3.11 and 3.12, then the registry admission was squash-merged as `53fc25fd56f778438ed090e684919f5ca81abb10`.
 
-This head admits UnityVideo only as a non-executable motion-control benchmark candidate. It does not change renderer, audio runtime, default provider routing, media thresholds, model downloads, GPU provisioning or paid-service policy. Treat this SHA as a verified historical evidence point only; future recovery must re-fetch live `main` rather than assuming this file self-updates.
+This workstream does not change renderer, audio runtime, default provider routing, media thresholds, model downloads, GPU provisioning or paid-service policy. Treat recorded SHAs as verified historical evidence points only; future recovery must re-fetch live `main` and exact-head CI.
 
 ## Canonical Production v0.2 baseline
 
@@ -58,16 +59,19 @@ The highest-value generated-quality proof remains a rights-safe reference-condit
 
 Primary tested/operator route remains **LightX2V/Wan2.2**. Gated continuity and motion-control candidates remain research/benchmark-only unless their exact source/checkpoint rights and operator runtime pass admission. Do not fabricate DGX/GPU readiness; driver/CUDA/PyTorch/model/reference state must be probed on actual operator machines before any generated-quality claim.
 
-UnityVideo is now registered as `benchmark_candidate / integration_ready=false / runtime_status=unprobed / self_owned_compute`, not as an executable backend. Reviewed source `JIA-Lab-research/UnityVideo@e79e9b6bd1c498dd919dceb4cdea47e20417bf70` is MIT; the published `KlingTeam/UnityVideo` model card reports Apache-2.0 for the roughly 10 GB inference checkpoint while Wan2.2 base/reference/output rights remain separate. Its upstream CLI auto-downloads UnityVideo + Wan2.2 assets on first use, and the released checkpoint was evaluated only at 256×256 / 33 frames, so normal `video-run` must never invoke it without explicit local provisioning and same-sequence operator evidence. See `docs/research/2026-08-28-unityvideo-admission.md`.
+UnityVideo remains registered as `benchmark_candidate / integration_ready=false / runtime_status=unprobed / self_owned_compute`, not as an executable backend. Reviewed source `JIA-Lab-research/UnityVideo@e79e9b6bd1c498dd919dceb4cdea47e20417bf70` is MIT; the published `KlingTeam/UnityVideo` model card reports Apache-2.0 for the roughly 10 GB inference checkpoint while Wan2.2 base/reference/output rights remain separate. Its upstream CLI auto-downloads UnityVideo + Wan2.2 assets on first use, and the released checkpoint was evaluated only at 256×256 / 33 frames, so normal `video-run` must never invoke it without explicit local provisioning and same-sequence operator evidence. See `docs/research/2026-08-28-unityvideo-admission.md`.
+
+Wan-Animate-2 is now also present in `integrations/model-hub.yml` only as `benchmark_candidate / integration_ready=false / runtime_status=unprobed / self_owned_compute`. Exact reviewed source `Wan-Video/Wan-Animate-2@3ad2fef7d61d6200c9c653e0fe47be7616b323f3` has Apache-2.0 source code, but checkpoint, reference-image, driving-performance and output rights remain separately bound. Upstream documents 720p around an 8×A800 setup and 480p on 2×A800 and provides checkpoint download helpers; Hottop must never invoke those download paths unattended. There is no executable Hottop adapter. Any future operator benchmark must independently prove identity fidelity and motion/performance fidelity on rights-safe bytes. See `docs/research/2026-08-28-wan-animate-2-admission.md`.
 
 ## Fresh ecosystem radar — 2026-08-28
 
 Targeted checks remain gap-driven rather than popularity-driven.
 
-- **UnityVideo:** newly reviewed exact source `e79e9b6bd1c498dd919dceb4cdea47e20417bf70` provides depth, DensePose, RAFT optical-flow, segmentation and skeleton conditioning on Wan2.2-TI2V-5B. This is relevant to Hottop's independently measured **motion fidelity** dimension, but it is not identity proof and is not admitted for unattended execution. Future value must be demonstrated by a rights-safe same-sequence A/B against the existing tested Wan2.2/LightX2V route.
-- **LightX2V/Wan2.2:** upstream `main` remains an operator-owned tested framework rather than a freshness-driven pin. No Hottop-measured continuity/runtime improvement was found in this cycle that justifies repinning or replacing the primary tested route.
-- **Qwen3-TTS:** current serving evidence continues to support benchmark-first admission: acceleration toggles without reproducible end-to-end benefit do not justify a runtime change. No official source change observed in this cycle removes the 1.7B operator-local benchmark gate.
-- **Qwen short-onset risk:** official-repo issue #343 remains tracked as a future A/B coverage requirement, not as evidence that Hottop's preset CustomVoice path is defective.
+- **Wan-Animate-2:** admitted into the discovery registry only after RED→GREEN model-hub tests. Its reference-image + driving-video shape is directly relevant to identity + motion evidence, but it remains non-executable until local operator provisioning, checkpoint-rights review and output-side benchmark evidence exist.
+- **UnityVideo:** reviewed source `e79e9b6bd1c498dd919dceb4cdea47e20417bf70` provides depth, DensePose, RAFT optical-flow, segmentation and skeleton conditioning on Wan2.2-TI2V-5B. It remains relevant to Hottop's independently measured **motion fidelity** dimension, but it is not identity proof and is not admitted for unattended execution.
+- **LightX2V/Wan2.2:** upstream remains an operator-owned tested framework rather than a freshness-driven pin. No Hottop-measured continuity/runtime improvement was found in this cycle that justifies repinning or replacing the primary tested route.
+- **Qwen3-TTS:** current serving evidence continues to support benchmark-first admission: acceleration toggles without reproducible end-to-end benefit do not justify a runtime change. No official open-source checkpoint change observed in this cycle removes the 1.7B operator-local benchmark gate.
+- **Qwen-Audio-3.0-TTS:** Alibaba Cloud made `qwen-audio-3.0-tts-plus` and `qwen-audio-3.0-tts-flash` available as Model Studio hosted services on 2026-07-14. Current international pricing is metered per input characters, and current documentation requires a regional API key for real-time use. The July technical report describes strong multilingual/dialect/control results, but no reviewed operator-local open checkpoint/source route was found in this cycle. It therefore does **not** qualify for Hottop's unattended ZERO_COST route and is not added to the model hub.
 - **MV-S2V and other continuity candidates:** impressive demos remain gated when source/checkpoint license, multi-GPU runtime or operator assets are unresolved. Popularity alone is not evidence.
 
 No newly reviewed candidate clears the admission gate strongly enough to replace the guaranteed software3d baseline or current tested operator routes.
@@ -77,11 +81,12 @@ No newly reviewed candidate clears the admission gate strongly enough to replace
 1. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
 3. Persist **identity fidelity and motion fidelity separately** for routes claiming both; neither dimension may stand in for the other.
-4. If UnityVideo is locally provisioned by the operator, benchmark one or more explicit depth/flow/pose conditions against the same rights-safe subject-bearing sequence used by the existing Wan2.2/LightX2V route. Promote nothing unless motion/action adherence measurably improves without weakening identity, geography, provenance or final-media gates.
-5. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run a same-line Mandarin A/B against the guaranteed fallback. Include both short production-like utterances with separate first-1–2-second onset review and normal production-length lines; label cold-first-use separately, use repeated warmed trials, and promote only on measured intelligibility/speaker consistency/delivery/naturalness plus publication-rights evidence.
-6. Re-evaluate gated continuity candidates only when exact source/checkpoint rights are compatible and the required operator runtime/assets are already provisioned; benchmark Hottop's own rights-safe sequence rather than copied benchmark media.
-7. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
-8. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
+4. If Wan-Animate-2 is locally provisioned by the operator, benchmark its reference-image + driving-performance route on the same rights-safe subject sequence used by the existing continuity evaluator. Promote nothing unless identity and motion/performance both measurably pass without weakening geography, provenance, cost or final-media gates.
+5. If UnityVideo is locally provisioned by the operator, benchmark one or more explicit depth/flow/pose conditions against the same rights-safe subject-bearing sequence used by the existing Wan2.2/LightX2V route. Promote nothing unless motion/action adherence measurably improves without weakening identity, geography, provenance or final-media gates.
+6. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run a same-line Mandarin A/B against the guaranteed fallback. Include both short production-like utterances with separate first-1–2-second onset review and normal production-length lines; label cold-first-use separately, use repeated warmed trials, and promote only on measured intelligibility/speaker consistency/delivery/naturalness plus publication-rights evidence.
+7. Re-evaluate gated continuity candidates only when exact source/checkpoint rights are compatible and the required operator runtime/assets are already provisioned; benchmark Hottop's own rights-safe sequence rather than copied benchmark media.
+8. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
+9. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
 
 ## Recovery order
 
