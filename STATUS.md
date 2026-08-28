@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified live-main evidence in this snapshot: **`main@91ce4980cfe1f36b16cc2a6b4341c54bc9f64d2c` → CI #2016 passed** on Python 3.11/3.12. That commit is the squash merge of PR #174 after exact-head CI #2015 passed.
+Latest verified live-main evidence in this snapshot: **`main@b6cf2410ff6ee14ecb4c20dd5a8e1a12f6d88683` → CI #2019 passed** on Python 3.11/3.12. That commit is the squash merge of PR #175 after PR #174 established fail-closed Qwen checkpoint/runtime capability binding and PR #175 synchronized the resulting qwentts.cpp exact-pin runtime risks.
 
 PR #174 corrected the durable interpretation of MLX-Audio issue #892 after inspecting merged upstream PR #895. The reported `Qwen3-TTS-12Hz-1.7B-Base-bf16 --voice Chelsie` path was not valid preset-speaker conditioning: Base checkpoints expose no preset-speaker table, MLX-Audio silently ignored the unsupported `--voice`, and synthesis proceeded unconditioned. Upstream fixed the runtime by rejecting unsupported voice conditioning on Base checkpoints and correcting examples to use real CustomVoice preset speakers.
 
