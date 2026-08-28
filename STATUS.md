@@ -23,6 +23,8 @@ The #75 downloadable 720p24 Odyssey artifact was also independently inspected: *
 
 PR #162 `Research PersonaShot narrative-continuity dimensions` exact head `83a95edfad7a2331a5247f1239a6dc62731ded11` passed **CI #1979**, had no review threads and was mergeable. It was squash-merged as `0559d21d2338fe58cb47646d5a0aceffe7889f9c`; post-merge **CI #1980 passed**.
 
+PR #164 `Research Qwen3-TTS ncnn CPU/Vulkan admission` used TDD to add a lower-hardware neural-TTS benchmark candidate without changing any production route. RED head `563fc1c447b9aeb7f383a8c111c120a72d93de13` passed Ruff and failed pytest exactly because `qwen3-tts-ncnn-0b6` was absent (**CI #1985: 1 failed / 538 passed**). GREEN exact head `f22e561117efe8b6ab1a600b6a19d87ade05be29` passed **CI #1987** on Python 3.11/3.12, had no review threads and was squash-merged as `47440ddfdc815575887ad1f3018e20b197c87ccf`; post-merge **CI #1988 passed**.
+
 ## Canonical guaranteed baseline
 
 Unattended guarantee remains:
@@ -43,7 +45,11 @@ Current primary operator route remains **LightX2V/Wan2.2**. Other continuity/mot
 
 ## Dialogue / neural-TTS boundary
 
-The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains an operator-owned benchmark candidate; CosyVoice3 remains correctness-gated.
+The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the higher-quality operator-owned benchmark target; CosyVoice3 remains correctness-gated.
+
+`qwen3-tts-ncnn-0b6` is now a **benchmark candidate only**. Reviewed exact source `mingshi2333/Qwen3-TTS-ncnn@7c58a6756367e38abe19b0fc2639e56aa1e8bf74` is Apache-2.0 and targets Qwen3-TTS 0.6B CustomVoice with CPU/Vulkan execution. Upstream reports free-running greedy token parity with PyTorch, including CustomVoice, but Hottop has not reproduced Mandarin naturalness, speaker quality, onset stability, dialogue-slot fit or mixed-video quality. The registry therefore keeps `integration_ready=false / runtime_status=unprobed`.
+
+Normal Hottop must never invoke the candidate's upstream automatic provisioning paths: its CMake can fetch ncnn automatically, and its conversion instructions explicitly download the official Qwen checkpoint/source. A future benchmark requires an operator-provisioned local ncnn build plus converted/bound 0.6B assets, with exact source/build/model/runtime/audio-byte provenance and the existing PCM integrity gates. This route may lower the hardware barrier for a neural-TTS experiment; it does **not** replace eSpeak or the 1.7B Qwen quality target. See `docs/research/2026-08-28-qwen3-tts-ncnn-admission.md`.
 
 Speech execution remains fail-closed across independent layers: semantic dialogue input validation, non-empty/finite/non-silent serialized PCM, Qwen duration-derived token ceiling, produced PCM slot-fit, and final media verification. Future Qwen3-TTS 1.7B Mandarin A/B must bind model/runtime/hardware provenance and separately inspect short-onset stability plus normal production-length intelligibility, speaker consistency, delivery and naturalness.
 
@@ -51,18 +57,20 @@ Speech execution remains fail-closed across independent layers: semantic dialogu
 
 - **LightX2V:** upstream `main` advanced to `5169278f6bfb343f339b59ce8ebdb261a57a27e2` with `fix h3 ref2v resize mode (#1451)`. The change adds MiniMax-H3 reference-image resize modes/configuration and does not provide Hottop-measured benefit for the currently tested Wan2.2 I2V subset. Keep the tested Hottop pin; no freshness-only repin.
 - **Qwen3-TTS:** official `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no official change removes the operator-local 1.7B benchmark gate.
-- **PersonaShot:** arXiv:2608.16717, published 2026-08-17, reports roughly 1,000 multi-shot segments and 16 metrics spanning physical continuity, affective dynamics and cinematic grammar. It shows that perceptual quality, identity and generic motion can still coexist with physical-state resets, abrupt affective shifts and broken shot relations. The paper states that benchmark/evaluators/code will be released, but targeted public searches in this run found no official/reviewable release or license surface. Hottop therefore records only a research-level evaluator-design signal; no code/data/evaluator dependency or PersonaShot-calibrated threshold is imported. See `docs/research/2026-08-28-personashot-narrative-continuity-admission.md`.
+- **Qwen3-TTS-ncnn:** exact reviewed source `7c58a6756367e38abe19b0fc2639e56aa1e8bf74` is Apache-2.0 and reports CPU/Vulkan CustomVoice token parity for the 0.6B line. It clears registry-level benchmark admission because it can materially lower hardware requirements, but not execution admission because upstream build/conversion can fetch ncnn/model assets and Hottop has no local audio-quality evidence. Keep it operator-provisioned and fail-closed.
+- **PersonaShot:** arXiv:2608.16717, published 2026-08-17, reports roughly 1,000 multi-shot segments and 16 metrics spanning physical continuity, affective dynamics and cinematic grammar. It shows that perceptual quality, identity and generic motion can still coexist with physical-state resets, abrupt affective shifts and broken shot relations. The paper states that benchmark/evaluators/code will be released, but targeted public searches in this run still found no official/reviewable release or license surface. Hottop therefore records only a research-level evaluator-design signal; no code/data/evaluator dependency or PersonaShot-calibrated threshold is imported. See `docs/research/2026-08-28-personashot-narrative-continuity-admission.md`.
 
-No reviewed candidate in this run clears admission strongly enough to replace the guaranteed software3d route or current tested operator route.
+No reviewed candidate in this run clears admission strongly enough to replace the guaranteed software3d route or current tested operator video route.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound identity + requested-action motion evidence before composition.
 3. For real multi-shot narratives, do not collapse all continuity into one generic score. When story semantics require it, separately consider physical-state continuity, affective trajectory and cinematic relations in addition to identity/motion; do not claim PersonaShot-compatible evaluation until an admissible release or independently specified evaluator exists.
-4. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback with bound runtime/hardware provenance and repeated cold/warm trials.
-5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-6. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+4. If an operator provisions Qwen3-TTS-ncnn locally, benchmark its 0.6B CustomVoice route on the same Mandarin production lines as eSpeak with bound ncnn/model/runtime/output provenance; treat upstream token parity as implementation evidence, not audio-quality proof.
+5. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run same-line Mandarin A/B against the guaranteed fallback with bound runtime/hardware provenance and repeated cold/warm trials.
+6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
