@@ -22,6 +22,8 @@ The candidate is unusually relevant because it exposes Qwen3-TTS 1.7B through a 
 
 Source-code permission does not automatically settle model, tokenizer, converted-GGUF or output-publication rights. Upstream Qwen model/tokenizer assets are described as Apache-2.0, but exact GGUF checkpoint identity and rights must still be bound at benchmark time.
 
+The reviewed upstream head still remains `a8a7716b530e49fed537c57711247c12fbbb903c` in this owner cycle. Its commit message reports end-to-end synthesis on a GTX 1070 Max-Q at roughly RTF 0.4 while validating CUDA 12.8/12.9 build compatibility. Treat that only as upstream runtime evidence for that exact setup, not as Hottop Mandarin naturalness, speaker-consistency or runtime-readiness evidence.
+
 ## Zero-cost and provisioning boundary
 
 `qwentts.cpp` is compatible with **self-owned compute**, not with Hottop's unattended auto-provisioning path.
@@ -36,6 +38,27 @@ Normal Hottop execution must not:
 - obtain credentials or enable paid inference.
 
 An operator may separately provision an exact reviewed source checkout, build/runtime and local GGUF assets. Only then may Hottop benchmark the candidate.
+
+## Read-only local benchmark preflight
+
+Hottop now exposes a **read-only artifact-binding preflight** for an already provisioned qwentts.cpp benchmark setup:
+
+```text
+hottop-models probe-qwentts-cpp \
+  --executable /local/path/qwentts-cli \
+  --talker-gguf /local/path/talker.gguf \
+  --tokenizer-gguf /local/path/tokenizer.gguf
+```
+
+The preflight:
+
+- requires the executable, talker GGUF and tokenizer GGUF to exist as local files;
+- requires the executable to be executable and all three files to be non-empty;
+- records the resolved local path, byte size and SHA-256 for every supplied artifact;
+- returns `ready=false` with explicit blockers when the local inputs are incomplete;
+- **never executes qwentts.cpp**, opens a network connection, downloads a model, builds dependencies, changes model-hub runtime status or claims audio quality.
+
+`ready=true` means only that the supplied local benchmark inputs are structurally present and byte-bound. It does **not** mean the runtime has successfully synthesized audio, that the GGUFs have correct publication rights, or that Mandarin quality has passed Hottop's benchmark gates.
 
 ## Why this is not a production route yet
 

@@ -6,6 +6,7 @@ from pathlib import Path
 import typer
 
 from .model_hub import load_model_hub, select_models
+from .qwentts_cpp_preflight import inspect_qwentts_cpp_inputs
 
 app = typer.Typer(no_args_is_help=False, add_completion=False)
 DEFAULT_HUB = Path("integrations/model-hub.yml")
@@ -45,6 +46,22 @@ def list(
             indent=2,
         )
     )
+
+
+@app.command("probe-qwentts-cpp")
+def probe_qwentts_cpp(
+    executable: Path = typer.Option(..., "--executable", dir_okay=False),
+    talker_gguf: Path = typer.Option(..., "--talker-gguf", dir_okay=False),
+    tokenizer_gguf: Path = typer.Option(..., "--tokenizer-gguf", dir_okay=False),
+) -> None:
+    """Bind local qwentts.cpp benchmark inputs without executing or downloading anything."""
+
+    result = inspect_qwentts_cpp_inputs(
+        executable=executable,
+        talker_gguf=talker_gguf,
+        tokenizer_gguf=tokenizer_gguf,
+    )
+    typer.echo(json.dumps(result.model_dump(mode="json"), ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
