@@ -7,6 +7,8 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+GGUF_MAGIC = b"GGUF"
+
 
 class LocalArtifactIdentity(BaseModel):
     path: str
@@ -33,6 +35,7 @@ def _identity(
     *,
     label: str,
     require_executable: bool = False,
+    require_gguf: bool = False,
 ) -> tuple[LocalArtifactIdentity | None, list[str]]:
     blockers: list[str] = []
     if not path.exists():
@@ -47,6 +50,9 @@ def _identity(
         blockers.append(f"{label} is not executable: {path}")
 
     payload = path.read_bytes()
+    if require_gguf and size_bytes > 0 and payload[: len(GGUF_MAGIC)] != GGUF_MAGIC:
+        blockers.append(f"{label} has invalid GGUF header: {path}")
+
     identity = LocalArtifactIdentity(
         path=str(path.resolve()),
         size_bytes=size_bytes,
@@ -68,8 +74,16 @@ def inspect_qwentts_cpp_inputs(
         label="qwentts executable",
         require_executable=True,
     )
-    talker_identity, talker_blockers = _identity(talker_gguf, label="talker GGUF")
-    tokenizer_identity, tokenizer_blockers = _identity(tokenizer_gguf, label="tokenizer GGUF")
+    talker_identity, talker_blockers = _identity(
+        talker_gguf,
+        label="talker GGUF",
+        require_gguf=True,
+    )
+    tokenizer_identity, tokenizer_blockers = _identity(
+        tokenizer_gguf,
+        label="tokenizer GGUF",
+        require_gguf=True,
+    )
     blockers = executable_blockers + talker_blockers + tokenizer_blockers
 
     return QwenTtsCppPreflight(
