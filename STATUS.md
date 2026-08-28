@@ -8,13 +8,14 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Live recovery on 2026-08-28 found `main@b795589cd06817275e715e16e8a7dc08559dbf90`, with no open PRs at recovery time.
+Live recovery on 2026-08-28 found `main@1c7c286aee67848243bd9d72f83804a8746c69ff`, with no open PRs after UnityVideo admission merge.
 
-Verified exact-head gate:
+Verified exact-head gates:
 
-- CI **#1941**: Ruff + full pytest passed on Python 3.11 and 3.12.
+- PR #149 GREEN head `d054f62f93e1ffd5108f8b8d297a24ea7658ebd8`: CI **#1946** passed Ruff + full pytest on Python 3.11 and 3.12.
+- merged `main@1c7c286aee67848243bd9d72f83804a8746c69ff`: CI **#1947** passed Ruff + full pytest on Python 3.11 and 3.12.
 
-This head is the merged short-onset benchmark coverage/status update. It did not change renderer, audio runtime, provider routing or media thresholds. Treat this SHA as a verified historical evidence point only; future recovery must re-fetch live `main` rather than assuming this file self-updates.
+This head admits UnityVideo only as a non-executable motion-control benchmark candidate. It does not change renderer, audio runtime, default provider routing, media thresholds, model downloads, GPU provisioning or paid-service policy. Treat this SHA as a verified historical evidence point only; future recovery must re-fetch live `main` rather than assuming this file self-updates.
 
 ## Canonical Production v0.2 baseline
 
@@ -55,14 +56,17 @@ The highest-value generated-quality proof remains a rights-safe reference-condit
 
 **Identity fidelity and motion fidelity are separate evidence dimensions.** A recognizable subject with wrong/frozen/degenerate motion is not successful subject-and-motion continuity; strong motion does not prove subject identity.
 
-Primary tested/operator route remains **LightX2V/Wan2.2**. Gated continuity candidates remain research/benchmark-only unless their exact source/checkpoint rights and operator runtime pass admission. Do not fabricate DGX/GPU readiness; driver/CUDA/PyTorch/model/reference state must be probed on actual operator machines before any generated-quality claim.
+Primary tested/operator route remains **LightX2V/Wan2.2**. Gated continuity and motion-control candidates remain research/benchmark-only unless their exact source/checkpoint rights and operator runtime pass admission. Do not fabricate DGX/GPU readiness; driver/CUDA/PyTorch/model/reference state must be probed on actual operator machines before any generated-quality claim.
+
+UnityVideo is now registered as `benchmark_candidate / integration_ready=false / runtime_status=unprobed / self_owned_compute`, not as an executable backend. Reviewed source `JIA-Lab-research/UnityVideo@e79e9b6bd1c498dd919dceb4cdea47e20417bf70` is MIT; the published `KlingTeam/UnityVideo` model card reports Apache-2.0 for the roughly 10 GB inference checkpoint while Wan2.2 base/reference/output rights remain separate. Its upstream CLI auto-downloads UnityVideo + Wan2.2 assets on first use, and the released checkpoint was evaluated only at 256×256 / 33 frames, so normal `video-run` must never invoke it without explicit local provisioning and same-sequence operator evidence. See `docs/research/2026-08-28-unityvideo-admission.md`.
 
 ## Fresh ecosystem radar — 2026-08-28
 
 Targeted checks remain gap-driven rather than popularity-driven.
 
-- **LightX2V/Wan2.2:** upstream `main` is still `680d9be199a69ebe4a02f86bdd653f23298ac02d` (2026-08-27, `cleanup: remove retired model remnants (#1449)`). No Hottop-measured continuity/runtime improvement was found that justifies a freshness-only repin or new default route.
-- **Qwen3-TTS:** official `QwenLM/Qwen3-TTS` `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; there is no new official source change that removes the 1.7B operator-local benchmark gate. SGLang-Omni's current Qwen3-TTS benchmark work continues to support benchmark-first admission: a Talker `torch.compile` path was removed after it failed to show reproducible end-to-end benefit under a fixed protocol.
+- **UnityVideo:** newly reviewed exact source `e79e9b6bd1c498dd919dceb4cdea47e20417bf70` provides depth, DensePose, RAFT optical-flow, segmentation and skeleton conditioning on Wan2.2-TI2V-5B. This is relevant to Hottop's independently measured **motion fidelity** dimension, but it is not identity proof and is not admitted for unattended execution. Future value must be demonstrated by a rights-safe same-sequence A/B against the existing tested Wan2.2/LightX2V route.
+- **LightX2V/Wan2.2:** upstream `main` remains an operator-owned tested framework rather than a freshness-driven pin. No Hottop-measured continuity/runtime improvement was found in this cycle that justifies repinning or replacing the primary tested route.
+- **Qwen3-TTS:** current serving evidence continues to support benchmark-first admission: acceleration toggles without reproducible end-to-end benefit do not justify a runtime change. No official source change observed in this cycle removes the 1.7B operator-local benchmark gate.
 - **Qwen short-onset risk:** official-repo issue #343 remains tracked as a future A/B coverage requirement, not as evidence that Hottop's preset CustomVoice path is defective.
 - **MV-S2V and other continuity candidates:** impressive demos remain gated when source/checkpoint license, multi-GPU runtime or operator assets are unresolved. Popularity alone is not evidence.
 
@@ -73,10 +77,11 @@ No newly reviewed candidate clears the admission gate strongly enough to replace
 1. Continue inspecting fresh real cow/Odyssey production evidence and modify deterministic visuals/audio only for a **measured** defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, run at least two subject-bearing Odyssey I2V shots and require meaningful motion plus complete subject-bound continuity evidence before composition.
 3. Persist **identity fidelity and motion fidelity separately** for routes claiming both; neither dimension may stand in for the other.
-4. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run a same-line Mandarin A/B against the guaranteed fallback. Include both short production-like utterances with separate first-1–2-second onset review and normal production-length lines; label cold-first-use separately, use repeated warmed trials, and promote only on measured intelligibility/speaker consistency/delivery/naturalness plus publication-rights evidence.
-5. Re-evaluate gated continuity candidates only when exact source/checkpoint rights are compatible and the required operator runtime/assets are already provisioned; benchmark Hottop's own rights-safe sequence rather than copied benchmark media.
-6. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
-7. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
+4. If UnityVideo is locally provisioned by the operator, benchmark one or more explicit depth/flow/pose conditions against the same rights-safe subject-bearing sequence used by the existing Wan2.2/LightX2V route. Promote nothing unless motion/action adherence measurably improves without weakening identity, geography, provenance or final-media gates.
+5. When operator-local Qwen3-TTS 1.7B is genuinely provisioned, run a same-line Mandarin A/B against the guaranteed fallback. Include both short production-like utterances with separate first-1–2-second onset review and normal production-length lines; label cold-first-use separately, use repeated warmed trials, and promote only on measured intelligibility/speaker consistency/delivery/naturalness plus publication-rights evidence.
+6. Re-evaluate gated continuity candidates only when exact source/checkpoint rights are compatible and the required operator runtime/assets are already provisioned; benchmark Hottop's own rights-safe sequence rather than copied benchmark media.
+7. Continue targeted ecosystem radar around the measured gap. Do not add freshness-only pins, large dependencies or provider abstraction without measurable value and rollback.
+8. For fresh creative output, perform live/supplied hotspot mechanism analysis first; consult creative memory only after current context is resolved and archive real feedback/performance lessons when evidence exists.
 
 ## Recovery order
 
