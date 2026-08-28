@@ -1,5 +1,3 @@
-# ruff: noqa
-
 import hashlib
 import json
 from pathlib import Path
@@ -33,6 +31,9 @@ def test_qwentts_cpp_preflight_binds_local_bytes_without_execution(tmp_path: Pat
     assert result.executed is False
     assert result.network_access is False
     assert result.auto_download is False
+    assert result.executable is not None
+    assert result.talker_gguf is not None
+    assert result.tokenizer_gguf is not None
     assert result.executable.sha256 == hashlib.sha256(b"local-qwentts-binary").hexdigest()
     assert result.talker_gguf.sha256 == hashlib.sha256(b"talker-model").hexdigest()
     assert result.tokenizer_gguf.sha256 == hashlib.sha256(b"tokenizer-model").hexdigest()
