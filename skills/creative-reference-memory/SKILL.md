@@ -87,9 +87,12 @@ When the user gives concrete feedback, preserve the lesson in structured memory 
 - film/movie hotspot creative must feel native to cinematic scene grammar;
 - rough viral 3D should remain deliberately rough when roughness carries recognition;
 - high-quality stills with pan/zoom are not cinematic video;
-- do not print internal labels such as `热点梗图` on the audience-facing image;
+- do not print internal labels such as `热点梗图`, `今日热搜 TOP1`, or other research/workflow labels on audience-facing assets;
 - keep InkClawAgent/product visually prominent enough that the promotional purpose is unmistakable;
-- when useful, publish a hotspot meme together with a separate product explainer and platform-native title/body/#hashtags.
+- when useful, publish a hotspot meme together with a separate product explainer and platform-native title/body/#hashtags;
+- hotspot exploration must go beyond the news event into the **active derivative meme**: what phrase, action, number, blame joke, callback, screenshot or remix people are actually repeating now;
+- social titles should use **meme-native hook compression** rather than newsroom summaries. A strong pattern is `short utterance + concrete consequence`, e.g. the user-approved `俩字，省了5000W` hook for the 2026-08-28 AI-decision meme. Reuse the pattern, not the people, exact event, or layout;
+- if a source story is marked fictional/satirical or a claim is unverified, keep that boundary explicit even when the derivative meme is real and widely circulating.
 
 Do not invent user ratings or numeric quality scores. Store qualitative feedback unless an actual score exists.
 
