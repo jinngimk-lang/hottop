@@ -5,7 +5,6 @@ from typer.testing import CliRunner
 
 from hottop.model_hub_cli import app
 
-
 runner = CliRunner()
 
 
