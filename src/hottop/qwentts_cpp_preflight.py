@@ -8,6 +8,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 GGUF_MAGIC = b"GGUF"
+GGUF_VERSION = 3
 GGUF_HEADER_BYTES = 24
 HASH_CHUNK_BYTES = 1024 * 1024
 
@@ -61,6 +62,9 @@ def _gguf_header_blockers(header: bytes, *, path: Path, label: str) -> list[str]
         return [f"{label} has invalid GGUF header: {path}"]
     if len(header) < GGUF_HEADER_BYTES:
         return [f"{label} has truncated GGUF header: {path}"]
+    version = int.from_bytes(header[4:8], "little")
+    if version != GGUF_VERSION:
+        return [f"{label} has unsupported GGUF version {version}: {path}"]
     tensor_count = int.from_bytes(header[8:16], "little")
     if tensor_count == 0:
         return [f"{label} has zero tensors: {path}"]
