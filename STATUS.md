@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified production head: **`main@03bcc2dfd0a449c47faea391d7f22b3281babb72`**. It adds a fail-closed, read-only local preflight for the already-admitted audio.cpp Qwen3-TTS 1.7B CustomVoice benchmark candidate without adding a production runtime adapter. Post-merge CI **#2141** passed on Python 3.11/3.12.
+Latest verified production head before this documentation-only workstream: **`main@5dd36793a1f865ac020b44c8edbdbb4b16972ca2`**. It contains the merged audio.cpp Qwen3-TTS 1.7B CustomVoice read-only preflight/status closure. Exact-head CI **#2143** passed on Python 3.11/3.12. Live GitHub state must still be re-fetched on every recovery.
 
 Audio.cpp admission/preflight evidence:
 
@@ -18,9 +18,10 @@ Audio.cpp admission/preflight evidence:
 - GREEN implementation `b37cdc5433d974b44d82d94b3d6b619f1a874727` → CI #2137: Python 3.11/3.12 Ruff + full pytest passed.
 - Final docs-synced exact head `be1df6451b4823b29b82eb32c36e967a0e2b54d9` → CI #2139 passed on Python 3.11/3.12 with no review threads.
 - The ready-for-review connector hit the known GitHub GraphQL `fullDatabaseId` compatibility error. Draft #220 was closed and non-draft #221 recreated on the **same exact verified head**; no force/update-ref or history rewrite was used.
-- PR #221 squash-merged as `03bcc2dfd0a449c47faea391d7f22b3281babb72`; post-merge CI #2141 passed on Python 3.11/3.12.
+- PR #221 squash-merged as `03bcc2dfd0a449c47faea391d7f22b3281babb72`; post-merge CI #2141 passed on Python 3.11/3.12. Follow-up status sync reached `main@5dd36793a1f865ac020b44c8edbdbb4b16972ca2`, whose exact-head CI #2143 also passed.
+- A fresh exact-source audit of audio.cpp `model_specs/qwen3_tts.json` plus `docs/models/qwen3.md` confirms the reviewed converted Qwen3-TTS layout: main `model.safetensors` and `speech_tokenizer/model.safetensors` are converted independently and placed as `model.gguf` beside each source. The package contract also supports recursively embedded sidecars, so there is no evidence for inventing a third mandatory preflight artifact.
 
-`hottop-models probe-audio-cpp --executable <audiocpp_cli> --model-dir <Qwen3-TTS-12Hz-1.7B-CustomVoice>` now binds an already provisioned operator input set without execution. The resolved model directory must contain `model.gguf` plus `speech_tokenizer/model.gguf`. The probe reuses Hottop's hardened local artifact boundary: concrete resolved targets, bounded-memory SHA-256, stable before/after filesystem snapshots, executable permission, complete GGUF v3 fixed headers, non-zero tensor counts and incompatible-role path/byte distinctness. `ready=true` is only benchmark-input readiness; it does not prove checkpoint identity, licensing, speaker capability, runtime success, Mandarin quality or publication rights.
+`hottop-models probe-audio-cpp --executable <audiocpp_cli> --model-dir <Qwen3-TTS-12Hz-1.7B-CustomVoice>` binds an already provisioned operator input set without execution. The resolved model directory must contain `model.gguf` plus `speech_tokenizer/model.gguf`. The probe reuses Hottop's hardened local artifact boundary: concrete resolved targets, bounded-memory SHA-256, stable before/after filesystem snapshots, executable permission, complete GGUF v3 fixed headers, non-zero tensor counts and incompatible-role path/byte distinctness. `ready=true` is only benchmark-input readiness; it does not prove checkpoint identity, licensing, speaker capability, runtime success, Mandarin quality or publication rights.
 
 ## Canonical guaranteed baseline
 
@@ -67,7 +68,7 @@ Unsupported speaker/voice/instruction/reference conditioning must fail closed be
 
 - **LightX2V/Wan2.2:** upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`. Latest reviewed changes are example-path cleanup plus H3/XPU-specific work and do not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V route. Keep the tested pin; no freshness-only repin.
 - **Qwen3-TTS:** reviewed official `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no reviewed official change justifies altering the 1.7B operator-local benchmark gate.
-- **audio.cpp:** reviewed upstream remains `a76ec04f620da829e4a53032247369083ba1ad45`. Its native model-directory capability is now covered by Hottop's read-only local preflight; upstream capability/performance evidence is still not Hottop Mandarin-quality evidence.
+- **audio.cpp:** reviewed upstream remains `a76ec04f620da829e4a53032247369083ba1ad45`. A fresh exact-source audit confirms the current two-GGUF CustomVoice model-directory assumption against upstream conversion docs/package semantics; no extra mandatory local artifact was found. Upstream capability/performance evidence remains separate from Hottop Mandarin-quality evidence.
 - **qwentts.cpp/CrispASR:** existing admissions remain unchanged. Auto-download/build paths stay forbidden in unattended Hottop execution.
 
 No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route or current tested LightX2V/Wan2.2 operator route.
