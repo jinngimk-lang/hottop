@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest production-code merge in this workstream: **`main@719f5b35660a49baa4724b9ea6b741c1d4f1c273`**, from the qwentts.cpp distinct-model-role preflight closure. Exact GREEN PR head `3baeddfad9b4167f449e9ddc0bf0d291364d673e` passed CI #2060 on Python 3.11/3.12 before merge. Post-merge CI #2062 was started on `719f5b35…`; always re-fetch its live conclusion before treating it as verified.
+Latest production-code merge in this workstream: **`main@719f5b35660a49baa4724b9ea6b741c1d4f1c273`**, from the qwentts.cpp distinct-model-role preflight closure. Exact GREEN PR head `3baeddfad9b4167f449e9ddc0bf0d291364d673e` passed CI #2060 on Python 3.11/3.12 before merge, and post-merge CI #2062 passed on Python 3.11/3.12.
 
 The new closure fixes an input-set provenance defect in the read-only qwentts.cpp operator preflight. Upstream qwentts.cpp loads a talker GGUF (`--model`) and a separate shared tokenizer/codec GGUF (`--codec`). Hottop previously validated both inputs independently, so one valid GGUF—or identical bytes copied under two names—could incorrectly satisfy both roles.
 
@@ -17,6 +17,7 @@ TDD evidence:
 - RED `3ff5c34a770aa48be0ebf6c94b042b7656afcde7` → CI #2059: Ruff passed; pytest failed on the new role-distinctness contract.
 - GREEN `3baeddfad9b4167f449e9ddc0bf0d291364d673e` → CI #2060: Python 3.11/3.12 Ruff + full pytest passed.
 - The ready-for-review GraphQL mutation again failed on the known `fullDatabaseId` compatibility error. Draft #195 was closed and non-draft #196 recreated on the **same exact GREEN head**, then squash-merged as `719f5b35660a49baa4724b9ea6b741c1d4f1c273` without force/update-ref bypass.
+- Post-merge CI #2062 passed on Python 3.11/3.12.
 
 The preflight now rejects talker/tokenizer pairs that resolve to the same concrete path **or** have identical exact SHA-256 bytes. Existing protections remain: symlinks are resolved before identity binding; bounded 1 MiB streaming SHA-256; complete 24-byte GGUF fixed-header surface; before/after device/inode/size/mtime_ns/ctime_ns/mode stability checks; executable checks; no execution/network/download/build/GPU provisioning/runtime-ready promotion.
 
@@ -80,14 +81,13 @@ No reviewed candidate in this run clears admission strongly enough to replace th
 
 ## Immediate next actions
 
-1. Re-fetch `main@719f5b35…` post-merge CI #2062; repair immediately if it exposes a regression.
-2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound identity + requested-action motion evidence before composition.
-4. If an operator provisions qwentts.cpp plus exact 1.7B CustomVoice GGUF assets locally, run `hottop-models probe-qwentts-cpp` first. Only after resolved-target + stable-snapshot + bounded-memory + fixed-header + exact-byte + distinct-role preflight passes may a separate explicit same-line Mandarin A/B execute.
-5. For qwentts CustomVoice A/B, use only checkpoint-supported preset speaker conditioning. Do not silently drop unsupported conditioning or reuse Base-only reference/latent registration semantics on a CustomVoice checkpoint.
-6. In real Qwen 1.7B A/B, preserve repeated speaker consistency, short-onset stability, intelligibility/naturalness, latency/RTF, PCM duration/integrity and exact runtime/model/output provenance as separate evidence dimensions.
-7. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-8. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound identity + requested-action motion evidence before composition.
+3. If an operator provisions qwentts.cpp plus exact 1.7B CustomVoice GGUF assets locally, run `hottop-models probe-qwentts-cpp` first. Only after resolved-target + stable-snapshot + bounded-memory + fixed-header + exact-byte + distinct-role preflight passes may a separate explicit same-line Mandarin A/B execute.
+4. For qwentts CustomVoice A/B, use only checkpoint-supported preset speaker conditioning. Do not silently drop unsupported conditioning or reuse Base-only reference/latent registration semantics on a CustomVoice checkpoint.
+5. In real Qwen 1.7B A/B, preserve repeated speaker consistency, short-onset stability, intelligibility/naturalness, latency/RTF, PCM duration/integrity and exact runtime/model/output provenance as separate evidence dimensions.
+6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
