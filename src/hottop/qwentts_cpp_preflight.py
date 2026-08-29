@@ -61,6 +61,9 @@ def _gguf_header_blockers(header: bytes, *, path: Path, label: str) -> list[str]
         return [f"{label} has invalid GGUF header: {path}"]
     if len(header) < GGUF_HEADER_BYTES:
         return [f"{label} has truncated GGUF header: {path}"]
+    tensor_count = int.from_bytes(header[8:16], "little")
+    if tensor_count == 0:
+        return [f"{label} has zero tensors: {path}"]
     return []
 
 
