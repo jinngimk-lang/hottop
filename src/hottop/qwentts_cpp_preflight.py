@@ -72,21 +72,26 @@ def _identity(
     require_gguf: bool = False,
 ) -> tuple[LocalArtifactIdentity | None, list[str]]:
     blockers: list[str] = []
-    if not path.exists():
+    try:
+        resolved_path = path.resolve(strict=True)
+    except FileNotFoundError:
         return None, [f"{label} does not exist: {path}"]
-    if not path.is_file():
+    except OSError:
+        return None, [f"{label} could not be resolved: {path}"]
+
+    if not resolved_path.is_file():
         return None, [f"{label} is not a file: {path}"]
 
-    snapshot_before = _snapshot_signature(path)
+    snapshot_before = _snapshot_signature(resolved_path)
     size_bytes = snapshot_before[2]
     if size_bytes <= 0:
         blockers.append(f"{label} is empty: {path}")
-    if require_executable and not os.access(path, os.X_OK):
+    if require_executable and not os.access(resolved_path, os.X_OK):
         blockers.append(f"{label} is not executable: {path}")
 
     try:
-        sha256, header = _stream_sha256_and_header(path)
-        snapshot_after = _snapshot_signature(path)
+        sha256, header = _stream_sha256_and_header(resolved_path)
+        snapshot_after = _snapshot_signature(resolved_path)
     except OSError:
         return None, blockers + [f"{label} changed during preflight: {path}"]
 
@@ -94,10 +99,10 @@ def _identity(
         return None, blockers + [f"{label} changed during preflight: {path}"]
 
     if require_gguf and size_bytes > 0:
-        blockers.extend(_gguf_header_blockers(header, path=path, label=label))
+        blockers.extend(_gguf_header_blockers(header, path=resolved_path, label=label))
 
     identity = LocalArtifactIdentity(
-        path=str(path.resolve()),
+        path=str(resolved_path),
         size_bytes=size_bytes,
         sha256=sha256,
     )

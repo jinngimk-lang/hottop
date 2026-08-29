@@ -38,6 +38,19 @@ Any mismatch fails closed and no `LocalArtifactIdentity` is emitted for that uns
 
 The SHA-256 remains streamed in bounded chunks, and GGUF validation remains deliberately shallow: a complete fixed header plus exact bytes is an artifact-structure/provenance check, not a checkpoint parser.
 
+### Symlink target binding
+
+A later closure found that a stable byte snapshot was still insufficient when an operator supplied a symlink. The old flow stat'ed and hashed through the symlink, but called `Path.resolve()` only while constructing the final identity. A symlink retargeted after the second snapshot could therefore produce a mixed record: SHA-256 and size from the original target, but a canonical path naming the replacement target.
+
+The preflight now resolves the supplied path to its concrete target **before** stat, hash, executable/header checks, and final identity construction. All byte and metadata checks operate on that same resolved target, so a later retarget of the symlink itself cannot rewrite the path associated with already-hashed bytes. Legitimate operator-managed symlinks remain supported; the contract binds the target that was selected at preflight start rather than rejecting symlinks categorically.
+
+TDD evidence for this closure:
+
+- RED head: `5b3ced7f8ef6152971453bb0678cc2799a469aaf`
+- RED CI: #2052 — Ruff passed; Python 3.11 pytest failed on the symlink-retarget provenance contract.
+- GREEN implementation head: `a9ab34ecadad3de329fa5140af1c9c9a4f8dab85`
+- GREEN CI: #2053 — Python 3.11 and 3.12 both passed Ruff and the full pytest suite.
+
 ## Scope and non-claims
 
 `ready=true` still means only that the supplied executable and GGUF-like inputs were present, locally readable, structurally acceptable to the shallow gate, stable during the preflight window, and byte-bound.
