@@ -9,6 +9,7 @@ from .audio_cpp_preflight import inspect_audio_cpp_inputs
 from .crispasr_preflight import inspect_crispasr_inputs
 from .model_hub import load_model_hub, select_models
 from .qwentts_cpp_preflight import inspect_qwentts_cpp_inputs
+from .tts_benchmark import inspect_tts_benchmark
 
 app = typer.Typer(no_args_is_help=False, add_completion=False)
 DEFAULT_HUB = Path("integrations/model-hub.yml")
@@ -90,6 +91,16 @@ def probe_audio_cpp(
     """Bind local audio.cpp CustomVoice inputs without executing or downloading anything."""
 
     result = inspect_audio_cpp_inputs(executable=executable, model_dir=model_dir)
+    typer.echo(json.dumps(result.model_dump(mode="json"), ensure_ascii=False, indent=2))
+
+
+@app.command("inspect-tts-benchmark")
+def inspect_tts_benchmark_command(
+    spec: Path = typer.Option(..., "--spec", exists=True, dir_okay=False),
+) -> None:
+    """Inspect already-produced local TTS WAV evidence without executing a TTS runtime."""
+
+    result = inspect_tts_benchmark(spec)
     typer.echo(json.dumps(result.model_dump(mode="json"), ensure_ascii=False, indent=2))
 
 
