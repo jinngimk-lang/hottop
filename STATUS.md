@@ -8,21 +8,19 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified merge: **`main@49e8f64b8c56473c3c7260711d510f9b745f6d75`**, which added a read-only local artifact preflight for the already-admitted CrispASR Qwen3-TTS 1.7B benchmark candidate. Final merge-candidate head `5bbc05b2fab5e76c8a3a63c0210cac296a484711` passed CI #2118 on Python 3.11/3.12; squash merge via non-draft PR #214 produced `49e8f64b8c56473c3c7260711d510f9b745f6d75`, and post-merge CI #2120 also passed on Python 3.11/3.12.
+Latest verified production head: **`main@8c7ba1d4c28e21b5c682abfedaabaf6a12913598`**. It exposes the already-reviewed audio.cpp Qwen3-TTS 1.7B candidate through the unified model-hub discovery layer without adding a runtime adapter or production route. Post-merge CI **#2128** passed on Python 3.11/3.12.
 
-CrispASR preflight TDD evidence:
+Audio.cpp admission/model-hub evidence:
 
-- RED exact head `166f094a46c24acb8f37f0ca7d01685fb715afc3` → CI #2111: Ruff passed; pytest reported exactly `2 failed / 554 passed`, both because `probe-crispasr` did not exist.
-- GREEN implementation `0dcd45627bfd88d68f2b688d5f3cf741271d36f2` added only the read-only artifact preflight + CLI surface → CI #2115 passed on Python 3.11/3.12.
-- Final exact head `5bbc05b2fab5e76c8a3a63c0210cac296a484711` added the durable admission update → CI #2118 passed on Python 3.11/3.12.
-- The ready-for-review GraphQL mutation hit the known connector `fullDatabaseId` compatibility error. Draft #213 was closed and non-draft #214 recreated on the **same exact head**; no force/update-ref or history rewrite was used.
-- PR #214 squash-merged as `49e8f64b8c56473c3c7260711d510f9b745f6d75`; post-merge CI #2120 passed on Python 3.11/3.12.
+- PR #216 exact head `c7a375a41fc53dee4edb87b6db8d5ce1faabff56` passed CI #2123, added only `docs/research/2026-08-29-audio-cpp-qwen3-tts-admission.md` plus the narrow operator benchmark manifest, then squash-merged as `7a10d487ad121cbb39da1afe1a394b46754e90c3`; post-merge CI #2124 passed on Python 3.11/3.12.
+- Reviewed upstream is `0xShug0/audio.cpp@a76ec04f620da829e4a53032247369083ba1ad45`, Apache-2.0 source. Qwen model/tokenizer/GGUF and output-publication rights remain separate operator gates.
+- The admission is benchmark-only: no normal `video-run`, no auto-build, no model download/conversion, no dependency fetch, no container pull, no GPU provisioning, no credentials and no paid call.
+- Model-hub TDD RED `9fde4d80a88dc0ad03fc6197e56875568ce17b8e` → CI #2125: Ruff passed and pytest reported exactly **1 failed / 556 passed**, solely because `qwen3-tts-audio-cpp-1b7` was absent from the unified registry.
+- GREEN exact head `8c4f6e3b88dd61219afb889a3bc2fd7f2cc8914b` added only the fail-closed registry entry + contract test → CI #2126 passed on Python 3.11/3.12.
+- The ready-for-review connector hit the known GitHub GraphQL `fullDatabaseId` compatibility error. Draft #217 was closed and non-draft #218 recreated on the **same exact head**; no force/update-ref or history rewrite was used.
+- PR #218 squash-merged as `8c7ba1d4c28e21b5c682abfedaabaf6a12913598`; post-merge CI #2128 passed on Python 3.11/3.12.
 
-No executable CrispASR synthesis adapter, model download, build/install path, GPU provisioning, credentials, paid call or production routing change was admitted. The new command only inspects operator-supplied local artifacts.
-
-The prior qwentts.cpp preflight closure remains intact. Hottop requires model inputs to be non-empty, GGUF-magic-correct, at least 24 bytes, fixed-header version `3`, and to declare at least one tensor. Existing protections remain: symlinks resolve before identity binding; bounded 1 MiB streaming SHA-256; before/after device/inode/size/mtime_ns/ctime_ns/mode stability checks; executable permission checks; executable/talker/tokenizer path-or-byte role distinctness; no execution/network/download/build/GPU provisioning/runtime-ready promotion.
-
-`ready=true` for either local GGUF preflight means only that operator-supplied local inputs were present, shallowly GGUF-structured for the currently reviewed version where applicable, stable during preflight, exact-byte-bound to resolved targets, non-zero-tensor for model roles, and distinct across incompatible runtime roles. It does **not** prove semantic checkpoint identity, model/tokenizer/checkpoint rights, runtime compatibility, checkpoint speaker capability, synthesis success or Mandarin quality.
+`qwen3-tts-audio-cpp-1b7` is now discoverable as `benchmark_candidate / integration_ready=false / runtime_status=unprobed / self_owned_compute` with CPU/CUDA/HIP/Vulkan/Metal capability metadata. It is excluded from integration-ready and runtime-ready selection. Upstream support is implementation evidence only, not Hottop Mandarin-quality evidence.
 
 ## Canonical guaranteed baseline
 
@@ -52,55 +50,37 @@ Primary operator route remains **LightX2V/Wan2.2**. Stand-In, Aura, Wan-Animate-
 
 The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the higher-quality operator-owned benchmark target; CosyVoice3 remains correctness-gated.
 
-`qwen3-tts-ncnn-0b6`, `qwen3-tts-qwentts-cpp-1b7` and `qwen3-tts-crispasr-1b7` are **benchmark candidates only** with `integration_ready=false / runtime_status=unprobed`.
+Current local benchmark candidates include:
 
-Read-only qwentts input preflight:
+- `qwen3-tts-qwentts-cpp-1b7` — read-only GGUF artifact preflight available;
+- `qwen3-tts-crispasr-1b7` — read-only GGUF artifact preflight available;
+- `qwen3-tts-audio-cpp-1b7` — unified discovery entry only; **no executable preflight/adapter admitted yet**;
+- `qwen3-tts-ncnn-0b6` — lower-hardware 0.6B CPU/Vulkan benchmark candidate only.
 
-```text
-hottop-models probe-qwentts-cpp \
-  --executable /local/path/qwentts-cli \
-  --talker-gguf /local/path/talker.gguf \
-  --tokenizer-gguf /local/path/tokenizer.gguf
-```
+The qwentts/CrispASR preflights require resolved-target binding, bounded-memory SHA-256, stable before/after filesystem snapshots, executable permission, complete 24-byte GGUF fixed header, reviewed GGUF version `3`, non-zero tensor count and path/byte distinctness across incompatible runtime roles. They do not execute runtimes or prove checkpoint identity, licensing, speaker capability or Mandarin quality.
 
-Read-only CrispASR input preflight:
+Future 1.7B cross-runtime A/B must bind exact source/build/backend, checkpoint capability mode, model/tokenizer/GGUF bytes, the **same Mandarin line**, the same checkpoint-supported preset speaker, seed/sampling/generation ceiling, cold/warm trial identity, every WAV's SHA-256/size/duration/PCM integrity, latency/RTF, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture.
 
-```text
-hottop-models probe-crispasr \
-  --executable /local/path/crispasr \
-  --talker-gguf /local/path/talker.gguf \
-  --tokenizer-gguf /local/path/tokenizer.gguf
-```
-
-Both preflights reuse the same hardened local artifact identity boundary: resolved symlink targets, bounded-memory streaming SHA-256, before/after filesystem snapshot stability, executable permission checks, complete 24-byte GGUF fixed header, reviewed GGUF version `3`, non-zero tensor count, and path/byte distinctness across incompatible runtime roles. They never execute the runtime, open network connections, invoke auto-download paths, build dependencies, provision hardware, change model-hub runtime state or claim audio quality.
-
-CrispASR remains a second **operator-provisioned cross-runtime benchmark candidate** at exact reviewed source `bb77301c4dbde1fca217e1a19584b1ae0167ee03`. Source is MIT; reviewed `cstr` 1.7B CustomVoice GGUF and tokenizer/codec model cards declare Apache-2.0 conversions of official Qwen Apache-2.0 assets. Its `-m auto` downloader remains forbidden in Hottop unattended execution. Preset CustomVoice is the initial benchmark scope and reference-audio cloning remains separately rights-gated.
-
-Future 1.7B A/B must bind exact runtime/build/backend, checkpoint capability mode, model/tokenizer/GGUF bytes, exact Mandarin line, valid preset speaker or separately rights-cleared reference conditioning, seed/sampling/generation ceiling, cold/warm trial identity, every WAV's bytes/duration/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture.
-
-Capability binding remains independent from output evidence: unsupported speaker/voice/instruction/reference conditioning must fail closed before execution; repeated trials still verify actual speaker consistency and output integrity afterward.
+Unsupported speaker/voice/instruction/reference conditioning must fail closed before execution. Reference-audio cloning remains separately rights-gated.
 
 ## Fresh ecosystem radar — 2026-08-29
 
-- **LightX2V/Wan2.2:** reviewed upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`; latest reviewed change only cleaned hard-coded Wan-Animate-2 example paths and provides no Hottop-measured continuity/quality/runtime gain. Keep the tested pin; no freshness-only repin.
-- **Qwen3-TTS:** reviewed official `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no reviewed official change in this cycle justifies changing the 1.7B operator-local benchmark gate.
-- **qwentts.cpp:** reviewed `master` remains `a8a7716b530e49fed537c57711247c12fbbb903c`. No reviewed upstream change in this cycle justifies automatic serving/build integration.
-- **CrispASR:** reviewed source remains `bb77301c4dbde1fca217e1a19584b1ae0167ee03` on 2026-08-29. The latest reviewed change adds configurable padding silence for a VLC/C2PA playback issue and does not change this admission. `-m auto` remains excluded; public issue #183 remains runtime-specific performance evidence, not Mandarin-quality proof.
-- **llama.cpp `llama-tts`:** remains research-only for this measured gap. Prior Qwen3-TTS Base/Vulkan repetition/EOS and Vulkan assertion failures reinforce bounded-generation and final PCM-duration/integrity gates, but do not justify a new unattended runtime.
-- **WildActor:** remains a research-only multi-reference identity signal because reviewed source/checkpoint/data/reference/API/runtime rights are not all cleared.
+- **LightX2V/Wan2.2:** upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`. Latest reviewed change cleans Wan-Animate-2 example paths and does not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V route. Keep the tested pin; no freshness-only repin.
+- **Qwen3-TTS:** reviewed official `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no reviewed official change justifies altering the 1.7B operator-local benchmark gate.
+- **audio.cpp:** reviewed upstream remains `a76ec04f620da829e4a53032247369083ba1ad45` as of this cycle. It is active and supports several native backends, but upstream capability/performance evidence is not a Hottop Mandarin-quality result.
+- **qwentts.cpp/CrispASR:** existing admissions remain unchanged. Auto-download/build paths stay forbidden in unattended Hottop execution.
 
-No reviewed candidate in this run clears admission strongly enough to replace the guaranteed software3d route or current tested operator video route. CrispASR preflight only improves the future **cross-runtime TTS benchmark readiness surface**.
+No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route or current tested LightX2V/Wan2.2 operator route.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound identity + requested-action motion evidence before composition.
-3. If an operator provisions qwentts.cpp plus exact 1.7B CustomVoice GGUF assets locally, run `hottop-models probe-qwentts-cpp` first. Only after its artifact checks pass may a separate explicit same-line Mandarin A/B execute.
-4. If an operator provisions CrispASR plus exact 1.7B CustomVoice talker/tokenizer GGUF assets locally, run `hottop-models probe-crispasr` first and **do not use `-m auto`**. Only after the same artifact checks pass may a separate explicit same-line Mandarin A/B execute.
-5. For all CustomVoice A/B, use only checkpoint-supported preset speaker conditioning. Do not silently drop unsupported conditioning or reuse Base-only reference/latent registration semantics on a CustomVoice checkpoint.
-6. In real Qwen 1.7B A/B, preserve repeated speaker consistency, short-onset stability, intelligibility/naturalness, latency/RTF, PCM duration/integrity and exact runtime/model/output provenance as separate evidence dimensions.
-7. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-8. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
+3. If an operator provisions qwentts.cpp or CrispASR plus exact 1.7B CustomVoice GGUF assets locally, run the existing read-only preflight first; only after it passes may a separate explicit same-line Mandarin A/B execute.
+4. If an operator provisions audio.cpp plus independently reviewed local Qwen3-TTS 1.7B CustomVoice assets, first add a narrow read-only artifact/runtime preflight or equivalent byte-bound benchmark harness. Do **not** promote the new discovery entry directly into `video-run`.
+5. In every 1.7B cross-runtime A/B, use the same line, supported preset speaker and bounded generation settings, and preserve repeated speaker/onset/intelligibility/naturalness/RTF/PCM/provenance as separate evidence dimensions.
+6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
