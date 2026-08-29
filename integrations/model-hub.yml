@@ -189,6 +189,29 @@ models:
       - Source code is Apache-2.0 at the reviewed revision; checkpoint, reference, driving-performance and output rights remain separately bound.
       - Benchmark-only discovery entry. There is no executable adapter or unattended production route.
 
+  - id: longcat-video-avatar-15
+    name: LongCat-Video-Avatar 1.5 audio/image character animation
+    family: longcat-video-avatar
+    modalities: [video, audio]
+    capabilities: [audio_image_to_video, audio_text_to_video, video_continuation, identity_conditioned_motion, multi_character_audio, character_animation, cinematic_real_motion]
+    repository: https://github.com/meituan-longcat/LongCat-Video
+    source_revision_reviewed: 6b3f4b8582a8bc3f20f795735f5383716c4ba794
+    weights: meituan-longcat/LongCat-Video-Avatar-1.5
+    code_license: MIT
+    weights_license: MIT-official-model-card
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    integration_ready: false
+    runtime_status: unprobed
+    operator_profiles: [dgx-spark-dual]
+    integration_strategy: registry_only_until_operator_same_sequence_identity_motion_audio_benchmark
+    runtime_boundary: Exact reviewed source 6b3f4b8582a8bc3f20f795735f5383716c4ba794. Upstream setup requires Python 3.10, PyTorch/CUDA, FlashAttention and explicit Hugging Face model downloads; Avatar 1.5 examples use a 2-process torchrun path. Hottop must not auto-install or invoke any upstream model-download path. Only operator-provisioned local source/model assets plus rights-safe image/audio references may enter a same-sequence benchmark, with identity, requested-action motion, dialogue/lip-sync, continuation/geography, provenance and final-media evidence measured independently.
+    priority: 58
+    notes:
+      - Official source repository and official model-card license surfaces are MIT at the reviewed revision/date, while reference/audio/output publication rights remain separately bound per benchmark asset.
+      - Upstream reports stylized/animal domains, multi-audio character animation and long-video continuation; these are benchmark hypotheses until reproduced on Hottop rights-safe outputs.
+      - No executable adapter or unattended production route is admitted.
+
   - id: wan22-s2v-14b
     name: Wan2.2 S2V 14B
     family: wan2.2
