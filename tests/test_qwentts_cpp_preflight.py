@@ -152,6 +152,34 @@ def test_qwentts_cpp_preflight_streams_artifact_hashing(tmp_path: Path, monkeypa
     assert result.talker_gguf.sha256 == hashlib.sha256(VALID_GGUF + b"-talker").hexdigest()
 
 
+def test_qwentts_cpp_preflight_rejects_executable_reused_as_model_artifact(tmp_path: Path) -> None:
+    executable_and_talker = _write(tmp_path / "qwentts-cli", VALID_GGUF + b"-talker")
+    executable_and_talker.chmod(0o755)
+    tokenizer = _write(tmp_path / "tokenizer.gguf", VALID_GGUF + b"-tokenizer")
+
+    result = inspect_qwentts_cpp_inputs(
+        executable=executable_and_talker,
+        talker_gguf=executable_and_talker,
+        tokenizer_gguf=tokenizer,
+    )
+
+    assert result.ready is False
+    assert any("qwentts executable and model GGUF artifacts must be distinct" in reason for reason in result.blockers)
+
+    executable_and_tokenizer = _write(tmp_path / "qwentts-cli-2", VALID_GGUF + b"-tokenizer-2")
+    executable_and_tokenizer.chmod(0o755)
+    talker = _write(tmp_path / "talker.gguf", VALID_GGUF + b"-talker-2")
+
+    result = inspect_qwentts_cpp_inputs(
+        executable=executable_and_tokenizer,
+        talker_gguf=talker,
+        tokenizer_gguf=executable_and_tokenizer,
+    )
+
+    assert result.ready is False
+    assert any("qwentts executable and model GGUF artifacts must be distinct" in reason for reason in result.blockers)
+
+
 def test_model_hub_cli_exposes_read_only_qwentts_cpp_preflight(tmp_path: Path) -> None:
     executable = _write(tmp_path / "qwentts-cli", b"binary")
     executable.chmod(0o755)
