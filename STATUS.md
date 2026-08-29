@@ -8,14 +8,18 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified production evidence point: **`main@6415dee873c063bd739e3216c2c81d28fe92111e`**. Post-merge CI **#2176** passed on Python 3.11/3.12.
+Latest verified production evidence point: **`main@25d00a36a68d11e3f4f4f79d6c142991afb85b9f`**. Post-merge CI **#2182** passed on Python 3.11/3.12.
 
-This cycle added a provider-neutral, read-only local TTS A/B evidence surface without changing any production provider/runtime route:
+This cycle added and corrected a provider-neutral, read-only local TTS A/B evidence surface without changing any production provider/runtime route:
 
-- clean RED after test isolation: pytest failed because `hottop.tts_benchmark` did not exist;
-- exact GREEN head `eda60c6a887a28f83f5a266c6b2280fbc8c37b6f` → PR CI **#2174**, Python 3.11/3.12 Ruff + full pytest green; Python 3.11 reported **563 passed**;
-- the known ready-for-review connector `fullDatabaseId` GraphQL incompatibility was handled without force/update-ref: draft #232 was closed and non-draft #233 recreated on the **same verified exact head**;
-- PR #233 squash-merged as `6415dee873c063bd739e3216c2c81d28fe92111e`; post-merge CI **#2176** passed.
+- clean feature RED after test isolation: pytest failed because `hottop.tts_benchmark` did not exist;
+- feature GREEN head `eda60c6a887a28f83f5a266c6b2280fbc8c37b6f` → PR CI **#2174**, Python 3.11/3.12 Ruff + full pytest green; Python 3.11 reported **563 passed**;
+- PR #233 squash-merged as `6415dee873c063bd739e3216c2c81d28fe92111e`; post-merge CI **#2176** passed;
+- self-review then found the initial `realtime_factor` field used the inverse speedup ratio. RED `b35128441702b0d476015137e4a85b25387d0142` → CI **#2179**, Ruff passed and pytest was exactly **1 failed / 562 passed** on the RTF semantic contract;
+- GREEN `8a4b55bcd5a780e08f66a88e197257e58fb5d5a9` → CI **#2180**, Python 3.11/3.12 Ruff + full pytest green;
+- PR #236 squash-merged as `25d00a36a68d11e3f4f4f79d6c142991afb85b9f`; post-merge CI **#2182** passed.
+
+The known ready-for-review connector `fullDatabaseId` GraphQL incompatibility was handled without force/update-ref: draft PRs were closed and non-draft PRs recreated only on the **same verified exact heads**.
 
 ## Canonical guaranteed baseline
 
@@ -54,7 +58,7 @@ Current local benchmark candidates:
 - `qwen3-tts-audio-cpp-1b7` — read-only CustomVoice model-directory preflight available; reviewed manual v0.7.0 runtime archives remain operator-provisioned only;
 - `qwen3-tts-ncnn-0b6` — lower-hardware 0.6B CPU/Vulkan benchmark candidate only.
 
-New shared evidence surface:
+Shared evidence surface:
 
 `hottop-models inspect-tts-benchmark --spec <benchmark.json>`
 
@@ -65,7 +69,8 @@ It inspects **already-produced local WAVs only**. It never executes TTS, accesse
 - exact WAV resolved path, SHA-256 and size;
 - sample rate, channels, sample width, frame count and duration;
 - digital-silence rejection and positive measured latency;
-- playback-duration / generation-latency factor;
+- **standard realtime factor** `RTF = generation_latency / audio_duration` (lower is faster);
+- explicit **realtime speedup** `audio_duration / generation_latency` (higher is faster), so the inverse metric is never mislabeled as RTF;
 - `listening_required=true`, so speed/PCM integrity cannot be mistaken for Mandarin naturalness, intelligibility, onset stability or speaker consistency.
 
 The method was independently derived after reviewing `5uck1ess/tts-bench@020a69422c96224785a8dc4b95466676119a7dc2`. Its benchmark code is MIT, but its full installer surface reports roughly **39 GB** of per-model virtual environments plus roughly **125 GB** of model weights and can fetch/build model-specific dependencies. Hottop therefore admits only the measurement separation idea, not the installer/model stack. Durable review: `docs/research/2026-08-30-tts-bench-method-admission.md`.
@@ -89,7 +94,7 @@ No reviewed candidate in this cycle clears admission strongly enough to replace 
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
 3. If a measured future sequence specifically requires leave-and-return scene/viewpoint memory, benchmark Echo-Memory only after operator-provisioned exact source/base/checkpoint assets and rights-safe action/reference bytes are available.
 4. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first. Hottop itself must not fetch/build those runtimes or models.
-5. After an explicit operator-local runtime produces same-line WAV trials, write a benchmark spec and run `hottop-models inspect-tts-benchmark --spec <benchmark.json>` to bind WAV bytes/stream metadata and cold/warm speed evidence. Human/listening evidence, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication rights remain independent gates.
+5. After an explicit operator-local runtime produces same-line WAV trials, write a benchmark spec and run `hottop-models inspect-tts-benchmark --spec <benchmark.json>` to bind WAV bytes/stream metadata, standard RTF and explicit speedup evidence. Human/listening evidence, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication rights remain independent gates.
 6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
