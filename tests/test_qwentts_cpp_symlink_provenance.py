@@ -7,7 +7,7 @@ from hottop.qwentts_cpp_preflight import inspect_qwentts_cpp_inputs
 VALID_GGUF = (
     b"GGUF"
     + (3).to_bytes(4, "little")
-    + (0).to_bytes(8, "little")
+    + (1).to_bytes(8, "little")
     + (0).to_bytes(8, "little")
     + b"fixture-payload"
 )
