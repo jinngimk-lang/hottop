@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified production evidence point: **`main@25d00a36a68d11e3f4f4f79d6c142991afb85b9f`**. Post-merge CI **#2182** passed on Python 3.11/3.12.
+Latest verified production evidence point: **`main@2a3620cc4d1ad208e908021e4c622bdddf78f219`**. Post-merge CI **#2186** passed on Python 3.11/3.12.
 
 This cycle added and corrected a provider-neutral, read-only local TTS A/B evidence surface without changing any production provider/runtime route:
 
@@ -18,6 +18,13 @@ This cycle added and corrected a provider-neutral, read-only local TTS A/B evide
 - self-review then found the initial `realtime_factor` field used the inverse speedup ratio. RED `b35128441702b0d476015137e4a85b25387d0142` → CI **#2179**, Ruff passed and pytest was exactly **1 failed / 562 passed** on the RTF semantic contract;
 - GREEN `8a4b55bcd5a780e08f66a88e197257e58fb5d5a9` → CI **#2180**, Python 3.11/3.12 Ruff + full pytest green;
 - PR #236 squash-merged as `25d00a36a68d11e3f4f4f79d6c142991afb85b9f`; post-merge CI **#2182** passed.
+
+The generated-video radar was also refreshed without changing any production route:
+
+- Stand-In upstream `main` is `e351224366be169076e94af1454115d91d458313`; its 2026-08-10 V2 change is only a README announcement (`Stand-In-V2 is coming soon!`), not a reviewable V2 source/checkpoint/runtime release;
+- PR #238 exact head `b119bdf62c0f5cdf3d55e2f7794e314858df242a` → CI **#2185** green, then squash-merged as `2a3620cc4d1ad208e908021e4c622bdddf78f219`; post-merge CI **#2186** passed;
+- durable record: `docs/research/2026-08-30-stand-in-v2-radar.md`;
+- Stand-In V2 remains research-only until exact source/checkpoint rights, runtime/hardware and same-sequence Hottop identity + requested-action motion evidence exist.
 
 The known ready-for-review connector `fullDatabaseId` GraphQL incompatibility was handled without force/update-ref: draft PRs were closed and non-draft PRs recreated only on the **same verified exact heads**.
 
@@ -44,6 +51,8 @@ Input locks are constraints, not output proof. Generated continuity evidence mus
 **Identity fidelity and requested-action/motion fidelity are separate dimensions.** Motion/anti-copy evidence binds `motion_spec_sha256` derived from exact ordered subject-bearing plan semantics; generic motion cannot prove a different requested action.
 
 Primary operator route remains **LightX2V/Wan2.2**. Stand-In, Aura, Wan-Animate-2, UnityVideo, DomainShuttle, MV-S2V, SMRABooth, ID-V2V, WildActor and other reviewed candidates remain benchmark/research-only unless exact source/checkpoint rights, operator runtime and output evidence clear admission. Runtime success never substitutes for identity, requested motion, geography, provenance or final-media proof.
+
+**Stand-In V2** is announcement-only at reviewed upstream `e351224366be169076e94af1454115d91d458313`. The current evidence does not expose a V2 source revision, checkpoint revision/weights license, runtime/hardware contract or Hottop output evidence. Do not freshness-only repin, auto-download V2 weights or promote an executable route until those artifacts exist and same-sequence identity + requested-action motion gates pass. Durable review: `docs/research/2026-08-30-stand-in-v2-radar.md`.
 
 **Echo-Memory** remains a scene/revisit-memory benchmark signal only. Reviewed source `Echo-Team-Joy-Future-Academy-JD/Echo-Memory@194be716aedaa84d9bd377740d6e6d9c32a309cb` and public Echo checkpoints are CC BY 4.0; the current released backbone is Wan2.1 T2V 1.3B, while Wan2.2/5B/14B remain roadmap items. Revisit/scene memory cannot substitute for subject identity or requested-action evidence.
 
@@ -79,7 +88,8 @@ Future 1.7B cross-runtime A/B must still use the **same Mandarin line**, same ch
 
 ## Fresh ecosystem radar — 2026-08-30
 
-- **LightX2V/Wan2.2:** reviewed upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`. Latest reviewed changes do not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V route. Keep the tested pin; no freshness-only repin.
+- **LightX2V/Wan2.2:** reviewed upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`. The 2026-08-28 `Update scripts (#1452)` change does not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V route. Keep the tested pin; no freshness-only repin.
+- **Stand-In:** reviewed upstream `main` is `e351224366be169076e94af1454115d91d458313`. Stand-In V2 is still only announced; keep V2 research-only until exact reviewable source/checkpoint/runtime evidence exists. Durable review: `docs/research/2026-08-30-stand-in-v2-radar.md`.
 - **WanGP/Wan2GP:** reviewed upstream `main` is `c3aa2915b039f898285d4a5de102d89eabf83237`; the reviewed PiD change is post-processing/upsampler maintenance, not improved Hottop reference-conditioned identity/requested-action motion. Durable review: `docs/research/2026-08-30-wangp-pid-radar.md`.
 - **Echo-Memory:** reviewed exact source `194be716aedaa84d9bd377740d6e6d9c32a309cb`, CC BY 4.0; keep research/benchmark-only. Durable review: `docs/research/2026-08-30-echo-memory-admission.md`.
 - **Qwen3-TTS:** reviewed official `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no reviewed official change justifies altering the 1.7B operator-local benchmark gate.
