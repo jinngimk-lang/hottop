@@ -5,6 +5,7 @@ from pathlib import Path
 
 import typer
 
+from .audio_cpp_preflight import inspect_audio_cpp_inputs
 from .crispasr_preflight import inspect_crispasr_inputs
 from .model_hub import load_model_hub, select_models
 from .qwentts_cpp_preflight import inspect_qwentts_cpp_inputs
@@ -78,6 +79,17 @@ def probe_crispasr(
         talker_gguf=talker_gguf,
         tokenizer_gguf=tokenizer_gguf,
     )
+    typer.echo(json.dumps(result.model_dump(mode="json"), ensure_ascii=False, indent=2))
+
+
+@app.command("probe-audio-cpp")
+def probe_audio_cpp(
+    executable: Path = typer.Option(..., "--executable", dir_okay=False),
+    model_dir: Path = typer.Option(..., "--model-dir", file_okay=False),
+) -> None:
+    """Bind local audio.cpp CustomVoice inputs without executing or downloading anything."""
+
+    result = inspect_audio_cpp_inputs(executable=executable, model_dir=model_dir)
     typer.echo(json.dumps(result.model_dump(mode="json"), ensure_ascii=False, indent=2))
 
 
