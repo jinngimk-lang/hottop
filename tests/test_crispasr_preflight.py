@@ -19,7 +19,7 @@ def _write_gguf(path: Path, *, payload: bytes) -> None:
     path.write_bytes(header + payload)
 
 
-def test_crispasr_probe_binds_operator_supplied_inputs_without_execution(tmp_path: Path) -> None:
+def test_crispasr_probe_binds_local_inputs(tmp_path: Path) -> None:
     executable = tmp_path / "crispasr"
     executable.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
     executable.chmod(0o755)
@@ -54,7 +54,7 @@ def test_crispasr_probe_binds_operator_supplied_inputs_without_execution(tmp_pat
     assert payload["talker_gguf"]["sha256"] != payload["tokenizer_gguf"]["sha256"]
 
 
-def test_crispasr_probe_fails_closed_when_runtime_roles_reuse_bytes(tmp_path: Path) -> None:
+def test_crispasr_probe_rejects_reused_model_bytes(tmp_path: Path) -> None:
     executable = tmp_path / "crispasr"
     executable.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
     executable.chmod(0o755)
@@ -79,4 +79,5 @@ def test_crispasr_probe_fails_closed_when_runtime_roles_reuse_bytes(tmp_path: Pa
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["ready"] is False
-    assert any("talker GGUF and tokenizer GGUF must be distinct" in item for item in payload["blockers"])
+    expected = "talker GGUF and tokenizer GGUF must be distinct"
+    assert any(expected in item for item in payload["blockers"])
