@@ -8,39 +8,14 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified production evidence point: **`main@a052c426c8612f856560beaecc16d9b291373d1f`**. Post-merge CI **#2159** passed on Python 3.11/3.12. Live GitHub state must still be re-fetched on every recovery.
+Latest verified production evidence point: **`main@6415dee873c063bd739e3216c2c81d28fe92111e`**. Post-merge CI **#2176** passed on Python 3.11/3.12.
 
-This cycle also closed two radar/documentation workstreams without changing production behavior:
+This cycle added a provider-neutral, read-only local TTS A/B evidence surface without changing any production provider/runtime route:
 
-- PR #228 refreshed live production status and the latest WanGP/Wan2GP observation; exact-head CI **#2154** passed and squash merge `1f5d56d438f32ffbb33fd38e83335cd218d5d0f5` was followed by main CI **#2155** passing on Python 3.11/3.12.
-- PR #229 persisted the WanGP PiD exact-head review as durable research; exact-head CI **#2156** passed and squash merge `320d38edd3640b1bcd143d06d92fe7ed85e38f00` was followed by main CI **#2157** passing on Python 3.11/3.12.
-- PR #230 persisted Echo-Memory as a scene/revisit-memory research/benchmark candidate only; exact-head CI **#2158** passed and squash merge `a052c426c8612f856560beaecc16d9b291373d1f` was followed by main CI **#2159** passing on Python 3.11/3.12.
-
-### audio.cpp Qwen3-TTS 1.7B operator route
-
-The candidate remains `benchmark_candidate / integration_ready=false / runtime_status=unprobed / self_owned_compute`. No normal `video-run`, automatic runtime/model download, model conversion, dependency build, container pull, GPU provisioning, credentials or paid path is admitted.
-
-Existing read-only command:
-
-`hottop-models probe-audio-cpp --executable <audiocpp_cli> --model-dir <Qwen3-TTS-12Hz-1.7B-CustomVoice>`
-
-It binds an already provisioned local executable plus `model.gguf` and `speech_tokenizer/model.gguf` using resolved-target binding, bounded-memory SHA-256, stable before/after filesystem snapshots, executable permission, GGUF v3 fixed-header checks, non-zero tensor counts and incompatible-role path/byte distinctness. `ready=true` is only benchmark-input readiness; it does not prove checkpoint identity, licensing, speaker capability, runtime success, Mandarin quality or publication rights.
-
-This cycle added a reviewed **manual prebuilt-runtime option** without widening unattended behavior:
-
-- source capability audit remains pinned separately at `0xShug0/audio.cpp@a76ec04f620da829e4a53032247369083ba1ad45`;
-- official release `v0.7.0` maps to commit `d2ff37009c69d464bcab6aa4a44a13746e84a914`, Apache-2.0 source at that revision;
-- reviewed Ubuntu CPU archive: `audio-v0.7.0-bin-ubuntu-x64-cpu.tar.gz`, SHA-256 `400774c3f92f3da4c5fedfa2e43d50482e951ec288eb39e66c10e63fb46de47d`, 39,878,502 bytes;
-- reviewed Ubuntu Vulkan archive: `audio-v0.7.0-bin-ubuntu-x64-vulkan.tar.gz`, SHA-256 `e49676f1da28df0d2a6ca2073118964e91f3d14aa3c2ca3ad984e3d09b96932d`, 66,981,995 bytes;
-- upstream release workflow enables the native model manager, so normal Hottop must **not** use it to fetch models. A release digest proves only runtime-archive identity; the extracted executable still goes through local preflight and real Qwen capability/audio quality remain separate execution gates.
-
-TDD/merge evidence:
-
-- RED `4fde05b086cd8a4d3330d38d3127f9dbad8669f3` → CI **#2147**: Ruff passed; pytest failed before reviewed-prebuilt provenance existed.
-- GREEN/docs exact head `bb1e88fcb32531f82670fc3008a2a574e115a770` → CI **#2149**: Python 3.11/3.12 Ruff + full pytest passed.
-- ready-for-review hit the known GitHub connector `fullDatabaseId` GraphQL compatibility failure; draft #225 was closed and non-draft #226 recreated on the **same verified exact head**, with no force/update-ref/history rewrite.
-- PR #226 squash-merged as `370dd5162f5ef5cc05e9ee4c39e939580a029c5b`; post-merge CI **#2151** passed on Python 3.11/3.12.
-- PR #227 synchronized the execution snapshot as `2200377b6607e1026a5d36c099b39b27715c651a`; post-merge CI **#2153** passed on Python 3.11/3.12.
+- clean RED after test isolation: pytest failed because `hottop.tts_benchmark` did not exist;
+- exact GREEN head `eda60c6a887a28f83f5a266c6b2280fbc8c37b6f` → PR CI **#2174**, Python 3.11/3.12 Ruff + full pytest green; Python 3.11 reported **563 passed**;
+- the known ready-for-review connector `fullDatabaseId` GraphQL incompatibility was handled without force/update-ref: draft #232 was closed and non-draft #233 recreated on the **same verified exact head**;
+- PR #233 squash-merged as `6415dee873c063bd739e3216c2c81d28fe92111e`; post-merge CI **#2176** passed.
 
 ## Canonical guaranteed baseline
 
@@ -66,31 +41,45 @@ Input locks are constraints, not output proof. Generated continuity evidence mus
 
 Primary operator route remains **LightX2V/Wan2.2**. Stand-In, Aura, Wan-Animate-2, UnityVideo, DomainShuttle, MV-S2V, SMRABooth, ID-V2V, WildActor and other reviewed candidates remain benchmark/research-only unless exact source/checkpoint rights, operator runtime and output evidence clear admission. Runtime success never substitutes for identity, requested motion, geography, provenance or final-media proof.
 
-**Echo-Memory** is now retained separately as a scene/revisit-memory benchmark signal, not as a solved identity route. Reviewed source `Echo-Team-Joy-Future-Academy-JD/Echo-Memory@194be716aedaa84d9bd377740d6e6d9c32a309cb` and public Echo checkpoints are CC BY 4.0; the current released backbone is Wan2.1 T2V 1.3B, while Wan2.2/5B/14B remain roadmap items. It may be re-evaluated when a measured Hottop sequence specifically needs leave-and-return scene/viewpoint memory or when a compatible Wan2.2 release exists. Any benchmark must still bind exact base/checkpoint/reference/output bytes and prove scene/viewpoint return, identity and requested motion as separate dimensions.
+**Echo-Memory** remains a scene/revisit-memory benchmark signal only. Reviewed source `Echo-Team-Joy-Future-Academy-JD/Echo-Memory@194be716aedaa84d9bd377740d6e6d9c32a309cb` and public Echo checkpoints are CC BY 4.0; the current released backbone is Wan2.1 T2V 1.3B, while Wan2.2/5B/14B remain roadmap items. Revisit/scene memory cannot substitute for subject identity or requested-action evidence.
 
 ## Dialogue / neural-TTS boundary
 
 The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the higher-quality operator-owned benchmark target; CosyVoice3 remains correctness-gated.
 
-Current local benchmark candidates include:
+Current local benchmark candidates:
 
 - `qwen3-tts-qwentts-cpp-1b7` — read-only GGUF artifact preflight available;
 - `qwen3-tts-crispasr-1b7` — read-only GGUF artifact preflight available;
-- `qwen3-tts-audio-cpp-1b7` — read-only CustomVoice model-directory preflight available plus reviewed v0.7.0 manual runtime-archive provenance; **no production runtime adapter admitted**;
+- `qwen3-tts-audio-cpp-1b7` — read-only CustomVoice model-directory preflight available; reviewed manual v0.7.0 runtime archives remain operator-provisioned only;
 - `qwen3-tts-ncnn-0b6` — lower-hardware 0.6B CPU/Vulkan benchmark candidate only.
 
-Future 1.7B cross-runtime A/B must bind exact source/build/backend or reviewed prebuilt digest, checkpoint capability mode, model/tokenizer/GGUF bytes, the **same Mandarin line**, the same checkpoint-supported preset speaker, seed/sampling/generation ceiling, cold/warm trial identity, every WAV's SHA-256/size/duration/PCM integrity, latency/RTF, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture.
+New shared evidence surface:
 
-Unsupported speaker/voice/instruction/reference conditioning must fail closed before execution. Reference-audio cloning remains separately rights-gated.
+`hottop-models inspect-tts-benchmark --spec <benchmark.json>`
+
+It inspects **already-produced local WAVs only**. It never executes TTS, accesses the network, installs dependencies, downloads models, provisions GPU resources or calls a paid service. `hottop.tts-benchmark.v1` binds:
+
+- exact benchmark text, language and preset speaker label;
+- candidate/runtime revision and cold/warm trial identity;
+- exact WAV resolved path, SHA-256 and size;
+- sample rate, channels, sample width, frame count and duration;
+- digital-silence rejection and positive measured latency;
+- playback-duration / generation-latency factor;
+- `listening_required=true`, so speed/PCM integrity cannot be mistaken for Mandarin naturalness, intelligibility, onset stability or speaker consistency.
+
+The method was independently derived after reviewing `5uck1ess/tts-bench@020a69422c96224785a8dc4b95466676119a7dc2`. Its benchmark code is MIT, but its full installer surface reports roughly **39 GB** of per-model virtual environments plus roughly **125 GB** of model weights and can fetch/build model-specific dependencies. Hottop therefore admits only the measurement separation idea, not the installer/model stack. Durable review: `docs/research/2026-08-30-tts-bench-method-admission.md`.
+
+Future 1.7B cross-runtime A/B must still use the **same Mandarin line**, same checkpoint-supported preset speaker and bounded generation settings, while separately preserving exact runtime/model bytes, cold/warm timing, every WAV's bytes/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported speaker/voice/instruction/reference conditioning must fail closed before execution. Reference-audio cloning remains separately rights-gated.
 
 ## Fresh ecosystem radar — 2026-08-30
 
-- **LightX2V/Wan2.2:** upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`. Latest reviewed changes remain example-path cleanup plus H3/XPU-specific work and do not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V route. Keep the tested pin; no freshness-only repin.
-- **WanGP/Wan2GP:** upstream `main` is `c3aa2915b039f898285d4a5de102d89eabf83237`. The exact reviewed change is PiD post-processing input alignment/upsampler maintenance, not improved Hottop Wan2.2 reference-conditioned identity or requested-action motion. Durable review: `docs/research/2026-08-30-wangp-pid-radar.md`. Keep operator-managed interoperability and do not repin or integrate from freshness alone.
-- **Echo-Memory:** reviewed exact source `194be716aedaa84d9bd377740d6e6d9c32a309cb`, CC BY 4.0. It provides released Wan2.1-1.3B memory checkpoints and a public ZeroGPU demo for leave/revisit consistency, while Wan2.2 and larger backbones remain roadmap work. Keep it research/benchmark-only; no auto-download, ComfyUI dependency or production route. Durable review: `docs/research/2026-08-30-echo-memory-admission.md`.
+- **LightX2V/Wan2.2:** reviewed upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`. Latest reviewed changes do not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V route. Keep the tested pin; no freshness-only repin.
+- **WanGP/Wan2GP:** reviewed upstream `main` is `c3aa2915b039f898285d4a5de102d89eabf83237`; the reviewed PiD change is post-processing/upsampler maintenance, not improved Hottop reference-conditioned identity/requested-action motion. Durable review: `docs/research/2026-08-30-wangp-pid-radar.md`.
+- **Echo-Memory:** reviewed exact source `194be716aedaa84d9bd377740d6e6d9c32a309cb`, CC BY 4.0; keep research/benchmark-only. Durable review: `docs/research/2026-08-30-echo-memory-admission.md`.
 - **Qwen3-TTS:** reviewed official `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no reviewed official change justifies altering the 1.7B operator-local benchmark gate.
-- **audio.cpp:** upstream `main` has advanced to `e73c980fe259aa2b3931c8b6ea53517e769877ec`, including release/documentation/runtime maintenance after v0.7.0. Hottop keeps the separate source capability audit at `a76ec04f...` because no measured contract requires a freshness-only repin. The v0.7.0 official Ubuntu CPU/Vulkan archives are exact-digest-reviewed manual operator options only.
-- **qwentts.cpp/CrispASR:** existing admissions remain unchanged. Auto-download/build paths stay forbidden in unattended Hottop execution.
+- **audio.cpp:** upstream maintenance after v0.7.0 does not justify freshness-only source repin; reviewed v0.7.0 Ubuntu CPU/Vulkan archives remain exact-digest manual operator options only, and Hottop must not invoke the bundled model manager.
+- **tts-bench:** exact method review `020a69422c96224785a8dc4b95466676119a7dc2`, MIT benchmark code only. Its large automatic environment/model provisioning surface is rejected; Hottop integrates only a narrow local-WAV evidence contract.
 
 No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route or current tested LightX2V/Wan2.2 operator route.
 
@@ -98,12 +87,11 @@ No reviewed candidate in this cycle clears admission strongly enough to replace 
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-3. If a measured future sequence specifically requires leave-and-return scene/viewpoint memory, benchmark Echo-Memory only after operator-provisioned exact source/base/checkpoint assets and rights-safe action/reference bytes are available; do not let a revisit score substitute for subject identity or requested-action evidence.
-4. If an operator provisions qwentts.cpp or CrispASR plus exact 1.7B CustomVoice GGUF assets locally, run the existing read-only preflight first; only after it passes may a separate explicit same-line Mandarin A/B execute.
-5. For audio.cpp, an operator may manually provision the reviewed v0.7.0 Ubuntu CPU/Vulkan archive and verify its exact digest, or provide another independently reviewed build. Then run `probe-audio-cpp` against the extracted executable and independently reviewed local Qwen3-TTS 1.7B CustomVoice assets. Hottop itself must not fetch the runtime archive or invoke the bundled model manager.
-6. In every 1.7B cross-runtime A/B, use the same line, supported preset speaker and bounded generation settings, and preserve repeated speaker/onset/intelligibility/naturalness/RTF/PCM/provenance as separate evidence dimensions.
-7. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-8. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+3. If a measured future sequence specifically requires leave-and-return scene/viewpoint memory, benchmark Echo-Memory only after operator-provisioned exact source/base/checkpoint assets and rights-safe action/reference bytes are available.
+4. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first. Hottop itself must not fetch/build those runtimes or models.
+5. After an explicit operator-local runtime produces same-line WAV trials, write a benchmark spec and run `hottop-models inspect-tts-benchmark --spec <benchmark.json>` to bind WAV bytes/stream metadata and cold/warm speed evidence. Human/listening evidence, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication rights remain independent gates.
+6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
