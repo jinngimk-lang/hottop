@@ -8,23 +8,22 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified live-main evidence before this docs sync: **`main@0e37b03129e58be0cf4a46b64a16a98e019154d6` → CI #2056 passed** on Python 3.11/3.12.
+Latest production-code merge in this workstream: **`main@719f5b35660a49baa4724b9ea6b741c1d4f1c273`**, from the qwentts.cpp distinct-model-role preflight closure. Exact GREEN PR head `3baeddfad9b4167f449e9ddc0bf0d291364d673e` passed CI #2060 on Python 3.11/3.12 before merge, and post-merge CI #2062 passed on Python 3.11/3.12.
 
-The latest closure hardens the read-only qwentts.cpp operator preflight against a symlink provenance race. The old flow could stat/hash through a symlink and only call `Path.resolve()` while constructing the final identity; a retarget after the second snapshot could therefore mix the original target's SHA/size with the replacement target's resolved path.
+The new closure fixes an input-set provenance defect in the read-only qwentts.cpp operator preflight. Upstream qwentts.cpp loads a talker GGUF (`--model`) and a separate shared tokenizer/codec GGUF (`--codec`). Hottop previously validated both inputs independently, so one valid GGUF—or identical bytes copied under two names—could incorrectly satisfy both roles.
 
-TDD / merge evidence:
+TDD evidence:
 
-- RED `5b3ced7f8ef6152971453bb0678cc2799a469aaf` → CI #2052: Ruff passed; Python 3.11 pytest failed on the symlink-retarget provenance contract.
-- GREEN `a9ab34ecadad3de329fa5140af1c9c9a4f8dab85` → CI #2053 passed on Python 3.11/3.12.
-- Durable-record exact head `2192bec6cf0a4790fafa6c5ef496e77bc37f7396` → CI #2054 passed on Python 3.11/3.12.
-- The connector's ready-for-review GraphQL mutation failed on an upstream schema-field compatibility error; draft #192 was closed and non-draft #193 recreated on the **same exact head**, then squash-merged as `0e37b03129e58be0cf4a46b64a16a98e019154d6`.
-- Post-merge CI #2056 passed.
+- RED `3ff5c34a770aa48be0ebf6c94b042b7656afcde7` → CI #2059: Ruff passed; pytest failed on the new role-distinctness contract.
+- GREEN `3baeddfad9b4167f449e9ddc0bf0d291364d673e` → CI #2060: Python 3.11/3.12 Ruff + full pytest passed.
+- The ready-for-review GraphQL mutation again failed on the known `fullDatabaseId` compatibility error. Draft #195 was closed and non-draft #196 recreated on the **same exact GREEN head**, then squash-merged as `719f5b35660a49baa4724b9ea6b741c1d4f1c273` without force/update-ref bypass.
+- Post-merge CI #2062 passed on Python 3.11/3.12.
 
-The preflight now resolves each supplied executable/GGUF path to one concrete target before stat/hash/header/executable checks and records exactly that target path. Legitimate symlinks remain supported, but later symlink retargeting cannot rewrite the path associated with already-hashed bytes.
+The preflight now rejects talker/tokenizer pairs that resolve to the same concrete path **or** have identical exact SHA-256 bytes. Existing protections remain: symlinks are resolved before identity binding; bounded 1 MiB streaming SHA-256; complete 24-byte GGUF fixed-header surface; before/after device/inode/size/mtime_ns/ctime_ns/mode stability checks; executable checks; no execution/network/download/build/GPU provisioning/runtime-ready promotion.
 
-The earlier stable-snapshot contract remains: bounded 1 MiB SHA-256 streaming plus before/after device id, inode, size, nanosecond mtime, nanosecond ctime and file-mode comparison. Replacement, append, truncation, disappearance or file-identity/permission change fails closed. Both GGUF inputs must also expose a complete 24-byte fixed header. The validation remains deliberately shallow and version-tolerant.
+`ready=true` therefore means only: operator-supplied local inputs were present, structurally GGUF-like where applicable, stable during preflight, exact-byte-bound to resolved targets, and distinct across the required talker/tokenizer roles. It does **not** prove semantic checkpoint identity, checkpoint/preset-speaker/output rights, qwentts runtime compatibility, synthesis success or Mandarin quality.
 
-`ready=true` still means only: operator-supplied local inputs were present, structurally GGUF-like where applicable, stable during preflight and exact-byte-bound to one resolved target. It does **not** prove checkpoint identity, checkpoint/preset-speaker/output rights, qwentts runtime compatibility, synthesis success or Mandarin quality.
+Durable record: `docs/research/2026-08-29-qwentts-distinct-role-artifacts.md`.
 
 ## Canonical guaranteed baseline
 
@@ -65,7 +64,7 @@ hottop-models probe-qwentts-cpp \
   --tokenizer-gguf /local/path/tokenizer.gguf
 ```
 
-The preflight never executes qwentts.cpp, opens a network connection, downloads/builds anything, provisions hardware, changes model-hub runtime state or claims audio quality.
+The talker and tokenizer/codec must be distinct artifacts; same resolved path or same exact SHA-256 fails closed. The preflight never executes qwentts.cpp, opens a network connection, downloads/builds anything, provisions hardware, changes model-hub runtime state or claims audio quality.
 
 Future 1.7B A/B must bind exact runtime/build/backend, checkpoint capability mode, model/tokenizer/GGUF bytes, exact Mandarin line, valid preset speaker or separately rights-cleared reference conditioning, seed/sampling/generation ceiling, cold/warm trial identity, every WAV's bytes/duration/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture.
 
@@ -73,9 +72,9 @@ Capability binding remains independent from output evidence: unsupported speaker
 
 ## Fresh ecosystem radar — 2026-08-29
 
-- **LightX2V/Wan2.2:** upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`. The latest reviewed change only replaces private hard-coded Wan-Animate-2 example paths with `/path/to/...` placeholders in two scripts; it does not provide a Hottop-measured continuity, quality or runtime gain for the tested I2V subset. Keep the tested pin and **do not freshness-only repin**.
-- **Qwen3-TTS:** official `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no reviewed official change in this cycle justifies changing the 1.7B operator-local benchmark gate.
-- **qwentts.cpp:** reviewed `master` remains `a8a7716b530e49fed537c57711247c12fbbb903c`; no reviewed upstream change in this cycle justifies changing current admission or adding an automatic serving/build stack. Preset-speaker/output-publication rights remain separate from source/model license.
+- **LightX2V/Wan2.2:** last reviewed upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`; latest reviewed change only cleaned hard-coded Wan-Animate-2 example paths and provides no Hottop-measured continuity/quality/runtime gain. Keep the tested pin; no freshness-only repin.
+- **Qwen3-TTS:** last reviewed official `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no reviewed official change in this cycle justifies changing the 1.7B operator-local benchmark gate.
+- **qwentts.cpp:** reviewed `master` remains `a8a7716b530e49fed537c57711247c12fbbb903c`. Its documented runtime topology confirms separate talker (`--model`) and tokenizer/codec (`--codec`) roles, which now informs the local preflight input-set gate. No reviewed upstream change justifies automatic serving/build integration.
 - **WildActor:** remains a research-only multi-reference identity signal because reviewed source/checkpoint/data/reference/API/runtime rights are not all cleared.
 
 No reviewed candidate in this run clears admission strongly enough to replace the guaranteed software3d route or current tested operator video route.
@@ -84,7 +83,7 @@ No reviewed candidate in this run clears admission strongly enough to replace th
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound identity + requested-action motion evidence before composition.
-3. If an operator provisions qwentts.cpp plus exact 1.7B CustomVoice GGUF assets locally, run `hottop-models probe-qwentts-cpp` first. Only after resolved-target + stable-snapshot + bounded-memory + fixed-header + exact-byte preflight passes may a separate explicit same-line Mandarin A/B execute.
+3. If an operator provisions qwentts.cpp plus exact 1.7B CustomVoice GGUF assets locally, run `hottop-models probe-qwentts-cpp` first. Only after resolved-target + stable-snapshot + bounded-memory + fixed-header + exact-byte + distinct-role preflight passes may a separate explicit same-line Mandarin A/B execute.
 4. For qwentts CustomVoice A/B, use only checkpoint-supported preset speaker conditioning. Do not silently drop unsupported conditioning or reuse Base-only reference/latent registration semantics on a CustomVoice checkpoint.
 5. In real Qwen 1.7B A/B, preserve repeated speaker consistency, short-onset stability, intelligibility/naturalness, latency/RTF, PCM duration/integrity and exact runtime/model/output provenance as separate evidence dimensions.
 6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
