@@ -67,8 +67,10 @@ def test_tts_benchmark_binds_local_wav_bytes_and_speed_without_execution(tmp_pat
     assert first.wav.duration_seconds == 1.0
     assert first.wav.sample_rate == 24000
     assert first.wav.channels == 1
-    assert first.realtime_factor == 0.5
-    assert result.trials[1].realtime_factor == 2.0
+    assert first.realtime_factor == 2.0
+    assert first.realtime_speedup == 0.5
+    assert result.trials[1].realtime_factor == 0.5
+    assert result.trials[1].realtime_speedup == 2.0
 
 
 def test_tts_benchmark_fails_closed_for_silent_or_mismatched_trials(tmp_path: Path) -> None:

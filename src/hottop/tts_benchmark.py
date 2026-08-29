@@ -60,6 +60,7 @@ class TtsBenchmarkTrialEvidence(BaseModel):
     runtime_revision: str
     latency_seconds: float
     realtime_factor: float | None = None
+    realtime_speedup: float | None = None
     wav: WavArtifactIdentity | None = None
     blockers: list[str]
 
@@ -181,8 +182,14 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
             )
 
         realtime_factor = None
-        if wav_identity is not None and trial.latency_seconds > 0:
-            realtime_factor = wav_identity.duration_seconds / trial.latency_seconds
+        realtime_speedup = None
+        if (
+            wav_identity is not None
+            and wav_identity.duration_seconds > 0
+            and trial.latency_seconds > 0
+        ):
+            realtime_factor = trial.latency_seconds / wav_identity.duration_seconds
+            realtime_speedup = wav_identity.duration_seconds / trial.latency_seconds
 
         blockers.extend(f"trial {index}: {blocker}" for blocker in trial_blockers)
         trial_evidence.append(
@@ -192,6 +199,7 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
                 runtime_revision=trial.runtime_revision,
                 latency_seconds=trial.latency_seconds,
                 realtime_factor=realtime_factor,
+                realtime_speedup=realtime_speedup,
                 wav=wav_identity,
                 blockers=trial_blockers,
             )
