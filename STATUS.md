@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified production evidence point: **`main@370dd5162f5ef5cc05e9ee4c39e939580a029c5b`**. Post-merge CI **#2151** passed on Python 3.11/3.12. Live GitHub state must still be re-fetched on every recovery.
+Latest verified production evidence point: **`main@2200377b6607e1026a5d36c099b39b27715c651a`**. Post-merge CI **#2153** passed on Python 3.11/3.12. Live GitHub state must still be re-fetched on every recovery.
 
 ### audio.cpp Qwen3-TTS 1.7B operator route
 
@@ -34,6 +34,7 @@ TDD/merge evidence:
 - GREEN/docs exact head `bb1e88fcb32531f82670fc3008a2a574e115a770` → CI **#2149**: Python 3.11/3.12 Ruff + full pytest passed.
 - ready-for-review hit the known GitHub connector `fullDatabaseId` GraphQL compatibility failure; draft #225 was closed and non-draft #226 recreated on the **same verified exact head**, with no force/update-ref/history rewrite.
 - PR #226 squash-merged as `370dd5162f5ef5cc05e9ee4c39e939580a029c5b`; post-merge CI **#2151** passed on Python 3.11/3.12.
+- PR #227 synchronized the execution snapshot as `2200377b6607e1026a5d36c099b39b27715c651a`; post-merge CI **#2153** passed on Python 3.11/3.12.
 
 ## Canonical guaranteed baseline
 
@@ -77,8 +78,9 @@ Unsupported speaker/voice/instruction/reference conditioning must fail closed be
 ## Fresh ecosystem radar — 2026-08-30
 
 - **LightX2V/Wan2.2:** upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`. Latest reviewed changes remain example-path cleanup plus H3/XPU-specific work and do not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V route. Keep the tested pin; no freshness-only repin.
+- **WanGP/Wan2GP:** upstream `main` advanced to `c3aa2915b039f898285d4a5de102d89eabf83237` on 2026-08-30 local time. The newest exact commit is PiD post-processing/upsampler maintenance (`deepy optimisations`), not evidence of improved Hottop Wan2.2 reference-conditioned identity or requested-action motion. WanGP remains operator-managed under its own license/runtime/download boundaries; do not repin or integrate from freshness alone. Its existing SVI/anchor-image ideas remain benchmark signals only until rights-safe Hottop output evidence exists.
 - **Qwen3-TTS:** reviewed official `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no reviewed official change justifies altering the 1.7B operator-local benchmark gate.
-- **audio.cpp:** upstream `main` has advanced to `e73c980fe259aa2b3931c8b6ea53517e769877ec`, including release/documentation/runtime maintenance after v0.7.0. Hottop keeps the separate source capability audit at `a76ec04f...` because no measured contract requires a freshness-only repin. The v0.7.0 official Ubuntu CPU/Vulkan archives are now exact-digest-reviewed manual operator options only.
+- **audio.cpp:** upstream `main` has advanced to `e73c980fe259aa2b3931c8b6ea53517e769877ec`, including release/documentation/runtime maintenance after v0.7.0. Hottop keeps the separate source capability audit at `a76ec04f...` because no measured contract requires a freshness-only repin. The v0.7.0 official Ubuntu CPU/Vulkan archives are exact-digest-reviewed manual operator options only.
 - **qwentts.cpp/CrispASR:** existing admissions remain unchanged. Auto-download/build paths stay forbidden in unattended Hottop execution.
 
 No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route or current tested LightX2V/Wan2.2 operator route.
