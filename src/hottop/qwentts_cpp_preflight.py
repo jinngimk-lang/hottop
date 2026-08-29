@@ -134,6 +134,12 @@ def inspect_qwentts_cpp_inputs(
     )
     blockers = executable_blockers + talker_blockers + tokenizer_blockers
 
+    if talker_identity is not None and tokenizer_identity is not None:
+        same_path = talker_identity.path == tokenizer_identity.path
+        same_bytes = talker_identity.sha256 == tokenizer_identity.sha256
+        if same_path or same_bytes:
+            blockers.append("talker GGUF and tokenizer GGUF must be distinct artifacts")
+
     return QwenTtsCppPreflight(
         ready=not blockers,
         executable=executable_identity,
