@@ -36,6 +36,17 @@ binds an **already provisioned** local benchmark input set without running audio
 
 The preflight never executes audio.cpp, accesses the network, invokes audio.cpp model-download/conversion helpers, builds dependencies, provisions accelerators or promotes the model-hub entry to runtime-ready. `ready=true` means only that the operator supplied a stable, byte-bound, structurally GGUF-like local input set. It does **not** prove checkpoint identity, licensing, speaker capability, runtime success, Mandarin quality or publication rights.
 
+## Exact upstream layout audit
+
+The reviewed upstream model contract was re-checked against `model_specs/qwen3_tts.json` and `docs/models/qwen3.md` at the same exact source revision. This resolves an important preflight question without widening the gate:
+
+- audio.cpp documents Qwen3 TTS conversion as converting the main `model.safetensors` and the separate `speech_tokenizer/model.safetensors` **independently**, placing each converted output beside its source as `model.gguf`;
+- the package spec maps `model_weights` and `speech_tokenizer_weights` as distinct tensor roles and the native directory loader expects the corresponding model/speech-tokenizer resources;
+- GGUF conversion can embed JSON/tokenizer/config sidecars recursively, so there is no reviewed evidence that Hottop should invent a third mandatory local artifact for this preflight;
+- older tensor-only GGUFs may require sidecars, but the shallow Hottop probe intentionally does not claim runtime loadability or checkpoint identity. Those remain execution-time/operator-evidence gates.
+
+Therefore the existing `model.gguf` + `speech_tokenizer/model.gguf` local layout is retained. The audit is evidence for the current probe shape, not a claim that any two GGUF-like files are a valid Qwen3 CustomVoice checkpoint.
+
 ## Benchmark gate
 
 A future run must compare the same Mandarin line and a checkpoint-supported preset speaker against the existing qwentts.cpp/CrispASR and, where available, official Qwen adapter path. Bind exact source/build/backend, model/tokenizer bytes, speaker, instruction, seed/sampling/generation ceiling, cold/warm trial identity, every WAV's SHA-256/size/duration/PCM integrity, latency/RTF, repeated speaker consistency, short-onset stability, intelligibility and naturalness.
