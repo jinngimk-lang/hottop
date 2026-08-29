@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@3e74e95c1a5f693bcff1e617a120fb179c9ce2f7`**. Post-merge push CI **#2201** passed on Python 3.11/3.12 after the LongCat-Video-Avatar 1.5 model-hub admission. The admission workstream is complete; no executable LongCat route was added.
+Latest verified evidence point: **`main@ff7999e6931625aa675bd4b7a30185875003398d`**. Post-merge push CI **#2203** passed on Python 3.11/3.12 after closing the LongCat-Video-Avatar 1.5 admission workstream. At that evidence point there were no open PRs.
 
 ## Canonical guaranteed baseline
 
@@ -40,7 +40,7 @@ Reviewed source: `meituan-longcat/LongCat-Video@6b3f4b8582a8bc3f20f795735f538371
 
 - source repository license: MIT;
 - official `meituan-longcat/LongCat-Video-Avatar-1.5` model-card license: MIT;
-- relevant upstream capabilities: audio-image-to-video, audio-text-to-video, continuation, single/multi-audio, Whisper-Large-v3 conditioning, distilled 8-step inference, 480p/720p, stylized/animal domains and long-video stability;
+- relevant upstream capabilities: audio-text-to-video, audio-image-to-video, continuation, single/multi-audio, Whisper-Large-v3 conditioning, distilled 8-step inference, 480p/720p, stylized/animal domains and long-video stability;
 - upstream setup requires Python/CUDA/PyTorch/FlashAttention plus explicit model downloads, and Avatar 1.5 examples use a two-process `torchrun` path;
 - model hub entry `longcat-video-avatar-15` is now **`benchmark_candidate / integration_ready=false / runtime_status=unprobed / self_owned_compute`** and is excluded from integration-ready/runtime-ready selection;
 - no executable Hottop route, auto-install/download or GPU provisioning was added.
@@ -75,9 +75,10 @@ Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoi
 - **WanGP/Wan2GP:** reviewed PiD changes remain post-processing/upsampler maintenance, not improved Hottop identity/requested-action evidence. Durable review: `docs/research/2026-08-30-wangp-pid-radar.md`.
 - **Echo-Memory:** scene/revisit-memory benchmark signal only; it cannot substitute for subject identity or requested-action motion proof. Durable review: `docs/research/2026-08-30-echo-memory-admission.md`.
 - **LongCat-Video-Avatar 1.5:** MIT source + official weights and unusually relevant audio-I2V/continuation/animal-domain capability justified benchmark-layer admission, but the heavy local stack and explicit model-download path keep it out of unattended production. Durable review: `docs/research/2026-08-30-longcat-video-avatar-15-admission.md`.
+- **Rust Qwen3-TTS runtimes:** `cgisky1980/Qwen3-TTS-Rust@f86f59ed…` and `second-state/qwen3_tts_rs@efe3285e…` were reviewed and **not admitted**. The former auto-downloads runtime components and silently falls back to Vivian when a requested speaker is missing; the latter's quick installer downloads binaries/models and its reviewed tree lacks the root `LICENSE` linked from README despite Cargo license metadata. Neither currently beats the already prepared qwentts.cpp/CrispASR/audio.cpp path under Hottop's fail-closed benchmark protocol. Durable review: `docs/research/2026-08-30-rust-qwen3-tts-local-radar.md`.
 - **Qwen3-TTS / local 1.7B runtimes:** retain the operator-provisioned, benchmark-first route. Do not infer quality from runtime support, speed claims or a single successful WAV.
 
-No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route or current tested LightX2V/Wan2.2 operator route.
+No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, current tested LightX2V/Wan2.2 operator route, or the existing prepared 1.7B TTS benchmark candidates.
 
 ## Immediate next actions
 
