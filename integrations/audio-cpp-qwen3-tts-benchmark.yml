@@ -17,14 +17,31 @@ auto_download_allowed: false
 auto_build_allowed: false
 operator_profiles: []
 integration_strategy: isolated_same_line_cross_runtime_benchmark_after_local_artifact_provisioning
+reviewed_prebuilt_release:
+  tag: v0.7.0
+  commit: d2ff37009c69d464bcab6aa4a44a13746e84a914
+  published_at: 2026-08-27T01:49:56Z
+  provenance_scope: runtime_artifact_only_execution_capability_still_gated
+  auto_download_allowed: false
+  operator_provisioning: manual_only
+  assets:
+    - name: audio-v0.7.0-bin-ubuntu-x64-cpu.tar.gz
+      sha256: 400774c3f92f3da4c5fedfa2e43d50482e951ec288eb39e66c10e63fb46de47d
+      size_bytes: 39878502
+    - name: audio-v0.7.0-bin-ubuntu-x64-vulkan.tar.gz
+      sha256: e49676f1da28df0d2a6ca2073118964e91f3d14aa3c2ca3ad984e3d09b96932d
+      size_bytes: 66981995
 runtime_boundary: >-
   Exact reviewed source a76ec04f620da829e4a53032247369083ba1ad45 exposes Qwen3-TTS
   1.7B CustomVoice through a native ggml runtime. The reviewed documentation separates
   Base reference-audio cloning, VoiceDesign instruction conditioning and CustomVoice
   packaged-speaker conditioning; CustomVoice uses --speaker and optional --instruct.
   Hottop must not download Qwen assets, build audio.cpp, convert checkpoints or provision
-  hardware automatically. Only operator-provisioned source/build plus independently
-  reviewed local model/tokenizer bytes may enter a separate benchmark run.
+  hardware automatically. Only operator-provisioned source/build or a manually provisioned,
+  exact-digest-reviewed upstream prebuilt plus independently reviewed local model/tokenizer
+  bytes may enter a separate benchmark run. The v0.7.0 prebuilt provenance above proves only
+  the runtime archive identity; Hottop must still verify the extracted executable locally and
+  must not infer Qwen capability, runtime success or audio quality from release publication.
 benchmark_protocol:
   compare_against: [qwen3-tts-qwentts-cpp-1b7, qwen3-tts-crispasr-1b7, qwen3-tts-customvoice-1b7]
   require_same_mandarin_line: true
@@ -42,3 +59,4 @@ notes:
   - The reviewed source repository carries Apache-2.0; model/checkpoint/tokenizer/conversion and output-publication rights remain separate.
   - Upstream support or parity claims are implementation evidence, not Hottop Mandarin quality evidence.
   - Reference-audio cloning is not admitted by this manifest and remains separately rights-gated.
+  - audio.cpp v0.7.0 official prebuilts are an operator-manual provisioning option only; normal Hottop must never fetch them automatically or invoke the bundled native model manager to obtain model assets.
