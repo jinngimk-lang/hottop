@@ -23,6 +23,13 @@ ZERO_TENSOR_GGUF = (
     + (0).to_bytes(8, "little")
     + b"fixture-payload"
 )
+UNSUPPORTED_VERSION_GGUF = (
+    b"GGUF"
+    + (99).to_bytes(4, "little")
+    + (1).to_bytes(8, "little")
+    + (0).to_bytes(8, "little")
+    + b"fixture-payload"
+)
 
 
 def _write(path: Path, payload: bytes) -> Path:
@@ -103,6 +110,22 @@ def test_qwentts_cpp_preflight_rejects_magic_only_or_truncated_gguf_header(tmp_p
 
     assert result.ready is False
     assert any("talker GGUF has truncated GGUF header" in reason for reason in result.blockers)
+
+
+def test_qwentts_cpp_preflight_rejects_unsupported_gguf_version(tmp_path: Path) -> None:
+    executable = _write(tmp_path / "qwentts-cli", b"binary")
+    executable.chmod(0o755)
+    unsupported_talker = _write(tmp_path / "talker.gguf", UNSUPPORTED_VERSION_GGUF)
+    tokenizer = _write(tmp_path / "tokenizer.gguf", VALID_GGUF)
+
+    result = inspect_qwentts_cpp_inputs(
+        executable=executable,
+        talker_gguf=unsupported_talker,
+        tokenizer_gguf=tokenizer,
+    )
+
+    assert result.ready is False
+    assert any("talker GGUF has unsupported GGUF version" in reason for reason in result.blockers)
 
 
 def test_qwentts_cpp_preflight_rejects_zero_tensor_gguf_model(tmp_path: Path) -> None:
