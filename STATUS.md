@@ -8,19 +8,19 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified production head: **`main@8c7ba1d4c28e21b5c682abfedaabaf6a12913598`**. It exposes the already-reviewed audio.cpp Qwen3-TTS 1.7B candidate through the unified model-hub discovery layer without adding a runtime adapter or production route. Post-merge CI **#2128** passed on Python 3.11/3.12.
+Latest verified production head: **`main@03bcc2dfd0a449c47faea391d7f22b3281babb72`**. It adds a fail-closed, read-only local preflight for the already-admitted audio.cpp Qwen3-TTS 1.7B CustomVoice benchmark candidate without adding a production runtime adapter. Post-merge CI **#2141** passed on Python 3.11/3.12.
 
-Audio.cpp admission/model-hub evidence:
+Audio.cpp admission/preflight evidence:
 
-- PR #216 exact head `c7a375a41fc53dee4edb87b6db8d5ce1faabff56` passed CI #2123, added only `docs/research/2026-08-29-audio-cpp-qwen3-tts-admission.md` plus the narrow operator benchmark manifest, then squash-merged as `7a10d487ad121cbb39da1afe1a394b46754e90c3`; post-merge CI #2124 passed on Python 3.11/3.12.
-- Reviewed upstream is `0xShug0/audio.cpp@a76ec04f620da829e4a53032247369083ba1ad45`, Apache-2.0 source. Qwen model/tokenizer/GGUF and output-publication rights remain separate operator gates.
-- The admission is benchmark-only: no normal `video-run`, no auto-build, no model download/conversion, no dependency fetch, no container pull, no GPU provisioning, no credentials and no paid call.
-- Model-hub TDD RED `9fde4d80a88dc0ad03fc6197e56875568ce17b8e` → CI #2125: Ruff passed and pytest reported exactly **1 failed / 556 passed**, solely because `qwen3-tts-audio-cpp-1b7` was absent from the unified registry.
-- GREEN exact head `8c4f6e3b88dd61219afb889a3bc2fd7f2cc8914b` added only the fail-closed registry entry + contract test → CI #2126 passed on Python 3.11/3.12.
-- The ready-for-review connector hit the known GitHub GraphQL `fullDatabaseId` compatibility error. Draft #217 was closed and non-draft #218 recreated on the **same exact head**; no force/update-ref or history rewrite was used.
-- PR #218 squash-merged as `8c7ba1d4c28e21b5c682abfedaabaf6a12913598`; post-merge CI #2128 passed on Python 3.11/3.12.
+- Reviewed upstream remains `0xShug0/audio.cpp@a76ec04f620da829e4a53032247369083ba1ad45`, Apache-2.0 source. Qwen model/tokenizer/GGUF and output-publication rights remain separate operator gates.
+- Existing model-hub entry remains `benchmark_candidate / integration_ready=false / runtime_status=unprobed / self_owned_compute`; no normal `video-run`, auto-build, model download/conversion, dependency fetch, container pull, GPU provisioning, credentials or paid call was added.
+- Preflight RED `b862e4d50ce73d05737367d677dc1db1c034fee5` → CI #2133: Ruff passed; pytest failed on the intentionally missing `probe-audio-cpp` contract.
+- GREEN implementation `b37cdc5433d974b44d82d94b3d6b619f1a874727` → CI #2137: Python 3.11/3.12 Ruff + full pytest passed.
+- Final docs-synced exact head `be1df6451b4823b29b82eb32c36e967a0e2b54d9` → CI #2139 passed on Python 3.11/3.12 with no review threads.
+- The ready-for-review connector hit the known GitHub GraphQL `fullDatabaseId` compatibility error. Draft #220 was closed and non-draft #221 recreated on the **same exact verified head**; no force/update-ref or history rewrite was used.
+- PR #221 squash-merged as `03bcc2dfd0a449c47faea391d7f22b3281babb72`; post-merge CI #2141 passed on Python 3.11/3.12.
 
-`qwen3-tts-audio-cpp-1b7` is now discoverable as `benchmark_candidate / integration_ready=false / runtime_status=unprobed / self_owned_compute` with CPU/CUDA/HIP/Vulkan/Metal capability metadata. It is excluded from integration-ready and runtime-ready selection. Upstream support is implementation evidence only, not Hottop Mandarin-quality evidence.
+`hottop-models probe-audio-cpp --executable <audiocpp_cli> --model-dir <Qwen3-TTS-12Hz-1.7B-CustomVoice>` now binds an already provisioned operator input set without execution. The resolved model directory must contain `model.gguf` plus `speech_tokenizer/model.gguf`. The probe reuses Hottop's hardened local artifact boundary: concrete resolved targets, bounded-memory SHA-256, stable before/after filesystem snapshots, executable permission, complete GGUF v3 fixed headers, non-zero tensor counts and incompatible-role path/byte distinctness. `ready=true` is only benchmark-input readiness; it does not prove checkpoint identity, licensing, speaker capability, runtime success, Mandarin quality or publication rights.
 
 ## Canonical guaranteed baseline
 
@@ -54,10 +54,10 @@ Current local benchmark candidates include:
 
 - `qwen3-tts-qwentts-cpp-1b7` — read-only GGUF artifact preflight available;
 - `qwen3-tts-crispasr-1b7` — read-only GGUF artifact preflight available;
-- `qwen3-tts-audio-cpp-1b7` — unified discovery entry only; **no executable preflight/adapter admitted yet**;
+- `qwen3-tts-audio-cpp-1b7` — read-only CustomVoice model-directory preflight available; **no production runtime adapter admitted**;
 - `qwen3-tts-ncnn-0b6` — lower-hardware 0.6B CPU/Vulkan benchmark candidate only.
 
-The qwentts/CrispASR preflights require resolved-target binding, bounded-memory SHA-256, stable before/after filesystem snapshots, executable permission, complete 24-byte GGUF fixed header, reviewed GGUF version `3`, non-zero tensor count and path/byte distinctness across incompatible runtime roles. They do not execute runtimes or prove checkpoint identity, licensing, speaker capability or Mandarin quality.
+The qwentts/CrispASR/audio.cpp preflights bind operator-provided local artifacts only. They require resolved-target binding, bounded-memory SHA-256, stable before/after filesystem snapshots, executable permission, complete 24-byte GGUF fixed headers, reviewed GGUF version `3`, non-zero tensor counts and path/byte distinctness across incompatible runtime roles. The audio.cpp probe additionally locks one resolved model directory and the reviewed `model.gguf` + `speech_tokenizer/model.gguf` layout. None of these probes executes a runtime or proves checkpoint identity, licensing, conditioning capability or Mandarin quality.
 
 Future 1.7B cross-runtime A/B must bind exact source/build/backend, checkpoint capability mode, model/tokenizer/GGUF bytes, the **same Mandarin line**, the same checkpoint-supported preset speaker, seed/sampling/generation ceiling, cold/warm trial identity, every WAV's SHA-256/size/duration/PCM integrity, latency/RTF, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture.
 
@@ -65,9 +65,9 @@ Unsupported speaker/voice/instruction/reference conditioning must fail closed be
 
 ## Fresh ecosystem radar — 2026-08-29
 
-- **LightX2V/Wan2.2:** upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`. Latest reviewed change cleans Wan-Animate-2 example paths and does not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V route. Keep the tested pin; no freshness-only repin.
+- **LightX2V/Wan2.2:** upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`. Latest reviewed changes are example-path cleanup plus H3/XPU-specific work and do not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V route. Keep the tested pin; no freshness-only repin.
 - **Qwen3-TTS:** reviewed official `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no reviewed official change justifies altering the 1.7B operator-local benchmark gate.
-- **audio.cpp:** reviewed upstream remains `a76ec04f620da829e4a53032247369083ba1ad45` as of this cycle. It is active and supports several native backends, but upstream capability/performance evidence is not a Hottop Mandarin-quality result.
+- **audio.cpp:** reviewed upstream remains `a76ec04f620da829e4a53032247369083ba1ad45`. Its native model-directory capability is now covered by Hottop's read-only local preflight; upstream capability/performance evidence is still not Hottop Mandarin-quality evidence.
 - **qwentts.cpp/CrispASR:** existing admissions remain unchanged. Auto-download/build paths stay forbidden in unattended Hottop execution.
 
 No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route or current tested LightX2V/Wan2.2 operator route.
@@ -77,7 +77,7 @@ No reviewed candidate in this cycle clears admission strongly enough to replace 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
 3. If an operator provisions qwentts.cpp or CrispASR plus exact 1.7B CustomVoice GGUF assets locally, run the existing read-only preflight first; only after it passes may a separate explicit same-line Mandarin A/B execute.
-4. If an operator provisions audio.cpp plus independently reviewed local Qwen3-TTS 1.7B CustomVoice assets, first add a narrow read-only artifact/runtime preflight or equivalent byte-bound benchmark harness. Do **not** promote the new discovery entry directly into `video-run`.
+4. If an operator provisions audio.cpp plus independently reviewed local Qwen3-TTS 1.7B CustomVoice assets, run `probe-audio-cpp` first. Only after it reports a stable byte-bound input set may a **separate explicit** same-line Mandarin A/B execute; do not promote the candidate directly into `video-run`.
 5. In every 1.7B cross-runtime A/B, use the same line, supported preset speaker and bounded generation settings, and preserve repeated speaker/onset/intelligibility/naturalness/RTF/PCM/provenance as separate evidence dimensions.
 6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
