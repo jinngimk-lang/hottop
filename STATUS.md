@@ -8,7 +8,13 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified production evidence point: **`main@2200377b6607e1026a5d36c099b39b27715c651a`**. Post-merge CI **#2153** passed on Python 3.11/3.12. Live GitHub state must still be re-fetched on every recovery.
+Latest verified production evidence point: **`main@a052c426c8612f856560beaecc16d9b291373d1f`**. Post-merge CI **#2159** passed on Python 3.11/3.12. Live GitHub state must still be re-fetched on every recovery.
+
+This cycle also closed two radar/documentation workstreams without changing production behavior:
+
+- PR #228 refreshed live production status and the latest WanGP/Wan2GP observation; exact-head CI **#2154** passed and squash merge `1f5d56d438f32ffbb33fd38e83335cd218d5d0f5` was followed by main CI **#2155** passing on Python 3.11/3.12.
+- PR #229 persisted the WanGP PiD exact-head review as durable research; exact-head CI **#2156** passed and squash merge `320d38edd3640b1bcd143d06d92fe7ed85e38f00` was followed by main CI **#2157** passing on Python 3.11/3.12.
+- PR #230 persisted Echo-Memory as a scene/revisit-memory research/benchmark candidate only; exact-head CI **#2158** passed and squash merge `a052c426c8612f856560beaecc16d9b291373d1f` was followed by main CI **#2159** passing on Python 3.11/3.12.
 
 ### audio.cpp Qwen3-TTS 1.7B operator route
 
@@ -60,6 +66,8 @@ Input locks are constraints, not output proof. Generated continuity evidence mus
 
 Primary operator route remains **LightX2V/Wan2.2**. Stand-In, Aura, Wan-Animate-2, UnityVideo, DomainShuttle, MV-S2V, SMRABooth, ID-V2V, WildActor and other reviewed candidates remain benchmark/research-only unless exact source/checkpoint rights, operator runtime and output evidence clear admission. Runtime success never substitutes for identity, requested motion, geography, provenance or final-media proof.
 
+**Echo-Memory** is now retained separately as a scene/revisit-memory benchmark signal, not as a solved identity route. Reviewed source `Echo-Team-Joy-Future-Academy-JD/Echo-Memory@194be716aedaa84d9bd377740d6e6d9c32a309cb` and public Echo checkpoints are CC BY 4.0; the current released backbone is Wan2.1 T2V 1.3B, while Wan2.2/5B/14B remain roadmap items. It may be re-evaluated when a measured Hottop sequence specifically needs leave-and-return scene/viewpoint memory or when a compatible Wan2.2 release exists. Any benchmark must still bind exact base/checkpoint/reference/output bytes and prove scene/viewpoint return, identity and requested motion as separate dimensions.
+
 ## Dialogue / neural-TTS boundary
 
 The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the higher-quality operator-owned benchmark target; CosyVoice3 remains correctness-gated.
@@ -78,7 +86,8 @@ Unsupported speaker/voice/instruction/reference conditioning must fail closed be
 ## Fresh ecosystem radar — 2026-08-30
 
 - **LightX2V/Wan2.2:** upstream `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`. Latest reviewed changes remain example-path cleanup plus H3/XPU-specific work and do not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V route. Keep the tested pin; no freshness-only repin.
-- **WanGP/Wan2GP:** upstream `main` advanced to `c3aa2915b039f898285d4a5de102d89eabf83237` on 2026-08-30 local time. The newest exact commit is PiD post-processing/upsampler maintenance (`deepy optimisations`), not evidence of improved Hottop Wan2.2 reference-conditioned identity or requested-action motion. WanGP remains operator-managed under its own license/runtime/download boundaries; do not repin or integrate from freshness alone. Its existing SVI/anchor-image ideas remain benchmark signals only until rights-safe Hottop output evidence exists.
+- **WanGP/Wan2GP:** upstream `main` is `c3aa2915b039f898285d4a5de102d89eabf83237`. The exact reviewed change is PiD post-processing input alignment/upsampler maintenance, not improved Hottop Wan2.2 reference-conditioned identity or requested-action motion. Durable review: `docs/research/2026-08-30-wangp-pid-radar.md`. Keep operator-managed interoperability and do not repin or integrate from freshness alone.
+- **Echo-Memory:** reviewed exact source `194be716aedaa84d9bd377740d6e6d9c32a309cb`, CC BY 4.0. It provides released Wan2.1-1.3B memory checkpoints and a public ZeroGPU demo for leave/revisit consistency, while Wan2.2 and larger backbones remain roadmap work. Keep it research/benchmark-only; no auto-download, ComfyUI dependency or production route. Durable review: `docs/research/2026-08-30-echo-memory-admission.md`.
 - **Qwen3-TTS:** reviewed official `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no reviewed official change justifies altering the 1.7B operator-local benchmark gate.
 - **audio.cpp:** upstream `main` has advanced to `e73c980fe259aa2b3931c8b6ea53517e769877ec`, including release/documentation/runtime maintenance after v0.7.0. Hottop keeps the separate source capability audit at `a76ec04f...` because no measured contract requires a freshness-only repin. The v0.7.0 official Ubuntu CPU/Vulkan archives are exact-digest-reviewed manual operator options only.
 - **qwentts.cpp/CrispASR:** existing admissions remain unchanged. Auto-download/build paths stay forbidden in unattended Hottop execution.
@@ -89,11 +98,12 @@ No reviewed candidate in this cycle clears admission strongly enough to replace 
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-3. If an operator provisions qwentts.cpp or CrispASR plus exact 1.7B CustomVoice GGUF assets locally, run the existing read-only preflight first; only after it passes may a separate explicit same-line Mandarin A/B execute.
-4. For audio.cpp, an operator may manually provision the reviewed v0.7.0 Ubuntu CPU/Vulkan archive and verify its exact digest, or provide another independently reviewed build. Then run `probe-audio-cpp` against the extracted executable and independently reviewed local Qwen3-TTS 1.7B CustomVoice assets. Hottop itself must not fetch the runtime archive or invoke the bundled model manager.
-5. In every 1.7B cross-runtime A/B, use the same line, supported preset speaker and bounded generation settings, and preserve repeated speaker/onset/intelligibility/naturalness/RTF/PCM/provenance as separate evidence dimensions.
-6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+3. If a measured future sequence specifically requires leave-and-return scene/viewpoint memory, benchmark Echo-Memory only after operator-provisioned exact source/base/checkpoint assets and rights-safe action/reference bytes are available; do not let a revisit score substitute for subject identity or requested-action evidence.
+4. If an operator provisions qwentts.cpp or CrispASR plus exact 1.7B CustomVoice GGUF assets locally, run the existing read-only preflight first; only after it passes may a separate explicit same-line Mandarin A/B execute.
+5. For audio.cpp, an operator may manually provision the reviewed v0.7.0 Ubuntu CPU/Vulkan archive and verify its exact digest, or provide another independently reviewed build. Then run `probe-audio-cpp` against the extracted executable and independently reviewed local Qwen3-TTS 1.7B CustomVoice assets. Hottop itself must not fetch the runtime archive or invoke the bundled model manager.
+6. In every 1.7B cross-runtime A/B, use the same line, supported preset speaker and bounded generation settings, and preserve repeated speaker/onset/intelligibility/naturalness/RTF/PCM/provenance as separate evidence dimensions.
+7. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+8. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
