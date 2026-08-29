@@ -8,9 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified production evidence point before this workstream: **`main@44f60bff11e1e05b733a3629fb6d8733053bd07a`**. Push CI **#2188** passed on Python 3.11/3.12. At recovery there were no open PRs.
-
-Current active workstream: **LongCat-Video-Avatar 1.5 gated admission**. Durable review: `docs/research/2026-08-30-longcat-video-avatar-15-admission.md`. Exact PR/head/CI state must be re-fetched live before merge decisions.
+Latest verified evidence point: **`main@3e74e95c1a5f693bcff1e617a120fb179c9ce2f7`**. Post-merge push CI **#2201** passed on Python 3.11/3.12 after the LongCat-Video-Avatar 1.5 model-hub admission. The admission workstream is complete; no executable LongCat route was added.
 
 ## Canonical guaranteed baseline
 
@@ -34,7 +32,7 @@ Input locks are constraints, not output proof. Generated continuity evidence mus
 
 **Identity fidelity and requested-action/motion fidelity are separate dimensions.** Motion/anti-copy evidence binds `motion_spec_sha256` from exact ordered subject-bearing plan semantics. Generic motion cannot prove a different requested action.
 
-Primary operator route remains **LightX2V/Wan2.2**. Stand-In, Aura, Wan-Animate-2, UnityVideo, DomainShuttle, MV-S2V, SMRABooth, ID-V2V, WildActor and other reviewed routes remain benchmark/research-only unless exact rights, local runtime and same-sequence output evidence clear admission. Runtime success never substitutes for identity, motion, geography, provenance or final-media proof.
+Primary operator route remains **LightX2V/Wan2.2**. Stand-In, Aura, Wan-Animate-2, UnityVideo, DomainShuttle, MV-S2V, SMRABooth, ID-V2V, WildActor, LongCat-Video-Avatar and other reviewed routes remain benchmark/research-only unless exact rights, local runtime and same-sequence output evidence clear admission. Runtime success never substitutes for identity, motion, geography, provenance or final-media proof.
 
 ### LongCat-Video-Avatar 1.5
 
@@ -44,7 +42,10 @@ Reviewed source: `meituan-longcat/LongCat-Video@6b3f4b8582a8bc3f20f795735f538371
 - official `meituan-longcat/LongCat-Video-Avatar-1.5` model-card license: MIT;
 - relevant upstream capabilities: audio-image-to-video, audio-text-to-video, continuation, single/multi-audio, Whisper-Large-v3 conditioning, distilled 8-step inference, 480p/720p, stylized/animal domains and long-video stability;
 - upstream setup requires Python/CUDA/PyTorch/FlashAttention plus explicit model downloads, and Avatar 1.5 examples use a two-process `torchrun` path;
-- admission: **gated research/benchmark candidate only**. No executable Hottop route, no auto-install/download and no GPU provisioning.
+- model hub entry `longcat-video-avatar-15` is now **`benchmark_candidate / integration_ready=false / runtime_status=unprobed / self_owned_compute`** and is excluded from integration-ready/runtime-ready selection;
+- no executable Hottop route, auto-install/download or GPU provisioning was added.
+
+TDD evidence: RED CI **#2195** isolated the absent candidate; the first GREEN run **#2197** exposed only a `Hugging Face` test-literal mismatch; corrected exact head `3010cb96604f9c58b11d11a8fd889d61c2ce88fd` passed CI **#2198** on Python 3.11/3.12; squash merge produced `main@3e74e95c1a5f693bcff1e617a120fb179c9ce2f7`, whose CI **#2201** also passed.
 
 Future benchmark requires operator-provisioned exact source/model bytes and the same rights-safe subject sequence as the primary route, with identity, requested-action motion, lip-sync/dialogue timing when relevant, continuation/geography stability, anti-copy, provenance and final-media evidence measured independently.
 
@@ -73,20 +74,19 @@ Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoi
 - **Stand-In:** reviewed V2 evidence remains announcement-only. Durable review: `docs/research/2026-08-30-stand-in-v2-radar.md`.
 - **WanGP/Wan2GP:** reviewed PiD changes remain post-processing/upsampler maintenance, not improved Hottop identity/requested-action evidence. Durable review: `docs/research/2026-08-30-wangp-pid-radar.md`.
 - **Echo-Memory:** scene/revisit-memory benchmark signal only; it cannot substitute for subject identity or requested-action motion proof. Durable review: `docs/research/2026-08-30-echo-memory-admission.md`.
-- **LongCat-Video-Avatar 1.5:** MIT source + official weights and unusually relevant audio-I2V/continuation/animal-domain capability make it worth retaining as a gated benchmark candidate. The heavy local stack and explicit model-download path keep it out of unattended production. Durable review: `docs/research/2026-08-30-longcat-video-avatar-15-admission.md`.
+- **LongCat-Video-Avatar 1.5:** MIT source + official weights and unusually relevant audio-I2V/continuation/animal-domain capability justified benchmark-layer admission, but the heavy local stack and explicit model-download path keep it out of unattended production. Durable review: `docs/research/2026-08-30-longcat-video-avatar-15-admission.md`.
 - **Qwen3-TTS / local 1.7B runtimes:** retain the operator-provisioned, benchmark-first route. Do not infer quality from runtime support, speed claims or a single successful WAV.
 
 No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route or current tested LightX2V/Wan2.2 operator route.
 
 ## Immediate next actions
 
-1. Finish the active LongCat admission PR only after exact-head CI/review evidence passes; then re-fetch `main` and post-merge CI and clear this workstream from `STATUS.md`.
-2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-4. If LongCat-Video-Avatar 1.5 is ever locally provisioned, benchmark it against the same rights-safe sequence rather than adding an adapter from upstream claims alone.
-5. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` and keep listening/speaker/onset evidence independent from speed.
-6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
+3. If LongCat-Video-Avatar 1.5 is locally provisioned, benchmark it against the same rights-safe sequence rather than adding an executable adapter from upstream claims alone.
+4. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` and keep listening/speaker/onset evidence independent from speed.
+5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+6. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
