@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified live-main evidence before this docs sync: **`main@69b3b0db2bb2f24f6387af323c8a06b159d9bdf1` → CI #2046 passed** on Python 3.11/3.12.
+Latest verified live-main evidence before this docs sync: **`main@7fef3520c530454b152b6342639d86146dca9de2` → CI #2048 passed** on Python 3.11/3.12.
 
 PR #188 closed a qwentts.cpp operator-preflight provenance gap. The previous binder could sample file size before hashing and then bind a digest after the local executable/GGUF had changed, creating a mixed artifact identity that described no single stable filesystem state.
 
@@ -18,6 +18,7 @@ TDD evidence:
 - GREEN `6befa6cc43fa9a10dc110371a082df3d4adf2fb8` → CI #2043 passed on Python 3.11/3.12.
 - Durable-record exact head `36a1e75c6987d2e3a95cc97f8cc1c6cc935cb9a1` → CI #2044 and replacement-PR CI #2045 passed.
 - PR #188 was squash-merged as `69b3b0db2bb2f24f6387af323c8a06b159d9bdf1`; post-merge CI #2046 passed.
+- Follow-up execution-snapshot sync `7fef3520c530454b152b6342639d86146dca9de2` → CI #2048 passed.
 
 The read-only qwentts.cpp preflight now requires a stable local artifact snapshot across bounded-memory SHA-256 streaming. It compares device id, inode, size, nanosecond mtime, nanosecond ctime and file mode before/after hashing. Replacement, append, truncation, disappearance or permission/file-identity change fails closed with no stable `LocalArtifactIdentity` emitted for that input.
 
@@ -72,8 +73,9 @@ Capability binding remains independent from output evidence: unsupported speaker
 
 ## Fresh ecosystem radar — 2026-08-29
 
-- **LightX2V/Wan2.2:** no Hottop-measured continuity, quality or runtime gain was found for the tested I2V subset in this cycle. Keep the tested pin and **do not freshness-only repin**.
-- **Qwen3-TTS / qwentts.cpp:** no reviewed upstream change in this cycle justifies changing current admission or adding an automatic serving stack. Preset-speaker/output-publication rights remain a separate gate from source/model license and must be resolved for the actual benchmark/output use.
+- **LightX2V/Wan2.2:** upstream `main` is now `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`. The latest reviewed change only replaces private hard-coded Wan-Animate-2 example paths with `/path/to/...` placeholders in two scripts; it does not provide a Hottop-measured continuity, quality or runtime gain for the tested I2V subset. Keep the tested pin and **do not freshness-only repin**.
+- **Qwen3-TTS:** official `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no reviewed official change in this cycle justifies changing the 1.7B operator-local benchmark gate.
+- **qwentts.cpp:** reviewed `master` remains `a8a7716b530e49fed537c57711247c12fbbb903c`; no reviewed upstream change in this cycle justifies changing current admission or adding an automatic serving/build stack. Preset-speaker/output-publication rights remain a separate gate from source/model license and must be resolved for the actual benchmark/output use.
 - **WildActor:** remains a research-only multi-reference identity signal because reviewed source/checkpoint/data/reference/API/runtime rights are not all cleared. No copied code, model/data download, hosted API use or runtime-ready claim.
 
 No reviewed candidate in this run clears admission strongly enough to replace the guaranteed software3d route or current tested operator video route.
