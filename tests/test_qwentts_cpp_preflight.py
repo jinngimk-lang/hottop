@@ -4,6 +4,7 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
+import hottop.qwentts_cpp_preflight as qwentts_preflight
 from hottop.model_hub_cli import app
 from hottop.qwentts_cpp_preflight import inspect_qwentts_cpp_inputs
 
@@ -95,6 +96,38 @@ def test_qwentts_cpp_preflight_rejects_magic_only_or_truncated_gguf_header(tmp_p
 
     assert result.ready is False
     assert any("talker GGUF has truncated GGUF header" in reason for reason in result.blockers)
+
+
+def test_qwentts_cpp_preflight_rejects_artifact_mutated_during_hashing(
+    tmp_path: Path, monkeypatch
+) -> None:
+    executable = _write(tmp_path / "qwentts-cli", b"binary")
+    executable.chmod(0o755)
+    talker = _write(tmp_path / "talker.gguf", VALID_GGUF + b"-talker")
+    tokenizer = _write(tmp_path / "tokenizer.gguf", VALID_GGUF + b"-tokenizer")
+    original_stream = qwentts_preflight._stream_sha256_and_header
+
+    def mutate_after_stream(path: Path) -> tuple[str, bytes]:
+        digest, header = original_stream(path)
+        if path == talker:
+            with path.open("ab") as handle:
+                handle.write(b"-mutated-after-hash")
+        return digest, header
+
+    monkeypatch.setattr(
+        qwentts_preflight,
+        "_stream_sha256_and_header",
+        mutate_after_stream,
+    )
+
+    result = inspect_qwentts_cpp_inputs(
+        executable=executable,
+        talker_gguf=talker,
+        tokenizer_gguf=tokenizer,
+    )
+
+    assert result.ready is False
+    assert any("talker GGUF changed during preflight" in reason for reason in result.blockers)
 
 
 def test_qwentts_cpp_preflight_streams_artifact_hashing(tmp_path: Path, monkeypatch) -> None:
