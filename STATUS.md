@@ -8,13 +8,17 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest live-main evidence point before the current CrispASR admission workstream: **`main@f81346871437c59000acc0aa469ddb93d51d5470`**, with CI #2092 passed on Python 3.11/3.12 and no open PR at recovery.
+Latest verified production/admission merge: **`main@0b38596410188bae126754d3a18c2d857c28840e`**, which admitted CrispASR only as a benchmark-only Qwen3-TTS 1.7B CustomVoice candidate. Final merge-candidate head `7c06dbe1f735ea0ff4b52a739bef00734d1cb3d6` passed CI #2099 on Python 3.11/3.12; squash merge via non-draft PR #211 produced `0b38596410188bae126754d3a18c2d857c28840e`, and post-merge CI #2101 also passed on Python 3.11/3.12.
 
-The current workstream adds a second independent local C++/GGUF runtime candidate for the unresolved Qwen3-TTS 1.7B Mandarin benchmark without changing the guaranteed production route. TDD evidence:
+TDD / admission evidence:
 
 - RED `ebc892f62be62ff44a7724e8c99ea520baa30b4c` → CI #2094: Ruff passed; pytest failed because `qwen3-tts-crispasr-1b7` did not yet exist in the model hub.
 - GREEN implementation `52bbd47de55c1ef80665d7dbc968d95201617913` added only the benchmark-only model-hub entry, focused selection contract and durable admission record → CI #2096 passed on Python 3.11/3.12.
-- PR #210 remains benchmark/admission scope only. No executable adapter, model download, build/install path, GPU provisioning, credentials, paid call or production routing change is part of this workstream.
+- Final exact head `7c06dbe1f735ea0ff4b52a739bef00734d1cb3d6` added the execution-snapshot sync → CI #2099 passed on Python 3.11/3.12.
+- The ready-for-review GraphQL mutation hit the known connector `fullDatabaseId` compatibility error. Draft #210 was closed and non-draft #211 recreated on the **same exact head**; no force/update-ref or history rewrite was used.
+- PR #211 squash-merged as `0b38596410188bae126754d3a18c2d857c28840e`; post-merge CI #2101 passed on Python 3.11/3.12.
+
+No executable CrispASR adapter, model download, build/install path, GPU provisioning, credentials, paid call or production routing change was admitted.
 
 The prior qwentts.cpp preflight closure remains intact. Hottop requires model inputs to be non-empty, GGUF-magic-correct, at least 24 bytes, fixed-header version `3`, and to declare at least one tensor. Existing protections remain: symlinks resolve before identity binding; bounded 1 MiB streaming SHA-256; before/after device/inode/size/mtime_ns/ctime_ns/mode stability checks; executable permission checks; executable/talker/tokenizer path-or-byte role distinctness; no execution/network/download/build/GPU provisioning/runtime-ready promotion.
 
