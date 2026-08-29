@@ -24,7 +24,7 @@ def test_longcat_avatar_15_is_unprobed_benchmark_only_and_never_default_selected
 
     boundary = candidate.runtime_boundary.lower()
     assert "6b3f4b8582a8bc3f20f795735f5383716c4ba794" in boundary
-    assert "huggingface" in boundary and "download" in boundary
+    assert "hugging face" in boundary and "download" in boundary
     assert "2-process" in boundary
 
     integration_ready = select_models(
