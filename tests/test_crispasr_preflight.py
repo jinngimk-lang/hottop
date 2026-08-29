@@ -44,10 +44,10 @@ def test_crispasr_probe_binds_local_inputs(tmp_path: Path) -> None:
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["schema_version"] == "hottop.crispasr-preflight.v1"
-    assert payload["ready"] is True
-    assert payload["executed"] is False
-    assert payload["network_access"] is False
-    assert payload["auto_download"] is False
+    assert payload["ready"]
+    assert not payload["executed"]
+    assert not payload["network_access"]
+    assert not payload["auto_download"]
     assert payload["executable"]["path"] == str(executable.resolve())
     assert payload["talker_gguf"]["path"] == str(talker.resolve())
     assert payload["tokenizer_gguf"]["path"] == str(tokenizer.resolve())
@@ -78,6 +78,6 @@ def test_crispasr_probe_rejects_reused_model_bytes(tmp_path: Path) -> None:
 
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
-    assert payload["ready"] is False
+    assert not payload["ready"]
     expected = "talker GGUF and tokenizer GGUF must be distinct"
     assert any(expected in item for item in payload["blockers"])
