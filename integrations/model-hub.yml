@@ -420,3 +420,24 @@ models:
     notes:
       - This candidate directly targets the unresolved 1.7B Mandarin A/B with a lighter local runtime surface than a Python/H100 serving stack, but Hottop has not reproduced naturalness, onset stability, speaker consistency, instruction control or latency.
       - Bind source/build/backend, exact GGUF SHA-256 and byte sizes, input line, speaker, seed/sampling, generated WAV bytes, latency/RTF and publication-rights posture before making any quality claim.
+
+  - id: qwen3-tts-crispasr-1b7
+    name: Qwen3-TTS 1.7B CustomVoice CrispASR GGUF benchmark candidate
+    family: qwen3-tts-crispasr
+    modalities: [audio]
+    capabilities: [mandarin_tts, role_aware_tts, dialogue_generation, cpu_inference, cuda_inference, vulkan_inference]
+    repository: https://github.com/CrispStrobe/CrispASR
+    source_revision_reviewed: bb77301c4dbde1fca217e1a19584b1ae0167ee03
+    code_license: MIT
+    weights_license: Apache-2.0-cstr-Qwen-GGUF-conversions-upstream-Qwen-output-rights-separate
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    integration_ready: false
+    runtime_status: unprobed
+    operator_profiles: []
+    integration_strategy: registry_only_until_operator_1b7_same_line_cross_runtime_benchmark
+    runtime_boundary: Exact reviewed source bb77301c4dbde1fca217e1a19584b1ae0167ee03 exposes Qwen3-TTS 1.7B CustomVoice through local GGUF on CPU/CUDA/Metal/Vulkan. Upstream supports -m auto, which downloads model files on first use; Hottop must not use that path. Only operator-provisioned local CrispASR build plus byte-bound 1.7B talker and tokenizer/codec GGUF files may be benchmarked. Preset CustomVoice is the initial scope; reference-audio cloning remains separately rights-gated. A runtime success or fast RTF is not a Mandarin quality claim.
+    priority: 47
+    notes:
+      - Reviewed cstr 1.7B CustomVoice GGUF and tokenizer model cards declare Apache-2.0 and identify themselves as format conversions/quantisations of the official Qwen Apache-2.0 assets.
+      - CrispASR#183 reports roughly 0.5-0.76 RTF for a 1.7B CustomVoice Q8_0 Vulkan path on AMD RDNA4 after a native-GQA fix; Hottop treats this only as runtime-specific benchmark evidence until reproduced with the same-line Mandarin protocol.
