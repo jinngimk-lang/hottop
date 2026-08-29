@@ -26,7 +26,15 @@ That capability split aligns with Hottop's fail-closed conditioning doctrine and
 
 ## Runtime/download boundary
 
-The reviewed project supports native model directories and audio.cpp-native GGUF conversion/loading. Hottop must not invoke model download, conversion, dependency fetch, build, container pull or hardware provisioning automatically. A future executable adapter is allowed only after a local operator runtime and exact model/tokenizer assets already exist and can be byte-bound fail-closed.
+The reviewed project supports native model directories and audio.cpp-native GGUF conversion/loading. Hottop must not invoke model download, conversion, dependency fetch, build, container pull or hardware provisioning automatically.
+
+The read-only command
+
+`hottop-models probe-audio-cpp --executable <audiocpp_cli> --model-dir <Qwen3-TTS-12Hz-1.7B-CustomVoice>`
+
+binds an **already provisioned** local benchmark input set without running audio.cpp. The model directory is resolved once and must contain the reviewed CustomVoice layout used by audio.cpp: `model.gguf` plus `speech_tokenizer/model.gguf`. The command reuses Hottop's hardened local artifact boundary: concrete resolved targets, bounded-memory SHA-256, stable before/after filesystem snapshots, executable permission, complete GGUF v3 fixed headers, non-zero tensor counts and incompatible-role path/byte distinctness.
+
+The preflight never executes audio.cpp, accesses the network, invokes audio.cpp model-download/conversion helpers, builds dependencies, provisions accelerators or promotes the model-hub entry to runtime-ready. `ready=true` means only that the operator supplied a stable, byte-bound, structurally GGUF-like local input set. It does **not** prove checkpoint identity, licensing, speaker capability, runtime success, Mandarin quality or publication rights.
 
 ## Benchmark gate
 
@@ -36,4 +44,6 @@ Runtime success, upstream speed claims or one acceptable WAV are not quality pro
 
 ## Integration in this workstream
 
-`integrations/audio-cpp-qwen3-tts-benchmark.yml` persists the narrow candidate contract without changing production routing. It is intentionally `integration_ready=false / runtime_status=unprobed`, forbids normal `video-run`, auto-download and auto-build, and records the same-line cross-runtime benchmark protocol.
+`integrations/audio-cpp-qwen3-tts-benchmark.yml` persists the narrow candidate contract without changing production routing. It remains intentionally `integration_ready=false / runtime_status=unprobed`, forbids normal `video-run`, auto-download and auto-build, and records the same-line cross-runtime benchmark protocol.
+
+The local preflight is a benchmark-input readiness tool only. It narrows the gap between discovery and a future explicit operator A/B while preserving the project's zero-cost/no-auto-provision boundary.
