@@ -134,6 +134,15 @@ def inspect_qwentts_cpp_inputs(
     )
     blockers = executable_blockers + talker_blockers + tokenizer_blockers
 
+    if executable_identity is not None:
+        model_identities = [identity for identity in (talker_identity, tokenizer_identity) if identity]
+        executable_reused_as_model = any(
+            executable_identity.path == identity.path or executable_identity.sha256 == identity.sha256
+            for identity in model_identities
+        )
+        if executable_reused_as_model:
+            blockers.append("qwentts executable and model GGUF artifacts must be distinct")
+
     if talker_identity is not None and tokenizer_identity is not None:
         same_path = talker_identity.path == tokenizer_identity.path
         same_bytes = talker_identity.sha256 == tokenizer_identity.sha256
