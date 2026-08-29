@@ -44,6 +44,18 @@ def _stream_sha256_and_header(path: Path) -> tuple[str, bytes]:
     return digest.hexdigest(), header
 
 
+def _snapshot_signature(path: Path) -> tuple[int, int, int, int, int, int]:
+    stat = path.stat()
+    return (
+        stat.st_dev,
+        stat.st_ino,
+        stat.st_size,
+        stat.st_mtime_ns,
+        stat.st_ctime_ns,
+        stat.st_mode,
+    )
+
+
 def _gguf_header_blockers(header: bytes, *, path: Path, label: str) -> list[str]:
     if not header.startswith(GGUF_MAGIC):
         return [f"{label} has invalid GGUF header: {path}"]
@@ -65,13 +77,22 @@ def _identity(
     if not path.is_file():
         return None, [f"{label} is not a file: {path}"]
 
-    size_bytes = path.stat().st_size
+    snapshot_before = _snapshot_signature(path)
+    size_bytes = snapshot_before[2]
     if size_bytes <= 0:
         blockers.append(f"{label} is empty: {path}")
     if require_executable and not os.access(path, os.X_OK):
         blockers.append(f"{label} is not executable: {path}")
 
-    sha256, header = _stream_sha256_and_header(path)
+    try:
+        sha256, header = _stream_sha256_and_header(path)
+        snapshot_after = _snapshot_signature(path)
+    except OSError:
+        return None, blockers + [f"{label} changed during preflight: {path}"]
+
+    if snapshot_before != snapshot_after:
+        return None, blockers + [f"{label} changed during preflight: {path}"]
+
     if require_gguf and size_bytes > 0:
         blockers.extend(_gguf_header_blockers(header, path=path, label=label))
 
