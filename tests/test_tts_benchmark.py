@@ -3,10 +3,10 @@ import json
 import wave
 from pathlib import Path
 
-from hottop.tts_benchmark import inspect_tts_benchmark
 from typer.testing import CliRunner
 
 from hottop.model_hub_cli import app
+from hottop.tts_benchmark import inspect_tts_benchmark
 
 RUNNER = CliRunner()
 
