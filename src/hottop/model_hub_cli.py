@@ -5,6 +5,7 @@ from pathlib import Path
 
 import typer
 
+from .crispasr_preflight import inspect_crispasr_inputs
 from .model_hub import load_model_hub, select_models
 from .qwentts_cpp_preflight import inspect_qwentts_cpp_inputs
 
@@ -57,6 +58,22 @@ def probe_qwentts_cpp(
     """Bind local qwentts.cpp benchmark inputs without executing or downloading anything."""
 
     result = inspect_qwentts_cpp_inputs(
+        executable=executable,
+        talker_gguf=talker_gguf,
+        tokenizer_gguf=tokenizer_gguf,
+    )
+    typer.echo(json.dumps(result.model_dump(mode="json"), ensure_ascii=False, indent=2))
+
+
+@app.command("probe-crispasr")
+def probe_crispasr(
+    executable: Path = typer.Option(..., "--executable", dir_okay=False),
+    talker_gguf: Path = typer.Option(..., "--talker-gguf", dir_okay=False),
+    tokenizer_gguf: Path = typer.Option(..., "--tokenizer-gguf", dir_okay=False),
+) -> None:
+    """Bind local CrispASR benchmark inputs without executing or downloading anything."""
+
+    result = inspect_crispasr_inputs(
         executable=executable,
         talker_gguf=talker_gguf,
         tokenizer_gguf=tokenizer_gguf,
