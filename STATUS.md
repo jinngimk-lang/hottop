@@ -8,24 +8,9 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified live-main evidence before this docs sync: **`main@3f7c8fc0e6b0120516c64614ee9f0c7bc388416d` → CI #2037 passed** on Python 3.11/3.12. PR #183 admitted WildActor as a gated identity-continuity research candidate and was squash-merged as `3f7c8fc0e6b0120516c64614ee9f0c7bc388416d`; the post-merge CI #2037 passed.
+Latest verified live-main evidence before this docs sync: **`main@da2c21aa167feff6ebf8fd337dfd4bde972a1cd6` → CI #2040 passed** on Python 3.11/3.12. The repository had no open PR at recovery.
 
-WildActor is relevant because it targets multi-reference identity preservation under changing viewpoint/composition/motion on a Wan2.2-5B-compatible path, but the reviewed release does **not** clear Hottop production admission. The exact source release does not expose a clear repository license at the reviewed revision, Actor-18M remains a construction pipeline/schema rather than a rights-cleared Hottop benchmark asset, and the public stack includes external model/download and optional hosted-API surfaces. Hottop therefore keeps it research-only: no copied code, no model/data download, no hosted Gemini use, no executable `video-run` route, no GPU provisioning and no runtime-ready claim. Future re-admission requires separately verified source/checkpoint/data/reference/output rights, operator-provisioned runtime, and same-sequence output-side identity + requested-action motion + geography + anti-copy + provenance/final-media evidence.
-
-PR #179 previously closed the qwentts GGUF-structure preflight gap: RED exact head `07b16d5210ceeb11213e11305923b3398f3fd5d7` → CI #2027 passed Ruff and failed pytest because a `GGUF`-prefixed truncated file was still accepted; GREEN exact head `a8467f4e069f9e79954e9465fbb8d683346ed6ba` → CI #2030 passed on Python 3.11/3.12; PR #179 was squash-merged as `caeea70d39f7998f47825196d1b02fbedc888932`, and post-merge CI #2031 passed.
-
-The qwentts preflight keeps bounded-memory exact hashing while retaining the first 24 bytes required for the fixed GGUF header surface. It rejects magic-only/truncated model bytes before any benchmark execution. The gate intentionally remains shallow and version-tolerant: it does not parse metadata, prove checkpoint identity, settle rights or claim Mandarin quality.
-
-PR #177 previously closed a practical operator-artifact preflight memory gap. RED exact head `520999224f79aa137df2c6ac1a150f0c455d8d7d` → CI #2021 passed Ruff and failed pytest because the qwentts binder still used whole-file `Path.read_bytes()`. GREEN exact head `8a31e800b3207d4576b3eb98a887e97843621772` → CI #2023 passed on Python 3.11/3.12; the binder now computes exact SHA-256 with bounded 1 MiB streaming reads. Post-merge `main@7b4022ea…` → CI #2024 also passed. This prevents multi-GB operator-provisioned GGUF preflight from materializing an entire model in memory while preserving exact-byte provenance.
-
-PR #174 corrected the durable interpretation of MLX-Audio issue #892 after inspecting merged upstream PR #895. The reported `Qwen3-TTS-12Hz-1.7B-Base-bf16 --voice Chelsie` path was not valid preset-speaker conditioning: Base checkpoints expose no preset-speaker table, MLX-Audio silently ignored the unsupported `--voice`, and synthesis proceeded unconditioned. Upstream fixed the runtime by rejecting unsupported voice conditioning on Base checkpoints and correcting examples to use real CustomVoice preset speakers.
-
-Canonical doctrine therefore keeps **two independent TTS gates**:
-
-1. capability binding before execution — requested preset speaker/voice/instruction/reference conditioning must be supported by the exact runtime/checkpoint; unsupported conditioning fails closed rather than silently degrading to unconditioned speech;
-2. output evidence after execution — repeated trials still verify speaker consistency, onset stability, intelligibility, naturalness, PCM integrity/duration and exact WAV provenance.
-
-This correction is runtime/checkpoint-specific evidence. It does **not** establish a defect in official Qwen CustomVoice, qwentts.cpp, Qwen3-TTS-ncnn or the Qwen model family.
+The immediately preceding work admitted WildActor as a **research-only** multi-reference identity candidate. Its Wan2.2-compatible mechanism is relevant to Hottop's continuity gap, but unclear source licensing plus separate model/data/reference/API/runtime rights block executable admission. No WildActor code/model/data/API route is part of normal Hottop execution.
 
 ## Canonical guaranteed baseline
 
@@ -47,7 +32,7 @@ Do not retune deterministic cow/Odyssey visuals or audio without a measured arti
 
 Input locks are constraints, not output proof. Generated continuity evidence must cover all subject-bearing plan shots and bind exact reference bytes, generated shot bytes, generator/model/source provenance when independently verifiable, and evaluator identity/revision.
 
-**Identity fidelity and requested-action/motion fidelity are separate dimensions.** Motion/anti-copy evidence binds `motion_spec_sha256` derived from the exact ordered subject-bearing plan semantics; generic motion cannot prove a different requested action.
+**Identity fidelity and requested-action/motion fidelity are separate dimensions.** Motion/anti-copy evidence binds `motion_spec_sha256` derived from exact ordered subject-bearing plan semantics; generic motion cannot prove a different requested action.
 
 Primary operator route remains **LightX2V/Wan2.2**. Stand-In, Aura, Wan-Animate-2, UnityVideo, DomainShuttle, MV-S2V, SMRABooth, ID-V2V, WildActor and other reviewed candidates remain benchmark/research-only unless exact source/checkpoint rights, operator runtime and output evidence clear admission. Runtime success never substitutes for identity, requested motion, geography, provenance or final-media proof.
 
@@ -55,41 +40,32 @@ Primary operator route remains **LightX2V/Wan2.2**. Stand-In, Aura, Wan-Animate-
 
 The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the higher-quality operator-owned benchmark target; CosyVoice3 remains correctness-gated.
 
-`qwen3-tts-ncnn-0b6` and `qwen3-tts-qwentts-cpp-1b7` remain **benchmark candidates only** with `integration_ready=false / runtime_status=unprobed`.
+The current Qwen benchmark doctrine remains:
 
-The qwentts.cpp read-only input binder remains:
+- capability binding before execution: requested preset speaker/voice/instruction/reference conditioning must be supported by the exact runtime/checkpoint; unsupported conditioning fails closed;
+- bounded generation and final PCM duration both remain required;
+- generated PCM must be non-empty, finite and non-silent **after serialization/quantization semantics**;
+- repeated trials separately evaluate speaker consistency, short-onset stability, intelligibility, naturalness, latency/RTF and exact WAV provenance.
 
-```text
-hottop-models probe-qwentts-cpp \
-  --executable /local/path/qwentts-cli \
-  --talker-gguf /local/path/talker.gguf \
-  --tokenizer-gguf /local/path/tokenizer.gguf
-```
-
-It requires local non-empty files and executable binary permission, records resolved path + byte size + exact SHA-256 using bounded 1 MiB streaming reads, and requires a complete 24-byte fixed GGUF header surface on both model files rather than only the four-byte magic. It never executes qwentts.cpp, opens a network connection, downloads/builds anything, provisions hardware, changes model-hub runtime status or claims Mandarin quality. `ready=true` means only that supplied benchmark inputs are shallowly GGUF-like and byte-bound; it does not prove exact checkpoint identity, licensing, runtime success or audio quality.
-
-Future 1.7B A/B must bind exact runtime/build/backend, checkpoint capability mode, exact model/tokenizer/GGUF bytes, exact Mandarin line, valid preset speaker or separately rights-cleared reference conditioning, seed/sampling/generation ceiling, cold/warm trial identity, every WAV's bytes/duration/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture.
+Existing local preflight tooling for qwentts.cpp remains read-only and does not claim runtime or quality readiness merely because local artifacts are present.
 
 ## Fresh ecosystem radar — 2026-08-29
 
-- **LightX2V:** no Hottop-measured continuity, quality or runtime gain was found for the tested Wan2.2 I2V subset in this cycle. Keep the tested pin and **do not freshness-only repin**.
-- **WildActor:** reviewed and merged as a **research-only** multi-reference identity candidate. Its Wan2.2-compatible mechanism is directly relevant, but unclear source licensing and separate model/data/reference/API/runtime rights block executable admission. Re-admission requires exact rights plus operator-provisioned runtime and complete output-side identity + requested-action motion evidence.
-- **MiniMax-H3 community signal:** a public RTX 4090 multi-reference four-scene experiment reports four successful generations with reused environment/character references, but public media/evidence are insufficient to substitute for Hottop's own byte-bound continuity benchmark. Treat it as a radar signal only, not a production-quality claim or default-route change.
-- **Qwen3-TTS 1.7B serving:** current public work continues to show that serving throughput/acceleration claims are runtime-specific and require fixed-protocol evidence; no new evidence removes Hottop's operator-local A/B gate. Existing onset-instability and missing-EOS/codec-repetition reports continue to justify repeated speaker/onset checks plus bounded generation and final PCM-duration validation.
-- **Qwen3-TTS official / qwentts.cpp:** no reviewed upstream change in this cycle justifies changing current admission, adding a serving stack or downloading models automatically.
+- **LightX2V/Wan2.2:** no Hottop-measured continuity, quality or runtime gain was found for the tested Wan2.2 I2V subset in this cycle. Keep the tested pin and **do not freshness-only repin**.
+- **WildActor:** remains research-only. Re-admission requires clear source/checkpoint/data/reference/output rights, operator-provisioned runtime and same-sequence output-side identity + requested-action motion evidence.
+- **Qwen3-TTS 1.7B:** current public evidence still shows runtime-specific onset, stopping/repetition and serving-throughput concerns. No new evidence removes Hottop's operator-local same-line A/B gate.
+- **`piedshag/qwen3-tts-hip`** — newly reviewed AMD-local TTS signal at exact source `5b60101c62e3a689e0d73aecde32ee40d7af33f9`, MIT source license. It supports CustomVoice 0.6B and basic 1.7B on ROCm/HIP and reports useful parity/RTF results, but upstream explicitly states 1.7B EOS/stopping parity still needs work. It is therefore **research / benchmark candidate only**, with no production adapter, no auto-install, no model download and no runtime-ready claim. Durable admission record: `docs/research/2026-08-29-qwen3-tts-hip-admission.md`.
 
-No reviewed candidate in this run clears admission strongly enough to replace the guaranteed software3d route or the current tested operator video route.
+No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route or the current tested operator video route.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound identity + requested-action motion evidence before composition.
-3. If an operator provisions qwentts.cpp plus exact 1.7B CustomVoice GGUF assets locally, run `hottop-models probe-qwentts-cpp` first; only after bounded-memory structural-header + exact-byte preflight passes may a separate explicit same-line Mandarin A/B execute.
-4. For the qwentts.cpp CustomVoice A/B, use only checkpoint-supported preset speaker conditioning; do not use Base-only latent/reference registration on a CustomVoice checkpoint, and avoid registered names that could collide with built-in speakers.
-5. Before any neural-TTS benchmark execution, fail closed if the requested speaker/voice/instruction/reference-conditioning mode is unsupported by the exact checkpoint/runtime. Never silently drop conditioning.
-6. In real Qwen 1.7B A/B, preserve repeated speaker consistency, short-onset stability, intelligibility/naturalness, latency/RTF, PCM duration/integrity and exact runtime/model/output provenance as separate evidence dimensions.
-7. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-8. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+3. When an operator provisions a local Qwen3-TTS 1.7B runtime/model, run the existing same-line Mandarin A/B protocol with exact runtime/model/input/output provenance, repeated speaker/onset checks and bounded generation.
+4. Revisit `qwen3-tts-hip` only if operator AMD ROCm/HIP hardware is available and 1.7B EOS/stopping behavior can be independently bounded; do not promote upstream RTF/parity results into Hottop quality claims.
+5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+6. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
