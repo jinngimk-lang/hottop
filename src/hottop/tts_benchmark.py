@@ -44,6 +44,24 @@ def _normalize_json_profile(
     return normalized
 
 
+def _hardware_profile_blockers(profile: dict[str, Any]) -> list[str]:
+    blockers: list[str] = []
+    backend = profile.get("backend")
+    if not isinstance(backend, str) or not backend.strip():
+        blockers.append("hardware_profile backend must be a nonblank string")
+
+    device_keys = ("cpu", "gpu", "accelerator")
+    has_device_identity = any(
+        isinstance(profile.get(key), str) and profile[key].strip()
+        for key in device_keys
+    )
+    if not has_device_identity:
+        blockers.append(
+            "hardware_profile device identity requires a nonblank cpu, gpu or accelerator"
+        )
+    return blockers
+
+
 class TtsBenchmarkTrialInput(BaseModel):
     candidate: str
     run_kind: Literal["cold", "warm"]
@@ -255,6 +273,7 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
             "benchmark requires hardware_profile to bind the latency/RTF measurement environment"
         )
     else:
+        blockers.extend(_hardware_profile_blockers(spec.hardware_profile))
         hardware_profile_sha256 = _canonical_json_sha256(spec.hardware_profile)
 
     for index, trial in enumerate(spec.trials):
