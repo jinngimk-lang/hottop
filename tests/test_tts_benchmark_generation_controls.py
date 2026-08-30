@@ -9,6 +9,11 @@ HARDWARE_PROFILE = {
     "backend": "cpu",
     "logical_cpu_count": 4,
 }
+EXECUTION_PROFILE = {
+    "mode": "cli",
+    "concurrency": 1,
+    "batch_size": 1,
+}
 
 
 def _write_wav(path: Path, *, sample: int) -> Path:
@@ -34,6 +39,7 @@ def _inspect(tmp_path: Path, generation_protocol: dict[str, object]):
                 "speaker": "Vivian",
                 "generation_protocol": generation_protocol,
                 "hardware_profile": HARDWARE_PROFILE,
+                "execution_profile": EXECUTION_PROFILE,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
