@@ -173,9 +173,13 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
     blockers: list[str] = []
     seen_wav_paths: dict[str, int] = {}
     run_kinds_by_candidate: dict[str, set[str]] = {}
+    runtime_revisions_by_candidate: dict[str, set[str]] = {}
 
     for index, trial in enumerate(spec.trials):
         run_kinds_by_candidate.setdefault(trial.candidate, set()).add(trial.run_kind)
+        runtime_revisions_by_candidate.setdefault(trial.candidate, set()).add(
+            trial.runtime_revision
+        )
         wav_path = Path(trial.wav)
         if not wav_path.is_absolute():
             wav_path = spec_path.parent / wav_path
@@ -230,6 +234,13 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
             blockers.append(
                 f"candidate {candidate} requires both cold and warm trials; missing "
                 + ", ".join(missing)
+            )
+
+    for candidate, runtime_revisions in runtime_revisions_by_candidate.items():
+        if len(runtime_revisions) > 1:
+            blockers.append(
+                f"candidate {candidate} mixes runtime revisions: "
+                + ", ".join(sorted(runtime_revisions))
             )
 
     return TtsBenchmarkEvidence(

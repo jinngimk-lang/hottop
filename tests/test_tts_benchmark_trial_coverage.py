@@ -93,3 +93,45 @@ def test_tts_benchmark_allows_multiple_warm_trials_when_cold_is_present(tmp_path
     result = inspect_tts_benchmark(spec)
 
     assert result.ready is True
+
+
+def test_tts_benchmark_requires_one_runtime_revision_per_candidate(tmp_path: Path) -> None:
+    cold = _write_wav(tmp_path / "cold.wav", sample=1000)
+    warm = _write_wav(tmp_path / "warm.wav", sample=1100)
+    spec = tmp_path / "bench.json"
+    spec.write_text(
+        json.dumps(
+            {
+                "schema_version": "hottop.tts-benchmark-input.v1",
+                "text": "今天我们测试同一句中文对白。",
+                "language": "zh",
+                "speaker": "Vivian",
+                "trials": [
+                    {
+                        "candidate": "audio-cpp",
+                        "run_kind": "cold",
+                        "wav": str(cold),
+                        "latency_seconds": 1.1,
+                        "runtime_revision": "audio.cpp@abc",
+                    },
+                    {
+                        "candidate": "audio-cpp",
+                        "run_kind": "warm",
+                        "wav": str(warm),
+                        "latency_seconds": 0.5,
+                        "runtime_revision": "audio.cpp@def",
+                    },
+                ],
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    result = inspect_tts_benchmark(spec)
+
+    assert result.ready is False
+    assert any(
+        "candidate audio-cpp mixes runtime revisions: audio.cpp@abc, audio.cpp@def" in blocker
+        for blocker in result.blockers
+    )
