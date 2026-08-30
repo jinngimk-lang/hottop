@@ -4,6 +4,12 @@ from pathlib import Path
 
 from hottop.tts_benchmark import inspect_tts_benchmark
 
+HARDWARE_PROFILE = {
+    "cpu": "AMD EPYC 7763",
+    "backend": "cpu",
+    "logical_cpu_count": 4,
+}
+
 
 def _write_wav(path: Path, *, sample: int) -> Path:
     payload = int(sample).to_bytes(2, "little", signed=True) * 24000
@@ -23,6 +29,7 @@ def _spec(tmp_path: Path, *, generation_protocol: dict[str, object] | None) -> P
         "text": "今天我们测试同一句中文对白。",
         "language": "zh",
         "speaker": "Vivian",
+        "hardware_profile": HARDWARE_PROFILE,
         "trials": [
             {
                 "candidate": "audio-cpp",
