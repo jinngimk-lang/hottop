@@ -1,0 +1,46 @@
+id: qwen3-tts-pure-c-1b7
+name: Qwen3-TTS Pure C 1.7B CustomVoice benchmark
+source_repository: https://github.com/gabriele-mastrapasqua/qwen3-tts
+source_revision_reviewed: f1b6865713d12a2a2365282fc02e19a5a384a565
+code_license: MIT
+model_family: Qwen3-TTS-12Hz-1.7B-CustomVoice
+model_source: Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice
+weights_license: Apache-2.0-official-Qwen-model-review-required-at-provision-time
+cost_class: self_owned_compute
+integration_ready: false
+runtime_status: unprobed
+normal_video_run_allowed: false
+auto_download_models: false
+auto_build_upstream: false
+languages:
+  - Chinese
+  - English
+  - Japanese
+  - Korean
+  - German
+  - French
+  - Russian
+  - Portuguese
+  - Spanish
+  - Italian
+benchmark_controls:
+  - seed
+  - temperature
+  - top_k
+  - top_p
+  - repetition_penalty
+  - max_tokens
+  - max_duration
+forbidden_unattended_paths:
+  - download_model.sh
+  - download_voices.sh
+runtime_boundary: >-
+  Research/benchmark candidate only. Operator must provision an exact local source checkout,
+  build and model directory manually. Hottop must not invoke upstream download helpers,
+  build dependencies, voice-download helpers, GPU provisioning or hosted services.
+benchmark_protocol: >-
+  Compare against qwentts.cpp, CrispASR and audio.cpp using the same Mandarin line,
+  the same checkpoint-supported preset speaker and semantically comparable generation controls.
+  Bind exact runtime revision, exact model bytes/revision, hardware/execution profile,
+  output WAV bytes, PCM integrity, duration, repeated speaker consistency, short-onset stability,
+  intelligibility, naturalness and latency/RTF. Runtime support is not Mandarin quality proof.
