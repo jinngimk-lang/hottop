@@ -48,7 +48,7 @@ def test_tts_benchmark_rejects_non_finite_latency_metrics(tmp_path: Path) -> Non
 
         assert result.ready is False
         assert any(
-            "latency_seconds must be finite and greater than zero" in blocker
+            "latency_seconds must be greater than zero and finite" in blocker
             for blocker in result.blockers
         )
         assert result.trials[0].realtime_factor is None
