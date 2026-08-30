@@ -108,16 +108,58 @@ def _hardware_profile_blockers(profile: dict[str, Any]) -> list[str]:
     backend = profile.get("backend")
     if not isinstance(backend, str) or not backend.strip():
         blockers.append("hardware_profile backend must be a nonblank string")
+        backend_name = None
+    else:
+        backend_name = backend.strip().lower()
 
-    device_keys = ("cpu", "gpu", "accelerator")
-    has_device_identity = any(
-        isinstance(profile.get(key), str) and profile[key].strip()
-        for key in device_keys
-    )
-    if not has_device_identity:
+    cpu = profile.get("cpu")
+    gpu = profile.get("gpu")
+    accelerator = profile.get("accelerator")
+    has_cpu_identity = isinstance(cpu, str) and bool(cpu.strip())
+    has_gpu_identity = isinstance(gpu, str) and bool(gpu.strip())
+    has_accelerator_identity = isinstance(accelerator, str) and bool(accelerator.strip())
+    if not (has_cpu_identity or has_gpu_identity or has_accelerator_identity):
         blockers.append(
             "hardware_profile device identity requires a nonblank cpu, gpu or accelerator"
         )
+
+    if backend_name == "cpu" and not has_cpu_identity:
+        blockers.append("hardware_profile cpu backend requires a nonblank cpu identity")
+
+    accelerator_backends = {"cuda", "rocm", "hip", "vulkan", "metal", "mps", "xpu"}
+    if (
+        backend_name in accelerator_backends
+        and not has_gpu_identity
+        and not has_accelerator_identity
+    ):
+        blockers.append(
+            f"hardware_profile {backend_name} backend requires a nonblank gpu or accelerator identity"
+        )
+    return blockers
+
+
+def _execution_profile_blockers(profile: dict[str, Any]) -> list[str]:
+    blockers: list[str] = []
+
+    mode = profile.get("mode")
+    if not isinstance(mode, str) or not mode.strip():
+        blockers.append("execution_profile mode must be a nonblank string")
+        mode_name = None
+    else:
+        mode_name = mode.strip().lower()
+
+    for field_name in ("concurrency", "batch_size"):
+        value = profile.get(field_name)
+        if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+            blockers.append(f"execution_profile {field_name} must be a positive integer")
+
+    if mode_name == "server":
+        connection_strategy = profile.get("connection_strategy")
+        if not isinstance(connection_strategy, str) or not connection_strategy.strip():
+            blockers.append(
+                "execution_profile server mode requires a nonblank connection_strategy"
+            )
+
     return blockers
 
 
@@ -145,6 +187,7 @@ class TtsBenchmarkInput(BaseModel):
     speaker: str
     generation_protocol: dict[str, Any] | None = None
     hardware_profile: dict[str, Any] | None = None
+    execution_profile: dict[str, Any] | None = None
     trials: list[TtsBenchmarkTrialInput]
 
     @field_validator("text", "language", "speaker")
@@ -168,6 +211,13 @@ class TtsBenchmarkInput(BaseModel):
         cls, value: dict[str, Any] | None
     ) -> dict[str, Any] | None:
         return _normalize_json_profile(value, field_name="hardware_profile")
+
+    @field_validator("execution_profile")
+    @classmethod
+    def _valid_execution_profile(
+        cls, value: dict[str, Any] | None
+    ) -> dict[str, Any] | None:
+        return _normalize_json_profile(value, field_name="execution_profile")
 
 
 class WavArtifactIdentity(BaseModel):
@@ -207,6 +257,8 @@ class TtsBenchmarkEvidence(BaseModel):
     generation_protocol_sha256: str | None = None
     hardware_profile: dict[str, Any] | None = None
     hardware_profile_sha256: str | None = None
+    execution_profile: dict[str, Any] | None = None
+    execution_profile_sha256: str | None = None
     trials: list[TtsBenchmarkTrialEvidence]
     blockers: list[str]
 
@@ -336,6 +388,15 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
         blockers.extend(_hardware_profile_blockers(spec.hardware_profile))
         hardware_profile_sha256 = _canonical_json_sha256(spec.hardware_profile)
 
+    execution_profile_sha256 = None
+    if spec.execution_profile is None:
+        blockers.append(
+            "benchmark requires execution_profile to bind mode, concurrency and batch size"
+        )
+    else:
+        blockers.extend(_execution_profile_blockers(spec.execution_profile))
+        execution_profile_sha256 = _canonical_json_sha256(spec.execution_profile)
+
     for index, trial in enumerate(spec.trials):
         run_kinds_by_candidate.setdefault(trial.candidate, set()).add(trial.run_kind)
         runtime_revisions_by_candidate.setdefault(trial.candidate, set()).add(
@@ -424,6 +485,8 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
         generation_protocol_sha256=generation_protocol_sha256,
         hardware_profile=spec.hardware_profile,
         hardware_profile_sha256=hardware_profile_sha256,
+        execution_profile=spec.execution_profile,
+        execution_profile_sha256=execution_profile_sha256,
         trials=trial_evidence,
         blockers=blockers,
     )

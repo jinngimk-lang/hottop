@@ -9,6 +9,11 @@ HARDWARE_PROFILE = {
     "backend": "cpu",
     "logical_cpu_count": 4,
 }
+EXECUTION_PROFILE = {
+    "mode": "cli",
+    "concurrency": 1,
+    "batch_size": 1,
+}
 
 
 def _write_wav(path: Path, *, sample: int) -> Path:
@@ -30,6 +35,7 @@ def _spec(tmp_path: Path, *, generation_protocol: dict[str, object] | None) -> P
         "language": "zh",
         "speaker": "Vivian",
         "hardware_profile": HARDWARE_PROFILE,
+        "execution_profile": EXECUTION_PROFILE,
         "trials": [
             {
                 "candidate": "audio-cpp",

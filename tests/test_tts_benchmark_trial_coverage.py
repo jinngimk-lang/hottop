@@ -15,6 +15,11 @@ HARDWARE_PROFILE = {
     "backend": "cpu",
     "logical_cpu_count": 4,
 }
+EXECUTION_PROFILE = {
+    "mode": "cli",
+    "concurrency": 1,
+    "batch_size": 1,
+}
 
 
 def _write_wav(path: Path, *, sample: int = 1000) -> Path:
@@ -39,6 +44,7 @@ def test_tts_benchmark_requires_cold_and_warm_trial_per_candidate(tmp_path: Path
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
                 "hardware_profile": HARDWARE_PROFILE,
+                "execution_profile": EXECUTION_PROFILE,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
@@ -78,6 +84,7 @@ def test_tts_benchmark_allows_multiple_warm_trials_when_cold_is_present(tmp_path
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
                 "hardware_profile": HARDWARE_PROFILE,
+                "execution_profile": EXECUTION_PROFILE,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
@@ -128,6 +135,7 @@ def test_tts_benchmark_requires_one_runtime_revision_per_candidate(tmp_path: Pat
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
                 "hardware_profile": HARDWARE_PROFILE,
+                "execution_profile": EXECUTION_PROFILE,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
