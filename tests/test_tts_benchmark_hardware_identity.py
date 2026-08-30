@@ -10,6 +10,11 @@ GENERATION_PROTOCOL = {
     "temperature": 0.9,
     "top_p": 1.0,
 }
+EXECUTION_PROFILE = {
+    "mode": "cli",
+    "concurrency": 1,
+    "batch_size": 1,
+}
 
 
 def _write_wav(path: Path, *, sample: int) -> Path:
@@ -35,6 +40,7 @@ def _inspect(tmp_path: Path, hardware_profile: dict[str, object]):
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
                 "hardware_profile": hardware_profile,
+                "execution_profile": EXECUTION_PROFILE,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
