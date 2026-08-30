@@ -10,6 +10,11 @@ GENERATION_PROTOCOL = {
     "temperature": 0.9,
     "top_p": 1.0,
 }
+HARDWARE_PROFILE = {
+    "cpu": "AMD EPYC 7763",
+    "backend": "cpu",
+    "logical_cpu_count": 4,
+}
 
 
 def _write_wav(path: Path, *, sample: int = 1000) -> Path:
@@ -33,6 +38,7 @@ def test_tts_benchmark_requires_cold_and_warm_trial_per_candidate(tmp_path: Path
                 "language": "zh",
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
+                "hardware_profile": HARDWARE_PROFILE,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
@@ -71,6 +77,7 @@ def test_tts_benchmark_allows_multiple_warm_trials_when_cold_is_present(tmp_path
                 "language": "zh",
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
+                "hardware_profile": HARDWARE_PROFILE,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
@@ -120,6 +127,7 @@ def test_tts_benchmark_requires_one_runtime_revision_per_candidate(tmp_path: Pat
                 "language": "zh",
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
+                "hardware_profile": HARDWARE_PROFILE,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
