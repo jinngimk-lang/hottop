@@ -4,6 +4,13 @@ from pathlib import Path
 
 from hottop.tts_benchmark import inspect_tts_benchmark
 
+GENERATION_PROTOCOL = {
+    "seed": 42,
+    "max_new_tokens": 256,
+    "temperature": 0.9,
+    "top_p": 1.0,
+}
+
 
 def _write_wav(path: Path, *, sample: int = 1000) -> Path:
     payload = int(sample).to_bytes(2, "little", signed=True) * 24000
@@ -25,6 +32,7 @@ def test_tts_benchmark_requires_cold_and_warm_trial_per_candidate(tmp_path: Path
                 "text": "今天我们测试同一句中文对白。",
                 "language": "zh",
                 "speaker": "Vivian",
+                "generation_protocol": GENERATION_PROTOCOL,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
@@ -62,6 +70,7 @@ def test_tts_benchmark_allows_multiple_warm_trials_when_cold_is_present(tmp_path
                 "text": "今天我们测试同一句中文对白。",
                 "language": "zh",
                 "speaker": "Vivian",
+                "generation_protocol": GENERATION_PROTOCOL,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
@@ -110,6 +119,7 @@ def test_tts_benchmark_requires_one_runtime_revision_per_candidate(tmp_path: Pat
                 "text": "今天我们测试同一句中文对白。",
                 "language": "zh",
                 "speaker": "Vivian",
+                "generation_protocol": GENERATION_PROTOCOL,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
