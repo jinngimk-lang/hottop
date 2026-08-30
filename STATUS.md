@@ -8,9 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Recovery baseline for this workstream: **`main@d3814427644a6721bfc6aa1b96f0711282338bf2` / CI #2302** on Python 3.11/3.12, with no open PRs at recovery time.
-
-Active workstream: `feat/tts-execution-profile-evidence`. It hardens the already-prepared local Qwen3-TTS benchmark evidence surface; it does **not** execute a neural runtime, access the network, download models, provision GPU resources, use credentials or call paid services.
+Latest verified evidence point: **`main@903b9b406d73bf5b91de8fd472224e90900667bf` / CI #2318** on Python 3.11/3.12. PR #281 has been merged and the TTS execution-shape workstream is closed.
 
 ## TTS benchmark coherence contract
 
@@ -29,13 +27,14 @@ Active workstream: `feat/tts-execution-profile-evidence`. It hardens the already
 
 The generation, hardware and execution profiles are **declared measurement provenance, not proof that the runtime internally obeyed the declaration**. Operator execution records and actual CLI/config provenance remain separately required. Candidates intentionally measured on incompatible hardware or execution shapes belong in separate evidence sets rather than one latency/RTF ranking.
 
-### Current TDD evidence
+### Latest TDD evidence
 
-- hardware/backend mismatch RED `19b72add6a1bd166de088a3ab52a31520caab25c`, **CI #2304**: Ruff passed; pytest produced exactly **2 failed / 580 passed**, proving `backend=cpu` with only GPU identity and `backend=cuda` with only CPU identity could previously become ready;
+- hardware/backend mismatch RED `19b72add6a1bd166de088a3ab52a31520caab25c`, **CI #2304**: Ruff passed; pytest produced exactly **2 failed / 580 passed**;
 - hardware/backend coherence GREEN `a9917c5a527da0e9ac217710936ab84f4c140256`, **CI #2305**: Python 3.11/3.12 Ruff + full pytest passed;
-- execution-profile RED `26248bd4bdd22189c7e029d919a2992050ab5a48`, **CI #2306**: Ruff passed; pytest produced exactly **4 failed / 582 passed**, proving missing/descriptive execution shape and server mode without connection strategy were accepted and the evidence did not persist an execution profile;
-- execution-profile implementation `692853cd973521dab8924710ee0c89e22c26e84f`, **CI #2307**: the new contracts passed; remaining failures were only legacy ready-fixtures that lacked the newly mandatory profile, so fixtures were migrated rather than weakening the gate;
-- migrated code/tests plus durable record are on the current branch; use the latest exact-head CI before merge claims.
+- execution-profile RED `26248bd4bdd22189c7e029d919a2992050ab5a48`, **CI #2306**: Ruff passed; pytest produced exactly **4 failed / 582 passed**;
+- first execution-profile implementation `692853cd973521dab8924710ee0c89e22c26e84f`, **CI #2307**: new contracts passed; only legacy ready-fixtures lacking the newly mandatory profile failed, so fixtures were migrated rather than weakening the gate;
+- final branch head `94159e33eb6d1839fcfde4c9dde43bdc166c8feb`, **CI #2316**: Python 3.11/3.12 Ruff + full pytest passed;
+- exact-head PR #281 squash merge `903b9b406d73bf5b91de8fd472224e90900667bf`, post-merge **CI #2318**: both Python versions passed.
 
 Durable rationale: `docs/research/2026-08-30-tts-execution-shape-evidence.md`.
 
@@ -79,17 +78,16 @@ Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoi
 ## Fresh ecosystem radar — 2026-08-30
 
 - Current public Qwen3-TTS benchmark practice continues to bind exact source/model revisions, hardware and workload/concurrency; fixed-protocol H100/H200 work remains a useful reminder that an optimization toggle is not evidence until repeatable end-to-end measurements improve.
-- Existing qwentts.cpp evidence already shows server connection/OpenMP-team and batch/concurrency shape can change performance, which motivated the execution-profile closure above.
+- Existing qwentts.cpp evidence already shows server connection/OpenMP-team and batch/concurrency shape can change performance, motivating the execution-profile gate.
 - No reviewed LightX2V/Wan2.2 change in this cycle produced Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V subset. Keep the tested pin; no freshness-only repin.
 - No new candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local 1.7B TTS candidates.
 
 ## Immediate next actions
 
-1. Finish the active TTS evidence workstream only after latest exact-head Python 3.11/3.12 CI is green; review the diff, merge through a PR, then verify post-merge `main` CI and remove this active-workstream recovery note.
-2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-4. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line local WAV generation and inspect it with the generation + hardware + execution-shape coherence contracts above.
-5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
+3. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line local WAV generation and inspect it with the generation + hardware + execution-shape coherence contracts above.
+4. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
 ## Recovery order
 
