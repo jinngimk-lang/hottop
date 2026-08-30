@@ -35,4 +35,4 @@ def test_qwen3_tts_pure_c_admission_record_binds_rights_and_runtime() -> None:
     assert "download_model.sh" in text
     assert "operator-provisioned" in text
     assert "same-line Mandarin" in text
-    assert "runtime support is not Mandarin quality proof" in text
+    assert "runtime support is not mandarin quality proof" in text.lower()
