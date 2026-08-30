@@ -60,6 +60,20 @@ def test_pure_c_preflight_binds_operator_provisioned_model_tree_without_executio
     assert result.blockers == []
 
 
+def test_pure_c_preflight_rejects_invalid_safetensors_payload(tmp_path: Path) -> None:
+    executable = _write_executable(tmp_path)
+    model_dir = _write_model_dir(tmp_path)
+    (model_dir / "model.safetensors").write_bytes(b"not-a-safetensors-file")
+
+    result = pure_c_preflight.inspect_pure_c_qwen3_tts_inputs(
+        executable=executable,
+        model_dir=model_dir,
+    )
+
+    assert result.ready is False
+    assert "safetensors" in " ".join(result.blockers).lower()
+
+
 def test_pure_c_preflight_fails_closed_when_required_model_file_is_missing(tmp_path: Path) -> None:
     executable = _write_executable(tmp_path)
     model_dir = _write_model_dir(tmp_path)
