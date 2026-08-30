@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@903b9b406d73bf5b91de8fd472224e90900667bf` / CI #2318** on Python 3.11/3.12. PR #281 has been merged and the TTS execution-shape workstream is closed.
+Latest verified pre-workstream evidence point: **`main@fd4afd7792ee609125ed27858459f5896225e071` / CI #2320** on Python 3.11/3.12. The current TTS execution-mode contract has exact-head GREEN through `1ba281e0b9d3f282346f9c8427c5f740abb59d39` / CI #2323; live `main` must still be re-fetched after merge before any post-merge claim.
 
 ## TTS benchmark coherence contract
 
@@ -18,14 +18,14 @@ Latest verified evidence point: **`main@903b9b406d73bf5b91de8fd472224e90900667bf
 2. one concrete generation protocol for the benchmark, canonical SHA-256, integer seed, positive `max_new_tokens` ceiling and at least one explicit sampling control;
 3. one concrete hardware profile for the benchmark, canonical SHA-256 and nonblank backend/device identity;
 4. **backend/device coherence**: `cpu` requires a CPU identity; accelerator backends (`cuda`, `rocm`, `hip`, `vulkan`, `metal`, `mps`, `xpu`) require a GPU or generic accelerator identity;
-5. **one concrete execution profile for the benchmark**, canonical SHA-256, nonblank mode, positive concurrency and positive batch size; `server` mode additionally requires a connection strategy;
+5. **one recognized execution profile for the benchmark**, canonical SHA-256, `mode` restricted to `cli` or `server`, positive concurrency and positive batch size; `server` mode additionally requires a connection strategy;
 6. at least one cold and one warm trial per candidate, with additional independent warm repeats allowed;
 7. one exact runtime revision per candidate;
 8. one exact model/checkpoint revision per candidate;
 9. finite positive latency plus distinct resolved WAV artifact paths, byte identity and WAV/PCM integrity;
 10. `listening_required=true`, keeping naturalness, speaker consistency and onset stability independent from speed/stream integrity.
 
-The generation, hardware and execution profiles are **declared measurement provenance, not proof that the runtime internally obeyed the declaration**. Operator execution records and actual CLI/config provenance remain separately required. Candidates intentionally measured on incompatible hardware or execution shapes belong in separate evidence sets rather than one latency/RTF ranking.
+The generation, hardware and execution profiles are **declared measurement provenance, not proof that the runtime internally obeyed the declaration**. Operator execution records and actual CLI/config provenance remain separately required. Candidates intentionally measured on incompatible hardware or execution shapes belong in separate evidence sets rather than one latency/RTF ranking. A future execution shape beyond `cli` or `server` requires an explicit evidence-contract extension before its timings can be called comparable.
 
 ### Latest TDD evidence
 
@@ -33,8 +33,11 @@ The generation, hardware and execution profiles are **declared measurement prove
 - hardware/backend coherence GREEN `a9917c5a527da0e9ac217710936ab84f4c140256`, **CI #2305**: Python 3.11/3.12 Ruff + full pytest passed;
 - execution-profile RED `26248bd4bdd22189c7e029d919a2992050ab5a48`, **CI #2306**: Ruff passed; pytest produced exactly **4 failed / 582 passed**;
 - first execution-profile implementation `692853cd973521dab8924710ee0c89e22c26e84f`, **CI #2307**: new contracts passed; only legacy ready-fixtures lacking the newly mandatory profile failed, so fixtures were migrated rather than weakening the gate;
-- final branch head `94159e33eb6d1839fcfde4c9dde43bdc166c8feb`, **CI #2316**: Python 3.11/3.12 Ruff + full pytest passed;
-- exact-head PR #281 squash merge `903b9b406d73bf5b91de8fd472224e90900667bf`, post-merge **CI #2318**: both Python versions passed.
+- prior execution-shape branch head `94159e33eb6d1839fcfde4c9dde43bdc166c8feb`, **CI #2316**: Python 3.11/3.12 Ruff + full pytest passed;
+- prior execution-shape merge `903b9b406d73bf5b91de8fd472224e90900667bf`, post-merge **CI #2318**: both Python versions passed;
+- unknown-mode RED `9c461ba07b2993993083b22ca33a965457f6f384`, **CI #2321**: Ruff passed and pytest failed on the new contract, proving an invented nonblank mode could become ready;
+- unknown-mode GREEN `45f25e47329e17dab997ac46318980edfab3797e`, **CI #2322**: Python 3.11/3.12 Ruff + full pytest passed;
+- durable-record head `1ba281e0b9d3f282346f9c8427c5f740abb59d39`, **CI #2323**: Python 3.11/3.12 Ruff + full pytest passed.
 
 Durable rationale: `docs/research/2026-08-30-tts-execution-shape-evidence.md`.
 
@@ -73,20 +76,20 @@ Prepared local benchmark candidates remain:
 - `qwen3-tts-audio-cpp-1b7` — read-only CustomVoice model-directory preflight;
 - `qwen3-tts-ncnn-0b6` — lower-hardware 0.6B CPU/Vulkan benchmark candidate only.
 
-Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoint-supported preset speaker, semantically comparable generation controls, comparable hardware and comparable execution shape, while preserving runtime/model/config provenance, cold/warm timing, distinct WAV instances, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported conditioning fails closed; reference-audio cloning remains separately rights-gated.
+Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoint-supported preset speaker, semantically comparable generation controls, comparable hardware and comparable recognized execution shape, while preserving runtime/model/config provenance, cold/warm timing, distinct WAV instances, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported conditioning fails closed; reference-audio cloning remains separately rights-gated.
 
 ## Fresh ecosystem radar — 2026-08-30
 
-- Current public Qwen3-TTS benchmark practice continues to bind exact source/model revisions, hardware and workload/concurrency; fixed-protocol H100/H200 work remains a useful reminder that an optimization toggle is not evidence until repeatable end-to-end measurements improve.
-- Existing qwentts.cpp evidence already shows server connection/OpenMP-team and batch/concurrency shape can change performance, motivating the execution-profile gate.
-- No reviewed LightX2V/Wan2.2 change in this cycle produced Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V subset. Keep the tested pin; no freshness-only repin.
+- LightX2V public `main` remains **`7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`**. The reviewed recent changes are Wan-Animate-2 example-path maintenance plus H3-specific Ref2V/XPU work; none provides Hottop-measured continuity/quality/runtime gain for the tested Wan2.2 I2V subset. Keep the tested pin; no freshness-only repin.
+- Qwen3-TTS official `main` remains **`022e286b98fbec7e1e916cb940cdf532cd9f488e`**. No official change in this cycle removes the operator-local 1.7B benchmark gate.
+- qwentts.cpp reviewed `master` remains **`a8a7716b530e49fed537c57711247c12fbbb903c`**. Its existing evidence that server connection/OpenMP-team and batch/concurrency shape can change performance continues to justify execution-shape binding; no new revision changes the current admission.
 - No new candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local 1.7B TTS candidates.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-3. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line local WAV generation and inspect it with the generation + hardware + execution-shape coherence contracts above.
+3. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line local WAV generation and inspect it with the generation + hardware + recognized execution-shape coherence contracts above. Retain the actual invocation/config separately because declared profiles are not execution proof.
 4. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
 ## Recovery order
