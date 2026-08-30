@@ -8,7 +8,9 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@1f9f225b8832e36ef412c1cd074a790603845af4`**. Push CI **#2234** passed on Python 3.11/3.12 after the TTS benchmark distinct-trial-artifact closure. The preceding finite-latency closure at `main@1227c00dacd0cd477a915cc182304d6e747e6abf` passed push CI **#2223**. At the latest verified evidence point there were no remaining production workstreams besides this status synchronization.
+Latest verified evidence point: **`main@eaffa96dcfcf8e0a5747bef309f9041400632eaf`**. PR #259 exact head `95fcb3222e26d501ead192662cc7f045e4dcc0b5` passed CI **#2237** and was squash-merged; post-merge push CI **#2238** passed on Python 3.11/3.12. The merged change is research-only and adds no executable provider, dependency, model download, GPU provisioning, credential or paid path.
+
+No production workstream is currently known to be failing at this evidence point.
 
 ## Canonical guaranteed baseline
 
@@ -32,28 +34,13 @@ Input locks are constraints, not output proof. Generated continuity evidence mus
 
 **Identity fidelity and requested-action/motion fidelity are separate dimensions.** Motion/anti-copy evidence binds `motion_spec_sha256` from exact ordered subject-bearing plan semantics. Generic motion cannot prove a different requested action.
 
-Primary operator route remains **LightX2V/Wan2.2**. Stand-In, Aura, Wan-Animate-2, UnityVideo, DomainShuttle, MV-S2V, SMRABooth, ID-V2V, WildActor, LongCat-Video-Avatar and other reviewed routes remain benchmark/research-only unless exact rights, local runtime and same-sequence output evidence clear admission. Runtime success never substitutes for identity, motion, geography, provenance or final-media proof.
-
-### LongCat-Video-Avatar 1.5
-
-Reviewed source: `meituan-longcat/LongCat-Video@6b3f4b8582a8bc3f20f795735f5383716c4ba794`.
-
-- source repository license: MIT;
-- official `meituan-longcat/LongCat-Video-Avatar-1.5` model-card license: MIT;
-- relevant upstream capabilities: audio-text-to-video, audio-image-to-video, continuation, single/multi-audio, Whisper-Large-v3 conditioning, distilled 8-step inference, 480p/720p, stylized/animal domains and long-video stability;
-- upstream setup requires Python/CUDA/PyTorch/FlashAttention plus explicit model downloads, and Avatar 1.5 examples use a two-process `torchrun` path;
-- model hub entry `longcat-video-avatar-15` is now **`benchmark_candidate / integration_ready=false / runtime_status=unprobed / self_owned_compute`** and is excluded from integration-ready/runtime-ready selection;
-- no executable Hottop route, auto-install/download or GPU provisioning was added.
-
-TDD evidence: RED CI **#2195** isolated the absent candidate; the first GREEN run **#2197** exposed only a `Hugging Face` test-literal mismatch; corrected exact head `3010cb96604f9c58b11d11a8fd889d61c2ce88fd` passed CI **#2198** on Python 3.11/3.12; squash merge produced `main@3e74e95c1a5f693bcff1e617a120fb179c9ce2f7`, whose CI **#2201** also passed.
-
-Future benchmark requires operator-provisioned exact source/model bytes and the same rights-safe subject sequence as the primary route, with identity, requested-action motion, lip-sync/dialogue timing when relevant, continuation/geography stability, anti-copy, provenance and final-media evidence measured independently.
+Primary operator route remains **LightX2V/Wan2.2**. Stand-In, Aura, Wan-Animate-2, UnityVideo, DomainShuttle, MV-S2V, SMRABooth, ID-V2V, WildActor, LongCat-Video-Avatar, DiffSynth/MiniMax-H3 NF4 and other reviewed routes remain benchmark/research-only unless exact rights, local runtime and same-sequence output evidence clear admission. Runtime success never substitutes for identity, motion, geography, provenance or final-media proof.
 
 ## Dialogue / neural-TTS boundary
 
 The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the higher-quality operator-owned benchmark target; CosyVoice3 remains correctness-gated.
 
-Current local benchmark candidates:
+Prepared local benchmark candidates:
 
 - `qwen3-tts-qwentts-cpp-1b7` — hardened read-only GGUF artifact preflight available;
 - `qwen3-tts-crispasr-1b7` — read-only GGUF artifact preflight available;
@@ -64,39 +51,30 @@ Shared evidence surface:
 
 `hottop-models inspect-tts-benchmark --spec <benchmark.json>`
 
-It inspects already-produced local WAVs only and never executes TTS, accesses the network, installs dependencies, downloads models, provisions GPU resources or calls a paid service. It binds exact text/language/speaker, runtime revision/trial identity, WAV bytes/stream metadata, non-silence, measured latency, standard realtime factor `latency / audio_duration`, explicit inverse speedup and `listening_required=true`.
+It inspects already-produced local WAVs only and never executes TTS, accesses the network, installs dependencies, downloads models, provisions GPU resources or calls a paid service. Latency must be finite and greater than zero. Separate benchmark rows cannot reuse the same resolved WAV path; identical bytes are still legal when independently produced as distinct artifact instances.
 
-**Performance evidence is fail-closed:** `latency_seconds` must be both finite and greater than zero. `NaN`, `+Inf`, `-Inf`, zero or negative latency makes the benchmark unready and suppresses derived realtime-factor/speed metrics instead of allowing non-finite performance evidence. TDD evidence: corrected RED CI **#2218** reached pytest and isolated the false-ready bug at **1 failed / 564 passed**; GREEN exact head `407b94e2e07b45ed4daea95a4911617cb25da299` passed CI **#2221** on Python 3.11/3.12; squash merge produced `main@1227c00dacd0cd477a915cc182304d6e747e6abf`, whose push CI **#2223** also passed.
-
-**Trial-instance provenance is fail-closed:** separate benchmark rows cannot reuse the same **resolved WAV path**, because one artifact instance cannot prove two independently produced executions. Identical SHA-256 bytes remain legal when they come from distinct files, preserving deterministic repeatability evidence. Corrected RED CI **#2227** passed Ruff and failed in pytest on the missing path-uniqueness contract; GREEN exact head `d468dea04ee04f48cfcd5dbd1af23622a340bacf` passed CI **#2232** on Python 3.11/3.12; squash merge produced `main@1f9f225b8832e36ef412c1cd074a790603845af4`, whose push CI **#2234** also passed. Durable method record: `docs/research/2026-08-30-tts-bench-method-admission.md`.
-
-Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoint-supported preset speaker and bounded generation settings while preserving exact runtime/model bytes, cold/warm timing, distinct resolved WAV artifact instances, WAV/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported conditioning fails closed before execution; reference-audio cloning remains separately rights-gated.
+Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoint-supported preset speaker and bounded generation settings while preserving exact runtime/model bytes, cold/warm timing, distinct WAV artifact instances, WAV/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported conditioning fails closed before execution; reference-audio cloning remains separately rights-gated.
 
 ## Fresh ecosystem radar — 2026-08-30
 
-- **LightX2V/Wan2.2:** live upstream remains `ModelTC/LightX2V@7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`; reviewed recent changes do not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V subset, so keep the existing tested pin and do not freshness-only repin.
-- **MiniMax H3 Motion Lab:** `matlowai/ComfyUI-MAINodes@f4868b4a08e8a504ce86db54a17961d399ffa2bc` remains a GPL-3.0-or-later, operator-managed post-generation recovery experiment for bursty-motion smear. It is not a generator admission. Future A/B must bind baseline/repaired bytes, preserve `motion_spec_sha256`, and re-check requested-action motion, identity, geography, anti-copy, dialogue/lip-sync and final-media. Durable review: `docs/research/2026-08-30-minimax-h3-motion-lab-radar.md`.
-- **Stand-In:** reviewed V2 evidence remains announcement-only. Durable review: `docs/research/2026-08-30-stand-in-v2-radar.md`.
-- **WanGP/Wan2GP:** reviewed PiD changes remain post-processing/upsampler maintenance, not improved Hottop identity/requested-action evidence. Durable review: `docs/research/2026-08-30-wangp-pid-radar.md`.
-- **Echo-Memory:** scene/revisit-memory benchmark signal only; it cannot substitute for subject identity or requested-action motion proof. Durable review: `docs/research/2026-08-30-echo-memory-admission.md`.
-- **LongCat-Video-Avatar 1.5:** MIT source + official weights and unusually relevant audio-I2V/continuation/animal-domain capability justified benchmark-layer admission, but the heavy local stack and explicit model-download path keep it out of unattended production. Durable review: `docs/research/2026-08-30-longcat-video-avatar-15-admission.md`.
-- **Step-Audio-EditX:** `Step-Audio-Tokenizer` now exposes explicit `apache-2.0` model-card metadata, but the current Step-Audio-EditX main model page still shows a YAML metadata warning and its detailed license wording remains scoped to repository code. This does **not** clear the main checkpoint code-vs-weights gate. Keep Step-Audio-EditX research-only until exact main checkpoint rights are unambiguous. Durable review: `docs/research/2026-08-30-step-audio-editx-admission.md`; freshness addendum: `docs/research/2026-08-30-mandarin-tts-license-radar.md`.
-- **Supertonic / Mandarin:** official Supertonic 3 remains compact/on-device but does not support Mandarin. The reviewed unofficial Supertonic-ZH preview is gated and evaluation-only/non-commercial, so it is not admitted to model hub or normal Hottop benchmarks. Durable review: `docs/research/2026-08-30-mandarin-tts-license-radar.md`.
-- **Rust Qwen3-TTS runtimes:** `cgisky1980/Qwen3-TTS-Rust@f86f59ed…` and `second-state/qwen3_tts_rs@efe3285e…` were reviewed and **not admitted**. The former auto-downloads runtime components and silently falls back to Vivian when a requested speaker is missing; the latter's quick installer downloads binaries/models and its reviewed tree lacks the root `LICENSE` linked from README despite Cargo license metadata. Neither currently beats the already prepared qwentts.cpp/CrispASR/audio.cpp path under Hottop's fail-closed benchmark protocol. Durable review: `docs/research/2026-08-30-rust-qwen3-tts-local-radar.md`.
-- **Qwen3-TTS / local 1.7B runtimes:** official source remains `QwenLM/Qwen3-TTS@022e286b98fbec7e1e916cb940cdf532cd9f488e`; retain the operator-provisioned, benchmark-first route. Fresh serving evidence continues to reinforce pinned-runtime, multi-trial evidence rather than acceleration-toggle claims; do not infer quality from runtime support, throughput or a single successful WAV.
+- **LightX2V/Wan2.2:** reviewed upstream remains `ModelTC/LightX2V@7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`; recent reviewed changes do not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V subset. Keep the tested pin; no freshness-only repin.
+- **DiffSynth-Studio / MiniMax-H3 NF4:** framework `modelscope/DiffSynth-Studio@102fe9980b9375ecb6436d360297a00327472535` is Apache-2.0 and the NF4 route is an interesting lower-hardware H3 benchmark signal, but it remains research/operator-benchmark only. The official MiniMax-H3 Community License reviewed 2026-08-30 excludes the EU, UK, Republic of Korea and USA from its default Applicable Territory, requires separate prior written authorization for commercial products/services above USD 20M equivalent yearly revenue, carries distribution/NOTICE/UI-display/use restrictions, and prohibits using H3 Works or their outputs/results to improve another AI model outside the H3 derivative family. A derivative NF4 model-card `apache-2.0` field does not override the base-model license. Durable review: `docs/research/2026-08-30-diffsynth-minimax-h3-nf4-admission.md`.
+- **MiniMax H3 Motion Lab:** `matlowai/ComfyUI-MAINodes@f4868b4a08e8a504ce86db54a17961d399ffa2bc` remains a GPL-3.0-or-later, operator-managed post-generation recovery experiment for bursty-motion smear; it is not a generator admission. Durable review: `docs/research/2026-08-30-minimax-h3-motion-lab-radar.md`.
+- **LongCat-Video-Avatar 1.5:** benchmark-layer candidate only despite relevant audio-I2V/continuation/animal-domain capability; heavy local stack and explicit downloads keep it out of unattended production. Durable review: `docs/research/2026-08-30-longcat-video-avatar-15-admission.md`.
+- **Step-Audio-EditX / Supertonic Mandarin:** remain research-only because main checkpoint/weights rights do not clear Hottop's commercial/operator admission gate. Durable reviews: `docs/research/2026-08-30-step-audio-editx-admission.md` and `docs/research/2026-08-30-mandarin-tts-license-radar.md`.
+- **Qwen3-TTS / local 1.7B runtimes:** official source remains `QwenLM/Qwen3-TTS@022e286b98fbec7e1e916cb940cdf532cd9f488e`; retain operator-provisioned, benchmark-first evaluation. Do not infer quality from runtime support, throughput or a single successful WAV.
 
-No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, current tested LightX2V/Wan2.2 operator route, or the existing prepared 1.7B TTS benchmark candidates.
+No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, the tested LightX2V/Wan2.2 operator route or the prepared 1.7B TTS benchmark candidates.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-3. If an operator-provisioned MiniMax-H3 clip fails requested-action motion specifically because of bursty-motion smear, benchmark the reviewed Motion Lab recovery path against the exact baseline bytes; do not treat smoother output alone as success.
-4. If LongCat-Video-Avatar 1.5 is locally provisioned, benchmark it against the same rights-safe sequence rather than adding an executable adapter from upstream claims alone.
-5. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` with one distinct resolved WAV artifact per trial and keep listening/speaker/onset evidence independent from speed. Any recorded latency must be finite and greater than zero.
-6. Revisit Step-Audio-EditX only if its **main checkpoint** license surface becomes unambiguous; tokenizer-only Apache-2.0 metadata does not clear the main checkpoint gate. Do not admit unofficial Supertonic-ZH while its Mandarin weights remain gated/non-commercial.
-7. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-8. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+3. Treat DiffSynth/MiniMax-H3 NF4 only as an operator benchmark if exact base/derivative rights, operator geography/commercial context, local artifact bytes and offline runtime all clear first; do not call ModelScope/Hugging Face download paths from normal `video-run`.
+4. If an operator-provisioned MiniMax-H3 clip fails requested-action motion specifically because of bursty-motion smear, benchmark the reviewed Motion Lab recovery path against exact baseline bytes; smoother output alone is not success.
+5. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` with one distinct resolved WAV artifact per trial and keep listening/speaker/onset evidence independent from speed.
+6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
