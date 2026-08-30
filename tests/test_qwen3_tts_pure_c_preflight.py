@@ -117,6 +117,31 @@ def test_pure_c_preflight_rejects_out_of_range_safetensors_offsets(tmp_path: Pat
     assert "out-of-range" in " ".join(result.blockers).lower()
 
 
+def test_pure_c_preflight_rejects_shape_dtype_offset_size_mismatch(tmp_path: Path) -> None:
+    executable = _write_executable(tmp_path)
+    model_dir = _write_model_dir(tmp_path)
+    talker = model_dir / "model.safetensors"
+    header = json.dumps(
+        {
+            "weight": {
+                "dtype": "U8",
+                "shape": [2],
+                "data_offsets": [0, 1],
+            }
+        },
+        separators=(",", ":"),
+    ).encode()
+    talker.write_bytes(len(header).to_bytes(8, "little") + header + b"\x01")
+
+    result = pure_c_preflight.inspect_pure_c_qwen3_tts_inputs(
+        executable=executable,
+        model_dir=model_dir,
+    )
+
+    assert result.ready is False
+    assert "byte size" in " ".join(result.blockers).lower()
+
+
 def test_pure_c_preflight_fails_closed_when_required_model_file_is_missing(tmp_path: Path) -> None:
     executable = _write_executable(tmp_path)
     model_dir = _write_model_dir(tmp_path)
@@ -136,7 +161,7 @@ def test_pure_c_preflight_rejects_reused_talker_and_speech_tokenizer_bytes(tmp_p
     executable = _write_executable(tmp_path)
     model_dir = _write_model_dir(tmp_path)
     talker = model_dir / "model.safetensors"
-    speech_tokenizer = model_dir / "speech_tokenizer" / "model.safetensors"
+    speech_tokenizer = model_dir / "speech_tokenizer/model.safetensors"
     speech_tokenizer.write_bytes(talker.read_bytes())
 
     result = pure_c_preflight.inspect_pure_c_qwen3_tts_inputs(
