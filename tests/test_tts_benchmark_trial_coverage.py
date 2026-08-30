@@ -32,6 +32,7 @@ def test_tts_benchmark_requires_cold_and_warm_trial_per_candidate(tmp_path: Path
                         "wav": str(warm),
                         "latency_seconds": 0.5,
                         "runtime_revision": "audio.cpp@abc",
+                        "model_revision": "qwen3-tts-customvoice@model-a",
                     }
                 ],
             },
@@ -68,6 +69,7 @@ def test_tts_benchmark_allows_multiple_warm_trials_when_cold_is_present(tmp_path
                         "wav": str(cold),
                         "latency_seconds": 1.2,
                         "runtime_revision": "audio.cpp@abc",
+                        "model_revision": "qwen3-tts-customvoice@model-a",
                     },
                     {
                         "candidate": "audio-cpp",
@@ -75,6 +77,7 @@ def test_tts_benchmark_allows_multiple_warm_trials_when_cold_is_present(tmp_path
                         "wav": str(warm_one),
                         "latency_seconds": 0.6,
                         "runtime_revision": "audio.cpp@abc",
+                        "model_revision": "qwen3-tts-customvoice@model-a",
                     },
                     {
                         "candidate": "audio-cpp",
@@ -82,6 +85,7 @@ def test_tts_benchmark_allows_multiple_warm_trials_when_cold_is_present(tmp_path
                         "wav": str(warm_two),
                         "latency_seconds": 0.5,
                         "runtime_revision": "audio.cpp@abc",
+                        "model_revision": "qwen3-tts-customvoice@model-a",
                     },
                 ],
             },
@@ -113,6 +117,7 @@ def test_tts_benchmark_requires_one_runtime_revision_per_candidate(tmp_path: Pat
                         "wav": str(cold),
                         "latency_seconds": 1.1,
                         "runtime_revision": "audio.cpp@abc",
+                        "model_revision": "qwen3-tts-customvoice@model-a",
                     },
                     {
                         "candidate": "audio-cpp",
@@ -120,6 +125,7 @@ def test_tts_benchmark_requires_one_runtime_revision_per_candidate(tmp_path: Pat
                         "wav": str(warm),
                         "latency_seconds": 0.5,
                         "runtime_revision": "audio.cpp@def",
+                        "model_revision": "qwen3-tts-customvoice@model-a",
                     },
                 ],
             },
