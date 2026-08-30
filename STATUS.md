@@ -8,7 +8,12 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@0ae690d3a765011fc8fad5e1f2dd5e34414ec044`**. The TTS benchmark cold/warm completeness fix was proven RED→GREEN (`CI #2241` → `CI #2243/#2244`), then merged via exact verified head and passed post-merge push **CI #2246** on Python 3.11/3.12. The change adds no neural runtime execution, provider route, dependency, model download, GPU provisioning, credential or paid path.
+Latest verified evidence point: **`main@a7c295afd1c3fd481b051ee6fcc21fa54fe0c25e`**. Two TTS benchmark-integrity gaps were closed in this cycle:
+
+- per-candidate cold/warm completeness: RED `CI #2241` → GREEN `CI #2243/#2244` → merged main/post-merge `CI #2246`;
+- per-candidate runtime-revision consistency: RED `CI #2249` → GREEN `CI #2250/#2251` → merged main/post-merge **`CI #2253`** on Python 3.11/3.12.
+
+The changes add no neural runtime execution, provider route, dependency, model download, GPU provisioning, credential or paid path.
 
 No production workstream is currently known to be failing at this evidence point.
 
@@ -53,9 +58,13 @@ Shared evidence surface:
 
 It inspects already-produced local WAVs only and never executes TTS, accesses the network, installs dependencies, downloads models, provisions GPU resources or calls a paid service. Latency must be finite and greater than zero. Separate benchmark rows cannot reuse the same resolved WAV path; identical bytes are still legal when independently produced as distinct artifact instances.
 
-**Benchmark completeness is now fail-closed per candidate:** every represented runtime must have at least one `cold` and at least one `warm` trial before the evidence can be `ready=true`. Additional independent warm trials remain valid and are preferred for warmed-runtime variance and repeated speaker-consistency evidence. Cold/warm coverage does not replace listening, onset, speaker, intelligibility or artifact-integrity gates.
+**Benchmark completeness is fail-closed per candidate:** every represented runtime must have at least one `cold` and at least one `warm` trial before the evidence can be `ready=true`. Additional independent warm trials remain valid and are preferred for warmed-runtime variance and repeated speaker-consistency evidence.
 
-Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoint-supported preset speaker and bounded generation settings while preserving exact runtime/model bytes, cold/warm timing, distinct WAV artifact instances, WAV/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported conditioning fails closed before execution; reference-audio cloning remains separately rights-gated.
+**Benchmark runtime identity is also fail-closed per candidate:** all cold/warm/repeated trials grouped under one candidate label must bind the same exact `runtime_revision`. Comparing two binaries/builds/revisions requires two distinct candidate identities instead of silently mixing revisions under one label.
+
+Cold/warm coverage and runtime-revision consistency are evidence-coherence gates; neither replaces listening, onset, speaker, intelligibility or artifact-integrity gates.
+
+Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoint-supported preset speaker and bounded generation settings while preserving exact runtime/model bytes, one exact runtime revision per candidate, cold/warm timing, distinct WAV artifact instances, WAV/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported conditioning fails closed before execution; reference-audio cloning remains separately rights-gated.
 
 ## Fresh ecosystem radar — 2026-08-30
 
@@ -64,7 +73,7 @@ Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoi
 - **MiniMax H3 Motion Lab:** `matlowai/ComfyUI-MAINodes@f4868b4a08e8a504ce86db54a17961d399ffa2bc` remains a GPL-3.0-or-later, operator-managed post-generation recovery experiment for bursty-motion smear; it is not a generator admission. Durable review: `docs/research/2026-08-30-minimax-h3-motion-lab-radar.md`.
 - **LongCat-Video-Avatar 1.5:** benchmark-layer candidate only despite relevant audio-I2V/continuation/animal-domain capability; heavy local stack and explicit downloads keep it out of unattended production. Durable review: `docs/research/2026-08-30-longcat-video-avatar-15-admission.md`.
 - **Step-Audio-EditX / Supertonic Mandarin:** remain research-only because main checkpoint/weights rights do not clear Hottop's commercial/operator admission gate. Durable reviews: `docs/research/2026-08-30-step-audio-editx-admission.md` and `docs/research/2026-08-30-mandarin-tts-license-radar.md`.
-- **Qwen3-TTS / local 1.7B runtimes:** official source remains `QwenLM/Qwen3-TTS@022e286b98fbec7e1e916cb940cdf532cd9f488e`; retain operator-provisioned, benchmark-first evaluation. Do not infer quality from runtime support, throughput or a single successful WAV.
+- **Qwen3-TTS / local 1.7B runtimes:** official source remains `QwenLM/Qwen3-TTS@022e286b98fbec7e1e916cb940cdf532cd9f488e`; retain operator-provisioned, benchmark-first evaluation. Do not infer quality from runtime support, throughput or a single successful WAV. Public benchmark practice reviewed this cycle reinforces pinning source/runtime/protocol rather than attributing results to a floating runtime label.
 
 No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, the tested LightX2V/Wan2.2 operator route or the prepared 1.7B TTS benchmark candidates.
 
@@ -74,7 +83,7 @@ No reviewed candidate in this cycle clears admission strongly enough to replace 
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
 3. Treat DiffSynth/MiniMax-H3 NF4 only as an operator benchmark if exact base/derivative rights, operator geography/commercial context, local artifact bytes and offline runtime all clear first; do not call ModelScope/Hugging Face download paths from normal `video-run`.
 4. If an operator-provisioned MiniMax-H3 clip fails requested-action motion specifically because of bursty-motion smear, benchmark the reviewed Motion Lab recovery path against exact baseline bytes; smoother output alone is not success.
-5. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` with at least one cold plus one warm trial **per candidate**, distinct resolved WAV artifacts per trial, and additional warm repeats where useful. Keep listening/speaker/onset evidence independent from speed.
+5. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` with at least one cold plus one warm trial **per candidate**, one exact runtime revision per candidate, distinct resolved WAV artifacts per trial, and additional warm repeats where useful. Keep listening/speaker/onset evidence independent from speed.
 6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
