@@ -46,6 +46,8 @@ The v1 evidence contract binds:
 
 - exact benchmark text, language and preset speaker label;
 - candidate/runtime revision and cold/warm trial identity;
+- **per-candidate cold/warm coverage**: every candidate must provide at least one `cold` trial and at least one `warm` trial before the benchmark can be `ready=true`;
+- repeated trials remain first-class evidence: one cold plus multiple independent warm trials is valid and preferred when measuring repeated-run speaker consistency or warmed-runtime variance;
 - exact WAV path, SHA-256 and size;
 - sample rate, channels, sample width, frame count and duration;
 - digital-silence rejection;
@@ -54,7 +56,11 @@ The v1 evidence contract binds:
 
 A benchmark trial is an artifact instance, not merely a row label. Two trial rows must not reuse the same **resolved WAV path**, because one physical artifact cannot prove two independently produced executions. This is intentionally narrower than byte uniqueness: two independently produced files may have identical SHA-256 bytes, and that byte equality is useful deterministic repeatability evidence rather than a failure.
 
-Future operator Qwen3-TTS 1.7B A/B runs should pair this artifact evidence with the already-required repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights review.
+Cold/warm coverage is a benchmark-completeness gate, not a claim that one cold and one warm sample are sufficient for production quality. Future operator Qwen3-TTS 1.7B A/B runs should pair this artifact evidence with multiple warm repeats plus the already-required repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights review.
+
+### 2026-08-30 closure evidence
+
+A TDD contract demonstrated that the previous inspector could report `ready=true` for a candidate represented only by a single warm trial. RED CI #2241 failed on the new coverage contract after Ruff passed. The minimal implementation groups trials by candidate, requires `{cold, warm}` coverage, and deliberately allows additional warm repeats. Exact-head CI #2243 passed Ruff and the full pytest suite on Python 3.11 and 3.12.
 
 ## Re-admission / expansion gate
 

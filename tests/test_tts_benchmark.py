@@ -113,7 +113,8 @@ def test_tts_benchmark_fails_closed_for_silent_or_mismatched_trials(tmp_path: Pa
 
 
 def test_model_hub_cli_exposes_read_only_tts_benchmark(tmp_path: Path) -> None:
-    wav = _write_wav(tmp_path / "voice.wav")
+    cold = _write_wav(tmp_path / "voice-cold.wav")
+    warm = _write_wav(tmp_path / "voice-warm.wav", sample=1200)
     spec = tmp_path / "bench.json"
     spec.write_text(
         json.dumps(
@@ -125,11 +126,18 @@ def test_model_hub_cli_exposes_read_only_tts_benchmark(tmp_path: Path) -> None:
                 "trials": [
                     {
                         "candidate": "audio-cpp",
+                        "run_kind": "cold",
+                        "wav": str(cold),
+                        "latency_seconds": 0.8,
+                        "runtime_revision": "audio.cpp@xyz",
+                    },
+                    {
+                        "candidate": "audio-cpp",
                         "run_kind": "warm",
-                        "wav": str(wav),
+                        "wav": str(warm),
                         "latency_seconds": 0.5,
                         "runtime_revision": "audio.cpp@xyz",
-                    }
+                    },
                 ],
             },
             ensure_ascii=False,
