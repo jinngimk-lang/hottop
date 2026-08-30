@@ -33,7 +33,7 @@ def _write_spec(path: Path, trials: list[dict[str, object]]) -> Path:
     return path
 
 
-def test_tts_benchmark_rejects_reusing_one_physical_wav_for_multiple_trials(
+def test_tts_benchmark_rejects_reusing_one_resolved_wav_path_for_multiple_trials(
     tmp_path: Path,
 ) -> None:
     shared = _write_wav(tmp_path / "shared.wav")
@@ -60,10 +60,7 @@ def test_tts_benchmark_rejects_reusing_one_physical_wav_for_multiple_trials(
     result = inspect_tts_benchmark(spec)
 
     assert result.ready is False
-    assert any(
-        "physical WAV artifact is reused across trials" in blocker
-        for blocker in result.blockers
-    )
+    assert any("resolved WAV path is reused across trials" in blocker for blocker in result.blockers)
 
 
 def test_tts_benchmark_allows_independent_files_with_identical_audio_bytes(
