@@ -484,3 +484,23 @@ models:
     notes:
       - Upstream support is implementation evidence only; Hottop has not reproduced Mandarin naturalness, onset stability, repeated speaker consistency, instruction control or latency.
       - Bind exact source/build/backend, model/tokenizer bytes, input line, supported preset speaker, seed/sampling/generation ceiling, every WAV's bytes/duration/PCM integrity, latency/RTF and publication-rights posture before any quality claim.
+
+  - id: qwen3-tts-pure-c-1b7
+    name: Qwen3-TTS 1.7B CustomVoice Pure C benchmark candidate
+    family: qwen3-tts-pure-c
+    modalities: [audio]
+    capabilities: [mandarin_tts, role_aware_tts, delivery_instruction, dialogue_generation, cpu_inference, cuda_inference, metal_inference]
+    repository: https://github.com/gabriele-mastrapasqua/qwen3-tts
+    code_license: MIT
+    weights_license: Apache-2.0-official-Qwen-model-review-required-at-provision-time
+    status: benchmark_candidate
+    cost_class: self_owned_compute
+    integration_ready: false
+    runtime_status: unprobed
+    operator_profiles: []
+    integration_strategy: registry_only_until_operator_1b7_same_line_cross_runtime_benchmark
+    runtime_boundary: Exact reviewed source f1b6865713d12a2a2365282fc02e19a5a384a565 exposes Qwen3-TTS 1.7B CustomVoice through a pure-C local runtime over raw safetensors. Upstream ships download_model.sh and download_voices.sh; Hottop must not invoke those helpers or auto-build/provision dependencies. Only operator-provisioned exact source/build plus locally bound official Qwen model bytes may enter a same-line Mandarin benchmark. Preset CustomVoice only initially; cloning/reference audio remains separately rights-gated.
+    priority: 49
+    notes:
+      - Upstream runtime support and performance claims are implementation evidence only; Hottop has not reproduced Mandarin naturalness, onset stability, repeated speaker consistency, delivery control or latency.
+      - Bind source/build/backend, exact model bytes/revision, input line, supported preset speaker, seed/sampling/generation ceiling, WAV bytes/PCM duration/integrity, latency/RTF and publication-rights posture before any quality claim.
