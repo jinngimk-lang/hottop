@@ -180,7 +180,7 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
         latency_is_valid = math.isfinite(trial.latency_seconds) and trial.latency_seconds > 0
         if not latency_is_valid:
             trial_blockers.append(
-                f"trial {index} latency_seconds must be finite and greater than zero"
+                f"trial {index} latency_seconds must be greater than zero and finite"
             )
 
         realtime_factor = None
