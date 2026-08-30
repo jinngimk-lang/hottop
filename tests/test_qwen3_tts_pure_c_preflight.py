@@ -10,6 +10,20 @@ from hottop.model_hub_cli import app
 runner = CliRunner()
 
 
+def _write_safetensors(path: Path, *, value: int) -> None:
+    header = json.dumps(
+        {
+            "weight": {
+                "dtype": "U8",
+                "shape": [1],
+                "data_offsets": [0, 1],
+            }
+        },
+        separators=(",", ":"),
+    ).encode()
+    path.write_bytes(len(header).to_bytes(8, "little") + header + bytes([value]))
+
+
 def _write_model_dir(root: Path) -> Path:
     model_dir = root / "qwen3-tts-1.7b"
     for relative_path in pure_c_preflight.REQUIRED_MODEL_FILES:
@@ -26,6 +40,10 @@ def _write_model_dir(root: Path) -> Path:
                 ),
                 encoding="utf-8",
             )
+        elif relative_path == "model.safetensors":
+            _write_safetensors(path, value=1)
+        elif relative_path == "speech_tokenizer/model.safetensors":
+            _write_safetensors(path, value=2)
         else:
             path.write_bytes(f"fixture:{relative_path}".encode())
     return model_dir
