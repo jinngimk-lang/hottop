@@ -11,9 +11,7 @@ def test_qwen3_tts_pure_c_benchmark_manifest_is_fail_closed() -> None:
     raw = yaml.safe_load(path.read_text(encoding="utf-8"))
 
     assert raw["id"] == "qwen3-tts-pure-c-1b7"
-    assert raw["source_revision_reviewed"] == (
-        "f1b6865713d12a2a2365282fc02e19a5a384a565"
-    )
+    assert raw["source_revision_reviewed"] == "f1b6865713d12a2a2365282fc02e19a5a384a565"
     assert raw["code_license"] == "MIT"
     assert raw["model_family"] == "Qwen3-TTS-12Hz-1.7B-CustomVoice"
     assert raw["cost_class"] == "self_owned_compute"
