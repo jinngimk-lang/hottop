@@ -32,6 +32,20 @@ Admission is therefore fail-closed:
 3. no model download, build dependency fetch, GPU provisioning, hosted API or paid fallback occurs from normal `video-run`;
 4. execution is allowed only as an explicit operator benchmark after local preflight exists or equivalent evidence is supplied.
 
+## Read-only local preflight
+
+`hottop-models probe-qwen3-tts-pure-c --executable <path> --model-dir <path>` binds an operator-provisioned executable plus the exact model tree without running the runtime or downloading anything.
+
+The reviewed upstream downloader uses the same file layout for 1.7B CustomVoice, 1.7B Base, 1.7B VoiceDesign and 0.6B CustomVoice. **File presence alone therefore cannot prove checkpoint capability.** The preflight now binds `config.json` bytes and requires all three semantic markers from the same bound config artifact:
+
+- `model_type == "qwen3_tts"`;
+- `tts_model_type == "custom_voice"`;
+- `tts_model_size == "1b7"`.
+
+The official Qwen configs distinguish 1.7B CustomVoice (`custom_voice`, `1b7`), 1.7B Base (`base`, `1b7`) and 0.6B CustomVoice (`custom_voice`, `0b6`). A Base, VoiceDesign or 0.6B tree must therefore fail closed rather than masquerade as the intended 1.7B CustomVoice benchmark input.
+
+The semantic parse is tied back to the already-bound `config.json` SHA-256; if the file bytes differ when parsed, the preflight fails instead of combining artifact identity from one config with capability metadata from another. `ready=true` remains only local input/preflight evidence. It does **not** prove checkpoint revision, model rights, runtime execution, speaker capability at inference time or Mandarin quality.
+
 ## Benchmark protocol
 
 Compare this runtime with qwentts.cpp, CrispASR and audio.cpp using the **same-line Mandarin** text, the same checkpoint-supported preset speaker and semantically comparable controls. Bind:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path
 from typing import Literal
 
@@ -31,9 +33,32 @@ class PureCQwen3TtsPreflight(BaseModel):
     network_access: Literal[False] = False
     auto_download: Literal[False] = False
     model_dir: str | None = None
+    checkpoint_model_type: str | None = None
+    checkpoint_model_size: str | None = None
     executable: LocalArtifactIdentity | None = None
     artifacts: dict[str, LocalArtifactIdentity]
     blockers: list[str]
+
+
+def _read_bound_config(
+    config_identity: LocalArtifactIdentity,
+) -> tuple[dict[str, object] | None, list[str]]:
+    path = Path(config_identity.path)
+    try:
+        config_bytes = path.read_bytes()
+    except OSError:
+        return None, [f"Pure-C Qwen3-TTS config.json changed after artifact binding: {path}"]
+
+    if hashlib.sha256(config_bytes).hexdigest() != config_identity.sha256:
+        return None, [f"Pure-C Qwen3-TTS config.json changed after artifact binding: {path}"]
+
+    try:
+        parsed = json.loads(config_bytes)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None, [f"Pure-C Qwen3-TTS config.json is not valid JSON: {path}"]
+    if not isinstance(parsed, dict):
+        return None, [f"Pure-C Qwen3-TTS config.json must contain a JSON object: {path}"]
+    return parsed, []
 
 
 def inspect_pure_c_qwen3_tts_inputs(
@@ -74,6 +99,27 @@ def inspect_pure_c_qwen3_tts_inputs(
             if identity is not None:
                 artifacts[relative_path] = identity
 
+    checkpoint_model_type: str | None = None
+    checkpoint_model_size: str | None = None
+    config_identity = artifacts.get("config.json")
+    if config_identity is not None:
+        config, config_blockers = _read_bound_config(config_identity)
+        blockers.extend(config_blockers)
+        if config is not None:
+            model_family = config.get("model_type")
+            raw_model_type = config.get("tts_model_type")
+            raw_model_size = config.get("tts_model_size")
+            checkpoint_model_type = raw_model_type if isinstance(raw_model_type, str) else None
+            checkpoint_model_size = raw_model_size if isinstance(raw_model_size, str) else None
+            if model_family != "qwen3_tts":
+                blockers.append("Pure-C Qwen3-TTS config.json must identify model_type qwen3_tts")
+            if checkpoint_model_type != "custom_voice":
+                blockers.append(
+                    "Pure-C Qwen3-TTS benchmark requires tts_model_type custom_voice"
+                )
+            if checkpoint_model_size != "1b7":
+                blockers.append("Pure-C Qwen3-TTS benchmark requires tts_model_size 1b7")
+
     if executable_identity is not None:
         executable_reused_as_model = any(
             executable_identity.path == identity.path
@@ -97,6 +143,8 @@ def inspect_pure_c_qwen3_tts_inputs(
     return PureCQwen3TtsPreflight(
         ready=not blockers,
         model_dir=str(resolved_model_dir) if resolved_model_dir is not None else None,
+        checkpoint_model_type=checkpoint_model_type,
+        checkpoint_model_size=checkpoint_model_size,
         executable=executable_identity,
         artifacts=artifacts,
         blockers=blockers,
