@@ -82,3 +82,30 @@ def test_tts_benchmark_accepts_generic_accelerator_identity(tmp_path: Path) -> N
     )
 
     assert result.ready is True
+
+
+def test_tts_benchmark_rejects_cpu_backend_with_only_gpu_identity(tmp_path: Path) -> None:
+    result = _inspect(
+        tmp_path,
+        {"backend": "cpu", "gpu": "NVIDIA H100", "logical_cpu_count": 4},
+    )
+
+    assert result.ready is False
+    assert any(
+        "hardware_profile cpu backend requires a nonblank cpu identity" in blocker
+        for blocker in result.blockers
+    )
+
+
+def test_tts_benchmark_rejects_accelerator_backend_with_only_cpu_identity(tmp_path: Path) -> None:
+    result = _inspect(
+        tmp_path,
+        {"backend": "cuda", "cpu": "AMD EPYC 7763", "device_count": 1},
+    )
+
+    assert result.ready is False
+    assert any(
+        "hardware_profile cuda backend requires a nonblank gpu or accelerator identity"
+        in blocker
+        for blocker in result.blockers
+    )
