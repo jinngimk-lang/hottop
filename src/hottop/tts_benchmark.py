@@ -171,12 +171,23 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
     spec = TtsBenchmarkInput.model_validate(payload)
     trial_evidence: list[TtsBenchmarkTrialEvidence] = []
     blockers: list[str] = []
+    seen_wav_paths: dict[str, int] = {}
 
     for index, trial in enumerate(spec.trials):
         wav_path = Path(trial.wav)
         if not wav_path.is_absolute():
             wav_path = spec_path.parent / wav_path
         wav_identity, trial_blockers = _inspect_wav(wav_path)
+        if wav_identity is not None:
+            previous_trial = seen_wav_paths.get(wav_identity.path)
+            if previous_trial is not None:
+                trial_blockers.append(
+                    "resolved WAV path is reused across trials: "
+                    f"trial {previous_trial} and trial {index}: {wav_identity.path}"
+                )
+            else:
+                seen_wav_paths[wav_identity.path] = index
+
         latency_is_valid = math.isfinite(trial.latency_seconds) and trial.latency_seconds > 0
         if not latency_is_valid:
             trial_blockers.append(
