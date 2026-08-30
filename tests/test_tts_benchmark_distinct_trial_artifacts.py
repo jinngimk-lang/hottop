@@ -46,6 +46,7 @@ def test_tts_benchmark_rejects_reusing_one_resolved_wav_path_for_multiple_trials
                 "wav": str(shared),
                 "latency_seconds": 2.0,
                 "runtime_revision": "qwentts@abc",
+                "model_revision": "qwen3-tts-customvoice@model-a",
             },
             {
                 "candidate": "crispasr",
@@ -53,6 +54,7 @@ def test_tts_benchmark_rejects_reusing_one_resolved_wav_path_for_multiple_trials
                 "wav": str(shared),
                 "latency_seconds": 0.5,
                 "runtime_revision": "crispasr@def",
+                "model_revision": "qwen3-tts-customvoice@model-a",
             },
         ],
     )
@@ -78,6 +80,7 @@ def test_tts_benchmark_allows_independent_files_with_identical_audio_bytes(
                 "wav": str(first),
                 "latency_seconds": 1.0,
                 "runtime_revision": "qwentts@abc",
+                "model_revision": "qwen3-tts-customvoice@model-a",
             },
             {
                 "candidate": "qwentts-cpp",
@@ -85,6 +88,7 @@ def test_tts_benchmark_allows_independent_files_with_identical_audio_bytes(
                 "wav": str(second),
                 "latency_seconds": 0.8,
                 "runtime_revision": "qwentts@abc",
+                "model_revision": "qwen3-tts-customvoice@model-a",
             },
         ],
     )
