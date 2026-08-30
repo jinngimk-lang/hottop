@@ -45,6 +45,7 @@ It reads only an operator-authored JSON spec and already-produced local WAV file
 The v1 evidence contract binds:
 
 - exact benchmark text, language and preset speaker label;
+- **one explicit generation protocol for the whole benchmark** — operator-authored seed, sampling controls, generation ceiling and any other settings required to make the compared runs semantically equivalent; the protocol must be non-empty finite JSON, is canonicalized with sorted keys and is preserved with a SHA-256 digest in the evidence;
 - candidate/runtime/model revision and cold/warm trial identity;
 - **per-candidate runtime identity**: every trial grouped under one candidate label must use the same exact `runtime_revision`; comparing two runtime revisions requires two distinct candidate identities instead of mixing binaries/builds under one label;
 - **per-candidate model identity**: every trial grouped under one candidate label must use the same exact `model_revision`; comparing two checkpoint/model revisions requires two distinct candidate identities instead of silently mixing model artifacts under one label;
@@ -58,6 +59,8 @@ The v1 evidence contract binds:
 
 A benchmark trial is an artifact instance, not merely a row label. Two trial rows must not reuse the same **resolved WAV path**, because one physical artifact cannot prove two independently produced executions. This is intentionally narrower than byte uniqueness: two independently produced files may have identical SHA-256 bytes, and that byte equality is useful deterministic repeatability evidence rather than a failure.
 
+The generation protocol is a **declared benchmark-control contract**, not proof that a runtime internally obeyed a flag. It closes a concrete evidence-coherence hole by preventing a ready benchmark from omitting seed/sampling/generation-ceiling identity altogether. Operator execution records should still retain the actual CLI/config provenance for each runtime; incompatible semantics across runtimes require separate candidate/protocol design rather than pretending similarly named flags are equivalent.
+
 Cold/warm coverage is a benchmark-completeness gate, not a claim that one cold and one warm sample are sufficient for production quality. Runtime- and model-revision consistency are evidence-coherence gates: they prevent cold/warm or repeated-trial results from silently crossing implementation or checkpoint revisions. Future operator Qwen3-TTS 1.7B A/B runs should pair this artifact evidence with multiple warm repeats plus the already-required repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights review.
 
 ### 2026-08-30 closure evidence
@@ -67,6 +70,8 @@ A first TDD contract demonstrated that the previous inspector could report `read
 A second TDD contract demonstrated that a candidate could satisfy cold/warm coverage while mixing `runtime_revision=audio.cpp@abc` and `audio.cpp@def`. RED CI #2249 passed Ruff and failed pytest on the new provenance contract. The minimal implementation groups runtime revisions by candidate and fails closed when a candidate label spans more than one revision. GREEN CI #2250 passed the full pytest suite on both Python 3.11 and 3.12 before the durable-record update.
 
 A third TDD contract demonstrated that a candidate could preserve one runtime revision while mixing two model/checkpoint revisions across cold and warm trials. RED CI #2256 passed Ruff and failed pytest on the new model-coherence contract. The minimal implementation promotes `model_revision` to required trial/evidence data, groups model revisions by candidate and fails closed when one candidate label spans multiple model revisions. GREEN CI #2261 passed Ruff and the full pytest suite on Python 3.11 and 3.12.
+
+A fourth TDD contract demonstrated that the benchmark could be `ready=true` without binding seed, sampling or generation-ceiling settings at all. RED CI #2269 passed Ruff and failed pytest after adding the new generation-protocol contract. The minimal implementation requires one non-empty finite JSON `generation_protocol` for the full benchmark, preserves it in evidence and binds its canonical sorted-key JSON bytes with SHA-256. Existing ready fixtures were updated to declare the same protocol rather than weakening the gate. Exact-head GREEN CI #2274 passed Ruff and the full pytest suite on Python 3.11 and 3.12.
 
 ## Re-admission / expansion gate
 

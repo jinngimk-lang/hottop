@@ -4,6 +4,13 @@ from pathlib import Path
 
 from hottop.tts_benchmark import inspect_tts_benchmark
 
+GENERATION_PROTOCOL = {
+    "seed": 42,
+    "max_new_tokens": 256,
+    "temperature": 0.9,
+    "top_p": 1.0,
+}
+
 
 def _write_wav(path: Path) -> Path:
     sample = 1000
@@ -24,6 +31,7 @@ def _write_spec(path: Path, trials: list[dict[str, object]]) -> Path:
                 "text": "今天我们测试同一句中文对白。",
                 "language": "zh",
                 "speaker": "Vivian",
+                "generation_protocol": GENERATION_PROTOCOL,
                 "trials": trials,
             },
             ensure_ascii=False,
