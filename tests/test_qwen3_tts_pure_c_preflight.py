@@ -3,18 +3,15 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
+from hottop import pure_c_qwen3_tts_preflight as pure_c_preflight
 from hottop.model_hub_cli import app
-from hottop.pure_c_qwen3_tts_preflight import (
-    REQUIRED_MODEL_FILES,
-    inspect_pure_c_qwen3_tts_inputs,
-)
 
 runner = CliRunner()
 
 
 def _write_model_dir(root: Path) -> Path:
     model_dir = root / "qwen3-tts-1.7b"
-    for relative_path in REQUIRED_MODEL_FILES:
+    for relative_path in pure_c_preflight.REQUIRED_MODEL_FILES:
         path = model_dir / relative_path
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(f"fixture:{relative_path}".encode())
@@ -32,7 +29,10 @@ def test_pure_c_preflight_binds_operator_provisioned_model_tree_without_executio
     executable = _write_executable(tmp_path)
     model_dir = _write_model_dir(tmp_path)
 
-    result = inspect_pure_c_qwen3_tts_inputs(executable=executable, model_dir=model_dir)
+    result = pure_c_preflight.inspect_pure_c_qwen3_tts_inputs(
+        executable=executable,
+        model_dir=model_dir,
+    )
 
     assert result.ready is True
     assert result.executed is False
@@ -41,7 +41,7 @@ def test_pure_c_preflight_binds_operator_provisioned_model_tree_without_executio
     assert result.model_dir == str(model_dir.resolve())
     assert result.executable is not None
     assert result.executable.sha256 == hashlib.sha256(executable.read_bytes()).hexdigest()
-    assert set(result.artifacts) == set(REQUIRED_MODEL_FILES)
+    assert set(result.artifacts) == set(pure_c_preflight.REQUIRED_MODEL_FILES)
     assert result.blockers == []
 
 
@@ -51,7 +51,10 @@ def test_pure_c_preflight_fails_closed_when_required_model_file_is_missing(tmp_p
     missing = model_dir / "speech_tokenizer" / "model.safetensors"
     missing.unlink()
 
-    result = inspect_pure_c_qwen3_tts_inputs(executable=executable, model_dir=model_dir)
+    result = pure_c_preflight.inspect_pure_c_qwen3_tts_inputs(
+        executable=executable,
+        model_dir=model_dir,
+    )
 
     assert result.ready is False
     assert "speech_tokenizer/model.safetensors" in " ".join(result.blockers)
@@ -64,7 +67,10 @@ def test_pure_c_preflight_rejects_reused_talker_and_speech_tokenizer_bytes(tmp_p
     speech_tokenizer = model_dir / "speech_tokenizer" / "model.safetensors"
     speech_tokenizer.write_bytes(talker.read_bytes())
 
-    result = inspect_pure_c_qwen3_tts_inputs(executable=executable, model_dir=model_dir)
+    result = pure_c_preflight.inspect_pure_c_qwen3_tts_inputs(
+        executable=executable,
+        model_dir=model_dir,
+    )
 
     assert result.ready is False
     assert "distinct" in " ".join(result.blockers).lower()
