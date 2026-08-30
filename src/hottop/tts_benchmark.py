@@ -5,7 +5,7 @@ import json
 import math
 import wave
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, field_validator
 
@@ -34,7 +34,7 @@ class TtsBenchmarkInput(BaseModel):
     text: str
     language: str
     speaker: str
-    generation_protocol: dict[str, object] | None = None
+    generation_protocol: dict[str, Any] | None = None
     trials: list[TtsBenchmarkTrialInput]
 
     @field_validator("text", "language", "speaker")
@@ -48,13 +48,13 @@ class TtsBenchmarkInput(BaseModel):
     @field_validator("generation_protocol")
     @classmethod
     def _valid_generation_protocol(
-        cls, value: dict[str, object] | None
-    ) -> dict[str, object] | None:
+        cls, value: dict[str, Any] | None
+    ) -> dict[str, Any] | None:
         if value is None:
             return None
         if not value:
             raise ValueError("generation_protocol must not be empty")
-        normalized: dict[str, object] = {}
+        normalized: dict[str, Any] = {}
         for key, item in value.items():
             normalized_key = key.strip()
             if not normalized_key:
@@ -110,7 +110,7 @@ class TtsBenchmarkEvidence(BaseModel):
     text: str
     language: str
     speaker: str
-    generation_protocol: dict[str, object] | None = None
+    generation_protocol: dict[str, Any] | None = None
     generation_protocol_sha256: str | None = None
     trials: list[TtsBenchmarkTrialEvidence]
     blockers: list[str]
@@ -136,7 +136,7 @@ def _stream_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _generation_protocol_sha256(protocol: dict[str, object]) -> str:
+def _generation_protocol_sha256(protocol: dict[str, Any]) -> str:
     canonical = json.dumps(
         protocol,
         ensure_ascii=False,
