@@ -7,7 +7,7 @@ from hottop.tts_benchmark import inspect_tts_benchmark
 
 
 def _write_wav(path: Path) -> Path:
-    payload = int(1000).to_bytes(2, "little", signed=True) * 24000
+    payload = (1000).to_bytes(2, "little", signed=True) * 24000
     with wave.open(str(path), "wb") as wav:
         wav.setnchannels(1)
         wav.setsampwidth(2)
