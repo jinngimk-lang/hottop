@@ -32,6 +32,30 @@ SAFETENSORS_MAX_HEADER_SIZE_BYTES = 100_000_000
 SAFETENSORS_MODEL_FILES = frozenset(
     {"model.safetensors", "speech_tokenizer/model.safetensors"}
 )
+SAFETENSORS_DTYPE_BITS = {
+    "BOOL": 8,
+    "F4": 4,
+    "F6_E2M3": 6,
+    "F6_E3M2": 6,
+    "U8": 8,
+    "I8": 8,
+    "F8_E5M2": 8,
+    "F8_E4M3": 8,
+    "F8_E8M0": 8,
+    "F8_E4M3FNUZ": 8,
+    "F8_E5M2FNUZ": 8,
+    "I16": 16,
+    "U16": 16,
+    "F16": 16,
+    "BF16": 16,
+    "I32": 32,
+    "U32": 32,
+    "F32": 32,
+    "C64": 64,
+    "F64": 64,
+    "I64": 64,
+    "U64": 64,
+}
 
 
 class PureCQwen3TtsPreflight(BaseModel):
@@ -71,6 +95,20 @@ def _read_bound_config(
     return parsed, []
 
 
+def _expected_tensor_size_bytes(dtype: str, shape: list[int]) -> int | None:
+    bits_per_element = SAFETENSORS_DTYPE_BITS.get(dtype)
+    if bits_per_element is None:
+        return None
+
+    element_count = 1
+    for dimension in shape:
+        element_count *= dimension
+    total_bits = element_count * bits_per_element
+    if total_bits % 8 != 0:
+        return -1
+    return total_bits // 8
+
+
 def _safetensors_header_blockers(
     header_bytes: bytes,
     *,
@@ -89,6 +127,7 @@ def _safetensors_header_blockers(
 
     blockers: list[str] = []
     tensor_count = 0
+    valid_spans: list[tuple[int, int]] = []
     for tensor_name, descriptor in header.items():
         if tensor_name == "__metadata__":
             if not isinstance(descriptor, dict) or not all(
@@ -120,9 +159,34 @@ def _safetensors_header_blockers(
         begin, end = offsets
         if begin < 0 or end < begin or end > data_size:
             blockers.append(f"{label} has out-of-range safetensors data offsets: {path}")
+            continue
+
+        expected_size = _expected_tensor_size_bytes(dtype, shape)
+        if expected_size is None:
+            blockers.append(f"{label} has unsupported safetensors dtype {dtype}: {path}")
+        elif expected_size < 0 or end - begin != expected_size:
+            blockers.append(
+                f"{label} safetensors tensor byte size does not match dtype/shape: {path}"
+            )
+        else:
+            valid_spans.append((begin, end))
 
     if tensor_count == 0:
         blockers.append(f"{label} safetensors header contains no tensors: {path}")
+    elif len(valid_spans) == tensor_count:
+        cursor = 0
+        for begin, end in sorted(valid_spans):
+            if begin != cursor:
+                blockers.append(
+                    f"{label} safetensors data offsets must cover the data buffer contiguously: {path}"
+                )
+                break
+            cursor = end
+        else:
+            if cursor != data_size:
+                blockers.append(
+                    f"{label} safetensors data offsets must cover the data buffer contiguously: {path}"
+                )
     return blockers
 
 
