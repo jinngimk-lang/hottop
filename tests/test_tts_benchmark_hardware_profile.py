@@ -4,10 +4,11 @@ from pathlib import Path
 
 from hottop.tts_benchmark import inspect_tts_benchmark
 
-HARDWARE_PROFILE = {
-    "cpu": "AMD EPYC 7763",
-    "backend": "cpu",
-    "logical_cpu_count": 4,
+GENERATION_PROTOCOL = {
+    "seed": 42,
+    "max_new_tokens": 256,
+    "temperature": 0.9,
+    "top_p": 1.0,
 }
 
 
@@ -21,7 +22,7 @@ def _write_wav(path: Path, *, sample: int) -> Path:
     return path
 
 
-def _spec(tmp_path: Path, *, generation_protocol: dict[str, object] | None) -> Path:
+def _spec(tmp_path: Path, *, hardware_profile: dict[str, object] | None) -> Path:
     cold = _write_wav(tmp_path / "cold.wav", sample=1000)
     warm = _write_wav(tmp_path / "warm.wav", sample=1100)
     payload: dict[str, object] = {
@@ -29,7 +30,7 @@ def _spec(tmp_path: Path, *, generation_protocol: dict[str, object] | None) -> P
         "text": "今天我们测试同一句中文对白。",
         "language": "zh",
         "speaker": "Vivian",
-        "hardware_profile": HARDWARE_PROFILE,
+        "generation_protocol": GENERATION_PROTOCOL,
         "trials": [
             {
                 "candidate": "audio-cpp",
@@ -49,31 +50,29 @@ def _spec(tmp_path: Path, *, generation_protocol: dict[str, object] | None) -> P
             },
         ],
     }
-    if generation_protocol is not None:
-        payload["generation_protocol"] = generation_protocol
+    if hardware_profile is not None:
+        payload["hardware_profile"] = hardware_profile
     spec = tmp_path / "bench.json"
     spec.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
     return spec
 
 
-def test_tts_benchmark_fails_closed_without_generation_protocol(tmp_path: Path) -> None:
-    result = inspect_tts_benchmark(_spec(tmp_path, generation_protocol=None))
+def test_tts_benchmark_fails_closed_without_hardware_profile(tmp_path: Path) -> None:
+    result = inspect_tts_benchmark(_spec(tmp_path, hardware_profile=None))
 
     assert result.ready is False
-    assert any("generation_protocol" in blocker for blocker in result.blockers)
+    assert any("hardware_profile" in blocker for blocker in result.blockers)
 
 
-def test_tts_benchmark_binds_generation_protocol_as_canonical_digest(tmp_path: Path) -> None:
-    protocol = {
-        "seed": 42,
-        "max_new_tokens": 256,
-        "temperature": 0.9,
-        "top_p": 1.0,
-        "top_k": 50,
-        "repetition_penalty": 1.05,
+def test_tts_benchmark_binds_hardware_profile_as_canonical_digest(tmp_path: Path) -> None:
+    profile = {
+        "cpu": "AMD EPYC 7763",
+        "gpu": "NVIDIA H200 SXM",
+        "gpu_count": 1,
+        "backend": "cuda",
     }
-    result = inspect_tts_benchmark(_spec(tmp_path, generation_protocol=protocol))
+    result = inspect_tts_benchmark(_spec(tmp_path, hardware_profile=profile))
 
     assert result.ready is True
-    assert result.generation_protocol == protocol
-    assert len(result.generation_protocol_sha256) == 64
+    assert result.hardware_profile == profile
+    assert len(result.hardware_profile_sha256) == 64

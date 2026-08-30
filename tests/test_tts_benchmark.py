@@ -15,6 +15,11 @@ GENERATION_PROTOCOL = {
     "temperature": 0.9,
     "top_p": 1.0,
 }
+HARDWARE_PROFILE = {
+    "cpu": "AMD EPYC 7763",
+    "backend": "cpu",
+    "logical_cpu_count": 4,
+}
 
 
 def _write_wav(path: Path, *, frames: int = 24000, sample_rate: int = 24000, sample: int = 1000) -> Path:
@@ -39,6 +44,7 @@ def test_tts_benchmark_binds_local_wav_bytes_and_speed_without_execution(tmp_pat
                 "language": "zh",
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
+                "hardware_profile": HARDWARE_PROFILE,
                 "trials": [
                     {
                         "candidate": "qwentts-cpp",
@@ -72,6 +78,8 @@ def test_tts_benchmark_binds_local_wav_bytes_and_speed_without_execution(tmp_pat
     assert result.listening_required is True
     assert result.generation_protocol == GENERATION_PROTOCOL
     assert result.generation_protocol_sha256 is not None
+    assert result.hardware_profile == HARDWARE_PROFILE
+    assert result.hardware_profile_sha256 is not None
     assert len(result.trials) == 2
     first = result.trials[0]
     assert first.runtime_revision == "qwentts@abc"
@@ -98,6 +106,7 @@ def test_tts_benchmark_fails_closed_for_silent_or_mismatched_trials(tmp_path: Pa
                 "language": "zh",
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
+                "hardware_profile": HARDWARE_PROFILE,
                 "trials": [
                     {
                         "candidate": "qwentts-cpp",
@@ -140,6 +149,7 @@ def test_model_hub_cli_exposes_read_only_tts_benchmark(tmp_path: Path) -> None:
                 "language": "zh",
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
+                "hardware_profile": HARDWARE_PROFILE,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
