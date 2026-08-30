@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified pre-workstream evidence point: **`main@fd4afd7792ee609125ed27858459f5896225e071` / CI #2320** on Python 3.11/3.12. The current TTS execution-mode contract has exact-head GREEN through `1ba281e0b9d3f282346f9c8427c5f740abb59d39` / CI #2323; live `main` must still be re-fetched after merge before any post-merge claim.
+Latest verified evidence point: **`main@eab6e5f09266503f8a9c6b9d1eb5b2571019eb54` / CI #2326** on Python 3.11/3.12. This records the merged TTS execution-mode closure; every later recovery must still re-fetch live `main`, open PRs and exact-head CI before treating this historical evidence point as current.
 
 ## TTS benchmark coherence contract
 
@@ -37,7 +37,9 @@ The generation, hardware and execution profiles are **declared measurement prove
 - prior execution-shape merge `903b9b406d73bf5b91de8fd472224e90900667bf`, post-merge **CI #2318**: both Python versions passed;
 - unknown-mode RED `9c461ba07b2993993083b22ca33a965457f6f384`, **CI #2321**: Ruff passed and pytest failed on the new contract, proving an invented nonblank mode could become ready;
 - unknown-mode GREEN `45f25e47329e17dab997ac46318980edfab3797e`, **CI #2322**: Python 3.11/3.12 Ruff + full pytest passed;
-- durable-record head `1ba281e0b9d3f282346f9c8427c5f740abb59d39`, **CI #2323**: Python 3.11/3.12 Ruff + full pytest passed.
+- durable-record head `1ba281e0b9d3f282346f9c8427c5f740abb59d39`, **CI #2323**: Python 3.11/3.12 Ruff + full pytest passed;
+- final PR exact head `f1108ec58c43c34b3692f2647afc235e900dbc27`, **CI #2324**: Python 3.11/3.12 Ruff + full pytest passed;
+- squash merge `eab6e5f09266503f8a9c6b9d1eb5b2571019eb54`, post-merge **CI #2326**: Python 3.11/3.12 Ruff + full pytest passed.
 
 Durable rationale: `docs/research/2026-08-30-tts-execution-shape-evidence.md`.
 
