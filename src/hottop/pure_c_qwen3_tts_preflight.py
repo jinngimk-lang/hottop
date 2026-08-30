@@ -127,6 +127,7 @@ def _safetensors_header_blockers(
 
     blockers: list[str] = []
     tensor_count = 0
+    valid_spans: list[tuple[int, int]] = []
     for tensor_name, descriptor in header.items():
         if tensor_name == "__metadata__":
             if not isinstance(descriptor, dict) or not all(
@@ -167,9 +168,25 @@ def _safetensors_header_blockers(
             blockers.append(
                 f"{label} safetensors tensor byte size does not match dtype/shape: {path}"
             )
+        else:
+            valid_spans.append((begin, end))
 
     if tensor_count == 0:
         blockers.append(f"{label} safetensors header contains no tensors: {path}")
+    elif len(valid_spans) == tensor_count:
+        cursor = 0
+        for begin, end in sorted(valid_spans):
+            if begin != cursor:
+                blockers.append(
+                    f"{label} safetensors data offsets must cover the data buffer contiguously: {path}"
+                )
+                break
+            cursor = end
+        else:
+            if cursor != data_size:
+                blockers.append(
+                    f"{label} safetensors data offsets must cover the data buffer contiguously: {path}"
+                )
     return blockers
 
 
