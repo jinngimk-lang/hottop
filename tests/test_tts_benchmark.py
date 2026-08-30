@@ -9,6 +9,12 @@ from hottop.model_hub_cli import app
 from hottop.tts_benchmark import inspect_tts_benchmark
 
 RUNNER = CliRunner()
+GENERATION_PROTOCOL = {
+    "seed": 42,
+    "max_new_tokens": 256,
+    "temperature": 0.9,
+    "top_p": 1.0,
+}
 
 
 def _write_wav(path: Path, *, frames: int = 24000, sample_rate: int = 24000, sample: int = 1000) -> Path:
@@ -32,6 +38,7 @@ def test_tts_benchmark_binds_local_wav_bytes_and_speed_without_execution(tmp_pat
                 "text": "今天我们测试同一句中文对白。",
                 "language": "zh",
                 "speaker": "Vivian",
+                "generation_protocol": GENERATION_PROTOCOL,
                 "trials": [
                     {
                         "candidate": "qwentts-cpp",
@@ -63,6 +70,8 @@ def test_tts_benchmark_binds_local_wav_bytes_and_speed_without_execution(tmp_pat
     assert result.network_access is False
     assert result.auto_download is False
     assert result.listening_required is True
+    assert result.generation_protocol == GENERATION_PROTOCOL
+    assert result.generation_protocol_sha256 is not None
     assert len(result.trials) == 2
     first = result.trials[0]
     assert first.runtime_revision == "qwentts@abc"
@@ -88,6 +97,7 @@ def test_tts_benchmark_fails_closed_for_silent_or_mismatched_trials(tmp_path: Pa
                 "text": "同一句话",
                 "language": "zh",
                 "speaker": "Vivian",
+                "generation_protocol": GENERATION_PROTOCOL,
                 "trials": [
                     {
                         "candidate": "qwentts-cpp",
@@ -129,6 +139,7 @@ def test_model_hub_cli_exposes_read_only_tts_benchmark(tmp_path: Path) -> None:
                 "text": "你好，世界。",
                 "language": "zh",
                 "speaker": "Vivian",
+                "generation_protocol": GENERATION_PROTOCOL,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
