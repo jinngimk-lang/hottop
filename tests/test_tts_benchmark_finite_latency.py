@@ -35,6 +35,7 @@ def test_tts_benchmark_rejects_non_finite_latency_metrics(tmp_path: Path) -> Non
                             "wav": str(wav),
                             "latency_seconds": latency,
                             "runtime_revision": "qwentts@abc",
+                            "model_revision": "qwen3-tts-customvoice@model-a",
                         }
                     ],
                 },
