@@ -10,6 +10,11 @@ GENERATION_PROTOCOL = {
     "temperature": 0.9,
     "top_p": 1.0,
 }
+HARDWARE_PROFILE = {
+    "cpu": "AMD EPYC 7763",
+    "backend": "cpu",
+    "logical_cpu_count": 4,
+}
 
 
 def _write_wav(path: Path) -> Path:
@@ -32,6 +37,7 @@ def _write_spec(path: Path, trials: list[dict[str, object]]) -> Path:
                 "language": "zh",
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
+                "hardware_profile": HARDWARE_PROFILE,
                 "trials": trials,
             },
             ensure_ascii=False,
