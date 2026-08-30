@@ -12,6 +12,7 @@ GENERATION_PROTOCOL = {
 HARDWARE_PROFILE = {
     "cpu": "Dual Xeon",
     "backend": "cpu",
+    "logical_cpu_count": 24,
 }
 
 

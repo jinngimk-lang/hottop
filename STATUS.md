@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@8f4c27ebf875eb41bbdb976777ed7b57dbaf799d` / CI #2407** on Python 3.11/3.12. This merge closes the TTS server worker/thread-topology evidence gap. Every later recovery must still re-fetch live `main`, open PRs and exact-head CI.
+Recovery baseline: **`main@85166f994b1806b3579634ff87e7af5f74c70cd6` / CI #2409** on Python 3.11/3.12, with no open PRs before the current workstream. Active PR #309 adds logical-CPU-count provenance for CPU-backed TTS benchmarks; exact implementation/fixture head `6e67f77ae5d91f1e0f46e1d2abb2cd2f4e685223` passed CI #2412 on Python 3.11/3.12 before this status update. Every later recovery must still re-fetch live `main`, open PRs and exact-head CI.
 
 ## Canonical guaranteed baseline
 
@@ -53,33 +53,35 @@ Pure-C remains bound to exact source `gabriele-mastrapasqua/qwen3-tts@f1b6865713
 1. exact text, language and checkpoint-supported preset speaker;
 2. one concrete generation protocol with canonical SHA-256, integer seed, positive `max_new_tokens` and explicit sampling control;
 3. one concrete hardware profile with canonical SHA-256 plus coherent backend/device identity;
-4. one recognized execution profile (`cli` or `server`) with positive concurrency and batch size;
-5. for `server`, nonblank connection strategy plus positive `worker_count` and `threads_per_worker`;
-6. cold/warm coverage, with additional independent warm repeats retained for warmed variance and repeated speaker-consistency evidence;
-7. one exact runtime revision and one exact model/checkpoint revision per candidate;
-8. finite positive latency plus distinct resolved WAV artifact paths, byte identity and WAV/PCM integrity;
-9. `listening_required=true`, keeping naturalness, speaker consistency, onset stability and intelligibility independent from speed/stream integrity.
+4. **for CPU backends, a nonblank CPU identity plus positive integer `logical_cpu_count`;**
+5. one recognized execution profile (`cli` or `server`) with positive concurrency and batch size;
+6. for `server`, nonblank connection strategy plus positive `worker_count` and `threads_per_worker`;
+7. cold/warm coverage, with additional independent warm repeats retained for warmed variance and repeated speaker-consistency evidence;
+8. one exact runtime revision and one exact model/checkpoint revision per candidate;
+9. finite positive latency plus distinct resolved WAV artifact paths, byte identity and WAV/PCM integrity;
+10. `listening_required=true`, keeping naturalness, speaker consistency, onset stability and intelligibility independent from speed/stream integrity.
 
-The server-topology closure was TDD-verified: RED `fa917df5e9e730994e2a01cee0717215ffea96de` passed Ruff and produced exactly **1 failed / 602 passed** because missing worker/thread topology still returned `ready=true`; GREEN `faf5141e1bc3197fdfcb675cbb83ad998a69e5af` passed CI #2404; final documented head `b041ba287f21f1607d2ae73f175d0bb3536e539c` passed CI #2405; the squash merge `8f4c27ebf875eb41bbdb976777ed7b57dbaf799d` passed post-merge CI #2407.
+The new CPU-capacity closure was TDD-verified. RED `8aa9cadfe948c518ee0ccc680ec254f86fbd3061` passed Ruff and failed pytest because a CPU benchmark lacking `logical_cpu_count` still became `ready=true`. GREEN implementation `1c01e0cc586c81c485c80cc3c6bde5ab6c604b7c` added the fail-closed gate; full-suite CI then exposed an older dual-Xeon server fixture that still claimed ready CPU latency evidence without CPU-count provenance. Fixture correction `6e67f77ae5d91f1e0f46e1d2abb2cd2f4e685223` declared 24 logical CPUs for its 12×2 topology instead of weakening the gate, and CI #2412 passed Ruff + full pytest on Python 3.11/3.12.
 
-This gate is motivated by fresh 2026-08-29 Pure-C server evidence: process/prefork and per-worker thread shape can materially affect CPU utilization under concurrent requests. Declared worker topology is measurement provenance, **not proof the runtime honored it**; retain actual invocation/config evidence separately.
+Fresh Pure-C issue #24 (2026-08-29) is a useful runtime signal: an operator on a dual-Xeon host reporting 24 total threads ran `--prefork 12 --prefork-threads 2` under 24 concurrent requests and observed utilization that did not trivially equal the declared topology. This is **not Hottop performance evidence**. It motivates binding available CPU capacity alongside worker/thread topology. Declared CPU count/topology remain measurement provenance, not proof the runtime honored affinity or used every declared CPU.
 
-Durable rationale: `docs/research/2026-08-30-tts-bench-method-admission.md`, `docs/research/2026-08-30-tts-execution-shape-evidence.md`, and `docs/research/2026-08-30-qwen3-tts-pure-c-admission.md`.
+Durable rationale: `docs/research/2026-08-30-tts-bench-method-admission.md`, `docs/research/2026-08-30-tts-execution-shape-evidence.md`, `docs/research/2026-08-30-qwen3-tts-pure-c-admission.md`, and `docs/research/2026-08-31-tts-cpu-count-provenance.md`.
 
 ## Fresh ecosystem radar — 2026-08-31
 
 - **LightX2V** public `main` remains **`7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`**. The current reviewed tip is script/example maintenance and provides no Hottop-measured continuity/quality/runtime gain for the tested Wan2.2 I2V subset. Keep the tested pin; no freshness-only repin.
 - **Qwen3-TTS** official `main` remains **`022e286b98fbec7e1e916cb940cdf532cd9f488e`**. No official change removes the operator-local 1.7B benchmark gate.
-- **Pure-C Qwen3-TTS** public `main` remains reviewed **`f1b6865713d12a2a2365282fc02e19a5a384a565`**. Fresh issue #24 (2026-08-29) reinforces that server worker/process/thread topology belongs in performance provenance; it does not constitute a Hottop quality or speed result.
+- **Pure-C Qwen3-TTS** public `main` remains reviewed **`f1b6865713d12a2a2365282fc02e19a5a384a565`**. Issue #24 reinforces that CPU capacity and process/thread topology belong in performance provenance; it does not constitute a Hottop quality or speed result.
 - **qwentts.cpp** reviewed `master` remains **`a8a7716b530e49fed537c57711247c12fbbb903c`**. No new revision changes current admission.
 - No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local 1.7B TTS candidates.
 
 ## Immediate next actions
 
-1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-3. When an operator provisions qwentts.cpp, CrispASR, audio.cpp or Pure-C plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line Mandarin generation and inspect it with the generation + hardware + execution-shape coherence gates above. Preserve actual invocation/config separately from declared benchmark profiles.
-4. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+1. Complete PR #309 exact-head documentation/status CI, review the diff and merge only with green evidence.
+2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
+4. When an operator provisions qwentts.cpp, CrispASR, audio.cpp or Pure-C plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line Mandarin generation and inspect it with the generation + hardware + execution-shape coherence gates above. Preserve actual invocation/config separately from declared benchmark profiles.
+5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
 ## Recovery order
 
