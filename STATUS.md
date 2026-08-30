@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@e0fb3b397a0b71f5b5ee934894fe0fb6400d0771`**. Push CI **#2214** passed on Python 3.11/3.12 after the Step-Audio-EditX admission/status merge. At that evidence point there were no open PRs.
+Latest verified evidence point: **`main@1227c00dacd0cd477a915cc182304d6e747e6abf`**. Push CI **#2223** passed on Python 3.11/3.12 after the read-only TTS benchmark finite-latency closure. Earlier in the same cycle, the Mandarin TTS license radar merged as `main@e29831c2f88243827a61c97f5cc13564f2f6f06b`; its push CI **#2216** also passed. At the latest verified evidence point there were no open production workstreams besides this status synchronization.
 
 ## Canonical guaranteed baseline
 
@@ -66,6 +66,8 @@ Shared evidence surface:
 
 It inspects already-produced local WAVs only and never executes TTS, accesses the network, installs dependencies, downloads models, provisions GPU resources or calls a paid service. It binds exact text/language/speaker, runtime revision/trial identity, WAV bytes/stream metadata, non-silence, measured latency, standard realtime factor `latency / audio_duration`, explicit inverse speedup and `listening_required=true`.
 
+**Performance evidence is fail-closed:** `latency_seconds` must be both finite and greater than zero. `NaN`, `+Inf`, `-Inf`, zero or negative latency makes the benchmark unready and suppresses derived realtime-factor/speed metrics instead of allowing non-finite performance evidence. TDD evidence: corrected RED CI **#2218** reached pytest and isolated the false-ready bug at **1 failed / 564 passed**; GREEN exact head `407b94e2e07b45ed4daea95a4911617cb25da299` passed CI **#2221** on Python 3.11/3.12; squash merge produced `main@1227c00dacd0cd477a915cc182304d6e747e6abf`, whose push CI **#2223** also passed.
+
 Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoint-supported preset speaker and bounded generation settings while preserving exact runtime/model bytes, cold/warm timing, WAV/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported conditioning fails closed before execution; reference-audio cloning remains separately rights-gated.
 
 ## Fresh ecosystem radar — 2026-08-30
@@ -89,7 +91,7 @@ No reviewed candidate in this cycle clears admission strongly enough to replace 
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
 3. If an operator-provisioned MiniMax-H3 clip fails requested-action motion specifically because of bursty-motion smear, benchmark the reviewed Motion Lab recovery path against the exact baseline bytes; do not treat smoother output alone as success.
 4. If LongCat-Video-Avatar 1.5 is locally provisioned, benchmark it against the same rights-safe sequence rather than adding an executable adapter from upstream claims alone.
-5. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` and keep listening/speaker/onset evidence independent from speed.
+5. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` and keep listening/speaker/onset evidence independent from speed. Any recorded latency must be finite and greater than zero.
 6. Revisit Step-Audio-EditX only if its **main checkpoint** license surface becomes unambiguous; tokenizer-only Apache-2.0 metadata does not clear the main checkpoint gate. Do not admit unofficial Supertonic-ZH while its Mandarin weights remain gated/non-commercial.
 7. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 8. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
