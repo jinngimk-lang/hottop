@@ -8,25 +8,29 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@aed24bc1af281efc8ed937258277d8402485c930` / CI #2293** on Python 3.11/3.12.
+Latest verified evidence point: **`main@6bbfe4a0f4734eeb3139aa1808277ea76b5607e4` / CI #2300** on Python 3.11/3.12.
 
-The local Qwen3-TTS benchmark evidence surface now closes six concrete coherence gaps:
+The local Qwen3-TTS benchmark evidence surface now closes seven concrete coherence gaps:
 
 - cold/warm completeness per candidate;
 - one exact runtime revision per candidate;
 - one exact model/checkpoint revision per candidate;
 - one benchmark-wide finite generation protocol with canonical SHA-256;
+- **concrete generation controls**: a ready generation protocol must contain an integer `seed`, positive integer `max_new_tokens` generation ceiling and at least one explicit sampling control (`temperature`, `top_p`, `top_k` or nonblank `sampling_mode`). Purely descriptive JSON such as `{ "note": "same settings" }` is not sufficient; `temperature=0` remains a valid explicit greedy protocol;
 - one benchmark-wide finite hardware profile with canonical SHA-256;
 - **concrete hardware identity**: a ready latency/RTF benchmark must name a nonblank execution `backend` plus at least one nonblank `cpu`, `gpu` or generic `accelerator` identity. A label such as `{ "note": "same machine" }` is no longer sufficient.
 
-Latest TDD chain for the hardware-identity closure:
+Latest TDD chain for the generation-control closure:
 
-- RED exact head `3334024689cceca26e00d82593a6e011ff0295cb`, CI **#2289**: Ruff passed; Python 3.11 pytest failed on the new concrete-hardware contracts and Python 3.12 was cancelled by fail-fast;
-- GREEN implementation `c035b0ed5f39e84479ff9cdf8a249fc0871769e6`, CI **#2290**: Python 3.11/3.12 Ruff + full pytest passed;
-- durable-record head `fabb559ec8918c29300db9ec88a84b309256d27f`, CI **#2291**: both Python versions passed;
-- exact-head squash merge `aed24bc1af281efc8ed937258277d8402485c930`, post-merge **CI #2293**: both Python versions passed.
+- RED exact head `4278fe3532e9578061579830ab08d3a7ad88160d`, CI **#2296**: Ruff passed; pytest failed on the new concrete-generation-control contract and the other matrix job was cancelled by fail-fast;
+- GREEN implementation `52e93e2bcf57b573284878653a68c2be0d756209`, CI **#2297**: Python 3.11/3.12 Ruff + full pytest passed;
+- durable-record head `7f5fee18f79a74c81a5a3e41b7d8755b0b4201fe`, CI **#2298**: both Python versions passed;
+- the ready-for-review connector hit the known GitHub `fullDatabaseId` GraphQL compatibility error, so draft #278 was closed and non-draft #279 was recreated on the **same exact verified head**, with no history/code change;
+- exact-head squash merge `6bbfe4a0f4734eeb3139aa1808277ea76b5607e4`, post-merge **CI #2300**: both Python versions passed.
 
-The hardware profile remains **declared measurement provenance, not proof that the declared machine was actually used**. Runtime execution records and local environment provenance remain separately required. Different candidate hardware belongs in separate benchmark evidence sets instead of one directly comparable latency/RTF surface.
+The generation protocol remains **declared benchmark-control provenance, not proof that a runtime internally obeyed similarly named flags**. Operator execution records and actual CLI/config provenance remain separately required; incompatible control semantics across runtimes require separate protocol/candidate design rather than superficial key matching.
+
+The hardware profile likewise remains **declared measurement provenance, not proof that the declared machine was actually used**. Runtime execution records and local environment provenance remain separately required. Different candidate hardware belongs in separate benchmark evidence sets instead of one directly comparable latency/RTF surface.
 
 No neural runtime execution, provider route, dependency, model download, GPU provisioning, credential or paid path was added by this closure.
 
@@ -74,7 +78,7 @@ It inspects already-produced local WAVs only and never executes TTS, accesses th
 A ready benchmark requires:
 
 - exact text, language and checkpoint-supported preset speaker;
-- one non-empty finite JSON generation protocol for the whole benchmark, with canonical SHA-256;
+- one finite JSON generation protocol for the whole benchmark, canonical SHA-256, integer seed, positive `max_new_tokens` ceiling and at least one explicit validated sampling control; descriptive metadata without concrete controls fails closed;
 - one non-empty finite JSON hardware profile for the whole benchmark, with canonical SHA-256, nonblank backend and concrete CPU/GPU/generic-accelerator identity;
 - at least one `cold` and one `warm` trial for every candidate; additional independent warm repeats remain preferred;
 - one exact `runtime_revision` and one exact `model_revision` per candidate;
@@ -82,10 +86,11 @@ A ready benchmark requires:
 - a distinct resolved WAV path for every trial; identical bytes remain legal when independently produced as separate artifacts;
 - WAV/PCM integrity and `listening_required=true` so speed/stream integrity cannot be mistaken for naturalness or speaker-quality proof.
 
-Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoint-supported preset speaker, one declared generation protocol and one actually comparable hardware evidence set while preserving runtime/model/config provenance, cold/warm timing, distinct WAV artifact instances, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported conditioning fails closed before execution; reference-audio cloning remains separately rights-gated.
+Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoint-supported preset speaker, one declared and semantically comparable generation protocol, and one actually comparable hardware evidence set while preserving runtime/model/config provenance, cold/warm timing, distinct WAV artifact instances, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported conditioning fails closed before execution; reference-audio cloning remains separately rights-gated.
 
 ## Fresh ecosystem radar — 2026-08-30
 
+- **Qwen3-TTS runtime resource signal:** recent llama.cpp Qwen3-TTS discussion reports that a default 32768-token context can reserve roughly 3.5 GB of KV cache while a much smaller context may be sufficient for the tested workload. This is runtime-specific evidence, not a Hottop default recommendation; future operator A/B must bind the actual runtime/config/context rather than claiming performance from model support alone.
 - **Qwen3-TTS benchmarking:** current public benchmark practice continues to bind concrete hardware, cold/warm protocol and runtime/model configuration. SGLang-Omni's fixed-protocol work remains a useful signal that acceleration claims must survive repeatable end-to-end measurement rather than being inferred from an optimization toggle.
 - **Qwen3-TTS official source:** the latest reviewed official source remains gated behind operator-local 1.7B assets for Hottop quality claims; no fresh evidence in this cycle clears that gate.
 - **LightX2V/Wan2.2:** no reviewed change in this cycle produced Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V subset. Keep the tested pin; no freshness-only repin.
@@ -95,7 +100,7 @@ Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoi
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-3. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line local WAV generation and inspect a benchmark with the concrete hardware identity contract above. Keep listening/speaker/onset evidence independent from speed.
+3. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line local WAV generation and inspect a benchmark with the concrete generation-control + hardware-identity contracts above. Keep listening/speaker/onset evidence independent from speed.
 4. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 5. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
