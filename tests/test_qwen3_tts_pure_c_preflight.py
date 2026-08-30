@@ -142,6 +142,31 @@ def test_pure_c_preflight_rejects_shape_dtype_offset_size_mismatch(tmp_path: Pat
     assert "byte size" in " ".join(result.blockers).lower()
 
 
+def test_pure_c_preflight_rejects_unindexed_safetensors_data_gap(tmp_path: Path) -> None:
+    executable = _write_executable(tmp_path)
+    model_dir = _write_model_dir(tmp_path)
+    talker = model_dir / "model.safetensors"
+    header = json.dumps(
+        {
+            "weight": {
+                "dtype": "U8",
+                "shape": [1],
+                "data_offsets": [1, 2],
+            }
+        },
+        separators=(",", ":"),
+    ).encode()
+    talker.write_bytes(len(header).to_bytes(8, "little") + header + b"\x00\x01")
+
+    result = pure_c_preflight.inspect_pure_c_qwen3_tts_inputs(
+        executable=executable,
+        model_dir=model_dir,
+    )
+
+    assert result.ready is False
+    assert "cover" in " ".join(result.blockers).lower()
+
+
 def test_pure_c_preflight_fails_closed_when_required_model_file_is_missing(tmp_path: Path) -> None:
     executable = _write_executable(tmp_path)
     model_dir = _write_model_dir(tmp_path)
