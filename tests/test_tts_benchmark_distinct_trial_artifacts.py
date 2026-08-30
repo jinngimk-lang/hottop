@@ -16,38 +16,45 @@ def _write_wav(path: Path) -> Path:
     return path
 
 
-def test_tts_benchmark_rejects_reusing_one_physical_wav_for_multiple_trials(
-    tmp_path: Path,
-) -> None:
-    shared = _write_wav(tmp_path / "shared.wav")
-    spec = tmp_path / "bench.json"
-    spec.write_text(
+def _write_spec(path: Path, trials: list[dict[str, object]]) -> Path:
+    path.write_text(
         json.dumps(
             {
                 "schema_version": "hottop.tts-benchmark-input.v1",
                 "text": "今天我们测试同一句中文对白。",
                 "language": "zh",
                 "speaker": "Vivian",
-                "trials": [
-                    {
-                        "candidate": "qwentts-cpp",
-                        "run_kind": "cold",
-                        "wav": str(shared),
-                        "latency_seconds": 2.0,
-                        "runtime_revision": "qwentts@abc",
-                    },
-                    {
-                        "candidate": "crispasr",
-                        "run_kind": "warm",
-                        "wav": str(shared),
-                        "latency_seconds": 0.5,
-                        "runtime_revision": "crispasr@def",
-                    },
-                ],
+                "trials": trials,
             },
             ensure_ascii=False,
         ),
         encoding="utf-8",
+    )
+    return path
+
+
+def test_tts_benchmark_rejects_reusing_one_physical_wav_for_multiple_trials(
+    tmp_path: Path,
+) -> None:
+    shared = _write_wav(tmp_path / "shared.wav")
+    spec = _write_spec(
+        tmp_path / "bench.json",
+        [
+            {
+                "candidate": "qwentts-cpp",
+                "run_kind": "cold",
+                "wav": str(shared),
+                "latency_seconds": 2.0,
+                "runtime_revision": "qwentts@abc",
+            },
+            {
+                "candidate": "crispasr",
+                "run_kind": "warm",
+                "wav": str(shared),
+                "latency_seconds": 0.5,
+                "runtime_revision": "crispasr@def",
+            },
+        ],
     )
 
     result = inspect_tts_benchmark(spec)
@@ -57,3 +64,38 @@ def test_tts_benchmark_rejects_reusing_one_physical_wav_for_multiple_trials(
         "physical WAV artifact is reused across trials" in blocker
         for blocker in result.blockers
     )
+
+
+def test_tts_benchmark_allows_independent_files_with_identical_audio_bytes(
+    tmp_path: Path,
+) -> None:
+    first = _write_wav(tmp_path / "first.wav")
+    second = tmp_path / "second.wav"
+    second.write_bytes(first.read_bytes())
+    spec = _write_spec(
+        tmp_path / "repeatability.json",
+        [
+            {
+                "candidate": "qwentts-cpp",
+                "run_kind": "cold",
+                "wav": str(first),
+                "latency_seconds": 1.0,
+                "runtime_revision": "qwentts@abc",
+            },
+            {
+                "candidate": "qwentts-cpp",
+                "run_kind": "warm",
+                "wav": str(second),
+                "latency_seconds": 0.8,
+                "runtime_revision": "qwentts@abc",
+            },
+        ],
+    )
+
+    result = inspect_tts_benchmark(spec)
+
+    assert result.ready is True
+    assert result.trials[0].wav is not None
+    assert result.trials[1].wav is not None
+    assert result.trials[0].wav.sha256 == result.trials[1].wav.sha256
+    assert result.trials[0].wav.path != result.trials[1].wav.path
