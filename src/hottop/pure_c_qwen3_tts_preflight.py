@@ -28,6 +28,7 @@ REQUIRED_MODEL_FILES = (
     "speech_tokenizer/preprocessor_config.json",
 )
 SAFETENSORS_HEADER_LENGTH_BYTES = 8
+SAFETENSORS_MAX_HEADER_SIZE_BYTES = 100_000_000
 SAFETENSORS_MODEL_FILES = frozenset(
     {"model.safetensors", "speech_tokenizer/model.safetensors"}
 )
@@ -149,6 +150,7 @@ def _safetensors_identity(
     digest = hashlib.sha256()
     header_bytes = b""
     header_length: int | None = None
+    header_read_allowed = False
     try:
         with resolved_path.open("rb") as handle:
             prefix = handle.read(SAFETENSORS_HEADER_LENGTH_BYTES)
@@ -157,7 +159,10 @@ def _safetensors_identity(
                 header_length = int.from_bytes(prefix, "little")
                 if header_length <= 0 or header_length > size_bytes - SAFETENSORS_HEADER_LENGTH_BYTES:
                     blockers.append(f"{label} has invalid safetensors header length: {path}")
+                elif header_length > SAFETENSORS_MAX_HEADER_SIZE_BYTES:
+                    blockers.append(f"{label} safetensors header is too large: {path}")
                 else:
+                    header_read_allowed = True
                     header_bytes = handle.read(header_length)
                     digest.update(header_bytes)
                     if len(header_bytes) != header_length:
@@ -171,7 +176,7 @@ def _safetensors_identity(
     if snapshot_before != snapshot_after:
         return None, blockers + [f"{label} changed during preflight: {path}"]
 
-    if header_length is not None and len(header_bytes) == header_length:
+    if header_read_allowed and header_length is not None and len(header_bytes) == header_length:
         data_size = size_bytes - SAFETENSORS_HEADER_LENGTH_BYTES - header_length
         blockers.extend(
             _safetensors_header_blockers(
