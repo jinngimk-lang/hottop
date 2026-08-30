@@ -39,6 +39,7 @@ def test_tts_benchmark_binds_local_wav_bytes_and_speed_without_execution(tmp_pat
                         "wav": str(qwentts),
                         "latency_seconds": 2.0,
                         "runtime_revision": "qwentts@abc",
+                        "model_revision": "qwen3-tts-customvoice@model-a",
                     },
                     {
                         "candidate": "crispasr",
@@ -46,6 +47,7 @@ def test_tts_benchmark_binds_local_wav_bytes_and_speed_without_execution(tmp_pat
                         "wav": str(crispasr),
                         "latency_seconds": 0.5,
                         "runtime_revision": "crispasr@def",
+                        "model_revision": "qwen3-tts-customvoice@model-b",
                     },
                 ],
             },
@@ -63,6 +65,8 @@ def test_tts_benchmark_binds_local_wav_bytes_and_speed_without_execution(tmp_pat
     assert result.listening_required is True
     assert len(result.trials) == 2
     first = result.trials[0]
+    assert first.runtime_revision == "qwentts@abc"
+    assert first.model_revision == "qwen3-tts-customvoice@model-a"
     assert first.wav.sha256 == hashlib.sha256(qwentts.read_bytes()).hexdigest()
     assert first.wav.duration_seconds == 1.0
     assert first.wav.sample_rate == 24000
@@ -91,6 +95,7 @@ def test_tts_benchmark_fails_closed_for_silent_or_mismatched_trials(tmp_path: Pa
                         "wav": str(silent),
                         "latency_seconds": 1.0,
                         "runtime_revision": "qwentts@abc",
+                        "model_revision": "qwen3-tts-customvoice@model-a",
                     },
                     {
                         "candidate": "qwentts-cpp",
@@ -98,6 +103,7 @@ def test_tts_benchmark_fails_closed_for_silent_or_mismatched_trials(tmp_path: Pa
                         "wav": str(valid),
                         "latency_seconds": 0.0,
                         "runtime_revision": "qwentts@abc",
+                        "model_revision": "qwen3-tts-customvoice@model-a",
                     },
                 ],
             }
@@ -130,6 +136,7 @@ def test_model_hub_cli_exposes_read_only_tts_benchmark(tmp_path: Path) -> None:
                         "wav": str(cold),
                         "latency_seconds": 0.8,
                         "runtime_revision": "audio.cpp@xyz",
+                        "model_revision": "qwen3-tts-customvoice@model-a",
                     },
                     {
                         "candidate": "audio-cpp",
@@ -137,6 +144,7 @@ def test_model_hub_cli_exposes_read_only_tts_benchmark(tmp_path: Path) -> None:
                         "wav": str(warm),
                         "latency_seconds": 0.5,
                         "runtime_revision": "audio.cpp@xyz",
+                        "model_revision": "qwen3-tts-customvoice@model-a",
                     },
                 ],
             },
