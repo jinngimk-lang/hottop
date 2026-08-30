@@ -44,6 +44,65 @@ def _normalize_json_profile(
     return normalized
 
 
+def _generation_protocol_blockers(profile: dict[str, Any]) -> list[str]:
+    blockers: list[str] = []
+
+    seed = profile.get("seed")
+    if isinstance(seed, bool) or not isinstance(seed, int):
+        blockers.append("generation_protocol seed must be an integer")
+
+    max_new_tokens = profile.get("max_new_tokens")
+    if (
+        isinstance(max_new_tokens, bool)
+        or not isinstance(max_new_tokens, int)
+        or max_new_tokens <= 0
+    ):
+        blockers.append(
+            "generation_protocol generation ceiling requires positive integer max_new_tokens"
+        )
+
+    sampling_keys = ("temperature", "top_p", "top_k", "sampling_mode")
+    if not any(key in profile for key in sampling_keys):
+        blockers.append(
+            "generation_protocol requires at least one explicit sampling control: "
+            "temperature, top_p, top_k or sampling_mode"
+        )
+
+    if "temperature" in profile:
+        temperature = profile["temperature"]
+        if (
+            isinstance(temperature, bool)
+            or not isinstance(temperature, (int, float))
+            or not math.isfinite(float(temperature))
+            or temperature < 0
+        ):
+            blockers.append(
+                "generation_protocol temperature must be a finite number greater than or equal to zero"
+            )
+
+    if "top_p" in profile:
+        top_p = profile["top_p"]
+        if (
+            isinstance(top_p, bool)
+            or not isinstance(top_p, (int, float))
+            or not math.isfinite(float(top_p))
+            or not 0 < top_p <= 1
+        ):
+            blockers.append("generation_protocol top_p must be a finite number in (0, 1]")
+
+    if "top_k" in profile:
+        top_k = profile["top_k"]
+        if isinstance(top_k, bool) or not isinstance(top_k, int) or top_k <= 0:
+            blockers.append("generation_protocol top_k must be a positive integer")
+
+    if "sampling_mode" in profile:
+        sampling_mode = profile["sampling_mode"]
+        if not isinstance(sampling_mode, str) or not sampling_mode.strip():
+            blockers.append("generation_protocol sampling_mode must be a nonblank string")
+
+    return blockers
+
+
 def _hardware_profile_blockers(profile: dict[str, Any]) -> list[str]:
     blockers: list[str] = []
     backend = profile.get("backend")
@@ -265,6 +324,7 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
             "benchmark requires generation_protocol to bind seed, sampling and generation ceiling"
         )
     else:
+        blockers.extend(_generation_protocol_blockers(spec.generation_protocol))
         generation_protocol_sha256 = _canonical_json_sha256(spec.generation_protocol)
 
     hardware_profile_sha256 = None
