@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@c68d7a7997e502f19c4a4a232a31cd211eef1846`**. Post-merge push CI **#2208** passed on Python 3.11/3.12 after merging the MiniMax H3 Motion Lab recovery-path review. At that evidence point there were no open PRs.
+Latest verified evidence point: **`main@275b64ff35f7174ff8cb2172f86544c2118c31d5`**. Push CI **#2211** passed on Python 3.11/3.12 after syncing the MiniMax H3 Motion Lab production status. At that evidence point there were no open PRs.
 
 ## Canonical guaranteed baseline
 
@@ -76,6 +76,7 @@ Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoi
 - **WanGP/Wan2GP:** reviewed PiD changes remain post-processing/upsampler maintenance, not improved Hottop identity/requested-action evidence. Durable review: `docs/research/2026-08-30-wangp-pid-radar.md`.
 - **Echo-Memory:** scene/revisit-memory benchmark signal only; it cannot substitute for subject identity or requested-action motion proof. Durable review: `docs/research/2026-08-30-echo-memory-admission.md`.
 - **LongCat-Video-Avatar 1.5:** MIT source + official weights and unusually relevant audio-I2V/continuation/animal-domain capability justified benchmark-layer admission, but the heavy local stack and explicit model-download path keep it out of unattended production. Durable review: `docs/research/2026-08-30-longcat-video-avatar-15-admission.md`.
+- **Step-Audio-EditX:** reviewed source `stepfun-ai/Step-Audio-EditX@a652e87052c109e26f616d60971376ff47a829d4` is Apache-2.0 and is highly relevant to expressive Mandarin TTS, with emotion/style/paralinguistic controls and a roughly 12–16 GB single-GPU local path. It is **not admitted to model hub yet** because the public model-card license wording explicitly covers repository code while checkpoint/Step-Audio-Tokenizer weight licensing remains insufficiently explicit for Hottop's code-vs-weights gate. Official maintainers have stated Apache-2.0 intent in a Hugging Face discussion, but Hottop requires clearer checkpoint-license metadata/text before production/benchmark admission. Normal setup also downloads model repositories and zero-shot cloning is reference-audio-rights-gated. Durable review: `docs/research/2026-08-30-step-audio-editx-admission.md`.
 - **Rust Qwen3-TTS runtimes:** `cgisky1980/Qwen3-TTS-Rust@f86f59ed…` and `second-state/qwen3_tts_rs@efe3285e…` were reviewed and **not admitted**. The former auto-downloads runtime components and silently falls back to Vivian when a requested speaker is missing; the latter's quick installer downloads binaries/models and its reviewed tree lacks the root `LICENSE` linked from README despite Cargo license metadata. Neither currently beats the already prepared qwentts.cpp/CrispASR/audio.cpp path under Hottop's fail-closed benchmark protocol. Durable review: `docs/research/2026-08-30-rust-qwen3-tts-local-radar.md`.
 - **Qwen3-TTS / local 1.7B runtimes:** official source remains `QwenLM/Qwen3-TTS@022e286b98fbec7e1e916cb940cdf532cd9f488e`; retain the operator-provisioned, benchmark-first route. Do not infer quality from runtime support, speed claims or a single successful WAV.
 
@@ -88,8 +89,9 @@ No reviewed candidate in this cycle clears admission strongly enough to replace 
 3. If an operator-provisioned MiniMax-H3 clip fails requested-action motion specifically because of bursty-motion smear, benchmark the reviewed Motion Lab recovery path against the exact baseline bytes; do not treat smoother output alone as success.
 4. If LongCat-Video-Avatar 1.5 is locally provisioned, benchmark it against the same rights-safe sequence rather than adding an executable adapter from upstream claims alone.
 5. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` and keep listening/speaker/onset evidence independent from speed.
-6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+6. Revisit Step-Audio-EditX only if its checkpoint/tokenizer license surface becomes unambiguous; if admitted later, require local/offline operator provisioning and compare expressive Mandarin delivery against the same existing TTS evidence protocol rather than trusting demos or leaderboard claims.
+7. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+8. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
