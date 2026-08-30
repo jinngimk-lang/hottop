@@ -8,7 +8,7 @@ This is an evidence-contract change only. It does not execute TTS, install depen
 
 ## Measured gaps
 
-Two false-ready classes were reproducible on the existing inspector.
+Three false-ready classes were reproducible on the existing inspector.
 
 ### Backend/device mismatch
 
@@ -28,7 +28,7 @@ The benchmark could also compare latency/RTF while omitting whether a candidate 
 
 The benchmark-wide `execution_profile` is therefore required for `ready=true` and is canonicalized with sorted-key JSON plus SHA-256. Minimum concrete fields are:
 
-- nonblank `mode`;
+- `mode` must be one of the currently supported execution shapes: `cli` or `server`;
 - positive integer `concurrency`;
 - positive integer `batch_size`;
 - when `mode=server`, a nonblank `connection_strategy`.
@@ -41,6 +41,14 @@ A descriptive object such as `{ "note": "same settings" }` is not evidence. A no
 
 RED CI #2306 passed Ruff and produced exactly 4 pytest failures / 582 passes: missing execution profile, descriptive-only profile, server mode without connection strategy, and missing evidence persistence. The first implementation made those new contracts pass; CI #2307 then exposed only legacy ready-fixture migration because old fixtures lacked the now-required profile. Those fixtures were migrated rather than weakening the gate.
 
+### Unknown execution mode bypass
+
+After execution-shape evidence became mandatory, one narrower false-ready remained: any nonblank `mode` other than the recognized `server` string could still pass as long as `concurrency` and `batch_size` were positive. A descriptive or invented mode such as `same-settings` therefore avoided the server-only connection-strategy gate while still making the benchmark ready.
+
+Hottop now accepts only the two execution shapes that the benchmark contract actually defines and can interpret: `cli` and `server`. New runtime shapes such as in-process/library execution require an explicit contract extension before they can carry comparable latency/RTF evidence; they must not gain evidence semantics merely by choosing a new string.
+
+RED CI #2321 passed Ruff and failed pytest on the new unknown-mode contract. The minimal implementation then passed Ruff and the full pytest suite on Python 3.11 and 3.12 in exact-head CI #2322.
+
 ## Evidence semantics
 
 `execution_profile` is declared measurement provenance, not proof that a runtime internally obeyed the declaration. Operator execution records must still retain the actual invocation/configuration when available. Different execution shapes should be separate benchmark evidence sets when their latency/RTF values are not directly comparable.
@@ -51,7 +59,7 @@ The benchmark coherence surface is now intentionally layered:
 2. concrete generation protocol + canonical digest;
 3. concrete hardware profile + canonical digest;
 4. backend/device-identity coherence;
-5. concrete execution profile + canonical digest;
+5. recognized concrete execution profile (`cli` or `server`) + canonical digest;
 6. cold/warm coverage;
 7. one runtime revision per candidate;
 8. one model revision per candidate;
