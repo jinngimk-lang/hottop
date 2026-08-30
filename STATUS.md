@@ -1,6 +1,6 @@
 # Hottop Status
 
-Last updated: 2026-08-30
+Last updated: 2026-08-31
 Completed milestone: **Foundation v0.1**
 Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
 
@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@44770f1cac55d9f9ec26b51f1d23100eb388fc8c` / CI #2328** on Python 3.11/3.12. Recovery on 2026-08-30 also found **no open PRs**. Every later recovery must still re-fetch live `main`, open PRs and exact-head CI before treating this historical evidence point as current.
+Latest verified evidence point: **`main@0fdc208ae3d4107c6a22650e62a6c91f2380dabc` / CI #2354** on Python 3.11/3.12. The same owner cycle also verified the Pure-C admission merge `11d97734471838a2602f6775889ccfdba69b2be4` with post-merge CI #2347. Every later recovery must still re-fetch live `main`, open PRs and exact-head CI before treating this historical evidence point as current.
 
 ## Canonical guaranteed baseline
 
@@ -38,12 +38,15 @@ Primary operator route remains **LightX2V/Wan2.2**. Reviewed alternatives remain
 
 The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the higher-quality operator-owned benchmark target; CosyVoice3 remains correctness-gated.
 
-Prepared local benchmark candidates remain:
+Prepared local benchmark candidates now include:
 
 - `qwen3-tts-qwentts-cpp-1b7` — hardened read-only GGUF artifact preflight;
 - `qwen3-tts-crispasr-1b7` — read-only GGUF artifact preflight;
 - `qwen3-tts-audio-cpp-1b7` — read-only CustomVoice model-directory preflight;
+- `qwen3-tts-pure-c-1b7` — Pure-C/raw-safetensors 1.7B benchmark candidate, registry-discoverable but `integration_ready=false` and `runtime_status=unprobed`;
 - `qwen3-tts-ncnn-0b6` — lower-hardware 0.6B CPU/Vulkan benchmark candidate only.
+
+The Pure-C route was admitted through exact source `gabriele-mastrapasqua/qwen3-tts@f1b6865713d12a2a2365282fc02e19a5a384a565`. Its manifest forbids normal `video-run`, auto-build and upstream `download_model.sh` / `download_voices.sh`; only operator-provisioned source/build plus independently bound official Qwen model bytes may enter the same-line Mandarin benchmark. PR #287/#288 admission debugging ended with exact-head CI #2345 green and post-merge CI #2347 green. The model-hub TDD follow-up produced RED CI #2350, GREEN CI #2352, merge `0fdc208ae3d4107c6a22650e62a6c91f2380dabc`, and post-merge CI #2354 green.
 
 `hottop-models inspect-tts-benchmark --spec <benchmark.json>` treats latency/RTF as comparable evidence only when it binds:
 
@@ -58,21 +61,21 @@ Prepared local benchmark candidates remain:
 
 Declared generation/hardware/execution profiles are measurement provenance, not proof that a runtime obeyed them. Operator execution records and actual invocation/config provenance remain separately required. Future 1.7B cross-runtime A/B must use the same Mandarin line, same supported preset speaker and semantically comparable generation controls, while retaining multiple warm repeats, short-onset checks, intelligibility/naturalness and publication-rights review.
 
-Durable rationale: `docs/research/2026-08-30-tts-bench-method-admission.md` and `docs/research/2026-08-30-tts-execution-shape-evidence.md`.
+Durable rationale: `docs/research/2026-08-30-tts-bench-method-admission.md`, `docs/research/2026-08-30-tts-execution-shape-evidence.md`, and `docs/research/2026-08-30-qwen3-tts-pure-c-admission.md`.
 
-## Fresh ecosystem radar — 2026-08-30
+## Fresh ecosystem radar — 2026-08-31
 
-- **LightX2V** public `main` remains **`7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`**. The current tip is `Update scripts (#1452)` from 2026-08-28; reviewed recent changes do not provide Hottop-measured continuity/quality/runtime gain for the tested Wan2.2 I2V subset. Keep the tested pin; no freshness-only repin.
+- **LightX2V** public `main` remains **`7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`**. The current tip is still `Update scripts (#1452)` from 2026-08-28; the reviewed change only removes private hard-coded example paths and provides no Hottop-measured continuity/quality/runtime gain for the tested Wan2.2 I2V subset. Keep the tested pin; no freshness-only repin.
 - **Qwen3-TTS** official `main` remains **`022e286b98fbec7e1e916cb940cdf532cd9f488e`**. No official change in this cycle removes the operator-local 1.7B benchmark gate.
+- **Pure-C Qwen3-TTS** public `main` remains the reviewed **`f1b6865713d12a2a2365282fc02e19a5a384a565`**. Its local CPU/Metal/CUDA support and seeded generation are implementation evidence only; Hottop has not reproduced Mandarin naturalness, onset stability, repeated speaker consistency, delivery control or latency.
 - **qwentts.cpp** reviewed `master` remains **`a8a7716b530e49fed537c57711247c12fbbb903c`**. No new revision changes the current admission.
-- **5uck1ess/tts-bench** current reviewed `master` is still the already-admitted exact revision **`020a69422c96224785a8dc4b95466676119a7dc2`**. Its latest measured result reinforces rather than changes Hottop's method: default voice can be deterministic while cloning can vary across repeated runs; cold/warm speed evidence therefore remains separate from repeated speaker-consistency and human/listening evidence. The benchmark code is MIT, but its model licenses are explicitly independent; Hottop continues to admit methodology only and does not execute the upstream installer/model stack.
 - No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local 1.7B TTS candidates.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-3. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line local WAV generation and inspect it with the generation + hardware + recognized execution-shape coherence contracts above. Retain actual invocation/config separately because declared profiles are not execution proof.
+3. When an operator provisions qwentts.cpp, CrispASR, audio.cpp or the Pure-C runtime plus exact Qwen3-TTS 1.7B CustomVoice assets, run the available read-only artifact preflight where one exists and independently bind the Pure-C source/build/model bytes; then perform same-line local WAV generation and inspect it with the generation + hardware + recognized execution-shape coherence contracts above. Retain actual invocation/config separately because declared profiles are not execution proof.
 4. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
 ## Recovery order
