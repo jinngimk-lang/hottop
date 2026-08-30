@@ -92,6 +92,31 @@ def test_pure_c_preflight_rejects_invalid_safetensors_payload(tmp_path: Path) ->
     assert "safetensors" in " ".join(result.blockers).lower()
 
 
+def test_pure_c_preflight_rejects_out_of_range_safetensors_offsets(tmp_path: Path) -> None:
+    executable = _write_executable(tmp_path)
+    model_dir = _write_model_dir(tmp_path)
+    talker = model_dir / "model.safetensors"
+    header = json.dumps(
+        {
+            "weight": {
+                "dtype": "U8",
+                "shape": [2],
+                "data_offsets": [0, 2],
+            }
+        },
+        separators=(",", ":"),
+    ).encode()
+    talker.write_bytes(len(header).to_bytes(8, "little") + header + b"\x01")
+
+    result = pure_c_preflight.inspect_pure_c_qwen3_tts_inputs(
+        executable=executable,
+        model_dir=model_dir,
+    )
+
+    assert result.ready is False
+    assert "out-of-range" in " ".join(result.blockers).lower()
+
+
 def test_pure_c_preflight_fails_closed_when_required_model_file_is_missing(tmp_path: Path) -> None:
     executable = _write_executable(tmp_path)
     model_dir = _write_model_dir(tmp_path)
