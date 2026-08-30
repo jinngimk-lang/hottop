@@ -123,8 +123,18 @@ def _hardware_profile_blockers(profile: dict[str, Any]) -> list[str]:
             "hardware_profile device identity requires a nonblank cpu, gpu or accelerator"
         )
 
-    if backend_name == "cpu" and not has_cpu_identity:
-        blockers.append("hardware_profile cpu backend requires a nonblank cpu identity")
+    if backend_name == "cpu":
+        if not has_cpu_identity:
+            blockers.append("hardware_profile cpu backend requires a nonblank cpu identity")
+        logical_cpu_count = profile.get("logical_cpu_count")
+        if (
+            isinstance(logical_cpu_count, bool)
+            or not isinstance(logical_cpu_count, int)
+            or logical_cpu_count <= 0
+        ):
+            blockers.append(
+                "hardware_profile cpu backend requires positive integer logical_cpu_count"
+            )
 
     accelerator_backends = {"cuda", "rocm", "hip", "vulkan", "metal", "mps", "xpu"}
     if (
