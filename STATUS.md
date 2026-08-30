@@ -8,15 +8,15 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest fully verified `main` evidence point remains **`main@a7c295afd1c3fd481b051ee6fcc21fa54fe0c25e` / CI #2253**. PR #266 subsequently merged the already-GREEN runtime-revision status sync to `main@293289878291aa61ff2c6f14cc63e5710d7fdf92`; no separate post-merge run was visible when this workstream began.
+Latest verified evidence point: **`main@e3640ecb593299cd3e59e9e96db646f4c9a7c971` / CI #2266** on Python 3.11/3.12.
 
-Three TTS benchmark-integrity gaps are now closed on the active PR #267 branch:
+Three TTS benchmark-integrity gaps are closed:
 
 - per-candidate cold/warm completeness: RED `CI #2241` → GREEN `CI #2243/#2244` → merged main/post-merge `CI #2246`;
 - per-candidate runtime-revision consistency: RED `CI #2249` → GREEN `CI #2250/#2251` → merged main/post-merge `CI #2253`;
-- per-candidate model/checkpoint-revision consistency: RED **`CI #2256`** → GREEN **`CI #2261`** on Python 3.11/3.12. The benchmark now persists `model_revision` per trial and rejects one candidate label spanning multiple model revisions.
+- per-candidate model/checkpoint-revision consistency: RED `CI #2256` → GREEN `CI #2261/#2264` → merged main/post-merge **`CI #2266`**. The benchmark now persists `model_revision` per trial and rejects one candidate label spanning multiple model revisions.
 
-The changes add no neural runtime execution, provider route, dependency, model download, GPU provisioning, credential or paid path.
+The changes add no neural runtime execution, provider route, dependency, model download, GPU provisioning, credential or paid path. No open PR is expected from this completed workstream.
 
 ## Canonical guaranteed baseline
 
@@ -69,7 +69,7 @@ Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoi
 
 ## Fresh ecosystem radar — 2026-08-30
 
-- **Qwen3-TTS benchmark practice:** SGLang-Omni issue #1464 requires exact source revision, model revision, dataset, hardware, request count and concurrency for performance claims. Its Aug. 23 Qwen3-TTS tracker also records removal of Talker `torch.compile` after fixed-protocol tests failed to show reproducible end-to-end benefit. This directly supports Hottop's runtime+model coherence gate rather than a floating candidate label.
+- **Qwen3-TTS benchmark practice:** SGLang-Omni issue #1464 requires exact source revision, model revision, dataset, hardware, request count and concurrency for performance claims. Its Aug. 23 Qwen3-TTS tracker also records removal of Talker `torch.compile` after fixed-protocol tests failed to show reproducible end-to-end benefit. This supports Hottop's runtime+model coherence gate rather than a floating candidate label.
 - **llama.cpp Qwen3-TTS:** issue #27937 opened 2026-08-29 reports that the default 32768 context can allocate roughly 3.5 GB of KV cache for Qwen3-TTS where a much smaller context may suffice. Treat this as a future operator-runtime performance signal only; it does not prove Mandarin quality or justify replacing the prepared qwentts.cpp/CrispASR/audio.cpp routes.
 - **LightX2V/Wan2.2:** no fresh result in this cycle provides Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V subset. Keep the tested pin; no freshness-only repin.
 - **DiffSynth-Studio / MiniMax-H3 NF4:** remains research/operator-benchmark only under the previously recorded base-model license and geography/commercial gates.
@@ -79,12 +79,11 @@ No reviewed candidate in this cycle clears admission strongly enough to replace 
 
 ## Immediate next actions
 
-1. Finish PR #267 only after its durable-record/status exact head is GREEN and the diff/review-thread check is clean; then squash-merge by exact SHA and verify live `main` evidence.
-2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-4. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` with at least one cold plus one warm trial **per candidate**, one exact runtime revision and one exact model revision per candidate, distinct resolved WAV artifacts per trial, and additional warm repeats where useful. Keep listening/speaker/onset evidence independent from speed.
-5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-6. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
+3. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` with at least one cold plus one warm trial **per candidate**, one exact runtime revision and one exact model revision per candidate, distinct resolved WAV artifacts per trial, and additional warm repeats where useful. Keep listening/speaker/onset evidence independent from speed.
+4. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+5. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
