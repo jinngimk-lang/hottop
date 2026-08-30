@@ -8,6 +8,7 @@ import typer
 from .audio_cpp_preflight import inspect_audio_cpp_inputs
 from .crispasr_preflight import inspect_crispasr_inputs
 from .model_hub import load_model_hub, select_models
+from .pure_c_qwen3_tts_preflight import inspect_pure_c_qwen3_tts_inputs
 from .qwentts_cpp_preflight import inspect_qwentts_cpp_inputs
 from .tts_benchmark import inspect_tts_benchmark
 
@@ -91,6 +92,17 @@ def probe_audio_cpp(
     """Bind local audio.cpp CustomVoice inputs without executing or downloading anything."""
 
     result = inspect_audio_cpp_inputs(executable=executable, model_dir=model_dir)
+    typer.echo(json.dumps(result.model_dump(mode="json"), ensure_ascii=False, indent=2))
+
+
+@app.command("probe-qwen3-tts-pure-c")
+def probe_qwen3_tts_pure_c(
+    executable: Path = typer.Option(..., "--executable", dir_okay=False),
+    model_dir: Path = typer.Option(..., "--model-dir", file_okay=False),
+) -> None:
+    """Bind local Pure-C Qwen3-TTS inputs without executing or downloading anything."""
+
+    result = inspect_pure_c_qwen3_tts_inputs(executable=executable, model_dir=model_dir)
     typer.echo(json.dumps(result.model_dump(mode="json"), ensure_ascii=False, indent=2))
 
 
