@@ -4,7 +4,10 @@ from pathlib import Path
 from typer.testing import CliRunner
 
 from hottop.model_hub_cli import app
-from hottop.pure_c_qwen3_tts_preflight import REQUIRED_MODEL_FILES, inspect_pure_c_qwen3_tts_inputs
+from hottop.pure_c_qwen3_tts_preflight import (
+    REQUIRED_MODEL_FILES,
+    inspect_pure_c_qwen3_tts_inputs,
+)
 
 runner = CliRunner()
 
