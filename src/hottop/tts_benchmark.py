@@ -108,15 +108,32 @@ def _hardware_profile_blockers(profile: dict[str, Any]) -> list[str]:
     backend = profile.get("backend")
     if not isinstance(backend, str) or not backend.strip():
         blockers.append("hardware_profile backend must be a nonblank string")
+        backend_name = None
+    else:
+        backend_name = backend.strip().lower()
 
-    device_keys = ("cpu", "gpu", "accelerator")
-    has_device_identity = any(
-        isinstance(profile.get(key), str) and profile[key].strip()
-        for key in device_keys
-    )
-    if not has_device_identity:
+    cpu = profile.get("cpu")
+    gpu = profile.get("gpu")
+    accelerator = profile.get("accelerator")
+    has_cpu_identity = isinstance(cpu, str) and bool(cpu.strip())
+    has_gpu_identity = isinstance(gpu, str) and bool(gpu.strip())
+    has_accelerator_identity = isinstance(accelerator, str) and bool(accelerator.strip())
+    if not (has_cpu_identity or has_gpu_identity or has_accelerator_identity):
         blockers.append(
             "hardware_profile device identity requires a nonblank cpu, gpu or accelerator"
+        )
+
+    if backend_name == "cpu" and not has_cpu_identity:
+        blockers.append("hardware_profile cpu backend requires a nonblank cpu identity")
+
+    accelerator_backends = {"cuda", "rocm", "hip", "vulkan", "metal", "mps", "xpu"}
+    if (
+        backend_name in accelerator_backends
+        and not has_gpu_identity
+        and not has_accelerator_identity
+    ):
+        blockers.append(
+            f"hardware_profile {backend_name} backend requires a nonblank gpu or accelerator identity"
         )
     return blockers
 
