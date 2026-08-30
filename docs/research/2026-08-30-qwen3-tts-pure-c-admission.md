@@ -44,7 +44,11 @@ The reviewed upstream downloader uses the same file layout for 1.7B CustomVoice,
 
 The official Qwen configs distinguish 1.7B CustomVoice (`custom_voice`, `1b7`), 1.7B Base (`base`, `1b7`) and 0.6B CustomVoice (`custom_voice`, `0b6`). A Base, VoiceDesign or 0.6B tree must therefore fail closed rather than masquerade as the intended 1.7B CustomVoice benchmark input.
 
-The semantic parse is tied back to the already-bound `config.json` SHA-256; if the file bytes differ when parsed, the preflight fails instead of combining artifact identity from one config with capability metadata from another. `ready=true` remains only local input/preflight evidence. It does **not** prove checkpoint revision, model rights, runtime execution, speaker capability at inference time or Mandarin quality.
+The semantic parse is tied back to the already-bound `config.json` SHA-256; if the file bytes differ when parsed, the preflight fails instead of combining artifact identity from one config with capability metadata from another.
+
+The two required model-weight files now also receive a shallow **safetensors container gate inside the same stable filesystem snapshot and streaming SHA-256 pass**. A non-empty file with a `.safetensors` suffix is not sufficient. The preflight requires the 8-byte little-endian header length to fit the file, a valid JSON object containing at least one tensor descriptor, structurally valid `dtype` / `shape` / `data_offsets`, and declared data offsets that remain inside the actual bound data region. This does not load tensors or prove checkpoint identity; it prevents arbitrary, truncated or out-of-range payloads from becoming `ready=true` merely because their names and sizes look plausible.
+
+`ready=true` remains only local input/preflight evidence. It does **not** prove checkpoint revision, model rights, runtime execution, speaker capability at inference time or Mandarin quality.
 
 ## Benchmark protocol
 

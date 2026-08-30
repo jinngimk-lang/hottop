@@ -10,6 +10,20 @@ from hottop.model_hub_cli import app
 runner = CliRunner()
 
 
+def _write_safetensors(path: Path, *, value: int) -> None:
+    header = json.dumps(
+        {
+            "weight": {
+                "dtype": "U8",
+                "shape": [1],
+                "data_offsets": [0, 1],
+            }
+        },
+        separators=(",", ":"),
+    ).encode()
+    path.write_bytes(len(header).to_bytes(8, "little") + header + bytes([value]))
+
+
 def _write_model_dir(root: Path) -> Path:
     model_dir = root / "qwen3-tts-1.7b"
     for relative_path in pure_c_preflight.REQUIRED_MODEL_FILES:
@@ -26,6 +40,10 @@ def _write_model_dir(root: Path) -> Path:
                 ),
                 encoding="utf-8",
             )
+        elif relative_path == "model.safetensors":
+            _write_safetensors(path, value=1)
+        elif relative_path == "speech_tokenizer/model.safetensors":
+            _write_safetensors(path, value=2)
         else:
             path.write_bytes(f"fixture:{relative_path}".encode())
     return model_dir
@@ -58,6 +76,45 @@ def test_pure_c_preflight_binds_operator_provisioned_model_tree_without_executio
     assert result.executable.sha256 == hashlib.sha256(executable.read_bytes()).hexdigest()
     assert set(result.artifacts) == set(pure_c_preflight.REQUIRED_MODEL_FILES)
     assert result.blockers == []
+
+
+def test_pure_c_preflight_rejects_invalid_safetensors_payload(tmp_path: Path) -> None:
+    executable = _write_executable(tmp_path)
+    model_dir = _write_model_dir(tmp_path)
+    (model_dir / "model.safetensors").write_bytes(b"not-a-safetensors-file")
+
+    result = pure_c_preflight.inspect_pure_c_qwen3_tts_inputs(
+        executable=executable,
+        model_dir=model_dir,
+    )
+
+    assert result.ready is False
+    assert "safetensors" in " ".join(result.blockers).lower()
+
+
+def test_pure_c_preflight_rejects_out_of_range_safetensors_offsets(tmp_path: Path) -> None:
+    executable = _write_executable(tmp_path)
+    model_dir = _write_model_dir(tmp_path)
+    talker = model_dir / "model.safetensors"
+    header = json.dumps(
+        {
+            "weight": {
+                "dtype": "U8",
+                "shape": [2],
+                "data_offsets": [0, 2],
+            }
+        },
+        separators=(",", ":"),
+    ).encode()
+    talker.write_bytes(len(header).to_bytes(8, "little") + header + b"\x01")
+
+    result = pure_c_preflight.inspect_pure_c_qwen3_tts_inputs(
+        executable=executable,
+        model_dir=model_dir,
+    )
+
+    assert result.ready is False
+    assert "out-of-range" in " ".join(result.blockers).lower()
 
 
 def test_pure_c_preflight_fails_closed_when_required_model_file_is_missing(tmp_path: Path) -> None:
