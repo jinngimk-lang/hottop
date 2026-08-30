@@ -34,6 +34,7 @@ class TtsBenchmarkInput(BaseModel):
     text: str
     language: str
     speaker: str
+    generation_protocol: dict[str, object] | None = None
     trials: list[TtsBenchmarkTrialInput]
 
     @field_validator("text", "language", "speaker")
@@ -42,6 +43,37 @@ class TtsBenchmarkInput(BaseModel):
         normalized = value.strip()
         if not normalized:
             raise ValueError("value must not be blank")
+        return normalized
+
+    @field_validator("generation_protocol")
+    @classmethod
+    def _valid_generation_protocol(
+        cls, value: dict[str, object] | None
+    ) -> dict[str, object] | None:
+        if value is None:
+            return None
+        if not value:
+            raise ValueError("generation_protocol must not be empty")
+        normalized: dict[str, object] = {}
+        for key, item in value.items():
+            normalized_key = key.strip()
+            if not normalized_key:
+                raise ValueError("generation_protocol keys must not be blank")
+            if normalized_key in normalized:
+                raise ValueError("generation_protocol keys must be unique after trimming")
+            normalized[normalized_key] = item
+        try:
+            json.dumps(
+                normalized,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            )
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                "generation_protocol must contain finite JSON-serializable values"
+            ) from exc
         return normalized
 
 
@@ -78,6 +110,8 @@ class TtsBenchmarkEvidence(BaseModel):
     text: str
     language: str
     speaker: str
+    generation_protocol: dict[str, object] | None = None
+    generation_protocol_sha256: str | None = None
     trials: list[TtsBenchmarkTrialEvidence]
     blockers: list[str]
 
@@ -100,6 +134,17 @@ def _stream_sha256(path: Path) -> str:
         while chunk := handle.read(HASH_CHUNK_BYTES):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _generation_protocol_sha256(protocol: dict[str, object]) -> str:
+    canonical = json.dumps(
+        protocol,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return hashlib.sha256(canonical).hexdigest()
 
 
 def _pcm_has_signal(raw: bytes, *, sample_width: int) -> bool:
@@ -177,6 +222,14 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
     run_kinds_by_candidate: dict[str, set[str]] = {}
     runtime_revisions_by_candidate: dict[str, set[str]] = {}
     model_revisions_by_candidate: dict[str, set[str]] = {}
+
+    generation_protocol_sha256 = None
+    if spec.generation_protocol is None:
+        blockers.append(
+            "benchmark requires generation_protocol to bind seed, sampling and generation ceiling"
+        )
+    else:
+        generation_protocol_sha256 = _generation_protocol_sha256(spec.generation_protocol)
 
     for index, trial in enumerate(spec.trials):
         run_kinds_by_candidate.setdefault(trial.candidate, set()).add(trial.run_kind)
@@ -262,6 +315,8 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
         text=spec.text,
         language=spec.language,
         speaker=spec.speaker,
+        generation_protocol=spec.generation_protocol,
+        generation_protocol_sha256=generation_protocol_sha256,
         trials=trial_evidence,
         blockers=blockers,
     )
