@@ -18,8 +18,9 @@ class TtsBenchmarkTrialInput(BaseModel):
     wav: str
     latency_seconds: float
     runtime_revision: str
+    model_revision: str
 
-    @field_validator("candidate", "wav", "runtime_revision")
+    @field_validator("candidate", "wav", "runtime_revision", "model_revision")
     @classmethod
     def _nonblank_text(cls, value: str) -> str:
         normalized = value.strip()
@@ -59,6 +60,7 @@ class TtsBenchmarkTrialEvidence(BaseModel):
     candidate: str
     run_kind: Literal["cold", "warm"]
     runtime_revision: str
+    model_revision: str
     latency_seconds: float
     realtime_factor: float | None = None
     realtime_speedup: float | None = None
@@ -174,11 +176,15 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
     seen_wav_paths: dict[str, int] = {}
     run_kinds_by_candidate: dict[str, set[str]] = {}
     runtime_revisions_by_candidate: dict[str, set[str]] = {}
+    model_revisions_by_candidate: dict[str, set[str]] = {}
 
     for index, trial in enumerate(spec.trials):
         run_kinds_by_candidate.setdefault(trial.candidate, set()).add(trial.run_kind)
         runtime_revisions_by_candidate.setdefault(trial.candidate, set()).add(
             trial.runtime_revision
+        )
+        model_revisions_by_candidate.setdefault(trial.candidate, set()).add(
+            trial.model_revision
         )
         wav_path = Path(trial.wav)
         if not wav_path.is_absolute():
@@ -216,6 +222,7 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
                 candidate=trial.candidate,
                 run_kind=trial.run_kind,
                 runtime_revision=trial.runtime_revision,
+                model_revision=trial.model_revision,
                 latency_seconds=trial.latency_seconds,
                 realtime_factor=realtime_factor,
                 realtime_speedup=realtime_speedup,
@@ -241,6 +248,13 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
             blockers.append(
                 f"candidate {candidate} mixes runtime revisions: "
                 + ", ".join(sorted(runtime_revisions))
+            )
+
+    for candidate, model_revisions in model_revisions_by_candidate.items():
+        if len(model_revisions) > 1:
+            blockers.append(
+                f"candidate {candidate} mixes model revisions: "
+                + ", ".join(sorted(model_revisions))
             )
 
     return TtsBenchmarkEvidence(
