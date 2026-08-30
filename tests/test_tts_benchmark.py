@@ -20,6 +20,11 @@ HARDWARE_PROFILE = {
     "backend": "cpu",
     "logical_cpu_count": 4,
 }
+EXECUTION_PROFILE = {
+    "mode": "cli",
+    "concurrency": 1,
+    "batch_size": 1,
+}
 
 
 def _write_wav(path: Path, *, frames: int = 24000, sample_rate: int = 24000, sample: int = 1000) -> Path:
@@ -45,6 +50,7 @@ def test_tts_benchmark_binds_local_wav_bytes_and_speed_without_execution(tmp_pat
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
                 "hardware_profile": HARDWARE_PROFILE,
+                "execution_profile": EXECUTION_PROFILE,
                 "trials": [
                     {
                         "candidate": "qwentts-cpp",
@@ -80,6 +86,8 @@ def test_tts_benchmark_binds_local_wav_bytes_and_speed_without_execution(tmp_pat
     assert result.generation_protocol_sha256 is not None
     assert result.hardware_profile == HARDWARE_PROFILE
     assert result.hardware_profile_sha256 is not None
+    assert result.execution_profile == EXECUTION_PROFILE
+    assert result.execution_profile_sha256 is not None
     assert len(result.trials) == 2
     first = result.trials[0]
     assert first.runtime_revision == "qwentts@abc"
@@ -107,6 +115,7 @@ def test_tts_benchmark_fails_closed_for_silent_or_mismatched_trials(tmp_path: Pa
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
                 "hardware_profile": HARDWARE_PROFILE,
+                "execution_profile": EXECUTION_PROFILE,
                 "trials": [
                     {
                         "candidate": "qwentts-cpp",
@@ -150,6 +159,7 @@ def test_model_hub_cli_exposes_read_only_tts_benchmark(tmp_path: Path) -> None:
                 "speaker": "Vivian",
                 "generation_protocol": GENERATION_PROTOCOL,
                 "hardware_profile": HARDWARE_PROFILE,
+                "execution_profile": EXECUTION_PROFILE,
                 "trials": [
                     {
                         "candidate": "audio-cpp",
