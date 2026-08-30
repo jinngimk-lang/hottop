@@ -89,6 +89,16 @@ def test_tts_benchmark_requires_connection_strategy_for_server_mode(tmp_path: Pa
     assert any("connection_strategy" in blocker for blocker in result.blockers)
 
 
+def test_tts_benchmark_rejects_unknown_execution_mode(tmp_path: Path) -> None:
+    result = _inspect(
+        tmp_path,
+        {"mode": "same-settings", "concurrency": 1, "batch_size": 1},
+    )
+
+    assert result.ready is False
+    assert any("execution_profile mode must be cli or server" in blocker for blocker in result.blockers)
+
+
 def test_tts_benchmark_accepts_concrete_cli_execution_profile(tmp_path: Path) -> None:
     result = _inspect(
         tmp_path,

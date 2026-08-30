@@ -147,6 +147,8 @@ def _execution_profile_blockers(profile: dict[str, Any]) -> list[str]:
         mode_name = None
     else:
         mode_name = mode.strip().lower()
+        if mode_name not in {"cli", "server"}:
+            blockers.append("execution_profile mode must be cli or server")
 
     for field_name in ("concurrency", "batch_size"):
         value = profile.get(field_name)
