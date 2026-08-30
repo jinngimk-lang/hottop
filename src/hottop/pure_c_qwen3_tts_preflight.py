@@ -7,7 +7,12 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from .qwentts_cpp_preflight import LocalArtifactIdentity, _identity
+from .qwentts_cpp_preflight import (
+    HASH_CHUNK_BYTES,
+    LocalArtifactIdentity,
+    _identity,
+    _snapshot_signature,
+)
 
 REQUIRED_MODEL_FILES = (
     "config.json",
@@ -21,6 +26,10 @@ REQUIRED_MODEL_FILES = (
     "speech_tokenizer/configuration.json",
     "speech_tokenizer/model.safetensors",
     "speech_tokenizer/preprocessor_config.json",
+)
+SAFETENSORS_HEADER_LENGTH_BYTES = 8
+SAFETENSORS_MODEL_FILES = frozenset(
+    {"model.safetensors", "speech_tokenizer/model.safetensors"}
 )
 
 
@@ -61,6 +70,128 @@ def _read_bound_config(
     return parsed, []
 
 
+def _safetensors_header_blockers(
+    header_bytes: bytes,
+    *,
+    data_size: int,
+    path: Path,
+    label: str,
+) -> list[str]:
+    if not header_bytes.startswith(b"{"):
+        return [f"{label} has invalid safetensors JSON header: {path}"]
+    try:
+        header = json.loads(header_bytes)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return [f"{label} has invalid safetensors JSON header: {path}"]
+    if not isinstance(header, dict):
+        return [f"{label} safetensors header must be a JSON object: {path}"]
+
+    blockers: list[str] = []
+    tensor_count = 0
+    for tensor_name, descriptor in header.items():
+        if tensor_name == "__metadata__":
+            if not isinstance(descriptor, dict) or not all(
+                isinstance(key, str) and isinstance(value, str)
+                for key, value in descriptor.items()
+            ):
+                blockers.append(f"{label} has invalid safetensors metadata: {path}")
+            continue
+
+        tensor_count += 1
+        if not isinstance(descriptor, dict):
+            blockers.append(f"{label} has invalid safetensors tensor descriptor: {path}")
+            continue
+        dtype = descriptor.get("dtype")
+        shape = descriptor.get("shape")
+        offsets = descriptor.get("data_offsets")
+        valid_shape = isinstance(shape, list) and all(
+            isinstance(dimension, int) and not isinstance(dimension, bool) and dimension >= 0
+            for dimension in shape
+        )
+        valid_offsets = (
+            isinstance(offsets, list)
+            and len(offsets) == 2
+            and all(isinstance(offset, int) and not isinstance(offset, bool) for offset in offsets)
+        )
+        if not isinstance(dtype, str) or not dtype or not valid_shape or not valid_offsets:
+            blockers.append(f"{label} has invalid safetensors tensor descriptor: {path}")
+            continue
+        begin, end = offsets
+        if begin < 0 or end < begin or end > data_size:
+            blockers.append(f"{label} has out-of-range safetensors data offsets: {path}")
+
+    if tensor_count == 0:
+        blockers.append(f"{label} safetensors header contains no tensors: {path}")
+    return blockers
+
+
+def _safetensors_identity(
+    path: Path,
+    *,
+    label: str,
+) -> tuple[LocalArtifactIdentity | None, list[str]]:
+    try:
+        resolved_path = path.resolve(strict=True)
+    except FileNotFoundError:
+        return None, [f"{label} does not exist: {path}"]
+    except OSError:
+        return None, [f"{label} could not be resolved: {path}"]
+
+    if not resolved_path.is_file():
+        return None, [f"{label} is not a file: {path}"]
+
+    snapshot_before = _snapshot_signature(resolved_path)
+    size_bytes = snapshot_before[2]
+    blockers: list[str] = []
+    if size_bytes <= SAFETENSORS_HEADER_LENGTH_BYTES:
+        blockers.append(f"{label} has truncated safetensors header: {path}")
+
+    digest = hashlib.sha256()
+    header_bytes = b""
+    header_length: int | None = None
+    try:
+        with resolved_path.open("rb") as handle:
+            prefix = handle.read(SAFETENSORS_HEADER_LENGTH_BYTES)
+            digest.update(prefix)
+            if len(prefix) == SAFETENSORS_HEADER_LENGTH_BYTES:
+                header_length = int.from_bytes(prefix, "little")
+                if header_length <= 0 or header_length > size_bytes - SAFETENSORS_HEADER_LENGTH_BYTES:
+                    blockers.append(f"{label} has invalid safetensors header length: {path}")
+                else:
+                    header_bytes = handle.read(header_length)
+                    digest.update(header_bytes)
+                    if len(header_bytes) != header_length:
+                        blockers.append(f"{label} has truncated safetensors JSON header: {path}")
+            while chunk := handle.read(HASH_CHUNK_BYTES):
+                digest.update(chunk)
+        snapshot_after = _snapshot_signature(resolved_path)
+    except OSError:
+        return None, blockers + [f"{label} changed during preflight: {path}"]
+
+    if snapshot_before != snapshot_after:
+        return None, blockers + [f"{label} changed during preflight: {path}"]
+
+    if header_length is not None and len(header_bytes) == header_length:
+        data_size = size_bytes - SAFETENSORS_HEADER_LENGTH_BYTES - header_length
+        blockers.extend(
+            _safetensors_header_blockers(
+                header_bytes,
+                data_size=data_size,
+                path=resolved_path,
+                label=label,
+            )
+        )
+
+    return (
+        LocalArtifactIdentity(
+            path=str(resolved_path),
+            size_bytes=size_bytes,
+            sha256=digest.hexdigest(),
+        ),
+        blockers,
+    )
+
+
 def inspect_pure_c_qwen3_tts_inputs(
     *,
     executable: Path,
@@ -91,10 +222,12 @@ def inspect_pure_c_qwen3_tts_inputs(
     artifacts: dict[str, LocalArtifactIdentity] = {}
     if resolved_model_dir is not None:
         for relative_path in REQUIRED_MODEL_FILES:
-            identity, artifact_blockers = _identity(
-                resolved_model_dir / relative_path,
-                label=f"Pure-C Qwen3-TTS {relative_path}",
-            )
+            artifact_path = resolved_model_dir / relative_path
+            label = f"Pure-C Qwen3-TTS {relative_path}"
+            if relative_path in SAFETENSORS_MODEL_FILES:
+                identity, artifact_blockers = _safetensors_identity(artifact_path, label=label)
+            else:
+                identity, artifact_blockers = _identity(artifact_path, label=label)
             blockers.extend(artifact_blockers)
             if identity is not None:
                 artifacts[relative_path] = identity
