@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@ff7999e6931625aa675bd4b7a30185875003398d`**. Post-merge push CI **#2203** passed on Python 3.11/3.12 after closing the LongCat-Video-Avatar 1.5 admission workstream. At that evidence point there were no open PRs.
+Latest verified evidence point: **`main@c68d7a7997e502f19c4a4a232a31cd211eef1846`**. Post-merge push CI **#2208** passed on Python 3.11/3.12 after merging the MiniMax H3 Motion Lab recovery-path review. At that evidence point there were no open PRs.
 
 ## Canonical guaranteed baseline
 
@@ -70,13 +70,14 @@ Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoi
 
 ## Fresh ecosystem radar — 2026-08-30
 
-- **LightX2V/Wan2.2:** keep the existing tested pin unless a newer revision produces Hottop-measured continuity/quality/runtime improvement; no freshness-only repin.
+- **LightX2V/Wan2.2:** live upstream remains `ModelTC/LightX2V@7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`; reviewed recent changes do not provide Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V subset, so keep the existing tested pin and do not freshness-only repin.
+- **MiniMax H3 Motion Lab:** `matlowai/ComfyUI-MAINodes@f4868b4a08e8a504ce86db54a17961d399ffa2bc` remains a GPL-3.0-or-later, operator-managed post-generation recovery experiment for bursty-motion smear. It is not a generator admission. Future A/B must bind baseline/repaired bytes, preserve `motion_spec_sha256`, and re-check requested-action motion, identity, geography, anti-copy, dialogue/lip-sync and final-media. Durable review: `docs/research/2026-08-30-minimax-h3-motion-lab-radar.md`.
 - **Stand-In:** reviewed V2 evidence remains announcement-only. Durable review: `docs/research/2026-08-30-stand-in-v2-radar.md`.
 - **WanGP/Wan2GP:** reviewed PiD changes remain post-processing/upsampler maintenance, not improved Hottop identity/requested-action evidence. Durable review: `docs/research/2026-08-30-wangp-pid-radar.md`.
 - **Echo-Memory:** scene/revisit-memory benchmark signal only; it cannot substitute for subject identity or requested-action motion proof. Durable review: `docs/research/2026-08-30-echo-memory-admission.md`.
 - **LongCat-Video-Avatar 1.5:** MIT source + official weights and unusually relevant audio-I2V/continuation/animal-domain capability justified benchmark-layer admission, but the heavy local stack and explicit model-download path keep it out of unattended production. Durable review: `docs/research/2026-08-30-longcat-video-avatar-15-admission.md`.
 - **Rust Qwen3-TTS runtimes:** `cgisky1980/Qwen3-TTS-Rust@f86f59ed…` and `second-state/qwen3_tts_rs@efe3285e…` were reviewed and **not admitted**. The former auto-downloads runtime components and silently falls back to Vivian when a requested speaker is missing; the latter's quick installer downloads binaries/models and its reviewed tree lacks the root `LICENSE` linked from README despite Cargo license metadata. Neither currently beats the already prepared qwentts.cpp/CrispASR/audio.cpp path under Hottop's fail-closed benchmark protocol. Durable review: `docs/research/2026-08-30-rust-qwen3-tts-local-radar.md`.
-- **Qwen3-TTS / local 1.7B runtimes:** retain the operator-provisioned, benchmark-first route. Do not infer quality from runtime support, speed claims or a single successful WAV.
+- **Qwen3-TTS / local 1.7B runtimes:** official source remains `QwenLM/Qwen3-TTS@022e286b98fbec7e1e916cb940cdf532cd9f488e`; retain the operator-provisioned, benchmark-first route. Do not infer quality from runtime support, speed claims or a single successful WAV.
 
 No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, current tested LightX2V/Wan2.2 operator route, or the existing prepared 1.7B TTS benchmark candidates.
 
@@ -84,10 +85,11 @@ No reviewed candidate in this cycle clears admission strongly enough to replace 
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-3. If LongCat-Video-Avatar 1.5 is locally provisioned, benchmark it against the same rights-safe sequence rather than adding an executable adapter from upstream claims alone.
-4. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` and keep listening/speaker/onset evidence independent from speed.
-5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
-6. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
+3. If an operator-provisioned MiniMax-H3 clip fails requested-action motion specifically because of bursty-motion smear, benchmark the reviewed Motion Lab recovery path against the exact baseline bytes; do not treat smoother output alone as success.
+4. If LongCat-Video-Avatar 1.5 is locally provisioned, benchmark it against the same rights-safe sequence rather than adding an executable adapter from upstream claims alone.
+5. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` and keep listening/speaker/onset evidence independent from speed.
+6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
 ## Recovery order
 
