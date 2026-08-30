@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import wave
 from pathlib import Path
 from typing import Literal
@@ -176,9 +177,10 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
         if not wav_path.is_absolute():
             wav_path = spec_path.parent / wav_path
         wav_identity, trial_blockers = _inspect_wav(wav_path)
-        if trial.latency_seconds <= 0:
+        latency_is_valid = math.isfinite(trial.latency_seconds) and trial.latency_seconds > 0
+        if not latency_is_valid:
             trial_blockers.append(
-                f"trial {index} latency_seconds must be greater than zero"
+                f"trial {index} latency_seconds must be finite and greater than zero"
             )
 
         realtime_factor = None
@@ -186,7 +188,7 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
         if (
             wav_identity is not None
             and wav_identity.duration_seconds > 0
-            and trial.latency_seconds > 0
+            and latency_is_valid
         ):
             realtime_factor = trial.latency_seconds / wav_identity.duration_seconds
             realtime_speedup = wav_identity.duration_seconds / trial.latency_seconds
