@@ -8,15 +8,18 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@e3640ecb593299cd3e59e9e96db646f4c9a7c971` / CI #2266** on Python 3.11/3.12.
+Latest verified evidence point: **`main@2fc00a88ce1ff63ccf07c15de77daf97d7b30238` / CI #2277** on Python 3.11/3.12.
 
-Three TTS benchmark-integrity gaps are closed:
+Four TTS benchmark evidence-coherence gaps are now closed:
 
-- per-candidate cold/warm completeness: RED `CI #2241` → GREEN `CI #2243/#2244` → merged main/post-merge `CI #2246`;
-- per-candidate runtime-revision consistency: RED `CI #2249` → GREEN `CI #2250/#2251` → merged main/post-merge `CI #2253`;
-- per-candidate model/checkpoint-revision consistency: RED `CI #2256` → GREEN `CI #2261/#2264` → merged main/post-merge **`CI #2266`**. The benchmark now persists `model_revision` per trial and rejects one candidate label spanning multiple model revisions.
+- per-candidate cold/warm completeness: RED `CI #2241` → GREEN `CI #2243/#2244` → merged/post-merge `CI #2246`;
+- per-candidate runtime-revision consistency: RED `CI #2249` → GREEN `CI #2250/#2251` → merged/post-merge `CI #2253`;
+- per-candidate model/checkpoint-revision consistency: RED `CI #2256` → GREEN `CI #2261/#2264` → merged/post-merge `CI #2266`;
+- benchmark generation-protocol binding: RED **`CI #2269`** → GREEN `CI #2274/#2275` → merged main/post-merge **`CI #2277`**. A ready benchmark now requires one non-empty finite JSON `generation_protocol` for the whole comparison and preserves its canonical sorted-key JSON SHA-256 in `hottop.tts-benchmark.v1`.
 
-The changes add no neural runtime execution, provider route, dependency, model download, GPU provisioning, credential or paid path. No open PR is expected from this completed workstream.
+The generation protocol is declared benchmark-control evidence, not proof a runtime obeyed a similarly named flag. Actual runtime CLI/config provenance remains separately required.
+
+These changes add no neural runtime execution, provider route, dependency, model download, GPU provisioning, credential or paid path. No open PR is expected from this completed workstream.
 
 ## Canonical guaranteed baseline
 
@@ -57,31 +60,32 @@ Shared evidence surface:
 
 `hottop-models inspect-tts-benchmark --spec <benchmark.json>`
 
-It inspects already-produced local WAVs only and never executes TTS, accesses the network, installs dependencies, downloads models, provisions GPU resources or calls a paid service. Latency must be finite and greater than zero. Separate benchmark rows cannot reuse the same resolved WAV path; identical bytes are still legal when independently produced as distinct artifact instances.
+It inspects already-produced local WAVs only and never executes TTS, accesses the network, installs dependencies, downloads models, provisions GPU resources or calls a paid service.
 
-**Benchmark completeness is fail-closed per candidate:** every represented runtime must have at least one `cold` and at least one `warm` trial before the evidence can be `ready=true`. Additional independent warm trials remain valid and are preferred for warmed-runtime variance and repeated speaker-consistency evidence.
+A ready benchmark now requires all of the following:
 
-**Benchmark implementation identity is fail-closed per candidate:** all cold/warm/repeated trials grouped under one candidate label must bind the same exact `runtime_revision` **and** the same exact `model_revision`. Comparing two binaries/builds or two model/checkpoint revisions requires distinct candidate identities instead of silently mixing evidence under one label.
+- exact text, language and checkpoint-supported preset speaker;
+- one non-empty finite JSON **generation protocol** for the whole benchmark, covering the seed/sampling/generation-ceiling semantics used to make candidate runs comparable; the evidence preserves both the protocol and its canonical SHA-256;
+- at least one `cold` and one `warm` trial for every candidate; additional independent warm repeats remain valid and preferred;
+- one exact `runtime_revision` and one exact `model_revision` per candidate;
+- finite positive latency;
+- a distinct resolved WAV path for every trial; identical bytes remain legal when independently produced as separate artifacts;
+- WAV/PCM integrity and `listening_required=true` so speed/stream integrity cannot be mistaken for naturalness or speaker-quality proof.
 
-Cold/warm coverage plus runtime/model-revision consistency are evidence-coherence gates; none replaces listening, onset, speaker, intelligibility or artifact-integrity gates.
-
-Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoint-supported preset speaker and bounded generation settings while preserving exact runtime/model bytes, one exact runtime revision and one exact model revision per candidate, cold/warm timing, distinct WAV artifact instances, WAV/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported conditioning fails closed before execution; reference-audio cloning remains separately rights-gated.
+Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoint-supported preset speaker and one declared generation protocol while preserving actual runtime/model/config provenance, cold/warm timing, distinct WAV artifact instances, WAV/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported conditioning fails closed before execution; reference-audio cloning remains separately rights-gated.
 
 ## Fresh ecosystem radar — 2026-08-30
 
-- **Qwen3-TTS benchmark practice:** SGLang-Omni issue #1464 requires exact source revision, model revision, dataset, hardware, request count and concurrency for performance claims. Its Aug. 23 Qwen3-TTS tracker also records removal of Talker `torch.compile` after fixed-protocol tests failed to show reproducible end-to-end benefit. This supports Hottop's runtime+model coherence gate rather than a floating candidate label.
-- **llama.cpp Qwen3-TTS:** issue #27937 opened 2026-08-29 reports that the default 32768 context can allocate roughly 3.5 GB of KV cache for Qwen3-TTS where a much smaller context may suffice. Treat this as a future operator-runtime performance signal only; it does not prove Mandarin quality or justify replacing the prepared qwentts.cpp/CrispASR/audio.cpp routes.
-- **LightX2V/Wan2.2:** no fresh result in this cycle provides Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V subset. Keep the tested pin; no freshness-only repin.
-- **DiffSynth-Studio / MiniMax-H3 NF4:** remains research/operator-benchmark only under the previously recorded base-model license and geography/commercial gates.
-- **MiniMax H3 Motion Lab / LongCat / Step-Audio-EditX / Supertonic:** existing research-only gates remain unchanged; no new evidence clears them for unattended production.
-
-No reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, the tested LightX2V/Wan2.2 operator route or the prepared 1.7B TTS benchmark candidates.
+- **Qwen3-TTS official source:** live `QwenLM/Qwen3-TTS@022e286b98fbec7e1e916cb940cdf532cd9f488e`; no official change in this cycle clears the 1.7B operator-local benchmark gate.
+- **Generation controls matter:** current Qwen3-TTS-compatible runtimes expose seed/sampling controls and `max_new_tokens`; public Qwen3-TTS serving evidence includes rare missing-EOS/repetition runs that continue until the generation ceiling. This supports binding generation protocol identity rather than comparing WAVs produced under unspecified settings.
+- **LightX2V/Wan2.2:** live upstream remains `ModelTC/LightX2V@7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`; the reviewed Aug. 28 change is example-script path cleanup, not a Hottop-measured continuity/quality/runtime improvement for the tested Wan2.2 I2V subset. Keep the tested pin; no freshness-only repin.
+- Existing DiffSynth/MiniMax-H3, Motion Lab, LongCat, Step-Audio-EditX and other research gates remain unchanged; no reviewed candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, the tested LightX2V/Wan2.2 operator route or the prepared local 1.7B TTS candidates.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-3. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` with at least one cold plus one warm trial **per candidate**, one exact runtime revision and one exact model revision per candidate, distinct resolved WAV artifacts per trial, and additional warm repeats where useful. Keep listening/speaker/onset evidence independent from speed.
+3. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` with one declared generation protocol, at least one cold plus one warm trial per candidate, one exact runtime revision and one exact model revision per candidate, and distinct resolved WAV artifacts per trial. Keep listening/speaker/onset evidence independent from speed.
 4. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 5. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
