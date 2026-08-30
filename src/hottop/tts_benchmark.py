@@ -182,7 +182,7 @@ def inspect_tts_benchmark(spec_path: Path) -> TtsBenchmarkEvidence:
             previous_trial = seen_wav_paths.get(wav_identity.path)
             if previous_trial is not None:
                 trial_blockers.append(
-                    "physical WAV artifact is reused across trials: "
+                    "resolved WAV path is reused across trials: "
                     f"trial {previous_trial} and trial {index}: {wav_identity.path}"
                 )
             else:
