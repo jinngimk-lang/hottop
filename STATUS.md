@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@eaffa96dcfcf8e0a5747bef309f9041400632eaf`**. PR #259 exact head `95fcb3222e26d501ead192662cc7f045e4dcc0b5` passed CI **#2237** and was squash-merged; post-merge push CI **#2238** passed on Python 3.11/3.12. The merged change is research-only and adds no executable provider, dependency, model download, GPU provisioning, credential or paid path.
+Latest verified evidence point: **`main@0ae690d3a765011fc8fad5e1f2dd5e34414ec044`**. The TTS benchmark cold/warm completeness fix was proven RED→GREEN (`CI #2241` → `CI #2243/#2244`), then merged via exact verified head and passed post-merge push **CI #2246** on Python 3.11/3.12. The change adds no neural runtime execution, provider route, dependency, model download, GPU provisioning, credential or paid path.
 
 No production workstream is currently known to be failing at this evidence point.
 
@@ -53,6 +53,8 @@ Shared evidence surface:
 
 It inspects already-produced local WAVs only and never executes TTS, accesses the network, installs dependencies, downloads models, provisions GPU resources or calls a paid service. Latency must be finite and greater than zero. Separate benchmark rows cannot reuse the same resolved WAV path; identical bytes are still legal when independently produced as distinct artifact instances.
 
+**Benchmark completeness is now fail-closed per candidate:** every represented runtime must have at least one `cold` and at least one `warm` trial before the evidence can be `ready=true`. Additional independent warm trials remain valid and are preferred for warmed-runtime variance and repeated speaker-consistency evidence. Cold/warm coverage does not replace listening, onset, speaker, intelligibility or artifact-integrity gates.
+
 Future 1.7B cross-runtime A/B must use the **same Mandarin line**, same checkpoint-supported preset speaker and bounded generation settings while preserving exact runtime/model bytes, cold/warm timing, distinct WAV artifact instances, WAV/PCM integrity, repeated speaker consistency, short-onset stability, intelligibility/naturalness and publication-rights posture. Unsupported conditioning fails closed before execution; reference-audio cloning remains separately rights-gated.
 
 ## Fresh ecosystem radar — 2026-08-30
@@ -72,7 +74,7 @@ No reviewed candidate in this cycle clears admission strongly enough to replace 
 2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
 3. Treat DiffSynth/MiniMax-H3 NF4 only as an operator benchmark if exact base/derivative rights, operator geography/commercial context, local artifact bytes and offline runtime all clear first; do not call ModelScope/Hugging Face download paths from normal `video-run`.
 4. If an operator-provisioned MiniMax-H3 clip fails requested-action motion specifically because of bursty-motion smear, benchmark the reviewed Motion Lab recovery path against exact baseline bytes; smoother output alone is not success.
-5. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` with one distinct resolved WAV artifact per trial and keep listening/speaker/onset evidence independent from speed.
+5. When an operator provisions qwentts.cpp, CrispASR or audio.cpp plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; after same-line local WAV generation, use `inspect-tts-benchmark` with at least one cold plus one warm trial **per candidate**, distinct resolved WAV artifacts per trial, and additional warm repeats where useful. Keep listening/speaker/onset evidence independent from speed.
 6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 7. For fresh creative generation, resolve current source-event + active derivative meme first, then use creative memory only as mechanism/grammar/guardrail support.
 
