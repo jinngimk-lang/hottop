@@ -161,6 +161,12 @@ def _execution_profile_blockers(profile: dict[str, Any]) -> list[str]:
             blockers.append(
                 "execution_profile server mode requires a nonblank connection_strategy"
             )
+        for field_name in ("worker_count", "threads_per_worker"):
+            value = profile.get(field_name)
+            if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+                blockers.append(
+                    f"execution_profile server mode requires positive integer {field_name}"
+                )
 
     return blockers
 
