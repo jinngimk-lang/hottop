@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import os
 import re
 import shutil
@@ -262,6 +263,28 @@ def _byte_identity(path: Path) -> tuple[str, int]:
     return digest.hexdigest(), size_bytes
 
 
+def _generation_request_identity(
+    config: LightX2VAdapterConfig,
+    *,
+    prompt: str,
+    negative_prompt: str,
+) -> tuple[str, int]:
+    payload = json.dumps(
+        {
+            "schema_version": "hottop.lightx2v-generation-request.v1",
+            "model_cls": config.model_cls,
+            "task": config.task,
+            "seed": config.seed,
+            "prompt": prompt,
+            "negative_prompt": negative_prompt,
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest(), len(payload)
+
+
 def _read_git_revision(root: Path) -> str | None:
     if _resolve_git_dir(root) is None:
         return None
@@ -352,6 +375,8 @@ def _write_artifact_manifest(
     candidate_revision: str,
     generation_config_sha256: str,
     generation_config_size_bytes: int,
+    generation_request_sha256: str,
+    generation_request_size_bytes: int,
     reference_sha256: str | None,
     reference_size_bytes: int | None,
     reference_rights: ReferenceRights | None,
@@ -374,6 +399,8 @@ def _write_artifact_manifest(
                 size_bytes=size_bytes,
                 generation_config_sha256=generation_config_sha256,
                 generation_config_size_bytes=generation_config_size_bytes,
+                generation_request_sha256=generation_request_sha256,
+                generation_request_size_bytes=generation_request_size_bytes,
                 reference_sha256=reference_sha256,
                 reference_size_bytes=reference_size_bytes,
                 reference_rights=reference_rights,
@@ -421,6 +448,11 @@ def run_lightx2v_shot(
         raise LightX2VError(
             f"LightX2V generation config could not be provenance-verified: {config_json}"
         ) from exc
+    generation_request_sha256, generation_request_size_bytes = _generation_request_identity(
+        config,
+        prompt=prompt,
+        negative_prompt=negative_prompt,
+    )
     output = output.resolve()
     if (shot_index is None) != (artifact_manifest is None):
         raise LightX2VError("LightX2V artifact provenance requires shot_index and artifact_manifest together")
@@ -506,6 +538,8 @@ def run_lightx2v_shot(
             candidate_revision=source_revision,
             generation_config_sha256=generation_config_sha256,
             generation_config_size_bytes=generation_config_size_bytes,
+            generation_request_sha256=generation_request_sha256,
+            generation_request_size_bytes=generation_request_size_bytes,
             reference_sha256=reference_sha256,
             reference_size_bytes=reference_size_bytes,
             reference_rights=reference_rights,
@@ -545,6 +579,7 @@ def main() -> None:
         config_json=Path(args.config_json),
         model_cls=args.model_cls,
         task=args.task,
+        seed=args.seed,
     )
     try:
         run_lightx2v_shot(
