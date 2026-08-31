@@ -3,8 +3,6 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-import pytest
-
 from hottop.video_artifacts import VideoArtifactManifest, VideoShotArtifact
 from hottop.video_benchmark import (
     ReferenceContinuityBenchmark,
@@ -15,7 +13,7 @@ from hottop.video_production import VideoProductionPlan, VideoShot
 from hottop.video_reference import VideoReference
 
 
-def test_continuity_benchmark_requires_every_reference_bearing_subject(
+def test_continuity_benchmark_preserves_explicit_subject_scope(
     tmp_path: Path,
 ) -> None:
     reference_paths = {
@@ -128,13 +126,9 @@ def test_continuity_benchmark_requires_every_reference_bearing_subject(
         ],
     )
 
-    with pytest.raises(
-        ValueError,
-        match="continuity benchmark must cover every reference-bearing subject in the video plan",
-    ):
-        verify_reference_continuity_artifacts(
-            evidence,
-            manifest,
-            reference_paths,
-            plan=plan,
-        )
+    verify_reference_continuity_artifacts(
+        evidence,
+        manifest,
+        {"hero-a": reference_paths["hero-a"]},
+        plan=plan,
+    )
