@@ -214,6 +214,19 @@ def verify_reference_continuity_artifacts(
 
     manifest.verify_required_byte_identity()
     subject_hashes, planned_references = _subject_plan_bindings(manifest, plan)
+    subject_by_shot_hash: dict[str, str] = {}
+    for subject_id, planned_hashes in subject_hashes.items():
+        for shot_hash in planned_hashes:
+            prior_subject = subject_by_shot_hash.setdefault(shot_hash, subject_id)
+            if prior_subject != subject_id:
+                raise ValueError(
+                    "distinct subjects require distinct subject-bearing shot artifacts"
+                )
+    evidence_subject_ids = {subject.subject_id for subject in evidence.subjects}
+    if set(subject_hashes) - evidence_subject_ids:
+        raise ValueError(
+            "continuity benchmark must cover every reference-bearing subject in the video plan"
+        )
     artifacts_by_hash = {
         artifact.sha256: artifact for artifact in manifest.shots if artifact.sha256 is not None
     }
