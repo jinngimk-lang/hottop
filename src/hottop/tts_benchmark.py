@@ -151,6 +151,16 @@ def _hardware_profile_blockers(profile: dict[str, Any]) -> list[str]:
         blockers.append(
             f"hardware_profile {backend_name} backend requires a nonblank gpu or accelerator identity"
         )
+    if backend_name in accelerator_backends:
+        device_count = profile.get("device_count")
+        if (
+            isinstance(device_count, bool)
+            or not isinstance(device_count, int)
+            or device_count <= 0
+        ):
+            blockers.append(
+                f"hardware_profile {backend_name} backend requires positive integer device_count"
+            )
     return blockers
 
 
