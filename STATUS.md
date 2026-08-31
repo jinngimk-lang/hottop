@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@8ed001ee400fdc9e627c23b29ed16e19e4b7deda` / CI #2425** on Python 3.11/3.12. This merge closes the undefined-hardware-backend false-ready gap for TTS latency/RTF evidence. Every later recovery must still re-fetch live `main`, open PRs and exact-head CI.
+Latest verified evidence point: **`main@8a8b63cf52d1b4d81b430db8caa5cb1e8b5eda94` / CI #2438** on Python 3.11/3.12. This merge closes the accelerator-device-count false-ready gap for TTS latency/RTF evidence. Every later recovery must still re-fetch live `main`, open PRs and exact-head CI.
 
 ## Canonical guaranteed baseline
 
@@ -46,32 +46,31 @@ Prepared local benchmark candidates:
 - `qwen3-tts-pure-c-1b7` — read-only raw-safetensors model-tree preflight, registry-discoverable but `integration_ready=false` and `runtime_status=unprobed`;
 - `qwen3-tts-ncnn-0b6` — lower-hardware 0.6B CPU/Vulkan benchmark candidate only.
 
-Pure-C remains bound to exact source `gabriele-mastrapasqua/qwen3-tts@f1b6865713d12a2a2365282fc02e19a5a384a565`. Its normal Hottop path forbids upstream model/voice downloads, auto-build and runtime execution. Its current preflight binds the intended 1.7B CustomVoice capability and performs bounded, metadata-only safetensors integrity/resource checks without loading tensors. `ready=true` still proves only local input structure/provenance, not checkpoint rights, runtime success, speaker capability or Mandarin quality.
-
 `hottop-models inspect-tts-benchmark --spec <benchmark.json>` treats latency/RTF as comparable evidence only when it binds:
 
 1. exact text, language and checkpoint-supported preset speaker;
 2. one concrete generation protocol with canonical SHA-256, integer seed, positive `max_new_tokens` and explicit sampling control;
 3. one concrete hardware profile with canonical SHA-256, one recognized backend class (`cpu`, `cuda`, `rocm`, `hip`, `vulkan`, `metal`, `mps`, `xpu`) and coherent device identity;
 4. **for CPU backends, a nonblank CPU identity plus positive integer `logical_cpu_count`;**
-5. one recognized execution profile (`cli` or `server`) with positive concurrency and batch size;
-6. for `server`, nonblank connection strategy plus positive `worker_count` and `threads_per_worker`;
-7. cold/warm coverage, with additional independent warm repeats retained for warmed variance and repeated speaker-consistency evidence;
-8. one exact runtime revision and one exact model/checkpoint revision per candidate;
-9. finite positive latency plus distinct resolved WAV artifact paths, byte identity and WAV/PCM integrity;
-10. `listening_required=true`, keeping naturalness, speaker consistency, onset stability and intelligibility independent from speed/stream integrity.
+5. **for accelerator backends, a nonblank GPU/generic-accelerator identity plus positive integer provider-neutral `device_count`;**
+6. one recognized execution profile (`cli` or `server`) with positive concurrency and batch size;
+7. for `server`, nonblank connection strategy plus positive `worker_count` and `threads_per_worker`;
+8. cold/warm coverage, with additional independent warm repeats retained for warmed variance and repeated speaker-consistency evidence;
+9. one exact runtime revision and one exact model/checkpoint revision per candidate;
+10. finite positive latency plus distinct resolved WAV artifact paths, byte identity and WAV/PCM integrity;
+11. `listening_required=true`, keeping naturalness, speaker consistency, onset stability and intelligibility independent from speed/stream integrity.
 
-The hardware-backend vocabulary closure was TDD-verified. The first test-only attempt was stopped by Ruff and was not treated as behavioral RED. Corrected RED head `92998100b2e7d1b2e81a2394525a1e12771b875d` passed Ruff and failed pytest in CI #2421 because an undefined backend such as `banana` could still acquire latency/RTF semantics when paired with a generic accelerator identity. Minimal GREEN `b085db862642a891b8028f11eaecc14ec1caf076` closed the backend vocabulary while preserving generic `accelerator` device identity; CI #2422 passed Ruff + full pytest on Python 3.11/3.12. Durable method head `7d8141037820dd75df36f2f00625817445bb0748` passed CI #2423, squash merge `8ed001ee400fdc9e627c23b29ed16e19e4b7deda` then passed post-merge CI #2425.
+The accelerator-count closure was TDD-verified. RED head `77882ba1cc9100649728a8fbedc2cf19df86bfa2` passed Ruff and failed pytest in CI #2430 because `cuda + H200` without any device count could still become benchmark-ready. Minimal GREEN requires positive integer `device_count` for accelerator backends. Full-suite validation exposed one old fixture using unvalidated `gpu_count`; it was migrated to provider-neutral `device_count` rather than weakening the gate. GREEN head `6a835fa64af6ccc3eedcd3d9bbe29b45d2fa43df` passed CI #2434; docs-synced head `fad19c6f327d1a001db57170314b3fdfb28da9b1` passed CI #2436; squash merge `8a8b63cf52d1b4d81b430db8caa5cb1e8b5eda94` passed post-merge CI #2438.
 
-This remains **declared measurement provenance**, not proof that the runtime actually used the declared device/backend or honored topology/affinity. New backend classes must enter through an explicit evidence-contract update rather than gaining comparability because an arbitrary string is nonblank.
+Hardware profiles remain **declared measurement provenance**, not proof that a runtime actually used the declared CPU/GPU/backend/count or honored topology/affinity. Actual invocation/config/telemetry remains separate evidence. New backend classes or parallelism semantics must enter through explicit evidence-contract updates rather than arbitrary JSON labels.
 
-Durable rationale: `docs/research/2026-08-30-tts-bench-method-admission.md`, `docs/research/2026-08-30-tts-execution-shape-evidence.md`, `docs/research/2026-08-30-qwen3-tts-pure-c-admission.md`, and `docs/research/2026-08-31-tts-cpu-count-provenance.md`.
+Durable rationale: `docs/research/2026-08-30-tts-bench-method-admission.md`, `docs/research/2026-08-31-tts-cpu-count-provenance.md`, and `docs/research/2026-08-31-tts-accelerator-count-provenance.md`.
 
 ## Fresh ecosystem radar — 2026-08-31
 
-- **LightX2V** public `main` remains reviewed without any Hottop-measured continuity/quality/runtime gain for the tested Wan2.2 I2V subset. Recent public activity still includes adjacent MiniMax-H3/model work and maintenance rather than evidence that improves the current tested route. Keep the tested pin; no freshness-only repin.
-- **Qwen3-TTS serving**: SGLang-Omni's 2026-08-23 fixed-protocol H100/H200 reproduction removed Talker `torch.compile` after compile-off matched or exceeded compile-on end-to-end. This reinforces Hottop's rule that acceleration toggles need exact-revision/hardware/protocol evidence rather than becoming default by reputation.
-- **Qwen3-TTS official / qwentts.cpp / prepared local candidates**: no fresh evidence in this cycle removes the operator-local 1.7B model/runtime gate or substitutes for same-line Mandarin output evidence.
+- **LightX2V** public `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6` (`Update scripts (#1452)`, 2026-08-28). No Hottop-measured continuity/quality/runtime gain exists for the tested Wan2.2 I2V subset; keep the tested pin and do not freshness-only repin.
+- **Qwen3-TTS official** public `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`. No fresh official change removes the operator-local 1.7B model/runtime gate.
+- Public Qwen3-TTS serving benchmarks continue to report concrete hardware scale and concurrency. Hottop uses this only as methodology context; public performance numbers are not imported as Hottop benchmark evidence.
 - No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local 1.7B TTS candidates.
 
 ## Immediate next actions
