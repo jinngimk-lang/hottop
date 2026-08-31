@@ -78,6 +78,7 @@ def test_lightx2v_linked_worktree_binds_actual_git_commit(tmp_path: Path) -> Non
         shot_index=1,
         artifact_manifest=artifact_manifest,
         runner=runner,
+        gpu_probe=lambda: None,
         quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
     )
 
