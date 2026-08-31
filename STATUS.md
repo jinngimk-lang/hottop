@@ -8,7 +8,9 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@8a8b63cf52d1b4d81b430db8caa5cb1e8b5eda94` / CI #2438** on Python 3.11/3.12. This merge closes the accelerator-device-count false-ready gap for TTS latency/RTF evidence. Every later recovery must still re-fetch live `main`, open PRs and exact-head CI.
+Latest verified code evidence point: **`main@9cac3f1cce404f702ad07e7aa0f58931bb6f95fc`**. Its push **CI #2462 is green** and **production-smoke #222 is green**. The same head's 720p cinematic-delivery-smoke #89 was still executing when this snapshot was written, so this file does not claim that final gate completed.
+
+The merged source-provenance feature was independently exact-head verified before merge at `4ba114005f78e2a9396ead2787f527551859145a`: CI #2460, production-smoke #220 and cinematic-delivery-smoke #87 all succeeded; no review threads remained. Draft PR #322 was recreated as non-draft PR #323 on the same verified head because the GitHub connector ready-for-review mutation hit the known `fullDatabaseId` compatibility error; #323 then squash-merged without force/update-ref.
 
 ## Canonical guaranteed baseline
 
@@ -26,59 +28,51 @@ Retained deterministic smoke evidence:
 
 Do not retune deterministic cow/Odyssey visuals or audio without a measured artifact defect.
 
-## Reference-conditioned continuity boundary
+## LightX2V / reference-conditioned continuity boundary
 
-Input locks are constraints, not output proof. Generated continuity evidence must cover all subject-bearing shots and bind exact reference bytes, generated shot bytes, generator/model/source provenance when independently verifiable, evaluator identity/revision and fail-closed thresholds.
+Primary operator route remains **LightX2V/Wan2.2**. Input locks are constraints, not output proof. Generated continuity evidence must cover all subject-bearing shots and bind exact reference bytes, generated shot bytes, generator/model/source provenance when independently verifiable, evaluator identity/revision and fail-closed thresholds.
 
-**Identity fidelity and requested-action/motion fidelity are separate dimensions.** Motion/anti-copy evidence binds `motion_spec_sha256` from exact ordered subject-bearing plan semantics. Generic motion cannot prove a different requested action.
+**Identity fidelity and requested-action/motion fidelity remain separate dimensions.** Motion/anti-copy evidence binds `motion_spec_sha256` from exact ordered subject-bearing plan semantics. Runtime success or generic motion never proves requested action or subject identity.
 
-Primary operator route remains **LightX2V/Wan2.2**. Reviewed alternatives remain benchmark/research-only unless exact rights, local runtime and same-sequence output evidence clear admission. Runtime success never substitutes for identity, motion, geography, provenance or final-media proof.
+LightX2V source provenance is now fail-closed across the generation window:
+
+- inherited `PYTHONPATH` is isolated to the operator checkout root;
+- tracked uncommitted changes are rejected;
+- untracked **and Git-ignored** importable/runtime-code files (`.py`, `.pyc`, `.pyd`, `.so`, `.pth`) are rejected while unrelated local data may remain;
+- the exact local source revision is captured before spawn and re-verified after generation, before quality/provenance acceptance;
+- if the post-generation source check fails, the produced video is deleted and no manifest is accepted.
+
+This is an implementation of the existing actual-generator-source doctrine, not proof against an adversarial actor that mutates source and restores the exact clean tree between the two boundary checks. Durable rationale: `docs/research/2026-08-31-lightx2v-source-provenance.md`.
 
 ## Dialogue / neural-TTS boundary
 
 The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the higher-quality operator-owned benchmark target; CosyVoice3 remains correctness-gated.
 
-Prepared local benchmark candidates:
+Prepared local candidates remain:
 
 - `qwen3-tts-qwentts-cpp-1b7` — hardened read-only GGUF artifact preflight;
 - `qwen3-tts-crispasr-1b7` — read-only GGUF artifact preflight;
 - `qwen3-tts-audio-cpp-1b7` — read-only CustomVoice model-directory preflight;
 - `qwen3-tts-pure-c-1b7` — read-only raw-safetensors model-tree preflight, registry-discoverable but `integration_ready=false` and `runtime_status=unprobed`;
-- `qwen3-tts-ncnn-0b6` — lower-hardware 0.6B CPU/Vulkan benchmark candidate only.
+- `qwen3-tts-ncnn-0b6` — lower-hardware CPU/Vulkan benchmark candidate only.
 
-`hottop-models inspect-tts-benchmark --spec <benchmark.json>` treats latency/RTF as comparable evidence only when it binds:
+Comparable `inspect-tts-benchmark` latency/RTF evidence continues to require exact text/language/supported speaker, canonical generation protocol, recognized hardware backend with coherent CPU/device count, recognized `cli`/`server` execution shape, server worker/thread topology when applicable, cold/warm independent trials, one runtime revision + one model revision per candidate, finite positive latency, distinct resolved WAV trial paths, WAV/PCM integrity and `listening_required=true`. Hardware/execution profiles remain declared measurement provenance rather than proof of actual runtime utilization.
 
-1. exact text, language and checkpoint-supported preset speaker;
-2. one concrete generation protocol with canonical SHA-256, integer seed, positive `max_new_tokens` and explicit sampling control;
-3. one concrete hardware profile with canonical SHA-256, one recognized backend class (`cpu`, `cuda`, `rocm`, `hip`, `vulkan`, `metal`, `mps`, `xpu`) and coherent device identity;
-4. **for CPU backends, a nonblank CPU identity plus positive integer `logical_cpu_count`;**
-5. **for accelerator backends, a nonblank GPU/generic-accelerator identity plus positive integer provider-neutral `device_count`;**
-6. one recognized execution profile (`cli` or `server`) with positive concurrency and batch size;
-7. for `server`, nonblank connection strategy plus positive `worker_count` and `threads_per_worker`;
-8. cold/warm coverage, with additional independent warm repeats retained for warmed variance and repeated speaker-consistency evidence;
-9. one exact runtime revision and one exact model/checkpoint revision per candidate;
-10. finite positive latency plus distinct resolved WAV artifact paths, byte identity and WAV/PCM integrity;
-11. `listening_required=true`, keeping naturalness, speaker consistency, onset stability and intelligibility independent from speed/stream integrity.
-
-The accelerator-count closure was TDD-verified. RED head `77882ba1cc9100649728a8fbedc2cf19df86bfa2` passed Ruff and failed pytest in CI #2430 because `cuda + H200` without any device count could still become benchmark-ready. Minimal GREEN requires positive integer `device_count` for accelerator backends. Full-suite validation exposed one old fixture using unvalidated `gpu_count`; it was migrated to provider-neutral `device_count` rather than weakening the gate. GREEN head `6a835fa64af6ccc3eedcd3d9bbe29b45d2fa43df` passed CI #2434; docs-synced head `fad19c6f327d1a001db57170314b3fdfb28da9b1` passed CI #2436; squash merge `8a8b63cf52d1b4d81b430db8caa5cb1e8b5eda94` passed post-merge CI #2438.
-
-Hardware profiles remain **declared measurement provenance**, not proof that a runtime actually used the declared CPU/GPU/backend/count or honored topology/affinity. Actual invocation/config/telemetry remains separate evidence. New backend classes or parallelism semantics must enter through explicit evidence-contract updates rather than arbitrary JSON labels.
-
-Durable rationale: `docs/research/2026-08-30-tts-bench-method-admission.md`, `docs/research/2026-08-31-tts-cpu-count-provenance.md`, and `docs/research/2026-08-31-tts-accelerator-count-provenance.md`.
+Durable method: `docs/research/2026-08-30-tts-bench-method-admission.md` plus the 2026-08-31 CPU/accelerator provenance records.
 
 ## Fresh ecosystem radar — 2026-08-31
 
-- **LightX2V** public `main` remains `7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6` (`Update scripts (#1452)`, 2026-08-28). No Hottop-measured continuity/quality/runtime gain exists for the tested Wan2.2 I2V subset; keep the tested pin and do not freshness-only repin.
-- **Qwen3-TTS official** public `main` remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`. No fresh official change removes the operator-local 1.7B model/runtime gate.
-- Public Qwen3-TTS serving benchmarks continue to report concrete hardware scale and concurrency. Hottop uses this only as methodology context; public performance numbers are not imported as Hottop benchmark evidence.
-- No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local 1.7B TTS candidates.
+- **LightX2V** public `main` advanced to `f85a5c6f5d97a2a031a9f11b8e7f521bde5fb691` on 2026-08-31. The new change fixes MiniMax-H3 tensor-parallel sharding for one-dimensional column-parallel biases/scales. It does **not** provide Hottop-measured continuity, quality or runtime gain for the tested Wan2.2 I2V subset; keep the tested pin and do not freshness-only repin.
+- **Qwen3-TTS official** remains operator-gated for 1.7B quality evidence; no fresh public signal in this cycle removes the need for exact local runtime/model plus same-line Mandarin A/B.
+- No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, the tested LightX2V/Wan2.2 operator route or the prepared local 1.7B TTS candidates.
 
 ## Immediate next actions
 
-1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-2. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-3. When an operator provisions qwentts.cpp, CrispASR, audio.cpp or Pure-C plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line Mandarin generation and inspect it with the generation + hardware + execution-shape coherence gates above. Preserve actual invocation/config separately from declared benchmark profiles.
-4. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+1. Close the remaining post-merge cinematic-delivery-smoke #89 evidence for `main@9cac3f1c…`; if it fails, repair the real regression before any new workstream.
+2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
+4. When an operator provisions qwentts.cpp, CrispASR, audio.cpp or Pure-C plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line Mandarin generation under the existing generation/hardware/execution-shape coherence gates.
+5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
 ## Recovery order
 
