@@ -13,6 +13,7 @@ VideoArtifactKind = Literal[
     "deterministic-non-generative",
     "operator-provided",
 ]
+ReferenceRights = Literal["generated-original", "user-provided-rights-cleared"]
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -46,6 +47,19 @@ class VideoShotArtifact(BaseModel):
     generation_config_size_bytes: int | None = Field(
         default=None,
         gt=0,
+        exclude_if=lambda value: value is None,
+    )
+    reference_sha256: str | None = Field(
+        default=None,
+        exclude_if=lambda value: value is None,
+    )
+    reference_size_bytes: int | None = Field(
+        default=None,
+        gt=0,
+        exclude_if=lambda value: value is None,
+    )
+    reference_rights: ReferenceRights | None = Field(
+        default=None,
         exclude_if=lambda value: value is None,
     )
 
@@ -90,6 +104,24 @@ class VideoShotArtifact(BaseModel):
         ):
             raise ValueError(
                 "generation config sha256 must be a lowercase 64-character hex digest"
+            )
+
+        reference_values = (
+            self.reference_sha256,
+            self.reference_size_bytes,
+            self.reference_rights,
+        )
+        if any(value is not None for value in reference_values) and not all(
+            value is not None for value in reference_values
+        ):
+            raise ValueError(
+                "reference provenance requires sha256, size_bytes and rights together"
+            )
+        if self.reference_sha256 is not None and not _SHA256_RE.fullmatch(
+            self.reference_sha256
+        ):
+            raise ValueError(
+                "reference sha256 must be a lowercase 64-character hex digest"
             )
         return self
 
