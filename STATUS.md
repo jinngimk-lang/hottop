@@ -8,18 +8,18 @@ Current milestone: **Production v0.2 — repeatable real video output**
 
 ## Current verified repository truth
 
-Latest merged production point is **`main@333405dab22724395acddc998affc05f0e3256c9`** (`fix: reject invalid generated-video dimensions`, PR #377), SHA-locked squash-merged from exact verified head `c2feb7d73feadc3cf6940a79cdb87b50fdbd4c6f`.
+Latest merged production point is **`main@b7899e066ec743008d185ee532ef7dab32da7288`** (`fix: fail closed on malformed ffprobe metadata shapes`, PR #379), SHA-locked squash-merged from exact verified head `63c5b0a91efbb895535232f0f4d56e6acbb38cde`.
 
 TDD/production evidence:
 
-- RED `62784f0e9bc052d4de01c1a64f2bfee3b617a37d`: CI #2601 completed installation + Ruff and Python 3.11 failed exactly the new regression with `1 failed, 642 passed`; malformed `width="not-a-number"` raised `ValueError` at the bare `int(...)` conversion instead of yielding a rejection report;
-- GREEN `c2feb7d73feadc3cf6940a79cdb87b50fdbd4c6f`: exact-head CI #2602 passed Python 3.11 + 3.12 Ruff/full pytest after bounded dimension parsing and early fail-closed rejection;
-- production-smoke #298 passed checked-in anti-polish cow + cinematic Odyssey execution and final-media/provenance verification; artifact `hottop-software3d-production-smoke` was 687,894 bytes with digest `sha256:9d0c680393376c30697b31e1ff281d36fee46bb98ca19adaae04eb40344f8568`;
-- cinematic-delivery-smoke #165 passed actual 720p24 Odyssey delivery, runtime provenance, final-media/seam verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 624,452 bytes with digest `sha256:250ddba8fc8499639cd124e1875e1fec6854b71f1860e9a15837aecf35b85e2f`.
+- RED `905fa77748f315c6de44936167d250741f48aba5`: CI #2606 reached Ruff successfully and Python 3.11 pytest failed on the new malformed-metadata-shape regression; Python 3.12 was cancelled after the branch advanced, so no stronger RED claim is recorded.
+- GREEN `63c5b0a91efbb895535232f0f4d56e6acbb38cde`: exact-head CI #2607 passed.
+- production-smoke #300 passed checked-in anti-polish cow + cinematic Odyssey execution and final-media/provenance verification; artifact `hottop-software3d-production-smoke` was 687,894 bytes with digest `sha256:363ed3091f79cdb2599a702df8faa3381fe7f3e706b32acab5858a969767614c`.
+- cinematic-delivery-smoke #167 passed actual 720p24 Odyssey delivery, runtime provenance and final-media verification; artifact `hottop-cinematic-software3d-delivery` was 624,448 bytes with digest `sha256:95e5c9a29b91c9155688ff61906b32aacfbf110457abe96d49ceea19e5842b50`.
 
-The shared generated-video gate remains fail closed below conservative compositor-usability minima of **0.5 s duration, 256 px width, 256 px height and 8 fps**. Duration and fps metadata must be finite. Width and height metadata must now also be integer-convertible; malformed/non-integer dimensions are normalized to safe report values, rejected as `video dimensions are invalid`, and stop before terminal/motion decoding instead of crashing the inspector. Terminal integrity requires FFmpeg success plus exactly one complete raw `gray` terminal frame of **`width × height` bytes**. Motion sampling requires exact frame alignment and temporal coverage: payload length must be an exact multiple of **`sample_width × sample_height`**, and complete samples must meet `max(2, int(duration * sample_fps) - 1)`. Partial bytes fail with `motion sample payload incomplete`; severe early truncation fails with `motion sample coverage incomplete`.
+The generated-video gate now validates the ffprobe metadata container contract before consuming values: top-level metadata and `format` must be objects, `streams` must be a list, and every stream entry must be an object. Malformed shapes fail with `ffprobe metadata structure invalid` rather than raising or being reinterpreted. Existing fail-closed requirements remain: conservative compositor-usability floors of **0.5 s duration, 256 px width, 256 px height and 8 fps**; finite duration/fps; integer-convertible positive dimensions; exactly one complete raw terminal frame of **`width × height` bytes**; motion samples aligned to **`sample_width × sample_height`** and covering at least `max(2, int(duration * sample_fps) - 1)` complete samples.
 
-Durable evidence records:
+Durable evidence records now include:
 
 - `docs/research/2026-09-01-generated-media-output-floor.md`
 - `docs/research/2026-09-01-terminal-frame-proof.md`
@@ -28,10 +28,11 @@ Durable evidence records:
 - `docs/research/2026-09-01-motion-sample-coverage-proof.md`
 - `docs/research/2026-09-01-nonfinite-video-metadata.md`
 - `docs/research/2026-09-01-invalid-video-dimension-metadata.md`
+- `docs/research/2026-09-01-ffprobe-metadata-shape-integrity.md`
 
 The previous LightX2V protections remain in force: bounded local NVIDIA preflight; fresh target invalidation; offline and runtime-bounded execution; exact request/source/config provenance; rights-safe I2V reference SHA-256 + byte-count + rights binding; rejection of reference mutation; dirty/ambiguous source and escaping tracked-symlink rejection.
 
-`PROJECT.md` remains intentionally unchanged: malformed dimension handling is a stricter implementation of the existing generated-media/final-media integrity doctrine, not a new durable direction.
+`PROJECT.md` remains intentionally unchanged: metadata-shape validation is a stricter implementation of the existing generated-media/final-media integrity doctrine, not a new durable direction.
 
 ## Canonical guaranteed baseline
 
@@ -60,17 +61,18 @@ Prepared local candidates remain operator-provisioned/no-auto-download. Comparab
 ## Fresh ecosystem radar — 2026-09-01
 
 - **LightX2V** public tip remains `2ea24fe794f3bc488d9cd9473cc97d6094bbf00f`; latest material work remains SeedVR distributed-operation focused and does not provide Hottop-measured Wan2.2 I2V identity/requested-action benefit. Continue **no freshness-only repin**.
-- Open LightX2V issue #603 reports lower Wan2.2 I2V resolution/content/realistic motion than Diffusers under reportedly comparable parameters; #1170 reports meaningless color-block/light-pattern output; #895 reports successful I2V execution with correct duration/frame count but all frames static. Treat these as external warning evidence, not Hottop benchmarks. They reinforce separate semantic/identity/requested-action/media gates.
+- Upstream LightX2V warning reports still reinforce that successful execution, correct duration/frame count, or decodable MP4s can coexist with degraded, static, or meaningless content. Treat those reports as external warnings rather than Hottop benchmarks; keep semantic, identity, requested-action and media-integrity gates separate.
 - Specialized acceleration/model forks remain gated where effective execution composes external weights/LoRAs/compiled assets without a fully reviewed code+weights+artifact provenance/license chain and Hottop same-case evidence.
-- Official **Qwen3-TTS** code is Apache-2.0; local/offline serving routes remain benchmark candidates, but model/weight licensing and exact revisions remain separate provenance dimensions. Any path that downloads model-family weights implicitly conflicts with unattended no-auto-download unless assets are operator-provisioned and pinned locally.
+- Official **Qwen3-TTS** code remains Apache-2.0, but model/weight licensing and exact revisions remain separate provenance dimensions. Operator-owned local/offline serving stays benchmark-only until the full asset chain is reviewed and same-line Mandarin evidence wins.
+- **SGLang-Omni** is a fresher Apache-2.0 serving-code candidate with Qwen3-TTS/CosyVoice-family support, but its code license does not settle served-model weight licenses, hardware practicality or Hottop quality/latency. No auto-install/download or admission is justified without same-case evidence.
 - No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local TTS candidates.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V checkout, exact Wan2.2 model/config and suitable operator NVIDIA GPU are genuinely provisioned, run fail-closed preflight and generate at least two subject-bearing rights-safe I2V shots.
-3. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition; finite metadata, valid integer dimensions, complete terminal/sample-frame framing and temporal coverage are necessary but not sufficient.
-4. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
+3. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition; valid metadata structure, finite metadata, valid integer dimensions, complete terminal/sample-frame framing and temporal coverage are necessary but not sufficient.
+4. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates; SGLang-Omni may be benchmarked only as a reviewed operator-owned serving route, never auto-provisioned.
 5. Continue targeted ecosystem radar around measured gaps; do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
 ## Recovery order
