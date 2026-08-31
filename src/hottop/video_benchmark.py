@@ -54,6 +54,17 @@ class ReferenceContinuityBenchmark(pydantic.BaseModel):
     evaluator_revision: str = pydantic.Field(min_length=1)
     subjects: list[SubjectContinuityEvidence] = pydantic.Field(min_length=1)
 
+    @pydantic.field_validator("subjects")
+    @classmethod
+    def require_unique_subject_ids(
+        cls,
+        value: list[SubjectContinuityEvidence],
+    ) -> list[SubjectContinuityEvidence]:
+        subject_ids = [subject.subject_id for subject in value]
+        if len(set(subject_ids)) != len(subject_ids):
+            raise ValueError("reference continuity benchmark requires unique subject ids")
+        return value
+
 
 class SubjectContinuityReport(pydantic.BaseModel):
     subject_id: str
