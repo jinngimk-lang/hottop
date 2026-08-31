@@ -20,6 +20,10 @@ class VideoQualityPolicy(BaseModel):
     sample_fps: int = Field(default=4, ge=1, le=12)
     sample_width: int = Field(default=96, ge=32, le=320)
     sample_height: int = Field(default=54, ge=18, le=180)
+    min_duration_seconds: float = Field(default=0.5, ge=0)
+    min_width: int = Field(default=256, ge=1)
+    min_height: int = Field(default=256, ge=1)
+    min_fps: float = Field(default=8.0, ge=0)
 
 
 class VideoQualityReport(BaseModel):
@@ -167,8 +171,19 @@ def inspect_video_quality(
     base_reasons: list[str] = []
     if duration <= 0:
         base_reasons.append("video duration is zero")
+    elif duration < policy.min_duration_seconds:
+        base_reasons.append(
+            f"video duration {duration:.3f}s below {policy.min_duration_seconds:.3f}s"
+        )
     if width <= 0 or height <= 0:
         base_reasons.append("video dimensions are invalid")
+    else:
+        if width < policy.min_width:
+            base_reasons.append(f"video width {width} below {policy.min_width}")
+        if height < policy.min_height:
+            base_reasons.append(f"video height {height} below {policy.min_height}")
+    if fps < policy.min_fps:
+        base_reasons.append(f"video fps {fps:.3f} below {policy.min_fps:.3f}")
 
     terminal = _run(
         runner,
