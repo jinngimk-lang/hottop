@@ -5,8 +5,8 @@ from pathlib import Path
 from hottop.tts_benchmark import inspect_tts_benchmark
 
 
-def _write_wav(path: Path) -> Path:
-    payload = int(1000).to_bytes(2, "little", signed=True) * 24000
+def _write_wav(path: Path, *, sample: int) -> Path:
+    payload = int(sample).to_bytes(2, "little", signed=True) * 24000
     with wave.open(str(path), "wb") as wav:
         wav.setnchannels(1)
         wav.setsampwidth(2)
@@ -16,7 +16,7 @@ def _write_wav(path: Path) -> Path:
 
 
 def test_tts_benchmark_rejects_unknown_hardware_backend(tmp_path: Path) -> None:
-    wav_path = _write_wav(tmp_path / "voice.wav")
+    wav_path = _write_wav(tmp_path / "voice.wav", sample=1000)
     spec = tmp_path / "bench.json"
     spec.write_text(
         json.dumps(
