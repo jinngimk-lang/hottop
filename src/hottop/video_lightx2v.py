@@ -438,6 +438,12 @@ def run_lightx2v_shot(
 ) -> Path:
     """Run one already-installed LightX2V Wan2.2 shot in network-offline mode."""
 
+    output = output.resolve()
+    output.unlink(missing_ok=True)
+    if artifact_manifest is not None:
+        artifact_manifest = artifact_manifest.resolve()
+        artifact_manifest.unlink(missing_ok=True)
+
     root = config.root.resolve()
     config = config.model_copy(update={"root": root})
     _preflight(config)
@@ -454,14 +460,10 @@ def run_lightx2v_shot(
         prompt=prompt,
         negative_prompt=negative_prompt,
     )
-    output = output.resolve()
     if (shot_index is None) != (artifact_manifest is None):
         raise LightX2VError("LightX2V artifact provenance requires shot_index and artifact_manifest together")
     if shot_index is not None and shot_index < 1:
         raise LightX2VError("LightX2V shot_index must be positive")
-    if artifact_manifest is not None:
-        artifact_manifest = artifact_manifest.resolve()
-        artifact_manifest.unlink(missing_ok=True)
 
     reference_sha256: str | None = None
     reference_size_bytes: int | None = None
@@ -484,7 +486,6 @@ def run_lightx2v_shot(
         raise LightX2VError("LightX2V T2V does not accept reference-image metadata")
 
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.unlink(missing_ok=True)
     command = build_lightx2v_command(
         config,
         prompt=prompt,
