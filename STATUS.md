@@ -12,7 +12,7 @@ Latest merged production point: **`main@bbe129b695eb253c505790a1cef886be51e4ae6b
 
 The GitHub ready-for-review GraphQL mutation failed on the connector's `fullDatabaseId` compatibility issue, so draft #347 was closed and non-draft #348 was recreated on the **same exact verified head** before SHA-locked squash merge. No history/ref force update was used.
 
-Post-merge main CI/production evidence is the next verification item; re-fetch live Actions rather than assuming this snapshot is current.
+Post-merge `main@bbe129b6…` CI #2513 and production-smoke #255 both succeeded. The 720p cinematic-delivery-smoke #122 was still executing its real Odyssey delivery stage when this snapshot was written; re-fetch live Actions before treating it as pending or complete.
 
 ## Canonical guaranteed baseline
 
@@ -62,13 +62,13 @@ Durable method: `docs/research/2026-08-30-tts-bench-method-admission.md` plus th
 
 ## Fresh ecosystem radar — 2026-08-31
 
-- **LightX2V/Wan2.2:** current public examples still expose the Wan2.2 I2V path, but this cycle found no Hottop-measured identity/motion/runtime gain that justifies changing the tested pin. Continue **no freshness-only repin**.
-- **Qwen3-TTS:** a fresh MLX-Audio report isolates progressive long-text pace acceleration to the Base ICL/reference-cloning path while CustomVoice preset speech stayed stable in that report. Treat it as runtime/path-specific evidence, not a defect claim against Hottop's CustomVoice route; the existing same-line A/B, speaker/onset, bounded-generation and final PCM gates remain appropriate.
+- **LightX2V** public `main` is `d6cf4f13d152e636ae6daac604d46531077e8670`. The tip only removes the redundant ERNIE Image Turbo runner alias and updates ERNIE example plumbing; it does not change the tested Wan2.2 I2V route or provide Hottop-measured identity/motion/runtime gain. Keep the tested pin and continue **no freshness-only repin**.
+- **Qwen3-TTS official** remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`. A fresh MLX-Audio report isolates progressive long-text pace acceleration to the Base ICL/reference-cloning path while CustomVoice preset speech stayed stable in that report. Treat it as runtime/path-specific evidence, not a defect claim against Hottop's CustomVoice route; the existing same-line A/B, speaker/onset, bounded-generation and final PCM gates remain appropriate.
 - No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local 1.7B TTS candidates.
 
 ## Immediate next actions
 
-1. Verify post-merge CI, production-smoke and 720p cinematic-delivery-smoke for `main@bbe129b6…`; fix any real failure before other work.
+1. Re-fetch 720p cinematic-delivery-smoke #122 for `main@bbe129b6…`; fix any real failure before other work.
 2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 3. Continue LightX2V/reference-continuity review only around concrete, reproducible execution/provenance gaps; preserve explicit evaluated-subject benchmark scope.
 4. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots for an evaluated subject and require complete byte-bound **identity + requested-action motion** evidence before composition.
