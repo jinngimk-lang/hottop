@@ -12,7 +12,7 @@ Latest merged production point: **`main@bbe129b695eb253c505790a1cef886be51e4ae6b
 
 The GitHub ready-for-review GraphQL mutation failed on the connector's `fullDatabaseId` compatibility issue, so draft #347 was closed and non-draft #348 was recreated on the **same exact verified head** before SHA-locked squash merge. No history/ref force update was used.
 
-Post-merge `main@bbe129b6…` CI #2513 and production-smoke #255 both succeeded. The 720p cinematic-delivery-smoke #122 was still executing its real Odyssey delivery stage when this snapshot was written; re-fetch live Actions before treating it as pending or complete.
+Post-merge `main@bbe129b6…` also passed CI #2513, production-smoke #255 and cinematic-delivery-smoke #122. The latter completed the real 720p24 Odyssey delivery, media runtime provenance capture, final media/provenance verification and evidence upload successfully.
 
 ## Canonical guaranteed baseline
 
@@ -68,12 +68,11 @@ Durable method: `docs/research/2026-08-30-tts-bench-method-admission.md` plus th
 
 ## Immediate next actions
 
-1. Re-fetch 720p cinematic-delivery-smoke #122 for `main@bbe129b6…`; fix any real failure before other work.
-2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-3. Continue LightX2V/reference-continuity review only around concrete, reproducible execution/provenance gaps; preserve explicit evaluated-subject benchmark scope.
-4. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots for an evaluated subject and require complete byte-bound **identity + requested-action motion** evidence before composition.
-5. When an operator provisions a local Qwen3-TTS 1.7B runtime/model, run the read-only artifact preflight first, then same-line Mandarin generation under existing generation/hardware/execution-shape coherence gates.
-6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+2. Continue LightX2V/reference-continuity review only around concrete, reproducible execution/provenance gaps; preserve explicit evaluated-subject benchmark scope.
+3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots for an evaluated subject and require complete byte-bound **identity + requested-action motion** evidence before composition.
+4. When an operator provisions a local Qwen3-TTS 1.7B runtime/model, run the read-only artifact preflight first, then same-line Mandarin generation under existing generation/hardware/execution-shape coherence gates.
+5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
 ## Recovery order
 
