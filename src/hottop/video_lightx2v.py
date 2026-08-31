@@ -47,12 +47,62 @@ def _resolve_python(executable: str) -> str | None:
     return shutil.which(executable)
 
 
+def _resolve_git_dir(root: Path) -> Path | None:
+    marker = root / ".git"
+    if marker.is_dir():
+        return marker
+    if not marker.is_file():
+        return None
+    try:
+        value = marker.read_text(encoding="utf-8").strip()
+    except OSError:
+        return None
+    if not value.startswith("gitdir:"):
+        return None
+    target = Path(value.removeprefix("gitdir:").strip())
+    return target.resolve() if target.is_absolute() else (root / target).resolve()
+
+
+def _require_clean_tracked_git_checkout(root: Path) -> None:
+    if _resolve_git_dir(root) is None:
+        return
+    git_executable = shutil.which("git")
+    if git_executable is None:
+        raise LightX2VError(
+            "LightX2V Git checkout cannot be provenance-verified because git is unavailable"
+        )
+    completed = subprocess.run(
+        [
+            git_executable,
+            "-C",
+            str(root),
+            "status",
+            "--porcelain",
+            "--untracked-files=no",
+        ],
+        shell=False,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout or "").strip()
+        suffix = f": {detail[:500]}" if detail else ""
+        raise LightX2VError(f"LightX2V Git checkout status could not be verified{suffix}")
+    if completed.stdout.strip():
+        raise LightX2VError(
+            "LightX2V Git checkout has uncommitted tracked changes; commit or revert them "
+            "before generation so artifact provenance matches the recorded Git revision"
+        )
+
+
 def _preflight(config: LightX2VAdapterConfig) -> None:
     root = config.root.resolve()
     if not (root / "lightx2v" / "infer.py").is_file():
         raise LightX2VError(
             f"LightX2V operator checkout is incomplete: {root / 'lightx2v' / 'infer.py'}"
         )
+    _require_clean_tracked_git_checkout(root)
     if not config.model_path.resolve().is_dir():
         raise LightX2VError(f"LightX2V model path is not available locally: {config.model_path}")
     if not config.config_json.resolve().is_file():
@@ -131,22 +181,6 @@ def _byte_identity(path: Path) -> tuple[str, int]:
             digest.update(chunk)
             size_bytes += len(chunk)
     return digest.hexdigest(), size_bytes
-
-
-def _resolve_git_dir(root: Path) -> Path | None:
-    marker = root / ".git"
-    if marker.is_dir():
-        return marker
-    if not marker.is_file():
-        return None
-    try:
-        value = marker.read_text(encoding="utf-8").strip()
-    except OSError:
-        return None
-    if not value.startswith("gitdir:"):
-        return None
-    target = Path(value.removeprefix("gitdir:").strip())
-    return target.resolve() if target.is_absolute() else (root / target).resolve()
 
 
 def _read_git_revision(root: Path) -> str | None:
