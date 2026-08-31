@@ -106,11 +106,17 @@ def _generation_protocol_blockers(profile: dict[str, Any]) -> list[str]:
 def _hardware_profile_blockers(profile: dict[str, Any]) -> list[str]:
     blockers: list[str] = []
     backend = profile.get("backend")
+    supported_backends = {"cpu", "cuda", "rocm", "hip", "vulkan", "metal", "mps", "xpu"}
     if not isinstance(backend, str) or not backend.strip():
         blockers.append("hardware_profile backend must be a nonblank string")
         backend_name = None
     else:
         backend_name = backend.strip().lower()
+        if backend_name not in supported_backends:
+            blockers.append(
+                "hardware_profile backend must be one of: "
+                "cpu, cuda, hip, metal, mps, rocm, vulkan, xpu"
+            )
 
     cpu = profile.get("cpu")
     gpu = profile.get("gpu")
