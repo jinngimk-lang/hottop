@@ -199,12 +199,22 @@ def inspect_video_quality(
             "-frames:v",
             "1",
             "-f",
-            "null",
-            "-",
+            "rawvideo",
+            "-pix_fmt",
+            "gray",
+            "pipe:1",
         ],
         text=False,
     )
-    terminal_decodable = int(getattr(terminal, "returncode", 1)) == 0
+    terminal_output = _result_stdout(terminal)
+    terminal_bytes = (
+        terminal_output
+        if isinstance(terminal_output, bytes)
+        else bytes(terminal_output or b"")
+    )
+    terminal_decodable = (
+        int(getattr(terminal, "returncode", 1)) == 0 and bool(terminal_bytes)
+    )
     if not terminal_decodable:
         base_reasons.append("terminal frame not decodable")
 
