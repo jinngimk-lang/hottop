@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import subprocess
 from collections.abc import Callable
 from pathlib import Path
@@ -158,18 +159,29 @@ def inspect_video_quality(
         duration = float(raw_probe.get("format", {}).get("duration") or 0)
     except (TypeError, ValueError):
         duration = 0
+    duration_is_finite = math.isfinite(duration)
+    if not duration_is_finite:
+        duration = 0
     if video is None:
+        reasons = ["video stream missing"]
+        if not duration_is_finite:
+            reasons.insert(0, "video duration is not finite")
         return VideoQualityReport(
             pass_=False,
             duration=duration,
-            reasons=["video stream missing"],
+            reasons=reasons,
         )
 
     width = int(video.get("width") or 0)
     height = int(video.get("height") or 0)
     fps = _parse_rate(video.get("avg_frame_rate"))
+    fps_is_finite = math.isfinite(fps)
+    if not fps_is_finite:
+        fps = 0
     base_reasons: list[str] = []
-    if duration <= 0:
+    if not duration_is_finite:
+        base_reasons.append("video duration is not finite")
+    elif duration <= 0:
         base_reasons.append("video duration is zero")
     elif duration < policy.min_duration_seconds:
         base_reasons.append(
@@ -182,7 +194,9 @@ def inspect_video_quality(
             base_reasons.append(f"video width {width} below {policy.min_width}")
         if height < policy.min_height:
             base_reasons.append(f"video height {height} below {policy.min_height}")
-    if fps < policy.min_fps:
+    if not fps_is_finite:
+        base_reasons.append("video fps is not finite")
+    elif fps < policy.min_fps:
         base_reasons.append(f"video fps {fps:.3f} below {policy.min_fps:.3f}")
 
     terminal = _run(
