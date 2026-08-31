@@ -175,6 +175,47 @@ def test_lightx2v_writes_byte_bound_artifact_manifest_after_quality_pass(tmp_pat
     assert shot["sha256"] == hashlib.sha256(payload).hexdigest()
 
 
+def test_lightx2v_artifact_manifest_binds_exact_generation_request(tmp_path):
+    config = _config(tmp_path, task="t2v")
+    output = tmp_path / "shots" / "shot-007.mp4"
+    artifact_manifest = tmp_path / "shots" / "shot-007.artifact.json"
+    prompt = "原创角色沿走廊冲刺，在门前急停"
+    negative_prompt = "identity drift, frozen motion"
+
+    def runner(command, **_kwargs):
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(b"generated-from-exact-request")
+        return subprocess.CompletedProcess(command, 0, "ok", "")
+
+    run_lightx2v_shot(
+        config,
+        prompt=prompt,
+        negative_prompt=negative_prompt,
+        output=output,
+        shot_index=7,
+        artifact_manifest=artifact_manifest,
+        runner=runner,
+        quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
+    )
+
+    request_bytes = json.dumps(
+        {
+            "schema_version": "hottop.lightx2v-generation-request.v1",
+            "model_cls": "wan2.2_moe",
+            "task": "t2v",
+            "seed": 42,
+            "prompt": prompt,
+            "negative_prompt": negative_prompt,
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    shot = json.loads(artifact_manifest.read_text(encoding="utf-8"))["shots"][0]
+    assert shot["generation_request_sha256"] == hashlib.sha256(request_bytes).hexdigest()
+    assert shot["generation_request_size_bytes"] == len(request_bytes)
+
+
 def test_lightx2v_i2v_manifest_binds_reference_bytes_and_rights(tmp_path):
     config = _config(tmp_path)
     reference = tmp_path / "hero.png"
