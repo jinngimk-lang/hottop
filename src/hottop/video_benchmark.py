@@ -230,6 +230,7 @@ def verify_reference_continuity_artifacts(
     artifacts_by_hash = {
         artifact.sha256: artifact for artifact in manifest.shots if artifact.sha256 is not None
     }
+    subject_by_reference_hash: dict[str, str] = {}
 
     for subject in evidence.subjects:
         reference_path = reference_paths.get(subject.subject_id)
@@ -247,8 +248,12 @@ def verify_reference_continuity_artifacts(
             raise ValueError(
                 f"reference path for subject {subject.subject_id} does not match the video plan reference"
             )
-        if _sha256(reference_path) != subject.reference_sha256:
+        reference_sha = _sha256(reference_path)
+        if reference_sha != subject.reference_sha256:
             raise ValueError(f"reference content mismatch for subject {subject.subject_id}")
+        prior_subject = subject_by_reference_hash.setdefault(reference_sha, subject.subject_id)
+        if prior_subject != subject.subject_id:
+            raise ValueError("distinct subjects require distinct reference artifacts")
 
         allowed_hashes = subject_hashes.get(subject.subject_id)
         if not allowed_hashes:
