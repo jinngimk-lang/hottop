@@ -62,6 +62,7 @@ lightx2v:
   model_cls: wan2.2_moe
   task: i2v
   seed: 42
+  generation_timeout_seconds: 14400
   code_license: Apache-2.0
   weights_license: Apache-2.0
   cost_per_unit: 0
