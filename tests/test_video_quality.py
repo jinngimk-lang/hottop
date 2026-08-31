@@ -54,6 +54,47 @@ def test_inspect_video_quality_rejects_missing_video_stream(tmp_path: Path):
     assert "video stream missing" in report.reasons
 
 
+def test_inspect_video_quality_rejects_media_below_output_floor(tmp_path: Path):
+    path = tmp_path / "tiny.mp4"
+    path.write_bytes(b"video")
+
+    def runner(args, **kwargs):
+        if args[0] == "ffprobe":
+            return SimpleNamespace(
+                returncode=0,
+                stdout=json.dumps(
+                    {
+                        "format": {"duration": "0.2"},
+                        "streams": [
+                            {
+                                "codec_type": "video",
+                                "codec_name": "h264",
+                                "width": 96,
+                                "height": 64,
+                                "avg_frame_rate": "4/1",
+                            }
+                        ],
+                    }
+                ),
+                stderr="",
+            )
+        if "-sseof" in args:
+            return SimpleNamespace(returncode=0, stdout=b"", stderr=b"")
+        return SimpleNamespace(
+            returncode=0,
+            stdout=bytes([0] * (96 * 54)) + bytes([10] * (96 * 54)),
+            stderr=b"",
+        )
+
+    report = inspect_video_quality(path, VideoQualityPolicy(), runner=runner)
+
+    assert report.pass_ is False
+    assert any("duration" in reason for reason in report.reasons)
+    assert any("width" in reason for reason in report.reasons)
+    assert any("height" in reason for reason in report.reasons)
+    assert any("fps" in reason.lower() for reason in report.reasons)
+
+
 def test_inspect_video_quality_reports_terminal_decode_failure(tmp_path: Path):
     path = tmp_path / "shot.mp4"
     path.write_bytes(b"video")
