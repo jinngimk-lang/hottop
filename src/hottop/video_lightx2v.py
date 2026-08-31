@@ -103,7 +103,6 @@ def _require_clean_tracked_git_checkout(root: Path) -> None:
             str(root),
             "ls-files",
             "--others",
-            "--exclude-standard",
             "-z",
         ],
         shell=False,
