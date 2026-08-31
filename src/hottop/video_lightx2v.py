@@ -261,6 +261,22 @@ def _require_source_unchanged(root: Path, expected_revision: str) -> None:
         )
 
 
+def _require_config_unchanged(
+    path: Path,
+    expected_sha256: str,
+    expected_size_bytes: int,
+) -> None:
+    try:
+        actual_sha256, actual_size_bytes = _byte_identity(path)
+    except OSError as exc:
+        raise LightX2VError(f"LightX2V config changed during generation: {exc}") from exc
+    if actual_sha256 != expected_sha256 or actual_size_bytes != expected_size_bytes:
+        raise LightX2VError(
+            "LightX2V config changed during generation; discard the output and rerun "
+            "against one stable generation config"
+        )
+
+
 def _candidate_id(config: LightX2VAdapterConfig) -> str:
     return f"lightx2v-wan22-{config.task}"
 
@@ -269,6 +285,8 @@ def _write_artifact_manifest(
     *,
     config: LightX2VAdapterConfig,
     candidate_revision: str,
+    generation_config_sha256: str,
+    generation_config_size_bytes: int,
     output: Path,
     shot_index: int,
     manifest_path: Path,
@@ -286,6 +304,8 @@ def _write_artifact_manifest(
                 candidate_revision=candidate_revision,
                 sha256=sha256,
                 size_bytes=size_bytes,
+                generation_config_sha256=generation_config_sha256,
+                generation_config_size_bytes=generation_config_size_bytes,
             )
         ],
     )
@@ -323,6 +343,13 @@ def run_lightx2v_shot(
     config = config.model_copy(update={"root": root})
     _preflight(config)
     source_revision = _local_source_revision(root)
+    config_json = config.config_json.resolve()
+    try:
+        generation_config_sha256, generation_config_size_bytes = _byte_identity(config_json)
+    except OSError as exc:
+        raise LightX2VError(
+            f"LightX2V generation config could not be provenance-verified: {config_json}"
+        ) from exc
     output = output.resolve()
     if (shot_index is None) != (artifact_manifest is None):
         raise LightX2VError("LightX2V artifact provenance requires shot_index and artifact_manifest together")
@@ -371,6 +398,11 @@ def run_lightx2v_shot(
         )
     try:
         _require_source_unchanged(root, source_revision)
+        _require_config_unchanged(
+            config_json,
+            generation_config_sha256,
+            generation_config_size_bytes,
+        )
     except LightX2VError:
         output.unlink(missing_ok=True)
         raise
@@ -383,6 +415,8 @@ def run_lightx2v_shot(
         _write_artifact_manifest(
             config=config,
             candidate_revision=source_revision,
+            generation_config_sha256=generation_config_sha256,
+            generation_config_size_bytes=generation_config_size_bytes,
             output=output,
             shot_index=shot_index,
             manifest_path=artifact_manifest,
