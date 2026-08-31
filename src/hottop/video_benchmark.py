@@ -139,22 +139,42 @@ def _verify_candidate_provenance(
     evidence: ReferenceContinuityBenchmark,
     artifacts: list[VideoShotArtifact],
 ) -> None:
+    lightx2v_generation_configs: set[tuple[str, int]] = set()
     for artifact in artifacts:
         requires_candidate_provenance = artifact.backend.startswith("lightx2v:")
         if requires_candidate_provenance and (
             artifact.candidate_id is None or artifact.candidate_revision is None
         ):
             raise ValueError("LightX2V continuity artifacts require candidate provenance")
-        if artifact.candidate_id is None:
+        if artifact.candidate_id is not None:
+            if artifact.candidate_id != evidence.candidate_id:
+                raise ValueError(
+                    "continuity benchmark candidate id does not match generated artifact provenance"
+                )
+            if artifact.candidate_revision != evidence.candidate_revision:
+                raise ValueError(
+                    "continuity benchmark candidate revision does not match generated artifact provenance"
+                )
+        if not requires_candidate_provenance:
             continue
-        if artifact.candidate_id != evidence.candidate_id:
+        if (
+            artifact.generation_config_sha256 is None
+            or artifact.generation_config_size_bytes is None
+        ):
             raise ValueError(
-                "continuity benchmark candidate id does not match generated artifact provenance"
+                "LightX2V continuity artifacts require generation config provenance"
             )
-        if artifact.candidate_revision != evidence.candidate_revision:
-            raise ValueError(
-                "continuity benchmark candidate revision does not match generated artifact provenance"
+        lightx2v_generation_configs.add(
+            (
+                artifact.generation_config_sha256,
+                artifact.generation_config_size_bytes,
             )
+        )
+
+    if len(lightx2v_generation_configs) > 1:
+        raise ValueError(
+            "LightX2V continuity artifacts must share one generation config provenance"
+        )
 
 
 def verify_reference_continuity_artifacts(
