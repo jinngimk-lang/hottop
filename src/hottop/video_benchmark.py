@@ -48,6 +48,8 @@ class ReferenceContinuityBenchmark(pydantic.BaseModel):
     candidate_revision: str = pydantic.Field(min_length=1)
     render_source: str = pydantic.Field(min_length=1)
     config_name: str = pydantic.Field(min_length=1)
+    generation_config_sha256: Sha256 | None = None
+    generation_config_size_bytes: int | None = pydantic.Field(default=None, gt=0)
     evaluator_id: str = pydantic.Field(min_length=1)
     evaluator_revision: str = pydantic.Field(min_length=1)
     subjects: list[SubjectContinuityEvidence] = pydantic.Field(min_length=1)
@@ -175,6 +177,22 @@ def _verify_candidate_provenance(
         raise ValueError(
             "LightX2V continuity artifacts must share one generation config provenance"
         )
+    if lightx2v_generation_configs:
+        if (
+            evidence.generation_config_sha256 is None
+            or evidence.generation_config_size_bytes is None
+        ):
+            raise ValueError(
+                "LightX2V continuity benchmark requires generation config provenance"
+            )
+        evidence_generation_config = (
+            evidence.generation_config_sha256,
+            evidence.generation_config_size_bytes,
+        )
+        if lightx2v_generation_configs != {evidence_generation_config}:
+            raise ValueError(
+                "continuity benchmark generation config provenance does not match generated artifact provenance"
+            )
 
 
 def verify_reference_continuity_artifacts(
