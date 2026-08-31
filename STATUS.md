@@ -8,9 +8,18 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Live recovery at the start of this production cycle found `main@88cea030f2d3ea012f4e946c3a07a1b7ef29948f` with no open PR. The previous merged production point remains **`bbe129b695eb253c505790a1cef886be51e4ae6b`** (`fix: preserve explicit continuity benchmark scope`): its exact pre-merge head `6030060e1c395b670b94f223d756e24dc4c70c9e` passed CI #2511, production-smoke #253 and cinematic-delivery-smoke #120, and post-merge `main@bbe129b6…` passed CI #2513, production-smoke #255 and cinematic-delivery-smoke #122. The latter completed the real 720p24 Odyssey delivery, media runtime provenance capture, final media/provenance verification and evidence upload successfully.
+Latest merged production point is **`main@7367eb1585dd11715466d3d39a20ea88f2a7ec90`** (`fix: bind LightX2V tracked symlink provenance`), squash-merged from PR #350 after SHA-locked exact-head verification.
 
-Current active workstream is PR #350, `fix/lightx2v-tracked-symlink-provenance`, closing a clean-HEAD provenance escape in the LightX2V operator route. TDD RED is `ddedc38d136f48a863f35269c5ee4e57ee9d70ec`: CI #2518 passed Ruff and failed pytest on a tracked Python symlink resolving outside the checkout. Initial GREEN implementation is `27b7cd816ffe20455911c5dc6a0bbe3982c309d8`: CI #2519 succeeded on Python 3.11/3.12 before durable-memory synchronization. The final PR head must be checked live after this status synchronization; do not infer its CI/smoke result from the initial GREEN head.
+TDD/prod evidence for that merge:
+
+- RED `ddedc38d136f48a863f35269c5ee4e57ee9d70ec`: CI #2518 passed Ruff and failed pytest on a clean temporary Git checkout whose tracked Python symlink resolved outside the checkout;
+- initial GREEN `27b7cd816ffe20455911c5dc6a0bbe3982c309d8`: CI #2519 succeeded on Python 3.11/3.12;
+- final reviewed head `13f04a792e7a5eb768b3432dd50c00400e401aa9`: CI #2522, production-smoke #259 and cinematic-delivery-smoke #126 all succeeded;
+- SHA-locked squash merge: `7367eb1585dd11715466d3d39a20ea88f2a7ec90`.
+
+No post-merge workflow was attached to the squash commit when first checked; the exact pre-merge production/cinematic gates above are therefore the merge evidence and are not being conflated with a nonexistent post-merge run.
+
+Previous retained production evidence remains valid: `main@bbe129b695eb253c505790a1cef886be51e4ae6b` passed post-merge CI #2513, production-smoke #255 and cinematic-delivery-smoke #122, including the real 720p24 Odyssey delivery, media runtime provenance capture, final media/provenance verification and evidence upload.
 
 ## Canonical guaranteed baseline
 
@@ -34,17 +43,11 @@ Primary operator route remains **LightX2V/Wan2.2**. Input locks are constraints,
 
 **Benchmark scope is explicit.** Incidental or single-shot reference-bearing subjects do not automatically become continuity targets. For every subject that is explicitly evaluated, however, evidence must cover **all** byte-bound subject-bearing plan shots for that subject; partial/cherry-picked coverage fails closed.
 
-Multi-subject integrity also remains fail closed:
-
-- each evidence subject ID must be unique;
-- distinct evaluated subjects require distinct reference artifact bytes;
-- distinct subjects cannot reuse the same subject-bearing generated artifact bytes;
-- evidence shot hashes must belong to the matching plan subject;
-- candidate/source and generation-config provenance must match evaluated generated artifacts.
+Multi-subject integrity remains fail closed: unique evidence subject IDs, distinct reference bytes for distinct subjects, distinct generated artifact bytes across distinct subjects, subject-matched plan hashes, and matching candidate/source/generation-config provenance.
 
 **Identity fidelity and requested-action/motion fidelity remain separate dimensions.** Motion/anti-copy evidence binds `motion_spec_sha256` from exact ordered subject-bearing plan semantics. Runtime success or generic motion never proves requested action or subject identity.
 
-LightX2V source provenance remains fail closed across the generation window: inherited `PYTHONPATH` is isolated to the operator checkout root; dirty tracked code and untracked/ignored importable runtime code are rejected; **tracked symlinks resolving outside the checkout are rejected before generation** because their target bytes are not bound by Git HEAD; exact local source revision is captured before spawn and re-verified after generation; a post-generation provenance failure deletes the output instead of accepting a manifest. Internal tracked symlinks resolving inside the checkout remain admissible. Durable rationale: `docs/research/2026-08-31-lightx2v-source-provenance.md`.
+LightX2V source provenance now fails closed across all reviewed execution surfaces: inherited `PYTHONPATH` is isolated to the operator checkout root; dirty tracked code and untracked/ignored importable runtime code are rejected; **tracked symlinks resolving outside the checkout are rejected before generation** because their target bytes are not bound by Git HEAD; exact local source revision is captured before spawn and re-verified after generation; a post-generation provenance failure deletes output instead of accepting a manifest. Internal tracked symlinks resolving inside the checkout remain admissible. Durable rationale: `docs/research/2026-08-31-lightx2v-source-provenance.md`.
 
 Continuity benchmark rationale: `docs/research/2026-08-25-reference-continuity-evaluator-radar.md`.
 
@@ -66,12 +69,11 @@ Durable method: `docs/research/2026-08-30-tts-bench-method-admission.md` plus th
 
 ## Immediate next actions
 
-1. Finish PR #350 only after exact final-head CI + production-smoke + cinematic-delivery-smoke are green; then SHA-lock squash merge and promptly remove stale open-workstream wording from this status snapshot.
-2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-3. Continue LightX2V/reference-continuity review only around concrete, reproducible execution/provenance gaps; preserve explicit evaluated-subject benchmark scope.
-4. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots for an evaluated subject and require complete byte-bound **identity + requested-action motion** evidence before composition.
-5. When an operator provisions a local Qwen3-TTS 1.7B runtime/model, run the read-only artifact preflight first, then same-line Mandarin generation under existing generation/hardware/execution-shape coherence gates.
-6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+2. Continue LightX2V/reference-continuity review only around concrete, reproducible execution/provenance gaps; preserve explicit evaluated-subject benchmark scope.
+3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots for an evaluated subject and require complete byte-bound **identity + requested-action motion** evidence before composition.
+4. When an operator provisions a local Qwen3-TTS 1.7B runtime/model, run the read-only artifact preflight first, then same-line Mandarin generation under existing generation/hardware/execution-shape coherence gates.
+5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
 ## Recovery order
 
