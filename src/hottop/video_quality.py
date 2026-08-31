@@ -99,6 +99,13 @@ def _parse_rate(value: Any) -> float:
     return n / d if d else 0
 
 
+def _parse_dimension(value: Any) -> tuple[int, bool]:
+    try:
+        return int(value or 0), True
+    except (TypeError, ValueError, OverflowError):
+        return 0, False
+
+
 def _result_stdout(result: Any) -> Any:
     return getattr(result, "stdout", "")
 
@@ -172,8 +179,9 @@ def inspect_video_quality(
             reasons=reasons,
         )
 
-    width = int(video.get("width") or 0)
-    height = int(video.get("height") or 0)
+    width, width_is_integer = _parse_dimension(video.get("width"))
+    height, height_is_integer = _parse_dimension(video.get("height"))
+    dimensions_are_integer = width_is_integer and height_is_integer
     fps = _parse_rate(video.get("avg_frame_rate"))
     fps_is_finite = math.isfinite(fps)
     if not fps_is_finite:
@@ -187,7 +195,7 @@ def inspect_video_quality(
         base_reasons.append(
             f"video duration {duration:.3f}s below {policy.min_duration_seconds:.3f}s"
         )
-    if width <= 0 or height <= 0:
+    if not dimensions_are_integer or width <= 0 or height <= 0:
         base_reasons.append("video dimensions are invalid")
     else:
         if width < policy.min_width:
@@ -198,6 +206,16 @@ def inspect_video_quality(
         base_reasons.append("video fps is not finite")
     elif fps < policy.min_fps:
         base_reasons.append(f"video fps {fps:.3f} below {policy.min_fps:.3f}")
+
+    if not dimensions_are_integer:
+        return VideoQualityReport(
+            pass_=False,
+            duration=duration,
+            width=width,
+            height=height,
+            fps=fps,
+            reasons=base_reasons,
+        )
 
     terminal = _run(
         runner,
