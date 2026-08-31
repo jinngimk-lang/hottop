@@ -8,16 +8,16 @@ Current milestone: **Production v0.2 — repeatable real video output**
 
 ## Current verified repository truth
 
-Latest merged production point is **`main@ce7ce2c9b046b7d3090ba7db626b9cc567b1a21d`** (`fix: reject incomplete motion sample coverage`, PR #373), SHA-locked squash-merged from exact verified head `73ee202831efb998c1f151ec3a9a2c0799b68723`.
+Latest merged production point is **`main@76e64158aeefaac5e4ef9a74d4f0222e8debfee3`** (`fix: reject non-finite generated-video metadata`, PR #375), SHA-locked squash-merged from exact verified head `092038246d8b41458d1fb192a54c5bde04d4d807`.
 
 TDD/production evidence:
 
-- RED `575092828db2d25f858fcf422483dd3145154c6a`: CI #2591 reached pytest after install + Ruff; Python 3.11 failed the new regression proving the old gate accepted only two complete sampled frames from a four-second clip;
-- GREEN `73ee202831efb998c1f151ec3a9a2c0799b68723`: exact-head CI #2592 passed Python 3.11 + 3.12 Ruff/full pytest;
-- production-smoke #294 passed checked-in anti-polish cow + cinematic Odyssey execution and final-media/provenance verification; artifact `hottop-software3d-production-smoke` was 687,894 bytes with digest `sha256:583d4b66e4a183921554e4e5b0f16a810742c6cc435623c6ffaef73b6040de86`;
-- cinematic-delivery-smoke #161 passed actual 720p24 Odyssey delivery, runtime provenance, final-media/seam verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 624,449 bytes with digest `sha256:36e166a16a5ff495b00508f03b28ec7138cdb223c3f82ea0ffae5fc910cfec73`.
+- RED `56eec1901d1063803942c8ba3e016e841f485b0c`: CI #2596 completed installation + Ruff and Python 3.11 failed exactly the two new regressions with `2 failed, 640 passed`; `duration=nan` crashed in expected-sample conversion and `fps=nan` incorrectly returned `pass_=True`;
+- GREEN `092038246d8b41458d1fb192a54c5bde04d4d807`: exact-head CI #2597 passed Python 3.11 + 3.12 Ruff/full pytest after explicit finite checks and structured rejection reasons;
+- production-smoke #296 passed checked-in anti-polish cow + cinematic Odyssey execution and final-media/provenance verification; artifact `hottop-software3d-production-smoke` was 687,895 bytes with digest `sha256:24f7eb3e92a0be10371ac9eceee1b6b2d7af86b584fa025f1eae8a4437342615`;
+- cinematic-delivery-smoke #163 passed actual 720p24 Odyssey delivery, runtime provenance, final-media/seam verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 624,449 bytes with digest `sha256:1d7aa075cff2947c7e1ad47ef44c9f8bbd9e29139460038c830439af549dbb9f`.
 
-The shared generated-video gate remains fail closed below conservative compositor-usability minima of **0.5 s duration, 256 px width, 256 px height and 8 fps**. Terminal integrity requires FFmpeg success plus exactly one complete raw `gray` terminal frame of **`width × height` bytes**. Motion sampling requires both exact frame alignment and enough temporal coverage: payload length must be an exact multiple of **`sample_width × sample_height`**, and complete samples must meet `max(2, int(duration * sample_fps) - 1)`. Partial bytes fail with `motion sample payload incomplete`; severe early truncation fails with `motion sample coverage incomplete`.
+The shared generated-video gate remains fail closed below conservative compositor-usability minima of **0.5 s duration, 256 px width, 256 px height and 8 fps**. Duration and fps metadata must now also be finite; non-finite values are normalized to safe report values and rejected explicitly instead of crashing or bypassing threshold comparisons. Terminal integrity requires FFmpeg success plus exactly one complete raw `gray` terminal frame of **`width × height` bytes**. Motion sampling requires exact frame alignment and temporal coverage: payload length must be an exact multiple of **`sample_width × sample_height`**, and complete samples must meet `max(2, int(duration * sample_fps) - 1)`. Partial bytes fail with `motion sample payload incomplete`; severe early truncation fails with `motion sample coverage incomplete`.
 
 Durable evidence records:
 
@@ -26,10 +26,11 @@ Durable evidence records:
 - `docs/research/2026-09-01-terminal-frame-byte-length-proof.md`
 - `docs/research/2026-09-01-motion-sample-payload-integrity.md`
 - `docs/research/2026-09-01-motion-sample-coverage-proof.md`
+- `docs/research/2026-09-01-nonfinite-video-metadata.md`
 
 The previous LightX2V protections remain in force: bounded local NVIDIA preflight; fresh target invalidation; offline and runtime-bounded execution; exact request/source/config provenance; rights-safe I2V reference SHA-256 + byte-count + rights binding; rejection of reference mutation; dirty/ambiguous source and escaping tracked-symlink rejection.
 
-`PROJECT.md` remains intentionally unchanged: sample-coverage proof is a stricter implementation of the existing generated-media/final-media integrity doctrine, not a new durable direction.
+`PROJECT.md` remains intentionally unchanged: finite media metadata is a stricter implementation of the existing generated-media/final-media integrity doctrine, not a new durable direction.
 
 ## Canonical guaranteed baseline
 
@@ -60,14 +61,14 @@ Prepared local candidates remain operator-provisioned/no-auto-download. Comparab
 - **LightX2V** public tip remains `2ea24fe794f3bc488d9cd9473cc97d6094bbf00f`; recent material work is still SeedVR distributed-operation focused and does not provide Hottop-measured Wan2.2 I2V identity/requested-action benefit. Continue **no freshness-only repin**.
 - Open LightX2V issue #603 reports lower Wan2.2 I2V resolution/content/realistic motion than Diffusers under reportedly comparable parameters; #1170 reports meaningless color-block/light-pattern output; #895 reports successful I2V execution with correct duration/frame count but all frames static. Treat these as external warning evidence, not Hottop benchmarks. They reinforce separate semantic/identity/requested-action/media gates.
 - Specialized acceleration/model forks remain gated where effective execution composes external weights/LoRAs/compiled assets without a fully reviewed code+weights+artifact provenance/license chain and Hottop same-case evidence.
-- **Qwen3-TTS** local/offline routes, including vLLM-Omni support, remain benchmark candidates. Any path that downloads model-family weights implicitly conflicts with unattended no-auto-download unless assets are operator-provisioned and pinned locally.
+- Official **Qwen3-TTS** code is Apache-2.0; local/offline serving routes remain benchmark candidates, but model/weight licensing and exact revisions remain separate provenance dimensions. Any path that downloads model-family weights implicitly conflicts with unattended no-auto-download unless assets are operator-provisioned and pinned locally.
 - No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local TTS candidates.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V checkout, exact Wan2.2 model/config and suitable operator NVIDIA GPU are genuinely provisioned, run fail-closed preflight and generate at least two subject-bearing rights-safe I2V shots.
-3. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition; complete terminal/sample-frame framing and temporal coverage are necessary but not sufficient.
+3. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition; finite metadata plus complete terminal/sample-frame framing and temporal coverage are necessary but not sufficient.
 4. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
 5. Continue targeted ecosystem radar around measured gaps; do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
