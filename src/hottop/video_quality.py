@@ -248,8 +248,11 @@ def inspect_video_quality(
     if int(getattr(sampled, "returncode", 1)) == 0:
         output = _result_stdout(sampled)
         byte_output = output if isinstance(output, bytes) else bytes(output or b"")
-        for offset in range(0, len(byte_output) - frame_size + 1, frame_size):
-            frames.append(byte_output[offset : offset + frame_size])
+        if len(byte_output) % frame_size != 0:
+            base_reasons.append("motion sample payload incomplete")
+        else:
+            for offset in range(0, len(byte_output), frame_size):
+                frames.append(byte_output[offset : offset + frame_size])
 
     motion = evaluate_motion_frames(frames, policy)
     reasons = [*base_reasons, *motion.reasons]
