@@ -324,6 +324,24 @@ def _require_config_unchanged(
         )
 
 
+def _require_reference_unchanged(
+    path: Path,
+    expected_sha256: str,
+    expected_size_bytes: int,
+) -> None:
+    try:
+        actual_sha256, actual_size_bytes = _byte_identity(path)
+    except OSError as exc:
+        raise LightX2VError(
+            f"LightX2V reference image changed during generation: {exc}"
+        ) from exc
+    if actual_sha256 != expected_sha256 or actual_size_bytes != expected_size_bytes:
+        raise LightX2VError(
+            "LightX2V reference image changed during generation; discard the output and rerun "
+            "against one stable rights-safe reference image"
+        )
+
+
 def _candidate_id(config: LightX2VAdapterConfig) -> str:
     return f"lightx2v-wan22-{config.task}"
 
@@ -406,6 +424,8 @@ def run_lightx2v_shot(
         artifact_manifest = artifact_manifest.resolve()
         artifact_manifest.unlink(missing_ok=True)
 
+    reference_sha256: str | None = None
+    reference_size_bytes: int | None = None
     if config.task == "i2v":
         if reference_image is None or reference_rights not in {
             "generated-original",
@@ -415,6 +435,12 @@ def run_lightx2v_shot(
         reference_image = reference_image.resolve()
         if not reference_image.is_file():
             raise LightX2VError(f"LightX2V reference image is missing: {reference_image}")
+        try:
+            reference_sha256, reference_size_bytes = _byte_identity(reference_image)
+        except OSError as exc:
+            raise LightX2VError(
+                f"LightX2V reference image could not be provenance-verified: {reference_image}"
+            ) from exc
     elif reference_image is not None or reference_rights is not None:
         raise LightX2VError("LightX2V T2V does not accept reference-image metadata")
 
@@ -450,6 +476,16 @@ def run_lightx2v_shot(
             generation_config_sha256,
             generation_config_size_bytes,
         )
+        if reference_image is not None:
+            if reference_sha256 is None or reference_size_bytes is None:
+                raise LightX2VError(
+                    "LightX2V reference image provenance was not captured before generation"
+                )
+            _require_reference_unchanged(
+                reference_image,
+                reference_sha256,
+                reference_size_bytes,
+            )
     except LightX2VError:
         output.unlink(missing_ok=True)
         raise

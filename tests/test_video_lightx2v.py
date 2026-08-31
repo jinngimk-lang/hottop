@@ -203,6 +203,37 @@ def test_lightx2v_rejects_source_mutation_during_generation(tmp_path):
     assert not artifact_manifest.exists()
 
 
+def test_lightx2v_rejects_reference_mutation_during_generation(tmp_path):
+    config = _config(tmp_path)
+    reference = tmp_path / "hero.png"
+    reference.write_bytes(b"original-reference-bytes")
+    output = tmp_path / "shots" / "shot-005.mp4"
+    artifact_manifest = tmp_path / "shots" / "shot-005.artifact.json"
+
+    def runner(command, **_kwargs):
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(b"generated-under-original-reference")
+        reference.write_bytes(b"replacement-reference-bytes")
+        return subprocess.CompletedProcess(command, 0, "ok", "")
+
+    with pytest.raises(LightX2VError, match="reference image changed during generation"):
+        run_lightx2v_shot(
+            config,
+            prompt="same original hero crosses one continuous room",
+            negative_prompt="identity drift",
+            output=output,
+            reference_image=reference,
+            reference_rights="generated-original",
+            shot_index=5,
+            artifact_manifest=artifact_manifest,
+            runner=runner,
+            quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
+        )
+
+    assert not output.exists()
+    assert not artifact_manifest.exists()
+
+
 def test_lightx2v_rejected_output_is_deleted(tmp_path):
     config = _config(tmp_path, task="t2v")
     output = tmp_path / "shot.mp4"
