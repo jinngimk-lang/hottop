@@ -156,14 +156,28 @@ def inspect_video_quality(
     except json.JSONDecodeError:
         return VideoQualityReport(pass_=False, reasons=["ffprobe returned invalid JSON"])
 
-    streams = raw_probe.get("streams") if isinstance(raw_probe, dict) else None
-    streams = streams if isinstance(streams, list) else []
+    if not isinstance(raw_probe, dict):
+        return VideoQualityReport(
+            pass_=False,
+            reasons=["ffprobe metadata structure invalid"],
+        )
+    format_info = raw_probe.get("format")
+    streams = raw_probe.get("streams")
+    if (
+        not isinstance(format_info, dict)
+        or not isinstance(streams, list)
+        or any(not isinstance(stream, dict) for stream in streams)
+    ):
+        return VideoQualityReport(
+            pass_=False,
+            reasons=["ffprobe metadata structure invalid"],
+        )
     video = next(
-        (stream for stream in streams if isinstance(stream, dict) and stream.get("codec_type") == "video"),
+        (stream for stream in streams if stream.get("codec_type") == "video"),
         None,
     )
     try:
-        duration = float(raw_probe.get("format", {}).get("duration") or 0)
+        duration = float(format_info.get("duration") or 0)
     except (TypeError, ValueError):
         duration = 0
     duration_is_finite = math.isfinite(duration)
