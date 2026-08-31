@@ -216,40 +216,32 @@ def _byte_identity(path: Path) -> tuple[str, int]:
 
 
 def _read_git_revision(root: Path) -> str | None:
-    git_dir = _resolve_git_dir(root)
-    if git_dir is None:
+    if _resolve_git_dir(root) is None:
         return None
-    try:
-        head = (git_dir / "HEAD").read_text(encoding="utf-8").strip()
-    except OSError:
+    git_executable = shutil.which("git")
+    if git_executable is None:
         return None
-    if _GIT_SHA_RE.fullmatch(head):
-        return head
-    if not head.startswith("ref:"):
+    completed = subprocess.run(
+        [git_executable, "-C", str(root), "rev-parse", "--verify", "HEAD"],
+        shell=False,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode != 0:
         return None
-    ref_name = head.removeprefix("ref:").strip()
-    try:
-        revision = (git_dir / ref_name).read_text(encoding="utf-8").strip()
-    except OSError:
-        revision = ""
-    if _GIT_SHA_RE.fullmatch(revision):
-        return revision
-    try:
-        packed_refs = (git_dir / "packed-refs").read_text(encoding="utf-8").splitlines()
-    except OSError:
-        return None
-    for line in packed_refs:
-        if not line or line.startswith(("#", "^")):
-            continue
-        parts = line.split(" ", 1)
-        if len(parts) == 2 and parts[1] == ref_name and _GIT_SHA_RE.fullmatch(parts[0]):
-            return parts[0]
-    return None
+    revision = completed.stdout.strip()
+    return revision if _GIT_SHA_RE.fullmatch(revision) else None
 
 
 def _local_source_revision(root: Path) -> str:
-    git_revision = _read_git_revision(root)
-    if git_revision is not None:
+    git_dir = _resolve_git_dir(root)
+    if git_dir is not None:
+        git_revision = _read_git_revision(root)
+        if git_revision is None:
+            raise LightX2VError(
+                "LightX2V Git checkout revision could not be provenance-verified"
+            )
         return git_revision
     entrypoint = root / "lightx2v" / "infer.py"
     digest, _ = _byte_identity(entrypoint)
