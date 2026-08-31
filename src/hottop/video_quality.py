@@ -253,6 +253,9 @@ def inspect_video_quality(
         else:
             for offset in range(0, len(byte_output), frame_size):
                 frames.append(byte_output[offset : offset + frame_size])
+            expected_samples = max(2, int(duration * policy.sample_fps) - 1)
+            if len(frames) < expected_samples:
+                base_reasons.append("motion sample coverage incomplete")
 
     motion = evaluate_motion_frames(frames, policy)
     reasons = [*base_reasons, *motion.reasons]
