@@ -8,19 +8,21 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest merged production point is **`main@34f8e1ffeb8bec7fda1c379e8de959e26f607a17`** (`feat: bind LightX2V generation request provenance`), SHA-locked squash-merged from PR #356 after exact-head verification.
+Latest merged production point is **`main@6d2c3cdc3f8e289b29b7bcb2a75a4552f37f2ecc`** (`fix: bound LightX2V generation runtime (#358)`), SHA-locked squash-merged from PR #358 after exact-head verification.
 
-TDD/prod evidence for PR #356:
+TDD/prod evidence for PR #358:
 
-- RED `072e77df9bc07734305170e1b21ea35fa99fe333`: CI #2539 passed Ruff and failed exactly on the new generation-request artifact contract (`KeyError: generation_request_sha256`; Python 3.11 summary `1 failed, 626 passed`; sibling matrix job was fail-fast cancelled);
-- final documentation-complete GREEN PR head `f5ce9ed69b1e9b1c77cd84322353bf1449e0a876`: exact-head CI #2543 succeeded, production-smoke #269 succeeded, and cinematic-delivery-smoke #136 succeeded;
-- production-smoke #269 executed both checked-in anti-polish cow and cinematic Odyssey paths and verified final media/provenance chains;
-- cinematic-delivery-smoke #136 executed the real 720p24 Odyssey delivery, captured media runtime provenance, verified delivery media/provenance and uploaded evidence;
-- SHA-locked squash merge: `34f8e1ffeb8bec7fda1c379e8de959e26f607a17`.
+- RED `d18107e296839eb253bb6390026c133363a49b03`: CI #2547 passed Ruff and failed exactly the two new timeout contracts; Python 3.11 summary was `2 failed, 628 passed` because the operator runner received no `timeout` and `subprocess.TimeoutExpired` escaped directly;
+- final documentation-complete GREEN PR head `aed15e5a25774624a740cf3df0a481109b1e8eca`: exact-head CI #2550 succeeded, production-smoke #273 succeeded, and cinematic-delivery-smoke #140 succeeded;
+- production-smoke #273 executed both checked-in anti-polish cow and cinematic Odyssey paths, then verified final media/provenance chains and uploaded evidence;
+- cinematic-delivery-smoke #140 executed the real 720p24 Odyssey delivery, captured runtime provenance, verified final delivery media/provenance and uploaded evidence;
+- SHA-locked squash merge: `6d2c3cdc3f8e289b29b7bcb2a75a4552f37f2ecc`.
 
-PR #356 closes two related reproducibility defects without adding a provider/network/download surface. Newly accepted LightX2V artifacts bind a canonical request identity (`generation_request_sha256` + byte count) over exact `model_cls`, `task`, `seed`, `prompt` and `negative_prompt`. The CLI also now forwards explicit `--seed` into `LightX2VAdapterConfig`; previously the option was parsed but silently fell back to the default `42`. The generic artifact schema keeps the new pair optional for backward compatibility. Durable rationale: `docs/research/2026-08-31-lightx2v-generation-request-provenance.md`.
+PR #358 closes an unattended-runtime defect without adding a provider/network/download surface. `LightX2VAdapterConfig` now requires a positive `generation_timeout_seconds`, defaults to a deliberately generous 14400 seconds, exposes a CLI override, and records the bound explicitly in the cinematic LightX2V config. The operator subprocess receives the bound; timeout deletes any partial expected output and becomes `LightX2VError`. Durable implementation/evidence record: `docs/research/2026-08-31-lightx2v-bounded-runtime.md`.
 
-The immediately preceding reference-input provenance merge remains valid historical evidence: PR #354 final head `9d6581ddeedaf60f131b5aee93ebf5cfb4cab52c` passed CI #2535, production-smoke #264 and cinematic-delivery-smoke #131 before squash merge `2e60742e47a9fcc85c35c948a881c8be85ba1bd1`. PR #355 synchronized STATUS and merged as `be05845b9a3e987f0a532bdbdfb979fbc5e1497a`.
+`PROJECT.md` was intentionally unchanged for this workstream: bounded fail-closed unattended execution already follows canonical zero-cost/operator-owned doctrine, so this is implementation closure rather than a new durable direction.
+
+The immediately preceding exact-request provenance merge remains valid: PR #356 merged as `34f8e1ffeb8bec7fda1c379e8de959e26f607a17` after CI #2543, production-smoke #269 and cinematic-delivery-smoke #136. Newly accepted LightX2V artifacts bind exact `model_cls`, `task`, `seed`, `prompt` and `negative_prompt` through a canonical request digest; explicit CLI `--seed` now reaches generation config. Reference-input byte binding from PR #354 also remains in force.
 
 ## Canonical guaranteed baseline
 
@@ -42,15 +44,13 @@ Do not retune deterministic cow/Odyssey visuals or audio without a measured arti
 
 Primary operator route remains **LightX2V/Wan2.2**. Input locks are constraints, not output proof. Generated continuity evidence binds exact reference bytes, generated-shot bytes, plan semantics, exact generation-request identity, generator/source/config provenance when independently verifiable, evaluator identity/revision and fail-closed thresholds.
 
-**Benchmark scope is explicit.** For every subject explicitly evaluated, evidence must cover all byte-bound subject-bearing plan shots; partial/cherry-picked coverage fails closed. Multi-subject integrity remains fail closed across subject IDs, distinct reference/generated bytes, plan hashes and candidate/source/config provenance.
+For every subject explicitly evaluated, evidence must cover all byte-bound subject-bearing plan shots; partial/cherry-picked coverage fails closed. Multi-subject integrity remains fail closed across subject IDs, distinct reference/generated bytes, plan hashes and candidate/source/config provenance.
 
 **Identity fidelity and requested-action/motion fidelity remain separate dimensions.** Motion/anti-copy evidence binds exact ordered plan semantics. Runtime success, a request digest or generic motion never proves requested action, subject identity or semantic correctness.
 
-For rights-safe I2V, Hottop captures reference SHA-256 + byte size before LightX2V, re-checks the same resolved file after generation, deletes output on mutation, and persists `reference_sha256`, `reference_size_bytes` and `reference_rights` after quality acceptance. Newly accepted LightX2V artifacts additionally persist a canonical request digest over model class, task, seed, prompt and negative prompt. Together these identify what local source/config/reference/request was used; they do not replace output-side quality/continuity gates.
+For rights-safe I2V, Hottop captures reference SHA-256 + byte size before LightX2V, re-checks the same resolved file after generation, deletes output on mutation, and persists `reference_sha256`, `reference_size_bytes` and `reference_rights` after quality acceptance. Newly accepted artifacts also bind canonical request identity over model/task/seed/prompts. Source provenance continues to fail closed on dirty tracked code, untracked/ignored importable runtime code, escaping tracked symlinks, source-revision drift and generation-config byte drift.
 
-LightX2V source provenance continues to fail closed across reviewed execution surfaces: inherited `PYTHONPATH` is isolated; dirty tracked code and untracked/ignored importable runtime code are rejected; tracked symlinks escaping the checkout are rejected; exact local source revision and generation-config bytes are captured before spawn and re-verified after generation; provenance failure deletes output. Durable source rationale: `docs/research/2026-08-31-lightx2v-source-provenance.md`.
-
-The current pre/post checks are a normal-operator stability contract, not a hostile-concurrent-mutation guarantee. Stronger immutable snapshot/process isolation should be admitted only against a concrete threat or measured benefit.
+LightX2V inference is now time-bounded as well as network-offline and no-auto-provisioning. The timeout is an execution control, not a substitute for output-side identity, requested-motion, media-quality or provenance gates.
 
 ## Dialogue / neural-TTS boundary
 
@@ -62,7 +62,7 @@ Comparable `inspect-tts-benchmark` evidence still requires exact text/language/s
 
 ## Fresh ecosystem radar — 2026-08-31
 
-- **LightX2V** public `main` advanced to `2ea24fe794f3bc488d9cd9473cc97d6094bbf00f` at 2026-08-31 11:57 UTC. The tip restores SeedVR distributed-op exports and reports SeedVR2 BF16/FP8 validation; parent `7d6df6659a332ce09d43860eef5321e7dc7e36ed` changes CI/lint behavior. Neither supplies Hottop-measured Wan2.2 I2V identity, requested-motion, continuity or output-quality gain for the tested route. Continue **no freshness-only repin**.
+- **LightX2V** public `main` remains `2ea24fe794f3bc488d9cd9473cc97d6094bbf00f`, committed 2026-08-31 11:57:20 UTC. The tip restores SeedVR distributed-op exports and reports SeedVR2 BF16/FP8 validation; it does not provide Hottop-measured Wan2.2 I2V identity, requested-motion, continuity or output-quality gain for the tested route. Continue **no freshness-only repin**.
 - The existing path-specific LightX2V field report about meaningless I2V color blocks continues to support independent output quality gates; it is not treated as a project-wide defect claim.
 - **Qwen3-TTS official** remains a prepared operator-owned benchmark route rather than an unattended dependency. Existing same-line A/B, speaker/onset, bounded-generation and final PCM gates remain in force.
 - No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local TTS candidates.
@@ -70,7 +70,7 @@ Comparable `inspect-tts-benchmark` evidence still requires exact text/language/s
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-2. The next true LightX2V quality milestone is **real generated media**, not more provider abstraction. When a reviewed local checkout, Wan2.2 model and suitable GPU are genuinely operator-provisioned, run fail-closed preflight and generate at least two subject-bearing rights-safe I2V shots.
+2. The next true LightX2V quality milestone is **real generated media**, not more provider abstraction. When a reviewed local checkout, Wan2.2 model and suitable GPU are genuinely operator-provisioned, run fail-closed preflight and generate at least two subject-bearing rights-safe I2V shots under the new bounded-runtime contract.
 3. Require complete byte-bound **identity + requested-action motion + media quality + exact request/source/config/reference provenance** before composition.
 4. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
 5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
