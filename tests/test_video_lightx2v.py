@@ -124,6 +124,7 @@ def test_lightx2v_executes_offline_and_quality_gates_output(tmp_path):
         reference_image=reference,
         reference_rights="generated-original",
         runner=runner,
+        gpu_probe=lambda: None,
         quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
     )
 
@@ -159,6 +160,7 @@ def test_lightx2v_writes_byte_bound_artifact_manifest_after_quality_pass(tmp_pat
         shot_index=3,
         artifact_manifest=artifact_manifest,
         runner=runner,
+        gpu_probe=lambda: None,
         quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
     )
 
@@ -195,6 +197,7 @@ def test_lightx2v_artifact_manifest_binds_exact_generation_request(tmp_path):
         shot_index=7,
         artifact_manifest=artifact_manifest,
         runner=runner,
+        gpu_probe=lambda: None,
         quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
     )
 
@@ -239,6 +242,7 @@ def test_lightx2v_i2v_manifest_binds_reference_bytes_and_rights(tmp_path):
         shot_index=6,
         artifact_manifest=artifact_manifest,
         runner=runner,
+        gpu_probe=lambda: None,
         quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
     )
 
@@ -269,6 +273,7 @@ def test_lightx2v_rejects_source_mutation_during_generation(tmp_path):
             shot_index=4,
             artifact_manifest=artifact_manifest,
             runner=runner,
+            gpu_probe=lambda: None,
             quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
         )
 
@@ -300,6 +305,7 @@ def test_lightx2v_rejects_reference_mutation_during_generation(tmp_path):
             shot_index=5,
             artifact_manifest=artifact_manifest,
             runner=runner,
+            gpu_probe=lambda: None,
             quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
         )
 
@@ -322,6 +328,7 @@ def test_lightx2v_rejected_output_is_deleted(tmp_path):
             negative_prompt="",
             output=output,
             runner=runner,
+            gpu_probe=lambda: None,
             quality_inspector=lambda _path, _policy: SimpleNamespace(
                 pass_=False,
                 reasons=["duplicate frames"],
