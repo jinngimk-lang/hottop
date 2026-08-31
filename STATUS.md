@@ -8,9 +8,11 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@8bc8a13aff44c0848c0655d98b0a3ef81ab2e399` / CI #2489** on Python 3.11/3.12. The continuity config-identity fix was exact-head verified at `1379597d024e2ef9b948462cafd1a6db987118cb`: CI #2487, production-smoke #236 and cinematic-delivery-smoke #103 all succeeded before squash merge. The preceding `main@2241d0c6b9a751b3c46311e1fa61b9d7e6aff6ed` generation-config-provenance closure passed CI #2485 and full 720p cinematic-delivery-smoke #102.
+Latest merged production point: **`main@bbe129b695eb253c505790a1cef886be51e4ae6b`** (`fix: preserve explicit continuity benchmark scope`). Its exact pre-merge head `6030060e1c395b670b94f223d756e24dc4c70c9e` passed CI #2511, production-smoke #253 and cinematic-delivery-smoke #120. The test-only predecessor `e7c7d39e0cf36f7cba5ac43fdbe21a16db010c99` established RED in CI #2510: Ruff passed and pytest failed on the corrected explicit-scope contract.
 
-The earlier LightX2V linked-worktree source-provenance merge `29afecc37ed8fc414ff9a0e06f4e02e6ca677e5c` also passed post-merge CI #2467 and full 720p cinematic-delivery-smoke #92: Odyssey delivery, media runtime provenance capture, final media/provenance verification and evidence upload all succeeded.
+The GitHub ready-for-review GraphQL mutation failed on the connector's `fullDatabaseId` compatibility issue, so draft #347 was closed and non-draft #348 was recreated on the **same exact verified head** before SHA-locked squash merge. No history/ref force update was used.
+
+Post-merge main CI/production evidence is the next verification item; re-fetch live Actions rather than assuming this snapshot is current.
 
 ## Canonical guaranteed baseline
 
@@ -30,57 +32,48 @@ Do not retune deterministic cow/Odyssey visuals or audio without a measured arti
 
 ## LightX2V / reference-conditioned continuity boundary
 
-Primary operator route remains **LightX2V/Wan2.2**. Input locks are constraints, not output proof. Generated continuity evidence must cover all subject-bearing shots and bind exact reference bytes, generated shot bytes, generator/model/source provenance when independently verifiable, evaluator identity/revision and fail-closed thresholds.
+Primary operator route remains **LightX2V/Wan2.2**. Input locks are constraints, not output proof. Generated continuity evidence binds exact reference bytes, generated-shot bytes, plan semantics, generator/source/config provenance when independently verifiable, evaluator identity/revision and fail-closed thresholds.
+
+**Benchmark scope is explicit.** Incidental or single-shot reference-bearing subjects do not automatically become continuity targets. For every subject that is explicitly evaluated, however, evidence must cover **all** byte-bound subject-bearing plan shots for that subject; partial/cherry-picked coverage fails closed.
+
+Multi-subject integrity also remains fail closed:
+
+- each evidence subject ID must be unique;
+- distinct evaluated subjects require distinct reference artifact bytes;
+- distinct subjects cannot reuse the same subject-bearing generated artifact bytes;
+- evidence shot hashes must belong to the matching plan subject;
+- candidate/source and generation-config provenance must match evaluated generated artifacts.
 
 **Identity fidelity and requested-action/motion fidelity remain separate dimensions.** Motion/anti-copy evidence binds `motion_spec_sha256` from exact ordered subject-bearing plan semantics. Runtime success or generic motion never proves requested action or subject identity.
 
-Continuity provenance is now bound across three independent execution identities in addition to exact media/reference bytes:
+LightX2V source provenance remains fail closed across the generation window: inherited `PYTHONPATH` is isolated to the operator checkout root; dirty tracked code and untracked/ignored importable runtime code are rejected; exact local source revision is captured before spawn and re-verified after generation; a post-generation provenance failure deletes the output instead of accepting a manifest. Durable rationale: `docs/research/2026-08-31-lightx2v-source-provenance.md`.
 
-- candidate/source identity (`candidate_id` + exact `candidate_revision` when independently verifiable);
-- the exact generation-config bytes (`generation_config_sha256` + `generation_config_size_bytes`) carried by LightX2V shot artifacts and continuity evidence;
-- the durable evidence `config_name`, which must equal the canonical derived `VideoProductionPlan.config_name`; a benchmark cannot relabel correctly bound generation-config bytes as another profile.
-
-LightX2V source provenance is fail-closed across the generation window:
-
-- inherited `PYTHONPATH` is isolated to the operator checkout root;
-- tracked uncommitted changes are rejected;
-- untracked **and Git-ignored** importable/runtime-code files (`.py`, `.pyc`, `.pyd`, `.so`, `.pth`) are rejected while unrelated local data may remain;
-- Git source identity is resolved with `git -C <root> rev-parse --verify HEAD`, covering linked-worktree/common-dir and packed-ref layouts;
-- a real Git checkout whose commit cannot be provenance-verified fails closed instead of degrading to an entrypoint-only hash;
-- the exact local source revision is captured before spawn and re-verified after generation, before quality/provenance acceptance;
-- if post-generation source verification fails, the produced video is deleted and no manifest is accepted.
-
-This is an implementation of the existing actual-generator-source doctrine, not proof against a hostile actor that mutates source and restores the exact clean tree between boundary checks. Durable rationale: `docs/research/2026-08-31-lightx2v-source-provenance.md`.
+Continuity benchmark rationale: `docs/research/2026-08-25-reference-continuity-evaluator-radar.md`.
 
 ## Dialogue / neural-TTS boundary
 
 The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVoice remains the higher-quality operator-owned benchmark target; CosyVoice3 remains correctness-gated.
 
-Prepared local candidates remain:
+Prepared local candidates remain qwentts.cpp, CrispASR, audio.cpp and Pure-C for 1.7B CustomVoice, plus the lower-hardware 0.6B ncnn benchmark candidate. All remain operator-provisioned and no-auto-download.
 
-- `qwen3-tts-qwentts-cpp-1b7` — hardened read-only GGUF artifact preflight;
-- `qwen3-tts-crispasr-1b7` — read-only GGUF artifact preflight;
-- `qwen3-tts-audio-cpp-1b7` — read-only CustomVoice model-directory preflight;
-- `qwen3-tts-pure-c-1b7` — read-only raw-safetensors model-tree preflight, registry-discoverable but `integration_ready=false` and `runtime_status=unprobed`;
-- `qwen3-tts-ncnn-0b6` — lower-hardware CPU/Vulkan benchmark candidate only.
-
-Comparable `inspect-tts-benchmark` latency/RTF evidence continues to require exact text/language/supported speaker, canonical generation protocol, recognized hardware backend with coherent CPU/device count, recognized `cli`/`server` execution shape, server worker/thread topology when applicable, cold/warm independent trials, one runtime revision + one model revision per candidate, finite positive latency, distinct resolved WAV trial paths, WAV/PCM integrity and `listening_required=true`. Hardware/execution profiles remain declared measurement provenance rather than proof of actual runtime utilization.
+Comparable `inspect-tts-benchmark` latency/RTF evidence requires exact text/language/supported speaker, canonical generation protocol, recognized hardware backend with coherent CPU/device count, recognized `cli`/`server` execution shape, server worker/thread topology when applicable, cold/warm independent trials, one runtime revision + one model revision per candidate, finite positive latency, distinct resolved WAV trial paths, WAV/PCM integrity and `listening_required=true`. Hardware/execution profiles remain declared measurement provenance rather than proof of actual runtime utilization.
 
 Durable method: `docs/research/2026-08-30-tts-bench-method-admission.md` plus the 2026-08-31 CPU/accelerator provenance records.
 
 ## Fresh ecosystem radar — 2026-08-31
 
-- **LightX2V** public `main` remains `e7262940e8fcd63a91659ef1e9a2c2bb611480f2`. The tip fixes Hunyuan SR transformer weight loading and removes a stale run-step path; its parent `f85a5c6f5d97a2a031a9f11b8e7f521bde5fb691` fixes MiniMax-H3 tensor-parallel sharding. Neither provides Hottop-measured continuity, quality or runtime gain for the tested Wan2.2 I2V subset; keep the tested pin and do not freshness-only repin.
-- **Qwen3-TTS official** remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no fresh signal in this cycle removes the need for exact local runtime/model plus same-line Mandarin A/B.
-- No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, the tested LightX2V/Wan2.2 operator route or the prepared local 1.7B TTS candidates.
+- **LightX2V/Wan2.2:** current public examples still expose the Wan2.2 I2V path, but this cycle found no Hottop-measured identity/motion/runtime gain that justifies changing the tested pin. Continue **no freshness-only repin**.
+- **Qwen3-TTS:** a fresh MLX-Audio report isolates progressive long-text pace acceleration to the Base ICL/reference-cloning path while CustomVoice preset speech stayed stable in that report. Treat it as runtime/path-specific evidence, not a defect claim against Hottop's CustomVoice route; the existing same-line A/B, speaker/onset, bounded-generation and final PCM gates remain appropriate.
+- No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local 1.7B TTS candidates.
 
 ## Immediate next actions
 
-1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-2. Continue LightX2V/reference-continuity contract review only around concrete, reproducible execution/provenance gaps; do not infer model/checkpoint identity from framework source revision or a profile label.
-3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
-4. When an operator provisions qwentts.cpp, CrispASR, audio.cpp or Pure-C plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line Mandarin generation under the existing generation/hardware/execution-shape coherence gates.
-5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+1. Verify post-merge CI, production-smoke and 720p cinematic-delivery-smoke for `main@bbe129b6…`; fix any real failure before other work.
+2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+3. Continue LightX2V/reference-continuity review only around concrete, reproducible execution/provenance gaps; preserve explicit evaluated-subject benchmark scope.
+4. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots for an evaluated subject and require complete byte-bound **identity + requested-action motion** evidence before composition.
+5. When an operator provisions a local Qwen3-TTS 1.7B runtime/model, run the read-only artifact preflight first, then same-line Mandarin generation under existing generation/hardware/execution-shape coherence gates.
+6. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
 ## Recovery order
 
