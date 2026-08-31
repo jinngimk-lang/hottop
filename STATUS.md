@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@d46718f2cf3a7fef87f7694f11a375c00a1a94ea` / CI #2416** on Python 3.11/3.12. This merge closes the CPU-capacity provenance gap for TTS latency/RTF evidence. Every later recovery must still re-fetch live `main`, open PRs and exact-head CI.
+Latest verified evidence point: **`main@8ed001ee400fdc9e627c23b29ed16e19e4b7deda` / CI #2425** on Python 3.11/3.12. This merge closes the undefined-hardware-backend false-ready gap for TTS latency/RTF evidence. Every later recovery must still re-fetch live `main`, open PRs and exact-head CI.
 
 ## Canonical guaranteed baseline
 
@@ -52,7 +52,7 @@ Pure-C remains bound to exact source `gabriele-mastrapasqua/qwen3-tts@f1b6865713
 
 1. exact text, language and checkpoint-supported preset speaker;
 2. one concrete generation protocol with canonical SHA-256, integer seed, positive `max_new_tokens` and explicit sampling control;
-3. one concrete hardware profile with canonical SHA-256 plus coherent backend/device identity;
+3. one concrete hardware profile with canonical SHA-256, one recognized backend class (`cpu`, `cuda`, `rocm`, `hip`, `vulkan`, `metal`, `mps`, `xpu`) and coherent device identity;
 4. **for CPU backends, a nonblank CPU identity plus positive integer `logical_cpu_count`;**
 5. one recognized execution profile (`cli` or `server`) with positive concurrency and batch size;
 6. for `server`, nonblank connection strategy plus positive `worker_count` and `threads_per_worker`;
@@ -61,18 +61,17 @@ Pure-C remains bound to exact source `gabriele-mastrapasqua/qwen3-tts@f1b6865713
 9. finite positive latency plus distinct resolved WAV artifact paths, byte identity and WAV/PCM integrity;
 10. `listening_required=true`, keeping naturalness, speaker consistency, onset stability and intelligibility independent from speed/stream integrity.
 
-The CPU-capacity closure was TDD-verified. RED `8aa9cadfe948c518ee0ccc680ec254f86fbd3061` passed Ruff and failed pytest because a CPU benchmark lacking `logical_cpu_count` still became `ready=true`. GREEN implementation `1c01e0cc586c81c485c80cc3c6bde5ab6c604b7c` added the fail-closed gate; full-suite CI then exposed an older dual-Xeon server fixture that still claimed ready CPU latency evidence without CPU-count provenance. Fixture correction `6e67f77ae5d91f1e0f46e1d2abb2cd2f4e685223` declared 24 logical CPUs for its 12×2 topology instead of weakening the gate; CI #2412 passed Ruff + full pytest on Python 3.11/3.12. Final documented head `9d1898a0d2441963545830abadf4ac9382137b0c` passed CI #2414, and squash merge `d46718f2cf3a7fef87f7694f11a375c00a1a94ea` passed post-merge CI #2416.
+The hardware-backend vocabulary closure was TDD-verified. The first test-only attempt was stopped by Ruff and was not treated as behavioral RED. Corrected RED head `92998100b2e7d1b2e81a2394525a1e12771b875d` passed Ruff and failed pytest in CI #2421 because an undefined backend such as `banana` could still acquire latency/RTF semantics when paired with a generic accelerator identity. Minimal GREEN `b085db862642a891b8028f11eaecc14ec1caf076` closed the backend vocabulary while preserving generic `accelerator` device identity; CI #2422 passed Ruff + full pytest on Python 3.11/3.12. Durable method head `7d8141037820dd75df36f2f00625817445bb0748` passed CI #2423, squash merge `8ed001ee400fdc9e627c23b29ed16e19e4b7deda` then passed post-merge CI #2425.
 
-Fresh Pure-C issue #24 (2026-08-29) is a useful runtime signal: an operator on a dual-Xeon host reporting 24 total threads ran `--prefork 12 --prefork-threads 2` under 24 concurrent requests and observed utilization that did not trivially equal the declared topology. This is **not Hottop performance evidence**. It motivates binding available CPU capacity alongside worker/thread topology. Declared CPU count/topology remain measurement provenance, not proof the runtime honored affinity or used every declared CPU.
+This remains **declared measurement provenance**, not proof that the runtime actually used the declared device/backend or honored topology/affinity. New backend classes must enter through an explicit evidence-contract update rather than gaining comparability because an arbitrary string is nonblank.
 
 Durable rationale: `docs/research/2026-08-30-tts-bench-method-admission.md`, `docs/research/2026-08-30-tts-execution-shape-evidence.md`, `docs/research/2026-08-30-qwen3-tts-pure-c-admission.md`, and `docs/research/2026-08-31-tts-cpu-count-provenance.md`.
 
 ## Fresh ecosystem radar — 2026-08-31
 
-- **LightX2V** public `main` remains **`7b8a96cc0a3a561824a5e6a8807ba7fae0984ea6`**. The current reviewed tip is script/example maintenance and provides no Hottop-measured continuity/quality/runtime gain for the tested Wan2.2 I2V subset. Keep the tested pin; no freshness-only repin.
-- **Qwen3-TTS** official `main` remains **`022e286b98fbec7e1e916cb940cdf532cd9f488e`**. No official change removes the operator-local 1.7B benchmark gate.
-- **Pure-C Qwen3-TTS** public `main` remains reviewed **`f1b6865713d12a2a2365282fc02e19a5a384a565`**. Issue #24 reinforces that CPU capacity and process/thread topology belong in performance provenance; it does not constitute a Hottop quality or speed result.
-- **qwentts.cpp** reviewed `master` remains **`a8a7716b530e49fed537c57711247c12fbbb903c`**. No new revision changes current admission.
+- **LightX2V** public `main` remains reviewed without any Hottop-measured continuity/quality/runtime gain for the tested Wan2.2 I2V subset. Recent public activity still includes adjacent MiniMax-H3/model work and maintenance rather than evidence that improves the current tested route. Keep the tested pin; no freshness-only repin.
+- **Qwen3-TTS serving**: SGLang-Omni's 2026-08-23 fixed-protocol H100/H200 reproduction removed Talker `torch.compile` after compile-off matched or exceeded compile-on end-to-end. This reinforces Hottop's rule that acceleration toggles need exact-revision/hardware/protocol evidence rather than becoming default by reputation.
+- **Qwen3-TTS official / qwentts.cpp / prepared local candidates**: no fresh evidence in this cycle removes the operator-local 1.7B model/runtime gate or substitutes for same-line Mandarin output evidence.
 - No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local 1.7B TTS candidates.
 
 ## Immediate next actions
