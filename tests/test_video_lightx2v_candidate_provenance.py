@@ -72,6 +72,7 @@ def test_lightx2v_artifact_records_actual_checkout_revision(tmp_path: Path) -> N
         shot_index=1,
         artifact_manifest=artifact_manifest,
         runner=runner,
+        gpu_probe=lambda: None,
         quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
     )
 
