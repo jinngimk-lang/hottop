@@ -233,6 +233,7 @@ def _write_artifact_manifest(
     output: Path,
     shot_index: int,
     manifest_path: Path,
+    source_revision: str,
 ) -> None:
     sha256, size_bytes = _byte_identity(output)
     manifest = VideoArtifactManifest(
@@ -244,7 +245,7 @@ def _write_artifact_manifest(
                 artifact_kind="ai-generated",
                 backend=f"lightx2v:{config.model_cls}",
                 candidate_id=_candidate_id(config),
-                candidate_revision=_local_source_revision(config.root.resolve()),
+                candidate_revision=source_revision,
                 sha256=sha256,
                 size_bytes=size_bytes,
             )
@@ -282,6 +283,7 @@ def run_lightx2v_shot(
 
     _preflight(config)
     root = config.root.resolve()
+    source_revision = _local_source_revision(root)
     output = output.resolve()
     if (shot_index is None) != (artifact_manifest is None):
         raise LightX2VError("LightX2V artifact provenance requires shot_index and artifact_manifest together")
@@ -332,6 +334,23 @@ def run_lightx2v_shot(
         output.unlink(missing_ok=True)
         raise LightX2VError("LightX2V completed without the expected non-empty video output")
 
+    try:
+        _require_clean_tracked_git_checkout(root)
+        post_generation_revision = _local_source_revision(root)
+    except LightX2VError:
+        output.unlink(missing_ok=True)
+        if artifact_manifest is not None:
+            artifact_manifest.unlink(missing_ok=True)
+        raise
+    if post_generation_revision != source_revision:
+        output.unlink(missing_ok=True)
+        if artifact_manifest is not None:
+            artifact_manifest.unlink(missing_ok=True)
+        raise LightX2VError(
+            "LightX2V source revision changed during generation; discard the output and rerun "
+            "from one stable operator checkout"
+        )
+
     _verify_quality(output, config.quality_policy, quality_inspector)
     if artifact_manifest is not None and shot_index is not None:
         _write_artifact_manifest(
@@ -339,6 +358,7 @@ def run_lightx2v_shot(
             output=output,
             shot_index=shot_index,
             manifest_path=artifact_manifest,
+            source_revision=source_revision,
         )
     return output
 
