@@ -128,6 +128,53 @@ def _require_clean_tracked_git_checkout(root: Path) -> None:
             f"that are not represented by the recorded Git revision: {preview}"
         )
 
+    tracked = subprocess.run(
+        [
+            git_executable,
+            "-C",
+            str(root),
+            "ls-files",
+            "-s",
+            "-z",
+        ],
+        shell=False,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if tracked.returncode != 0:
+        detail = (tracked.stderr or tracked.stdout or "").strip()
+        suffix = f": {detail[:500]}" if detail else ""
+        raise LightX2VError(
+            f"LightX2V tracked-file provenance could not be verified{suffix}"
+        )
+    root = root.resolve()
+    escaping_symlinks: list[str] = []
+    for record in tracked.stdout.split("\0"):
+        if not record:
+            continue
+        try:
+            metadata, relative_path = record.split("\t", 1)
+        except ValueError as exc:
+            raise LightX2VError(
+                "LightX2V tracked-file provenance returned an unexpected Git record"
+            ) from exc
+        mode = metadata.split(" ", 1)[0]
+        if mode != "120000":
+            continue
+        link_path = root / relative_path
+        try:
+            target = link_path.resolve(strict=False)
+            target.relative_to(root)
+        except (OSError, RuntimeError, ValueError):
+            escaping_symlinks.append(relative_path)
+    if escaping_symlinks:
+        preview = ", ".join(escaping_symlinks[:5])
+        raise LightX2VError(
+            "LightX2V Git checkout contains a tracked symlink that resolves outside the "
+            f"checkout and is not fully bound by the recorded Git revision: {preview}"
+        )
+
 
 def _preflight(config: LightX2VAdapterConfig) -> None:
     root = config.root.resolve()
