@@ -175,6 +175,34 @@ def test_lightx2v_writes_byte_bound_artifact_manifest_after_quality_pass(tmp_pat
     assert shot["sha256"] == hashlib.sha256(payload).hexdigest()
 
 
+def test_lightx2v_rejects_source_mutation_during_generation(tmp_path):
+    config = _config(tmp_path, task="t2v")
+    output = tmp_path / "shots" / "shot-004.mp4"
+    artifact_manifest = tmp_path / "shots" / "shot-004.artifact.json"
+    entrypoint = config.root / "lightx2v" / "infer.py"
+
+    def runner(command, **_kwargs):
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(b"generated-under-original-source")
+        entrypoint.write_text("# mutated while generation was running\n", encoding="utf-8")
+        return subprocess.CompletedProcess(command, 0, "ok", "")
+
+    with pytest.raises(LightX2VError, match="source changed during generation"):
+        run_lightx2v_shot(
+            config,
+            prompt="original cinematic shot",
+            negative_prompt="identity drift",
+            output=output,
+            shot_index=4,
+            artifact_manifest=artifact_manifest,
+            runner=runner,
+            quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
+        )
+
+    assert not output.exists()
+    assert not artifact_manifest.exists()
+
+
 def test_lightx2v_rejected_output_is_deleted(tmp_path):
     config = _config(tmp_path, task="t2v")
     output = tmp_path / "shot.mp4"

@@ -18,6 +18,7 @@ from .video_quality import VideoQualityPolicy, VideoQualityReport, inspect_video
 from .video_reference import ReferenceRights
 
 _GIT_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+_UNTRACKED_IMPORTABLE_SUFFIXES = {".py", ".pyc", ".pyd", ".so", ".pth"}
 
 
 class LightX2VError(RuntimeError):
@@ -93,6 +94,38 @@ def _require_clean_tracked_git_checkout(root: Path) -> None:
         raise LightX2VError(
             "LightX2V Git checkout has uncommitted tracked changes; commit or revert them "
             "before generation so artifact provenance matches the recorded Git revision"
+        )
+
+    untracked = subprocess.run(
+        [
+            git_executable,
+            "-C",
+            str(root),
+            "ls-files",
+            "--others",
+            "-z",
+        ],
+        shell=False,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if untracked.returncode != 0:
+        detail = (untracked.stderr or untracked.stdout or "").strip()
+        suffix = f": {detail[:500]}" if detail else ""
+        raise LightX2VError(
+            f"LightX2V untracked-file provenance could not be verified{suffix}"
+        )
+    importable = [
+        path
+        for path in untracked.stdout.split("\0")
+        if path and Path(path).suffix.lower() in _UNTRACKED_IMPORTABLE_SUFFIXES
+    ]
+    if importable:
+        preview = ", ".join(importable[:5])
+        raise LightX2VError(
+            "LightX2V Git checkout contains untracked importable source/runtime files "
+            f"that are not represented by the recorded Git revision: {preview}"
         )
 
 
@@ -223,6 +256,19 @@ def _local_source_revision(root: Path) -> str:
     return f"source-sha256:{digest}"
 
 
+def _require_source_unchanged(root: Path, expected_revision: str) -> None:
+    try:
+        _require_clean_tracked_git_checkout(root)
+        actual_revision = _local_source_revision(root)
+    except LightX2VError as exc:
+        raise LightX2VError(f"LightX2V source changed during generation: {exc}") from exc
+    if actual_revision != expected_revision:
+        raise LightX2VError(
+            "LightX2V source changed during generation; discard the output and rerun "
+            "against one stable operator checkout"
+        )
+
+
 def _candidate_id(config: LightX2VAdapterConfig) -> str:
     return f"lightx2v-wan22-{config.task}"
 
@@ -230,6 +276,7 @@ def _candidate_id(config: LightX2VAdapterConfig) -> str:
 def _write_artifact_manifest(
     *,
     config: LightX2VAdapterConfig,
+    candidate_revision: str,
     output: Path,
     shot_index: int,
     manifest_path: Path,
@@ -244,7 +291,7 @@ def _write_artifact_manifest(
                 artifact_kind="ai-generated",
                 backend=f"lightx2v:{config.model_cls}",
                 candidate_id=_candidate_id(config),
-                candidate_revision=_local_source_revision(config.root.resolve()),
+                candidate_revision=candidate_revision,
                 sha256=sha256,
                 size_bytes=size_bytes,
             )
@@ -280,8 +327,10 @@ def run_lightx2v_shot(
 ) -> Path:
     """Run one already-installed LightX2V Wan2.2 shot in network-offline mode."""
 
-    _preflight(config)
     root = config.root.resolve()
+    config = config.model_copy(update={"root": root})
+    _preflight(config)
+    source_revision = _local_source_revision(root)
     output = output.resolve()
     if (shot_index is None) != (artifact_manifest is None):
         raise LightX2VError("LightX2V artifact provenance requires shot_index and artifact_manifest together")
@@ -328,6 +377,11 @@ def run_lightx2v_shot(
         raise LightX2VError(
             f"LightX2V generation failed with return code {completed.returncode}{suffix}"
         )
+    try:
+        _require_source_unchanged(root, source_revision)
+    except LightX2VError:
+        output.unlink(missing_ok=True)
+        raise
     if not output.is_file() or output.stat().st_size <= 0:
         output.unlink(missing_ok=True)
         raise LightX2VError("LightX2V completed without the expected non-empty video output")
@@ -336,6 +390,7 @@ def run_lightx2v_shot(
     if artifact_manifest is not None and shot_index is not None:
         _write_artifact_manifest(
             config=config,
+            candidate_revision=source_revision,
             output=output,
             shot_index=shot_index,
             manifest_path=artifact_manifest,
