@@ -74,7 +74,7 @@ def test_tts_benchmark_binds_hardware_profile_as_canonical_digest(tmp_path: Path
     profile = {
         "cpu": "AMD EPYC 7763",
         "gpu": "NVIDIA H200 SXM",
-        "gpu_count": 1,
+        "device_count": 1,
         "backend": "cuda",
     }
     result = inspect_tts_benchmark(_spec(tmp_path, hardware_profile=profile))
