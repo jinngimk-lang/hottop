@@ -39,6 +39,15 @@ class VideoShotArtifact(BaseModel):
     degradation_reason: str | None = None
     sha256: str | None = None
     size_bytes: int | None = Field(default=None, gt=0)
+    generation_config_sha256: str | None = Field(
+        default=None,
+        exclude_if=lambda value: value is None,
+    )
+    generation_config_size_bytes: int | None = Field(
+        default=None,
+        gt=0,
+        exclude_if=lambda value: value is None,
+    )
 
     @model_validator(mode="after")
     def validate_provenance(self) -> VideoShotArtifact:
@@ -69,6 +78,19 @@ class VideoShotArtifact(BaseModel):
             raise ValueError("artifact byte identity requires both sha256 and size_bytes")
         if self.sha256 is not None and not _SHA256_RE.fullmatch(self.sha256):
             raise ValueError("artifact sha256 must be a lowercase 64-character hex digest")
+
+        if (self.generation_config_sha256 is None) != (
+            self.generation_config_size_bytes is None
+        ):
+            raise ValueError(
+                "generation config byte identity requires both sha256 and size_bytes"
+            )
+        if self.generation_config_sha256 is not None and not _SHA256_RE.fullmatch(
+            self.generation_config_sha256
+        ):
+            raise ValueError(
+                "generation config sha256 must be a lowercase 64-character hex digest"
+            )
         return self
 
 
