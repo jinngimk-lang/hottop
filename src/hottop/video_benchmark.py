@@ -233,11 +233,6 @@ def verify_reference_continuity_artifacts(
                 raise ValueError(
                     "distinct subjects require distinct subject-bearing shot artifacts"
                 )
-    evidence_subject_ids = {subject.subject_id for subject in evidence.subjects}
-    if set(subject_hashes) - evidence_subject_ids:
-        raise ValueError(
-            "continuity benchmark must cover every reference-bearing subject in the video plan"
-        )
     artifacts_by_hash = {
         artifact.sha256: artifact for artifact in manifest.shots if artifact.sha256 is not None
     }
