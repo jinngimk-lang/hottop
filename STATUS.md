@@ -8,7 +8,7 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified code evidence point: **`main@29afecc37ed8fc414ff9a0e06f4e02e6ca677e5c`**. Post-merge CI #2467 is green. This merge closes the linked-Git-worktree revision gap in the LightX2V source-provenance boundary. The same head's 720p cinematic-delivery-smoke #92 was still executing when this snapshot was written, so this file does not infer that gate from ordinary CI.
+Latest verified evidence point: **`main@011b0e84000dbd81bc22993dd091b48a05dbf14e` / CI #2470** on Python 3.11/3.12. The underlying LightX2V linked-worktree source-provenance merge `29afecc37ed8fc414ff9a0e06f4e02e6ca677e5c` also passed post-merge CI #2467 and full 720p cinematic-delivery-smoke #92: Odyssey delivery, media runtime provenance capture, final media/provenance verification and evidence upload all succeeded.
 
 The linked-worktree feature was exact-head verified before merge at `2bf92a433732d2420cb0157a6e7c7f68ebe63865`: CI #2465, production-smoke #223 and cinematic-delivery-smoke #90 succeeded. Its predecessor stable-source closure at `4ba114005f78e2a9396ead2787f527551859145a` passed CI #2460, production-smoke #220 and cinematic-delivery-smoke #87.
 
@@ -70,8 +70,8 @@ Durable method: `docs/research/2026-08-30-tts-bench-method-admission.md` plus th
 
 ## Immediate next actions
 
-1. Close the remaining post-merge cinematic-delivery-smoke #92 evidence for `main@29afecc3…`; repair any real media/provenance regression before opening unrelated work.
-2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+2. Continue LightX2V operator-path contract review around actual execution inputs/provenance; do not infer model/checkpoint identity from framework source revision.
 3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
 4. When an operator provisions qwentts.cpp, CrispASR, audio.cpp or Pure-C plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line Mandarin generation under the existing generation/hardware/execution-shape coherence gates.
 5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
