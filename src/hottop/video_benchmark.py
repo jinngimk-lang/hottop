@@ -204,6 +204,9 @@ def verify_reference_continuity_artifacts(
 ) -> None:
     """Bind visual-continuity scores to exact production reference and subject-shot bytes."""
 
+    if evidence.config_name != plan.config_name:
+        raise ValueError("continuity benchmark config name does not match the video plan config name")
+
     manifest.verify_required_byte_identity()
     subject_hashes, planned_references = _subject_plan_bindings(manifest, plan)
     artifacts_by_hash = {
