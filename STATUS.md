@@ -8,16 +8,16 @@ Current milestone: **Production v0.2 — repeatable real video output**
 
 ## Current verified repository truth
 
-Latest merged production point is **`main@76e64158aeefaac5e4ef9a74d4f0222e8debfee3`** (`fix: reject non-finite generated-video metadata`, PR #375), SHA-locked squash-merged from exact verified head `092038246d8b41458d1fb192a54c5bde04d4d807`.
+Latest merged production point is **`main@333405dab22724395acddc998affc05f0e3256c9`** (`fix: reject invalid generated-video dimensions`, PR #377), SHA-locked squash-merged from exact verified head `c2feb7d73feadc3cf6940a79cdb87b50fdbd4c6f`.
 
 TDD/production evidence:
 
-- RED `56eec1901d1063803942c8ba3e016e841f485b0c`: CI #2596 completed installation + Ruff and Python 3.11 failed exactly the two new regressions with `2 failed, 640 passed`; `duration=nan` crashed in expected-sample conversion and `fps=nan` incorrectly returned `pass_=True`;
-- GREEN `092038246d8b41458d1fb192a54c5bde04d4d807`: exact-head CI #2597 passed Python 3.11 + 3.12 Ruff/full pytest after explicit finite checks and structured rejection reasons;
-- production-smoke #296 passed checked-in anti-polish cow + cinematic Odyssey execution and final-media/provenance verification; artifact `hottop-software3d-production-smoke` was 687,895 bytes with digest `sha256:24f7eb3e92a0be10371ac9eceee1b6b2d7af86b584fa025f1eae8a4437342615`;
-- cinematic-delivery-smoke #163 passed actual 720p24 Odyssey delivery, runtime provenance, final-media/seam verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 624,449 bytes with digest `sha256:1d7aa075cff2947c7e1ad47ef44c9f8bbd9e29139460038c830439af549dbb9f`.
+- RED `62784f0e9bc052d4de01c1a64f2bfee3b617a37d`: CI #2601 completed installation + Ruff and Python 3.11 failed exactly the new regression with `1 failed, 642 passed`; malformed `width="not-a-number"` raised `ValueError` at the bare `int(...)` conversion instead of yielding a rejection report;
+- GREEN `c2feb7d73feadc3cf6940a79cdb87b50fdbd4c6f`: exact-head CI #2602 passed Python 3.11 + 3.12 Ruff/full pytest after bounded dimension parsing and early fail-closed rejection;
+- production-smoke #298 passed checked-in anti-polish cow + cinematic Odyssey execution and final-media/provenance verification; artifact `hottop-software3d-production-smoke` was 687,894 bytes with digest `sha256:9d0c680393376c30697b31e1ff281d36fee46bb98ca19adaae04eb40344f8568`;
+- cinematic-delivery-smoke #165 passed actual 720p24 Odyssey delivery, runtime provenance, final-media/seam verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 624,452 bytes with digest `sha256:250ddba8fc8499639cd124e1875e1fec6854b71f1860e9a15837aecf35b85e2f`.
 
-The shared generated-video gate remains fail closed below conservative compositor-usability minima of **0.5 s duration, 256 px width, 256 px height and 8 fps**. Duration and fps metadata must now also be finite; non-finite values are normalized to safe report values and rejected explicitly instead of crashing or bypassing threshold comparisons. Terminal integrity requires FFmpeg success plus exactly one complete raw `gray` terminal frame of **`width × height` bytes**. Motion sampling requires exact frame alignment and temporal coverage: payload length must be an exact multiple of **`sample_width × sample_height`**, and complete samples must meet `max(2, int(duration * sample_fps) - 1)`. Partial bytes fail with `motion sample payload incomplete`; severe early truncation fails with `motion sample coverage incomplete`.
+The shared generated-video gate remains fail closed below conservative compositor-usability minima of **0.5 s duration, 256 px width, 256 px height and 8 fps**. Duration and fps metadata must be finite. Width and height metadata must now also be integer-convertible; malformed/non-integer dimensions are normalized to safe report values, rejected as `video dimensions are invalid`, and stop before terminal/motion decoding instead of crashing the inspector. Terminal integrity requires FFmpeg success plus exactly one complete raw `gray` terminal frame of **`width × height` bytes**. Motion sampling requires exact frame alignment and temporal coverage: payload length must be an exact multiple of **`sample_width × sample_height`**, and complete samples must meet `max(2, int(duration * sample_fps) - 1)`. Partial bytes fail with `motion sample payload incomplete`; severe early truncation fails with `motion sample coverage incomplete`.
 
 Durable evidence records:
 
@@ -27,10 +27,11 @@ Durable evidence records:
 - `docs/research/2026-09-01-motion-sample-payload-integrity.md`
 - `docs/research/2026-09-01-motion-sample-coverage-proof.md`
 - `docs/research/2026-09-01-nonfinite-video-metadata.md`
+- `docs/research/2026-09-01-invalid-video-dimension-metadata.md`
 
 The previous LightX2V protections remain in force: bounded local NVIDIA preflight; fresh target invalidation; offline and runtime-bounded execution; exact request/source/config provenance; rights-safe I2V reference SHA-256 + byte-count + rights binding; rejection of reference mutation; dirty/ambiguous source and escaping tracked-symlink rejection.
 
-`PROJECT.md` remains intentionally unchanged: finite media metadata is a stricter implementation of the existing generated-media/final-media integrity doctrine, not a new durable direction.
+`PROJECT.md` remains intentionally unchanged: malformed dimension handling is a stricter implementation of the existing generated-media/final-media integrity doctrine, not a new durable direction.
 
 ## Canonical guaranteed baseline
 
@@ -58,7 +59,7 @@ Prepared local candidates remain operator-provisioned/no-auto-download. Comparab
 
 ## Fresh ecosystem radar — 2026-09-01
 
-- **LightX2V** public tip remains `2ea24fe794f3bc488d9cd9473cc97d6094bbf00f`; recent material work is still SeedVR distributed-operation focused and does not provide Hottop-measured Wan2.2 I2V identity/requested-action benefit. Continue **no freshness-only repin**.
+- **LightX2V** public tip remains `2ea24fe794f3bc488d9cd9473cc97d6094bbf00f`; latest material work remains SeedVR distributed-operation focused and does not provide Hottop-measured Wan2.2 I2V identity/requested-action benefit. Continue **no freshness-only repin**.
 - Open LightX2V issue #603 reports lower Wan2.2 I2V resolution/content/realistic motion than Diffusers under reportedly comparable parameters; #1170 reports meaningless color-block/light-pattern output; #895 reports successful I2V execution with correct duration/frame count but all frames static. Treat these as external warning evidence, not Hottop benchmarks. They reinforce separate semantic/identity/requested-action/media gates.
 - Specialized acceleration/model forks remain gated where effective execution composes external weights/LoRAs/compiled assets without a fully reviewed code+weights+artifact provenance/license chain and Hottop same-case evidence.
 - Official **Qwen3-TTS** code is Apache-2.0; local/offline serving routes remain benchmark candidates, but model/weight licensing and exact revisions remain separate provenance dimensions. Any path that downloads model-family weights implicitly conflicts with unattended no-auto-download unless assets are operator-provisioned and pinned locally.
@@ -68,7 +69,7 @@ Prepared local candidates remain operator-provisioned/no-auto-download. Comparab
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V checkout, exact Wan2.2 model/config and suitable operator NVIDIA GPU are genuinely provisioned, run fail-closed preflight and generate at least two subject-bearing rights-safe I2V shots.
-3. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition; finite metadata plus complete terminal/sample-frame framing and temporal coverage are necessary but not sufficient.
+3. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition; finite metadata, valid integer dimensions, complete terminal/sample-frame framing and temporal coverage are necessary but not sufficient.
 4. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
 5. Continue targeted ecosystem radar around measured gaps; do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
