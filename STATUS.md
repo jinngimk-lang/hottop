@@ -8,9 +8,9 @@ Current milestone: **Production v0.2 — repeatable evidence-backed image/video 
 
 ## Current verified repository truth
 
-Latest verified evidence point: **`main@011b0e84000dbd81bc22993dd091b48a05dbf14e` / CI #2470** on Python 3.11/3.12. The underlying LightX2V linked-worktree source-provenance merge `29afecc37ed8fc414ff9a0e06f4e02e6ca677e5c` also passed post-merge CI #2467 and full 720p cinematic-delivery-smoke #92: Odyssey delivery, media runtime provenance capture, final media/provenance verification and evidence upload all succeeded.
+Latest verified evidence point: **`main@8bc8a13aff44c0848c0655d98b0a3ef81ab2e399` / CI #2489** on Python 3.11/3.12. The continuity config-identity fix was exact-head verified at `1379597d024e2ef9b948462cafd1a6db987118cb`: CI #2487, production-smoke #236 and cinematic-delivery-smoke #103 all succeeded before squash merge. The preceding `main@2241d0c6b9a751b3c46311e1fa61b9d7e6aff6ed` generation-config-provenance closure passed CI #2485 and full 720p cinematic-delivery-smoke #102.
 
-The linked-worktree feature was exact-head verified before merge at `2bf92a433732d2420cb0157a6e7c7f68ebe63865`: CI #2465, production-smoke #223 and cinematic-delivery-smoke #90 succeeded. Its predecessor stable-source closure at `4ba114005f78e2a9396ead2787f527551859145a` passed CI #2460, production-smoke #220 and cinematic-delivery-smoke #87.
+The earlier LightX2V linked-worktree source-provenance merge `29afecc37ed8fc414ff9a0e06f4e02e6ca677e5c` also passed post-merge CI #2467 and full 720p cinematic-delivery-smoke #92: Odyssey delivery, media runtime provenance capture, final media/provenance verification and evidence upload all succeeded.
 
 ## Canonical guaranteed baseline
 
@@ -33,6 +33,12 @@ Do not retune deterministic cow/Odyssey visuals or audio without a measured arti
 Primary operator route remains **LightX2V/Wan2.2**. Input locks are constraints, not output proof. Generated continuity evidence must cover all subject-bearing shots and bind exact reference bytes, generated shot bytes, generator/model/source provenance when independently verifiable, evaluator identity/revision and fail-closed thresholds.
 
 **Identity fidelity and requested-action/motion fidelity remain separate dimensions.** Motion/anti-copy evidence binds `motion_spec_sha256` from exact ordered subject-bearing plan semantics. Runtime success or generic motion never proves requested action or subject identity.
+
+Continuity provenance is now bound across three independent execution identities in addition to exact media/reference bytes:
+
+- candidate/source identity (`candidate_id` + exact `candidate_revision` when independently verifiable);
+- the exact generation-config bytes (`generation_config_sha256` + `generation_config_size_bytes`) carried by LightX2V shot artifacts and continuity evidence;
+- the durable evidence `config_name`, which must equal the canonical derived `VideoProductionPlan.config_name`; a benchmark cannot relabel correctly bound generation-config bytes as another profile.
 
 LightX2V source provenance is fail-closed across the generation window:
 
@@ -64,14 +70,14 @@ Durable method: `docs/research/2026-08-30-tts-bench-method-admission.md` plus th
 
 ## Fresh ecosystem radar — 2026-08-31
 
-- **LightX2V** public `main` advanced to `e7262940e8fcd63a91659ef1e9a2c2bb611480f2` on 2026-08-31. The tip fixes Hunyuan SR transformer weight loading and removes a stale run-step path; its parent `f85a5c6f5d97a2a031a9f11b8e7f521bde5fb691` fixes MiniMax-H3 tensor-parallel sharding. Neither provides Hottop-measured continuity, quality or runtime gain for the tested Wan2.2 I2V subset; keep the tested pin and do not freshness-only repin.
-- **Qwen3-TTS official** remains operator-gated for 1.7B quality evidence; no fresh signal in this cycle removes the need for exact local runtime/model plus same-line Mandarin A/B.
+- **LightX2V** public `main` remains `e7262940e8fcd63a91659ef1e9a2c2bb611480f2`. The tip fixes Hunyuan SR transformer weight loading and removes a stale run-step path; its parent `f85a5c6f5d97a2a031a9f11b8e7f521bde5fb691` fixes MiniMax-H3 tensor-parallel sharding. Neither provides Hottop-measured continuity, quality or runtime gain for the tested Wan2.2 I2V subset; keep the tested pin and do not freshness-only repin.
+- **Qwen3-TTS official** remains `022e286b98fbec7e1e916cb940cdf532cd9f488e`; no fresh signal in this cycle removes the need for exact local runtime/model plus same-line Mandarin A/B.
 - No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, the tested LightX2V/Wan2.2 operator route or the prepared local 1.7B TTS candidates.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-2. Continue LightX2V operator-path contract review around actual execution inputs/provenance; do not infer model/checkpoint identity from framework source revision.
+2. Continue LightX2V/reference-continuity contract review only around concrete, reproducible execution/provenance gaps; do not infer model/checkpoint identity from framework source revision or a profile label.
 3. When a reviewed local LightX2V/Wan2.2 runtime plus rights-safe references is genuinely provisioned, generate at least two subject-bearing shots and require complete byte-bound **identity + requested-action motion** evidence before composition.
 4. When an operator provisions qwentts.cpp, CrispASR, audio.cpp or Pure-C plus exact Qwen3-TTS 1.7B CustomVoice assets, run the corresponding read-only artifact preflight first; then perform same-line Mandarin generation under the existing generation/hardware/execution-shape coherence gates.
 5. Continue targeted ecosystem radar around measured gaps. Do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
