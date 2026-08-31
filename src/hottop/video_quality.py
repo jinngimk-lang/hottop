@@ -212,8 +212,11 @@ def inspect_video_quality(
         if isinstance(terminal_output, bytes)
         else bytes(terminal_output or b"")
     )
+    terminal_frame_size = width * height
     terminal_decodable = (
-        int(getattr(terminal, "returncode", 1)) == 0 and bool(terminal_bytes)
+        int(getattr(terminal, "returncode", 1)) == 0
+        and terminal_frame_size > 0
+        and len(terminal_bytes) == terminal_frame_size
     )
     if not terminal_decodable:
         base_reasons.append("terminal frame not decodable")
