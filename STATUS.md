@@ -8,16 +8,16 @@ Current milestone: **Production v0.2 — repeatable real video output**
 
 ## Current verified repository truth
 
-Latest merged production point is **`main@15d0d1832bbbb8292fb35a3a12f5b37c2b311899`** (`fix: reject partial motion sample payloads`, PR #371), SHA-locked squash-merged from exact verified head `97ac5f6fae35bc71fee4469ea533db64bb0aeac3`.
+Latest merged production point is **`main@ce7ce2c9b046b7d3090ba7db626b9cc567b1a21d`** (`fix: reject incomplete motion sample coverage`, PR #373), SHA-locked squash-merged from exact verified head `73ee202831efb998c1f151ec3a9a2c0799b68723`.
 
 TDD/production evidence:
 
-- RED `93c5aac662a6c578a94a4cbdd19441f6affb47be`: CI #2586 reached pytest after successful installation + Ruff; Python 3.11 failed exactly the new partial-motion-payload regression with `1 failed, 638 passed`, proving the previous sampler silently discarded a trailing partial raw frame;
-- GREEN `97ac5f6fae35bc71fee4469ea533db64bb0aeac3`: exact-head CI #2587 passed Python 3.11 + 3.12 Ruff/full pytest;
-- production-smoke #292 passed checked-in anti-polish cow + cinematic Odyssey execution and final-media/provenance verification; artifact `hottop-software3d-production-smoke` was 687,894 bytes with archive digest `sha256:106f9fdf0eeff5cc88ec1232b0a7ea45d32a717e235725cffb9585031285d7c2`;
-- cinematic-delivery-smoke #159 passed actual 720p24 Odyssey delivery, runtime provenance, final-media/seam verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 624,448 bytes with archive digest `sha256:842de6346b627e371db67234471b9563297ab0da798e25e6eb6b4b32345d7617`.
+- RED `575092828db2d25f858fcf422483dd3145154c6a`: CI #2591 reached pytest after install + Ruff; Python 3.11 failed the new regression proving the old gate accepted only two complete sampled frames from a four-second clip;
+- GREEN `73ee202831efb998c1f151ec3a9a2c0799b68723`: exact-head CI #2592 passed Python 3.11 + 3.12 Ruff/full pytest;
+- production-smoke #294 passed checked-in anti-polish cow + cinematic Odyssey execution and final-media/provenance verification; artifact `hottop-software3d-production-smoke` was 687,894 bytes with digest `sha256:583d4b66e4a183921554e4e5b0f16a810742c6cc435623c6ffaef73b6040de86`;
+- cinematic-delivery-smoke #161 passed actual 720p24 Odyssey delivery, runtime provenance, final-media/seam verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 624,449 bytes with digest `sha256:36e166a16a5ff495b00508f03b28ec7138cdb223c3f82ea0ffae5fc910cfec73`.
 
-The shared generated-video gate remains fail closed below conservative compositor-usability minima of **0.5 s duration, 256 px width, 256 px height and 8 fps**. Terminal integrity requires FFmpeg success plus exactly one complete raw `gray` terminal frame: **`width × height` bytes**. Motion sampling now applies the same framing discipline: successful raw `gray` sample output must be an exact multiple of **`sample_width × sample_height` bytes**; any partial/trailing bytes fail closed with `motion sample payload incomplete` instead of being silently discarded.
+The shared generated-video gate remains fail closed below conservative compositor-usability minima of **0.5 s duration, 256 px width, 256 px height and 8 fps**. Terminal integrity requires FFmpeg success plus exactly one complete raw `gray` terminal frame of **`width × height` bytes**. Motion sampling requires both exact frame alignment and enough temporal coverage: payload length must be an exact multiple of **`sample_width × sample_height`**, and complete samples must meet `max(2, int(duration * sample_fps) - 1)`. Partial bytes fail with `motion sample payload incomplete`; severe early truncation fails with `motion sample coverage incomplete`.
 
 Durable evidence records:
 
@@ -25,10 +25,11 @@ Durable evidence records:
 - `docs/research/2026-09-01-terminal-frame-proof.md`
 - `docs/research/2026-09-01-terminal-frame-byte-length-proof.md`
 - `docs/research/2026-09-01-motion-sample-payload-integrity.md`
+- `docs/research/2026-09-01-motion-sample-coverage-proof.md`
 
 The previous LightX2V protections remain in force: bounded local NVIDIA preflight; fresh target invalidation; offline and runtime-bounded execution; exact request/source/config provenance; rights-safe I2V reference SHA-256 + byte-count + rights binding; rejection of reference mutation; dirty/ambiguous source and escaping tracked-symlink rejection.
 
-`PROJECT.md` is intentionally unchanged because exact motion-sample framing is a stricter implementation of the existing generated-media/final-media integrity doctrine, not a new durable direction.
+`PROJECT.md` remains intentionally unchanged: sample-coverage proof is a stricter implementation of the existing generated-media/final-media integrity doctrine, not a new durable direction.
 
 ## Canonical guaranteed baseline
 
@@ -44,7 +45,7 @@ Do not retune deterministic cow/Odyssey visuals or audio without a measured arti
 
 Primary operator route remains **LightX2V/Wan2.2**. Input locks are constraints, not output proof. Generated continuity evidence must bind exact reference bytes, generated-shot bytes, byte-bound plan semantics, generation request identity, independently verifiable source/config provenance, evaluator identity/revision and fail-closed thresholds.
 
-For every evaluated subject, evidence must cover all subject-bearing plan shots; cherry-picked coverage fails closed. **Identity fidelity and requested-action/motion fidelity remain separate dimensions.** Runtime success, request digests, decodability, generic motion or merely clearing the media floor never prove requested action, subject identity or semantic correctness.
+For every evaluated subject, evidence must cover all subject-bearing plan shots; cherry-picked coverage fails closed. **Identity fidelity and requested-action/motion fidelity remain separate dimensions.** Runtime success, correct duration/frame count, decodability, generic motion or clearing the media floor never prove requested action, subject identity or semantic correctness.
 
 The next real quality gate remains generated media, not another provider abstraction.
 
@@ -56,17 +57,17 @@ Prepared local candidates remain operator-provisioned/no-auto-download. Comparab
 
 ## Fresh ecosystem radar — 2026-09-01
 
-- **LightX2V** public tip remains `2ea24fe794f3bc488d9cd9473cc97d6094bbf00f`. Its latest material work restores SeedVR distributed operations and reports SeedVR2 BF16/FP8 validation; it does not provide Hottop-measured Wan2.2 I2V identity/requested-action benefit. Continue **no freshness-only repin**.
-- Open LightX2V issue #603 reports lower Wan2.2 I2V resolution/content/realistic motion than the authors' Diffusers implementation under reportedly comparable parameters. Issue #1170 reports a Wan2.2-TI2V-5B run producing meaningless color-block/light-pattern output. Treat both as external warning evidence, not benchmarks; they reinforce that runtime success, decodability and generic motion do not substitute for Hottop same-case semantic/identity/requested-action quality gates.
+- **LightX2V** public tip remains `2ea24fe794f3bc488d9cd9473cc97d6094bbf00f`; recent material work is still SeedVR distributed-operation focused and does not provide Hottop-measured Wan2.2 I2V identity/requested-action benefit. Continue **no freshness-only repin**.
+- Open LightX2V issue #603 reports lower Wan2.2 I2V resolution/content/realistic motion than Diffusers under reportedly comparable parameters; #1170 reports meaningless color-block/light-pattern output; #895 reports successful I2V execution with correct duration/frame count but all frames static. Treat these as external warning evidence, not Hottop benchmarks. They reinforce separate semantic/identity/requested-action/media gates.
 - Specialized acceleration/model forks remain gated where effective execution composes external weights/LoRAs/compiled assets without a fully reviewed code+weights+artifact provenance/license chain and Hottop same-case evidence.
-- **Qwen3-TTS** lower-hardware community ports remain benchmark candidates. Any route that auto-downloads model-family weights conflicts with unattended no-auto-download unless those assets are operator-provisioned and pinned locally.
+- **Qwen3-TTS** local/offline routes, including vLLM-Omni support, remain benchmark candidates. Any path that downloads model-family weights implicitly conflicts with unattended no-auto-download unless assets are operator-provisioned and pinned locally.
 - No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local TTS candidates.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V checkout, exact Wan2.2 model/config and suitable operator NVIDIA GPU are genuinely provisioned, run fail-closed preflight and generate at least two subject-bearing rights-safe I2V shots.
-3. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition; complete terminal/sample-frame proof and the shared media floor are necessary but not sufficient.
+3. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition; complete terminal/sample-frame framing and temporal coverage are necessary but not sufficient.
 4. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
 5. Continue targeted ecosystem radar around measured gaps; do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
