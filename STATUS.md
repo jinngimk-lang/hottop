@@ -1,29 +1,29 @@
 # Hottop Status
 
-Last updated: 2026-08-31
+Last updated: 2026-09-01
 Completed milestone: **Foundation v0.1**
-Current milestone: **Production v0.2 — repeatable evidence-backed image/video production**
+Current milestone: **Production v0.2 — repeatable real video output**
 
 > `PROJECT.md` is durable doctrine. This file is the short-lived execution snapshot. Always re-fetch live GitHub state before exact branch/head/CI claims; recorded SHAs are historical evidence points, not a self-updating `main` pointer.
 
 ## Current verified repository truth
 
-Latest merged production point is **`main@2eaa6f47a529e803999c798aae8c426a90c4c759`** (`fix: fail closed when LightX2V has no NVIDIA GPU`, PR #363), SHA-locked squash-merged from exact verified head `14905514fcf76fe64ba62fb2cccdd5184fc9f19a`.
+Latest merged production point is **`main@3a9e8e1d1103229564b4b7f049c775396a356788`** (`video: reject unusable generated media geometry`, PR #365), SHA-locked squash-merged from exact verified head `13a900a5a6027f7f36abf2db782ee8a6cd5e511a`.
 
-TDD/production evidence for the NVIDIA local-preflight workstream:
+TDD/production evidence for the generated-media output-floor workstream:
 
-- RED `e5ccb02f892c29641172a93935b9f2adb55a2859`: CI #2560 failed the new regression contract before an explicit NVIDIA availability check existed;
-- GREEN `14905514fcf76fe64ba62fb2cccdd5184fc9f19a`: exact-head CI #2567 succeeded;
-- the same GREEN head passed production-smoke #284 and cinematic-delivery-smoke #151;
-- production-smoke #284 executed both checked-in anti-polish cow and cinematic Odyssey software3d paths through final media/provenance verification and uploaded artifact `hottop-software3d-production-smoke` (687,896 bytes, archive digest `sha256:181fa429933044c73d2cfe3f97374279c9d2f1ec76b925fb5f88b57237420f87`).
+- RED `d99f4fdf6da56db9e6a1c823f5dbdeff8aa6c60e`: CI #2571 reached pytest failure on Python 3.11 and 3.12 while install/Ruff were green, proving the prior shared gate could accept an implausibly tiny/short/low-FPS moving clip;
+- GREEN `13a900a5a6027f7f36abf2db782ee8a6cd5e511a`: exact-head CI #2572 passed Python 3.11 + 3.12 Ruff/full pytest;
+- the same GREEN head passed production-smoke #286, including both checked-in anti-polish cow and cinematic Odyssey execution plus final-media/provenance verification; artifact `hottop-software3d-production-smoke` was 687,894 bytes with archive digest `sha256:758597fb2597e70b1d3446255a197b50e63c0fcda438b3b9f920d445af3dc9b9`;
+- the same GREEN head passed cinematic-delivery-smoke #153, including actual 720×1280/24 fps Odyssey delivery, runtime provenance, final-media/provenance and seam-quality verification; artifact `hottop-cinematic-software3d-delivery` was 624,450 bytes with archive digest `sha256:f548b98770b9090dbdc5d7408d424e90448521a8857a6c5a8b2e7582ebdcd7b2`.
 
-`run_lightx2v_shot()` now requires a bounded local `nvidia-smi` probe before generation. Missing `nvidia-smi`, timeout, non-zero probe status, OS execution failure or no visible GPU fails closed before the LightX2V inference runner starts. Production keeps the real probe by default; ordinary unit tests inject the probe explicitly only when testing independent generation behavior. No hardware provisioning, driver install, model download, hosted endpoint or paid fallback was added.
+The shared generated-video `VideoQualityPolicy` now fails closed below conservative compositor-usability minima of **0.5 s duration, 256 px width, 256 px height, and 8 fps**. These are minimum acceptance floors, not forced target delivery geometry; higher-quality profiles and later MoviePy/FFmpeg scaling remain style/config routed.
 
-Durable evidence record: `docs/research/2026-08-31-lightx2v-nvidia-preflight.md`.
+Durable evidence record: `docs/research/2026-09-01-generated-media-output-floor.md`.
 
-The earlier LightX2V protections remain in force: fresh requested targets are invalidated before preflight; generation runtime is positively bounded and network-offline; accepted artifacts bind exact request/source/config provenance; rights-safe I2V binds exact reference SHA-256 + bytes + rights classification and rejects reference mutation; source provenance rejects dirty/ambiguous runtime code and escaping tracked symlinks.
+The previous LightX2V protections remain in force: bounded local NVIDIA preflight; fresh target invalidation; network-offline and runtime-bounded generation; exact request/source/config provenance; rights-safe I2V reference SHA-256 + bytes + rights binding; rejection of reference mutation; dirty/ambiguous source and escaping tracked-symlink rejection.
 
-`PROJECT.md` is intentionally unchanged for this workstream because explicit local accelerator availability is direct implementation closure under existing operator-owned/fail-closed/no-auto-provisioning doctrine.
+`PROJECT.md` is intentionally unchanged in this workstream because the new media floor directly implements the existing generated-media quality/integrity doctrine rather than changing durable project direction.
 
 ## Canonical guaranteed baseline
 
@@ -31,13 +31,7 @@ Unattended guarantee remains:
 
 `checked-in render/config → software3d moving shots → Mandarin eSpeak-family dialogue + original synthetic music + procedural Foley → MoviePy → FFmpeg → verified H.264/AAC/yuv420p MP4`
 
-`ZERO_COST_MODE=true` remains canonical. The guaranteed route uses no GPU/model, credentials, paid fallback or implicit multi-GB download. Existing production-smoke evidence covers meaningful motion, mobile framing/subtitle readability, dialogue/audio coverage, seam quality, shot-byte provenance, composition-time byte verification, runtime provenance and final-media verification.
-
-Retained deterministic smoke evidence:
-
-- cow: 15.0 s H.264/yuv420p + AAC, SHA-256 `8c23e3ea76dad18d5d2092e52b944365f267df363a16e9624db08a5be0e339b5`;
-- Odyssey: 15.0 s H.264/yuv420p + AAC, SHA-256 `f30a15c8e146f07d2bae8416a7bae3ebe5a54cfb5cb65bac5fbb82f6ac39795c`;
-- 720×1280/24 fps Odyssey: SHA-256 `c1353b556cb8675b94e58bb1d41624c69b4711ad1b83c690f1e81dd60b3f58df`, with bound CPU/NumPy/OpenBLAS/FFmpeg/FFprobe/eSpeak-NG/font provenance.
+`ZERO_COST_MODE=true` remains canonical. The guaranteed route uses no GPU/model, credentials, paid fallback or implicit multi-GB download. Existing production evidence covers meaningful motion, mobile framing/subtitle readability, dialogue/audio coverage, seam quality, shot-byte provenance, composition-time byte verification, runtime provenance and final-media verification.
 
 Do not retune deterministic cow/Odyssey visuals or audio without a measured artifact defect.
 
@@ -45,7 +39,7 @@ Do not retune deterministic cow/Odyssey visuals or audio without a measured arti
 
 Primary operator route remains **LightX2V/Wan2.2**. Input locks are constraints, not output proof. Generated continuity evidence must bind exact reference bytes, generated-shot bytes, byte-bound plan semantics, generation request identity, actual source/config provenance when independently verifiable, evaluator identity/revision and fail-closed thresholds.
 
-For every evaluated subject, evidence must cover all subject-bearing plan shots; cherry-picked coverage fails closed. **Identity fidelity and requested-action/motion fidelity are separate dimensions.** Runtime success, request digests or generic motion never prove requested action, subject identity or semantic correctness.
+For every evaluated subject, evidence must cover all subject-bearing plan shots; cherry-picked coverage fails closed. **Identity fidelity and requested-action/motion fidelity are separate dimensions.** Runtime success, request digests, generic motion, or merely clearing the new media floor never prove requested action, subject identity or semantic correctness.
 
 The next real quality gate is generated media, not another provider abstraction.
 
@@ -55,18 +49,18 @@ The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVo
 
 Prepared local candidates remain operator-provisioned/no-auto-download. Comparable `inspect-tts-benchmark` evidence still requires exact text/language/supported speaker, canonical generation protocol, coherent hardware/execution shape, cold/warm independent trials, exact runtime/model revisions, finite positive latency, distinct WAV paths, PCM integrity and `listening_required=true`.
 
-## Fresh ecosystem radar — 2026-08-31
+## Fresh ecosystem radar — 2026-09-01
 
-- **LightX2V** remains evidence-pinned rather than freshness-pinned. Reviewed public tip work is centered on SeedVR/distributed-runtime changes and does not provide Hottop-measured Wan2.2 I2V identity/requested-motion benefit for the tested route; continue **no freshness-only repin**.
-- A small Apache-2.0 **Wan2.2-Fast** code repository surfaced with a CUDA/ZeroGPU 4-step I2V path, but its effective runtime composes external Wan2.2 Diffusers weights, third-party dual-transformer weights, Lightning LoRAs and compiled CUDA artifacts. The combined code/weights/artifact licensing and exact provenance have not been admitted as one Hottop-compatible zero-cost bundle, and no Hottop benchmark shows a quality win. Radar-only; no vendoring, auto-install or model download.
-- **Qwen3-TTS** community ports continue to show lower-hardware possibilities, including Rust/ONNX/llama.cpp CPU/Vulkan/CUDA routes, but published performance is not Hottop same-line Mandarin evidence. Existing prepared operator-owned benchmark candidates remain unchanged.
-- No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, tested LightX2V/Wan2.2 operator route or prepared local TTS candidates.
+- **LightX2V** public tip remained `2ea24fe794f3bc488d9cd9473cc97d6094bbf00f` in this cycle. Its newest material work repairs SeedVR distributed operations and reports SeedVR2 BF16/FP8 validation; it does not provide Hottop-measured Wan2.2 I2V identity/requested-action benefit. Continue **no freshness-only repin**.
+- A specialized Wan2.2 acceleration fork surfaced with aggressive quantization/4-step claims, but its effective route composes multiple external model/LoRA/compiled assets. Exact code/weights/artifact licensing and provenance have not been admitted as one Hottop-compatible zero-cost runtime, and no same-case Hottop quality win is proven. Radar-only: no vendoring, auto-install or model download.
+- **Qwen3-TTS** lower-hardware community ports remain benchmark candidates. Any route that auto-downloads model-family weights conflicts with unattended no-auto-download unless the operator has already provisioned and pinned those assets locally.
+- No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, the tested LightX2V/Wan2.2 operator route, or prepared local TTS candidates.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-2. When a reviewed local LightX2V checkout, Wan2.2 model and suitable operator NVIDIA GPU are genuinely provisioned, run fail-closed preflight and generate at least two subject-bearing rights-safe I2V shots.
-3. Require complete byte-bound **identity + requested-action motion + media quality + exact request/source/config/reference provenance** before composition.
+2. When a reviewed local LightX2V checkout, exact Wan2.2 model/config and suitable operator NVIDIA GPU are genuinely provisioned, run fail-closed preflight and generate at least two subject-bearing rights-safe I2V shots.
+3. Require complete byte-bound **media quality + identity + requested-action motion + exact request/source/config/reference provenance** across all subject-bearing shots before composition; the shared media floor is necessary but not sufficient.
 4. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
 5. Continue targeted ecosystem radar around measured gaps; do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
