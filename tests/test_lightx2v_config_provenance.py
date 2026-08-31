@@ -49,6 +49,7 @@ def test_lightx2v_artifact_manifest_binds_generation_config_bytes(tmp_path: Path
         shot_index=1,
         artifact_manifest=manifest_path,
         runner=runner,
+        gpu_probe=lambda: None,
         quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
     )
 
@@ -78,6 +79,7 @@ def test_lightx2v_rejects_generation_config_mutation_during_generation(tmp_path:
             shot_index=2,
             artifact_manifest=manifest_path,
             runner=runner,
+            gpu_probe=lambda: None,
             quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
         )
 
