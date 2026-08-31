@@ -58,4 +58,7 @@ def test_tts_benchmark_rejects_unknown_hardware_backend(tmp_path: Path) -> None:
     result = inspect_tts_benchmark(spec)
 
     assert result.ready is False
-    assert any("hardware_profile backend must be one of" in blocker for blocker in result.blockers)
+    assert any(
+        "hardware_profile backend must be one of" in blocker
+        for blocker in result.blockers
+    )
