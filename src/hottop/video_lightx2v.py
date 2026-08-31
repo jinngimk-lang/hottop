@@ -50,6 +50,43 @@ def _resolve_python(executable: str) -> str | None:
     return shutil.which(executable)
 
 
+def require_nvidia_gpu(
+    *,
+    runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+) -> None:
+    """Require one locally visible NVIDIA GPU without provisioning anything."""
+
+    command = [
+        "nvidia-smi",
+        "--query-gpu=index,name,memory.total",
+        "--format=csv,noheader,nounits",
+    ]
+    try:
+        completed = runner(
+            command,
+            shell=False,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=10,
+        )
+    except FileNotFoundError as exc:
+        raise LightX2VError(
+            "LightX2V requires nvidia-smi and one operator-owned NVIDIA GPU"
+        ) from exc
+    except subprocess.TimeoutExpired as exc:
+        raise LightX2VError("LightX2V NVIDIA availability probe timed out") from exc
+    except OSError as exc:
+        raise LightX2VError(f"LightX2V nvidia-smi probe could not run: {exc}") from exc
+    if completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout or "").strip()
+        suffix = f": {detail[:500]}" if detail else ""
+        raise LightX2VError(f"LightX2V nvidia-smi probe failed{suffix}")
+    rows = [row.strip() for row in completed.stdout.splitlines() if row.strip()]
+    if not rows:
+        raise LightX2VError("LightX2V has no usable NVIDIA GPU visible to nvidia-smi")
+
+
 def _resolve_git_dir(root: Path) -> Path | None:
     marker = root / ".git"
     if marker.is_dir():
@@ -432,6 +469,7 @@ def run_lightx2v_shot(
     shot_index: int | None = None,
     artifact_manifest: Path | None = None,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+    gpu_probe: Callable[[], None] = require_nvidia_gpu,
     quality_inspector: Callable[
         [Path, VideoQualityPolicy], VideoQualityReport
     ] = inspect_video_quality,
@@ -485,6 +523,7 @@ def run_lightx2v_shot(
     elif reference_image is not None or reference_rights is not None:
         raise LightX2VError("LightX2V T2V does not accept reference-image metadata")
 
+    gpu_probe()
     output.parent.mkdir(parents=True, exist_ok=True)
     command = build_lightx2v_command(
         config,
