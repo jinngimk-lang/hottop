@@ -40,6 +40,7 @@ class LightX2VAdapterConfig(BaseModel):
     auto_install: Literal[False] = False
     auto_download_models: Literal[False] = False
     quality_policy: VideoQualityPolicy = Field(default_factory=VideoQualityPolicy)
+    generation_timeout_seconds: int = Field(default=14400, gt=0)
 
 
 def _resolve_python(executable: str) -> str | None:
@@ -491,15 +492,23 @@ def run_lightx2v_shot(
         output=output,
         reference_image=reference_image,
     )
-    completed = runner(
-        command,
-        cwd=root,
-        env=_offline_environment(root),
-        shell=False,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    try:
+        completed = runner(
+            command,
+            cwd=root,
+            env=_offline_environment(root),
+            shell=False,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=config.generation_timeout_seconds,
+        )
+    except subprocess.TimeoutExpired as exc:
+        output.unlink(missing_ok=True)
+        raise LightX2VError(
+            "LightX2V generation timed out after "
+            f"{config.generation_timeout_seconds} seconds"
+        ) from exc
     if completed.returncode != 0:
         output.unlink(missing_ok=True)
         detail = (completed.stderr or completed.stdout or "").strip()
@@ -558,6 +567,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--model-cls", choices=["wan2.2_moe", "wan2.2_moe_distill"], required=True)
     parser.add_argument("--task", choices=["t2v", "i2v"], required=True)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--generation-timeout-seconds", type=int, default=14400)
     parser.add_argument("--prompt", required=True)
     parser.add_argument("--negative-prompt", default="")
     parser.add_argument("--output", required=True)
@@ -580,6 +590,7 @@ def main() -> None:
         model_cls=args.model_cls,
         task=args.task,
         seed=args.seed,
+        generation_timeout_seconds=args.generation_timeout_seconds,
     )
     try:
         run_lightx2v_shot(
