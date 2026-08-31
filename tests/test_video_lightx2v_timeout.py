@@ -44,6 +44,7 @@ def test_lightx2v_passes_bounded_timeout_to_operator_process(tmp_path):
         negative_prompt="identity drift",
         output=output,
         runner=runner,
+        gpu_probe=lambda: None,
         quality_inspector=lambda _path, _policy: type(
             "Report", (), {"pass_": True, "reasons": []}
         )(),
@@ -67,6 +68,7 @@ def test_lightx2v_timeout_fails_closed_and_deletes_partial_output(tmp_path):
             negative_prompt="identity drift",
             output=output,
             runner=runner,
+            gpu_probe=lambda: None,
         )
 
     assert not output.exists()
