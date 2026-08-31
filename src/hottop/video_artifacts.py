@@ -49,6 +49,15 @@ class VideoShotArtifact(BaseModel):
         gt=0,
         exclude_if=lambda value: value is None,
     )
+    generation_request_sha256: str | None = Field(
+        default=None,
+        exclude_if=lambda value: value is None,
+    )
+    generation_request_size_bytes: int | None = Field(
+        default=None,
+        gt=0,
+        exclude_if=lambda value: value is None,
+    )
     reference_sha256: str | None = Field(
         default=None,
         exclude_if=lambda value: value is None,
@@ -104,6 +113,19 @@ class VideoShotArtifact(BaseModel):
         ):
             raise ValueError(
                 "generation config sha256 must be a lowercase 64-character hex digest"
+            )
+
+        if (self.generation_request_sha256 is None) != (
+            self.generation_request_size_bytes is None
+        ):
+            raise ValueError(
+                "generation request byte identity requires both sha256 and size_bytes"
+            )
+        if self.generation_request_sha256 is not None and not _SHA256_RE.fullmatch(
+            self.generation_request_sha256
+        ):
+            raise ValueError(
+                "generation request sha256 must be a lowercase 64-character hex digest"
             )
 
         reference_values = (
