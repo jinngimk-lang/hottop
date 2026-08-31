@@ -12,12 +12,42 @@ def test_lightx2v_artifact_records_actual_checkout_revision(tmp_path: Path) -> N
     root = tmp_path / "LightX2V"
     (root / "lightx2v").mkdir(parents=True)
     (root / "lightx2v" / "infer.py").write_text("# operator checkout\n", encoding="utf-8")
-    revision = "926299962ed32a142411e45468a289623432b4e4"
-    (root / ".git").mkdir()
-    (root / ".git" / "HEAD").write_text(revision + "\n", encoding="utf-8")
     config_json = root / "configs" / "wan22" / "wan_moe_i2v.json"
     config_json.parent.mkdir(parents=True)
     config_json.write_text("{}\n", encoding="utf-8")
+
+    subprocess.run(["git", "init", str(root)], check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["git", "-C", str(root), "config", "user.name", "Hottop Test"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    subprocess.run(
+        ["git", "-C", str(root), "config", "user.email", "hottop-test@example.invalid"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    subprocess.run(
+        ["git", "-C", str(root), "add", "lightx2v/infer.py", "configs/wan22/wan_moe_i2v.json"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    subprocess.run(
+        ["git", "-C", str(root), "commit", "-m", "test operator checkout"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    revision = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "HEAD"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
     model_path = tmp_path / "Wan2.2-I2V-A14B"
     model_path.mkdir()
     output = tmp_path / "shot-001.mp4"
