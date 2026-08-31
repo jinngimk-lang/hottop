@@ -128,7 +128,12 @@ def _subject_plan_bindings(
                 f"artifact missing for subject {reference.subject_id} plan shot {shot.index}"
             )
         subject_id = reference.subject_id
-        hashes_by_subject.setdefault(subject_id, set()).add(artifact.sha256)
+        subject_hashes = hashes_by_subject.setdefault(subject_id, set())
+        if artifact.sha256 in subject_hashes:
+            raise ValueError(
+                f"subject {subject_id} continuity benchmark requires unique subject-bearing shot artifacts"
+            )
+        subject_hashes.add(artifact.sha256)
         planned_reference = pathlib.Path(reference.image_path).resolve()
         prior_reference = references_by_subject.get(subject_id)
         if prior_reference is not None and prior_reference != planned_reference:
