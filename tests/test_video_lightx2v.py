@@ -175,6 +175,38 @@ def test_lightx2v_writes_byte_bound_artifact_manifest_after_quality_pass(tmp_pat
     assert shot["sha256"] == hashlib.sha256(payload).hexdigest()
 
 
+def test_lightx2v_i2v_manifest_binds_reference_bytes_and_rights(tmp_path):
+    config = _config(tmp_path)
+    reference = tmp_path / "hero.png"
+    reference_bytes = b"rights-safe-original-reference"
+    reference.write_bytes(reference_bytes)
+    output = tmp_path / "shots" / "shot-006.mp4"
+    artifact_manifest = tmp_path / "shots" / "shot-006.artifact.json"
+
+    def runner(command, **_kwargs):
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(b"generated-from-bound-reference")
+        return subprocess.CompletedProcess(command, 0, "ok", "")
+
+    run_lightx2v_shot(
+        config,
+        prompt="same original hero performs the requested action",
+        negative_prompt="identity drift",
+        output=output,
+        reference_image=reference,
+        reference_rights="generated-original",
+        shot_index=6,
+        artifact_manifest=artifact_manifest,
+        runner=runner,
+        quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
+    )
+
+    shot = json.loads(artifact_manifest.read_text(encoding="utf-8"))["shots"][0]
+    assert shot["reference_sha256"] == hashlib.sha256(reference_bytes).hexdigest()
+    assert shot["reference_size_bytes"] == len(reference_bytes)
+    assert shot["reference_rights"] == "generated-original"
+
+
 def test_lightx2v_rejects_source_mutation_during_generation(tmp_path):
     config = _config(tmp_path, task="t2v")
     output = tmp_path / "shots" / "shot-004.mp4"
