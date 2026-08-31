@@ -147,8 +147,7 @@ def build_lightx2v_command(
 
 def _offline_environment(root: Path) -> dict[str, str]:
     env = os.environ.copy()
-    existing = env.get("PYTHONPATH")
-    env["PYTHONPATH"] = str(root) if not existing else os.pathsep.join([str(root), existing])
+    env["PYTHONPATH"] = str(root)
     env["HF_HUB_OFFLINE"] = "1"
     env["TRANSFORMERS_OFFLINE"] = "1"
     env["HF_DATASETS_OFFLINE"] = "1"
