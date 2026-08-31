@@ -18,6 +18,7 @@ from .video_quality import VideoQualityPolicy, VideoQualityReport, inspect_video
 from .video_reference import ReferenceRights
 
 _GIT_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+_UNTRACKED_IMPORTABLE_SUFFIXES = {".py", ".pyc", ".pyd", ".so", ".pth"}
 
 
 class LightX2VError(RuntimeError):
@@ -93,6 +94,39 @@ def _require_clean_tracked_git_checkout(root: Path) -> None:
         raise LightX2VError(
             "LightX2V Git checkout has uncommitted tracked changes; commit or revert them "
             "before generation so artifact provenance matches the recorded Git revision"
+        )
+
+    untracked = subprocess.run(
+        [
+            git_executable,
+            "-C",
+            str(root),
+            "ls-files",
+            "--others",
+            "--exclude-standard",
+            "-z",
+        ],
+        shell=False,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if untracked.returncode != 0:
+        detail = (untracked.stderr or untracked.stdout or "").strip()
+        suffix = f": {detail[:500]}" if detail else ""
+        raise LightX2VError(
+            f"LightX2V untracked-file provenance could not be verified{suffix}"
+        )
+    importable = [
+        path
+        for path in untracked.stdout.split("\0")
+        if path and Path(path).suffix.lower() in _UNTRACKED_IMPORTABLE_SUFFIXES
+    ]
+    if importable:
+        preview = ", ".join(importable[:5])
+        raise LightX2VError(
+            "LightX2V Git checkout contains untracked importable source/runtime files "
+            f"that are not represented by the recorded Git revision: {preview}"
         )
 
 
