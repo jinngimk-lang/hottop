@@ -112,3 +112,73 @@ def test_artifact_manifest_cannot_overwrite_verified_video(tmp_path: Path) -> No
                 AssertionError("GPU probe must not run when output and manifest collide")
             ),
         )
+
+
+def test_artifact_manifest_path_cannot_delete_generation_config(tmp_path: Path) -> None:
+    root = tmp_path / "LightX2V"
+    entrypoint = root / "lightx2v" / "infer.py"
+    entrypoint.parent.mkdir(parents=True)
+    entrypoint.write_text("# operator checkout fixture\n", encoding="utf-8")
+
+    model_path = tmp_path / "Wan2.2-T2V-A14B"
+    model_path.mkdir()
+    (model_path / "weights.bin").write_bytes(b"reviewed-model-bytes")
+    config_json = tmp_path / "wan_moe_t2v.json"
+    config_json.write_text("{}\n", encoding="utf-8")
+
+    config = LightX2VAdapterConfig(
+        root=root,
+        model_path=model_path,
+        config_json=config_json,
+        model_cls="wan2.2_moe",
+        task="t2v",
+        python_executable=sys.executable,
+    )
+
+    with pytest.raises(LightX2VError, match="artifact manifest path overlaps protected operator input"):
+        run_lightx2v_shot(
+            config,
+            prompt="原创角色完成明确动作",
+            negative_prompt="",
+            output=tmp_path / "shot.mp4",
+            shot_index=1,
+            artifact_manifest=config_json,
+        )
+
+    assert config_json.read_text(encoding="utf-8") == "{}\n"
+
+
+def test_output_path_cannot_delete_i2v_reference(tmp_path: Path) -> None:
+    root = tmp_path / "LightX2V"
+    entrypoint = root / "lightx2v" / "infer.py"
+    entrypoint.parent.mkdir(parents=True)
+    entrypoint.write_text("# operator checkout fixture\n", encoding="utf-8")
+
+    model_path = tmp_path / "Wan2.2-I2V-A14B"
+    model_path.mkdir()
+    (model_path / "weights.bin").write_bytes(b"reviewed-model-bytes")
+    config_json = tmp_path / "wan_moe_i2v.json"
+    config_json.write_text("{}\n", encoding="utf-8")
+    reference = tmp_path / "rights-safe-reference.png"
+    reference.write_bytes(b"original-reference-bytes")
+
+    config = LightX2VAdapterConfig(
+        root=root,
+        model_path=model_path,
+        config_json=config_json,
+        model_cls="wan2.2_moe",
+        task="i2v",
+        python_executable=sys.executable,
+    )
+
+    with pytest.raises(LightX2VError, match="output path overlaps protected operator input"):
+        run_lightx2v_shot(
+            config,
+            prompt="同一原创角色完成明确动作",
+            negative_prompt="",
+            output=reference,
+            reference_image=reference,
+            reference_rights="generated-original",
+        )
+
+    assert reference.read_bytes() == b"original-reference-bytes"
