@@ -336,8 +336,19 @@ def _model_tree_identity(model_path: Path) -> tuple[str, int]:
     digest = hashlib.sha256()
     total_size = 0
     try:
+        paths = list(model_path.rglob("*"))
+        for path in paths:
+            if not path.is_symlink():
+                continue
+            try:
+                path.resolve(strict=True).relative_to(model_path)
+            except (OSError, RuntimeError, ValueError) as exc:
+                raise LightX2VError(
+                    "LightX2V model tree contains a symlink that resolves outside the "
+                    f"reviewed model root: {path.relative_to(model_path).as_posix()}"
+                ) from exc
         entries = sorted(
-            (path for path in model_path.rglob("*") if path.is_file()),
+            (path for path in paths if path.is_file()),
             key=lambda path: path.relative_to(model_path).as_posix(),
         )
         for path in entries:
