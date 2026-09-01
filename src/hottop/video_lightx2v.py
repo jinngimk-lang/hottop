@@ -209,6 +209,10 @@ def _require_clean_tracked_git_checkout(root: Path) -> None:
         )
 
 
+def _reject_nonstandard_json_constant(value: str) -> object:
+    raise ValueError(f"non-standard JSON constant: {value}")
+
+
 def _preflight(config: LightX2VAdapterConfig) -> None:
     root = config.root.resolve()
     if not (root / "lightx2v" / "infer.py").is_file():
@@ -222,8 +226,11 @@ def _preflight(config: LightX2VAdapterConfig) -> None:
     if not config_json.is_file():
         raise LightX2VError(f"LightX2V config JSON is not available locally: {config.config_json}")
     try:
-        config_payload = json.loads(config_json.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        config_payload = json.loads(
+            config_json.read_text(encoding="utf-8"),
+            parse_constant=_reject_nonstandard_json_constant,
+        )
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
         raise LightX2VError(f"LightX2V config JSON is invalid: {config_json}") from exc
     if not isinstance(config_payload, dict):
         raise LightX2VError(
