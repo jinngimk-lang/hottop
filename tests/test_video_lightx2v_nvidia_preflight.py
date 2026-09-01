@@ -52,6 +52,7 @@ def test_lightx2v_generation_fails_before_runner_when_gpu_probe_rejects(tmp_path
     config_json.write_text("{}\n", encoding="utf-8")
     model_path = tmp_path / "Wan2.2-T2V-A14B"
     model_path.mkdir()
+    (model_path / "weights.bin").write_bytes(b"test-model-bytes")
     config = LightX2VAdapterConfig(
         root=root,
         model_path=model_path,
