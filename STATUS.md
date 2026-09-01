@@ -8,16 +8,16 @@ Current milestone: **Production v0.2 — repeatable real video output**
 
 ## Current verified repository truth
 
-Latest merged production point is **`main@9e19c7a611cd40e5beebc6a5c464362240dd3847`** (`Sanitize LightX2V offline subprocess environment`, PR #386), SHA-locked squash-merged from exact verified head `9691ed8ca8b013ac1987d6d55a8617c33dd0793f`.
+Latest merged production point is **`main@0415e0ff59042dc923c3f08c7e5a1a43da8d09c3`** (`Fail closed on LightX2V runtime injection environment`, PR #388), SHA-locked squash-merged from exact verified head `5b291939994b611dfd4083786fcf65e2c20652ae`.
 
 Latest TDD/production evidence:
 
-- RED `ad1fa516...`: CI #2629 demonstrated that the old LightX2V child environment still inherited unrelated API tokens/secrets and proxy settings despite offline flags.
-- GREEN exact head `9691ed8ca8b013ac1987d6d55a8617c33dd0793f`: CI #2630 passed Ruff + full pytest on Python 3.11 and 3.12 after removing proxy keys and secret-like `*_API_KEY`, `*_TOKEN`, `*_SECRET`, `*_PASSWORD` variables while preserving local runtime controls and forcing offline/telemetry-disable flags.
-- production-smoke #314 passed checked-in anti-polish cow + cinematic Odyssey execution, final-media/provenance verification and evidence upload; artifact `hottop-software3d-production-smoke` was 687,895 bytes with digest `sha256:f217b610d9df7cf8369b49c978061658fc56db53ee04f4700e6ebe8bc4bbea8f`.
-- cinematic-delivery-smoke #181 passed actual 720p24 Odyssey delivery, runtime provenance, final-media verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 624,450 bytes with digest `sha256:50192c1ba0dd5d841812f27e1e7c46140a8d4ef39584a267e44e2f03bc96c0a9`.
+- RED `653521087bb1f57f892539412037965b20ff854c`: CI #2634 reached clean Ruff and failed pytest on the new regression proving that the old LightX2V child environment still inherited interpreter/loader injection controls including `LD_PRELOAD`, `PYTHONHOME`, `PYTHONSTARTUP`, and `PYTHONINSPECT`.
+- GREEN exact head `5b291939994b611dfd4083786fcf65e2c20652ae`: CI #2635 passed Ruff + full pytest on Python 3.11 and 3.12 after stripping those runtime-injection controls while preserving legitimate local runtime configuration such as `LD_LIBRARY_PATH`.
+- production-smoke #316 passed checked-in anti-polish cow + cinematic Odyssey execution, final-media/provenance verification and evidence upload; artifact `hottop-software3d-production-smoke` was 687,895 bytes with digest `sha256:7f3c4097e14bf192978c5f936853b818d430b4234fe05dca7a32998a80e5d17c`.
+- cinematic-delivery-smoke #183 passed actual 720p24 Odyssey delivery, runtime provenance, final-media verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 624,451 bytes with digest `sha256:e8e3822c6e9cb826d6dc58384632d22446d096c803be28f115bea717d0a4a034`.
 
-The LightX2V operator route now minimizes the environment inherited by its inference subprocess: unrelated proxy settings and common secret-like credential variables are stripped, `PYTHONPATH` is pinned to the reviewed checkout, local runtime controls such as CUDA visibility remain available, and Hugging Face/Transformers/Datasets offline plus telemetry-disable flags are forced. This is defense-in-depth for the existing offline operator route; it does not install, download, provision, call hosted services or consume credits.
+The LightX2V operator route now minimizes the environment inherited by its inference subprocess: unrelated proxy settings, common secret-like credential variables, and interpreter/loader injection controls are stripped; `PYTHONPATH` is pinned to the reviewed checkout; legitimate local runtime controls such as CUDA visibility and `LD_LIBRARY_PATH` remain available; and Hugging Face/Transformers/Datasets offline plus telemetry-disable flags are forced. This is defense-in-depth for the existing offline operator route; it does not install, download, provision, call hosted services or consume credits.
 
 The route also requires the recursively measured configured local model tree to contain **non-zero local file bytes** before GPU probe or inference. It then binds that tree by deterministic SHA-256 + total bytes before generation, records `generation_model_sha256` / `generation_model_size_bytes`, and recomputes the tree after generation. Empty, changed or unreadable model trees fail closed; changed generation state deletes the produced shot before quality acceptance.
 
@@ -36,10 +36,11 @@ Durable evidence records now include:
 - `docs/research/2026-09-01-lightx2v-model-byte-provenance.md`
 - `docs/research/2026-09-01-lightx2v-nonempty-model-preflight.md`
 - `docs/research/2026-09-01-lightx2v-offline-environment-isolation.md`
+- `docs/research/2026-09-01-lightx2v-runtime-injection-environment.md`
 
 The previous LightX2V protections remain in force: bounded local NVIDIA preflight; fresh target invalidation; offline and runtime-bounded execution; exact request/source/config provenance; rights-safe I2V reference SHA-256 + byte-count + rights binding; rejection of source/config/reference/model mutation; dirty/ambiguous source, untracked importable runtime files and escaping tracked-symlink rejection.
 
-`PROJECT.md` remains intentionally unchanged: subprocess environment minimization is a stricter implementation of the existing zero-cost/offline/secret-safety and fail-closed operator-owned doctrine, not a new durable product direction.
+`PROJECT.md` remains intentionally unchanged: runtime-injection filtering is a stricter implementation of the existing zero-cost/offline/secret-safety, source-provenance and fail-closed operator-owned doctrine, not a new durable product direction.
 
 ## Canonical guaranteed baseline
 
