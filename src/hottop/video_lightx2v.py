@@ -112,14 +112,7 @@ def _require_clean_tracked_git_checkout(root: Path) -> None:
             "LightX2V Git checkout cannot be provenance-verified because git is unavailable"
         )
     completed = subprocess.run(
-        [
-            git_executable,
-            "-C",
-            str(root),
-            "status",
-            "--porcelain",
-            "--untracked-files=no",
-        ],
+        [git_executable, "-C", str(root), "status", "--porcelain", "--untracked-files=no"],
         shell=False,
         capture_output=True,
         text=True,
@@ -136,14 +129,7 @@ def _require_clean_tracked_git_checkout(root: Path) -> None:
         )
 
     untracked = subprocess.run(
-        [
-            git_executable,
-            "-C",
-            str(root),
-            "ls-files",
-            "--others",
-            "-z",
-        ],
+        [git_executable, "-C", str(root), "ls-files", "--others", "-z"],
         shell=False,
         capture_output=True,
         text=True,
@@ -152,9 +138,7 @@ def _require_clean_tracked_git_checkout(root: Path) -> None:
     if untracked.returncode != 0:
         detail = (untracked.stderr or untracked.stdout or "").strip()
         suffix = f": {detail[:500]}" if detail else ""
-        raise LightX2VError(
-            f"LightX2V untracked-file provenance could not be verified{suffix}"
-        )
+        raise LightX2VError(f"LightX2V untracked-file provenance could not be verified{suffix}")
     importable = [
         path
         for path in untracked.stdout.split("\0")
@@ -168,14 +152,7 @@ def _require_clean_tracked_git_checkout(root: Path) -> None:
         )
 
     tracked = subprocess.run(
-        [
-            git_executable,
-            "-C",
-            str(root),
-            "ls-files",
-            "-s",
-            "-z",
-        ],
+        [git_executable, "-C", str(root), "ls-files", "-s", "-z"],
         shell=False,
         capture_output=True,
         text=True,
@@ -184,9 +161,7 @@ def _require_clean_tracked_git_checkout(root: Path) -> None:
     if tracked.returncode != 0:
         detail = (tracked.stderr or tracked.stdout or "").strip()
         suffix = f": {detail[:500]}" if detail else ""
-        raise LightX2VError(
-            f"LightX2V tracked-file provenance could not be verified{suffix}"
-        )
+        raise LightX2VError(f"LightX2V tracked-file provenance could not be verified{suffix}")
     root = root.resolve()
     escaping_symlinks: list[str] = []
     for record in tracked.stdout.split("\0"):
@@ -301,6 +276,34 @@ def _byte_identity(path: Path) -> tuple[str, int]:
     return digest.hexdigest(), size_bytes
 
 
+def _model_tree_identity(model_path: Path) -> tuple[str, int]:
+    """Hash logical model paths and every local file byte without network access."""
+
+    model_path = model_path.resolve()
+    digest = hashlib.sha256()
+    total_size = 0
+    try:
+        entries = sorted(
+            (path for path in model_path.rglob("*") if path.is_file()),
+            key=lambda path: path.relative_to(model_path).as_posix(),
+        )
+        for path in entries:
+            relative = path.relative_to(model_path).as_posix().encode("utf-8")
+            size_bytes = path.stat().st_size
+            digest.update(len(relative).to_bytes(8, "big"))
+            digest.update(relative)
+            digest.update(size_bytes.to_bytes(8, "big"))
+            with path.open("rb") as stream:
+                while chunk := stream.read(1024 * 1024):
+                    digest.update(chunk)
+                    total_size += len(chunk)
+    except (OSError, RuntimeError, ValueError) as exc:
+        raise LightX2VError(
+            f"LightX2V model bytes could not be provenance-verified: {model_path}"
+        ) from exc
+    return digest.hexdigest(), total_size
+
+
 def _generation_request_identity(
     config: LightX2VAdapterConfig,
     *,
@@ -347,9 +350,7 @@ def _local_source_revision(root: Path) -> str:
     if git_dir is not None:
         git_revision = _read_git_revision(root)
         if git_revision is None:
-            raise LightX2VError(
-                "LightX2V Git checkout revision could not be provenance-verified"
-            )
+            raise LightX2VError("LightX2V Git checkout revision could not be provenance-verified")
         return git_revision
     entrypoint = root / "lightx2v" / "infer.py"
     digest, _ = _byte_identity(entrypoint)
@@ -366,6 +367,22 @@ def _require_source_unchanged(root: Path, expected_revision: str) -> None:
         raise LightX2VError(
             "LightX2V source changed during generation; discard the output and rerun "
             "against one stable operator checkout"
+        )
+
+
+def _require_model_unchanged(
+    path: Path,
+    expected_sha256: str,
+    expected_size_bytes: int,
+) -> None:
+    try:
+        actual_sha256, actual_size_bytes = _model_tree_identity(path)
+    except LightX2VError as exc:
+        raise LightX2VError(f"LightX2V model changed during generation: {exc}") from exc
+    if actual_sha256 != expected_sha256 or actual_size_bytes != expected_size_bytes:
+        raise LightX2VError(
+            "LightX2V model changed during generation; discard the output and rerun "
+            "against one stable local model tree"
         )
 
 
@@ -393,9 +410,7 @@ def _require_reference_unchanged(
     try:
         actual_sha256, actual_size_bytes = _byte_identity(path)
     except OSError as exc:
-        raise LightX2VError(
-            f"LightX2V reference image changed during generation: {exc}"
-        ) from exc
+        raise LightX2VError(f"LightX2V reference image changed during generation: {exc}") from exc
     if actual_sha256 != expected_sha256 or actual_size_bytes != expected_size_bytes:
         raise LightX2VError(
             "LightX2V reference image changed during generation; discard the output and rerun "
@@ -411,6 +426,8 @@ def _write_artifact_manifest(
     *,
     config: LightX2VAdapterConfig,
     candidate_revision: str,
+    generation_model_sha256: str,
+    generation_model_size_bytes: int,
     generation_config_sha256: str,
     generation_config_size_bytes: int,
     generation_request_sha256: str,
@@ -435,6 +452,8 @@ def _write_artifact_manifest(
                 candidate_revision=candidate_revision,
                 sha256=sha256,
                 size_bytes=size_bytes,
+                generation_model_sha256=generation_model_sha256,
+                generation_model_size_bytes=generation_model_size_bytes,
                 generation_config_sha256=generation_config_sha256,
                 generation_config_size_bytes=generation_config_size_bytes,
                 generation_request_sha256=generation_request_sha256,
@@ -486,6 +505,8 @@ def run_lightx2v_shot(
     config = config.model_copy(update={"root": root})
     _preflight(config)
     source_revision = _local_source_revision(root)
+    model_path = config.model_path.resolve()
+    generation_model_sha256, generation_model_size_bytes = _model_tree_identity(model_path)
     config_json = config.config_json.resolve()
     try:
         generation_config_sha256, generation_config_size_bytes = _byte_identity(config_json)
@@ -558,6 +579,11 @@ def run_lightx2v_shot(
         )
     try:
         _require_source_unchanged(root, source_revision)
+        _require_model_unchanged(
+            model_path,
+            generation_model_sha256,
+            generation_model_size_bytes,
+        )
         _require_config_unchanged(
             config_json,
             generation_config_sha256,
@@ -585,6 +611,8 @@ def run_lightx2v_shot(
         _write_artifact_manifest(
             config=config,
             candidate_revision=source_revision,
+            generation_model_sha256=generation_model_sha256,
+            generation_model_size_bytes=generation_model_size_bytes,
             generation_config_sha256=generation_config_sha256,
             generation_config_size_bytes=generation_config_size_bytes,
             generation_request_sha256=generation_request_sha256,
