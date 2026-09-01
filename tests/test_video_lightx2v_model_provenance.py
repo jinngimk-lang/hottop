@@ -102,3 +102,32 @@ def test_lightx2v_rejects_model_mutation_during_generation(tmp_path):
 
     assert not output.exists()
     assert not manifest_path.exists()
+
+
+def test_lightx2v_rejects_empty_local_model_tree_before_gpu_generation(tmp_path):
+    config = _config(tmp_path)
+    for path in config.model_path.iterdir():
+        path.unlink()
+    output = tmp_path / "shots" / "shot-empty-model.mp4"
+    calls = {"gpu": 0, "runner": 0}
+
+    def gpu_probe() -> None:
+        calls["gpu"] += 1
+
+    def runner(command, **_kwargs):
+        calls["runner"] += 1
+        return subprocess.CompletedProcess(command, 0, "ok", "")
+
+    with pytest.raises(LightX2VError, match="model tree contains no local file bytes"):
+        run_lightx2v_shot(
+            config,
+            prompt="original subject performs the requested action",
+            negative_prompt="identity drift",
+            output=output,
+            runner=runner,
+            gpu_probe=gpu_probe,
+            quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
+        )
+
+    assert calls == {"gpu": 0, "runner": 0}
+    assert not output.exists()
