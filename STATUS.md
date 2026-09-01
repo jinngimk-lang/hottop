@@ -8,20 +8,20 @@ Current milestone: **Production v0.2 — repeatable real video output**
 
 ## Current verified repository truth
 
-Latest merged production point is **`main@ecb6ecf57a577edecb8737e80fdd7a994f0b5de4`** (`Fail closed on empty LightX2V model trees`, PR #384), SHA-locked squash-merged from exact verified head `4bc1e84d120a49b6013dc5851d7c651b0d2ef77d`.
+Latest merged production point is **`main@9e19c7a611cd40e5beebc6a5c464362240dd3847`** (`Sanitize LightX2V offline subprocess environment`, PR #386), SHA-locked squash-merged from exact verified head `9691ed8ca8b013ac1987d6d55a8617c33dd0793f`.
 
-TDD/production evidence:
+Latest TDD/production evidence:
 
-- RED `119ed1bd84d035ecee2a31999a46f1bf04a0b04e`: CI #2617 reached pytest after clean Ruff and Python 3.11 failed on the new empty-model regression; Python 3.12 was cancelled by fail-fast after the demonstrated failure.
-- First GREEN implementation `3439331f7f79aa51b038cf08d833992e76eaf98f` made empty trees fail closed. CI #2618 then exposed 15 unrealistic legacy fixtures that represented a supposedly provisioned model with an empty directory; those fixtures were corrected to contain minimal local test model bytes while the dedicated empty-tree regression remains empty.
-- Final exact head `4bc1e84d120a49b6013dc5851d7c651b0d2ef77d`: CI #2624 passed Ruff + full pytest on Python 3.11 and 3.12.
-- production-smoke #311 passed checked-in anti-polish cow + cinematic Odyssey execution, final-media/provenance verification and evidence upload; artifact `hottop-software3d-production-smoke` was 688,374 bytes with digest `sha256:bbef2b1bf25075cfaebca2640897cbb6211164116fedf5c727bd26847d343230`.
-- cinematic-delivery-smoke #178 passed actual 720p24 Odyssey delivery, runtime provenance, final-media verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 623,328 bytes with digest `sha256:b0c86c6de56524eb0b7c5189f636153cf4d60a6bf533df5231b7feee783b4eab`.
-- Draft PR #383 used the same verified head but could not be transitioned to ready because the connected GitHub GraphQL mutation failed at the tool/schema layer. It was closed without code change and replaced by non-draft PR #384 at the identical exact head; no verification or merge protection was bypassed.
+- RED `ad1fa516...`: CI #2629 demonstrated that the old LightX2V child environment still inherited unrelated API tokens/secrets and proxy settings despite offline flags.
+- GREEN exact head `9691ed8ca8b013ac1987d6d55a8617c33dd0793f`: CI #2630 passed Ruff + full pytest on Python 3.11 and 3.12 after removing proxy keys and secret-like `*_API_KEY`, `*_TOKEN`, `*_SECRET`, `*_PASSWORD` variables while preserving local runtime controls and forcing offline/telemetry-disable flags.
+- production-smoke #314 passed checked-in anti-polish cow + cinematic Odyssey execution, final-media/provenance verification and evidence upload; artifact `hottop-software3d-production-smoke` was 687,895 bytes with digest `sha256:f217b610d9df7cf8369b49c978061658fc56db53ee04f4700e6ebe8bc4bbea8f`.
+- cinematic-delivery-smoke #181 passed actual 720p24 Odyssey delivery, runtime provenance, final-media verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 624,450 bytes with digest `sha256:50192c1ba0dd5d841812f27e1e7c46140a8d4ef39584a267e44e2f03bc96c0a9`.
 
-The LightX2V operator route now requires the recursively measured configured local model tree to contain **non-zero local file bytes** before GPU probe or inference. It then binds that tree by deterministic SHA-256 + total bytes before generation, records `generation_model_sha256` / `generation_model_size_bytes`, and recomputes the tree after generation. Empty, changed or unreadable model trees fail closed; changed generation state deletes the produced shot before quality acceptance. This is local/read-only evidence: no model download, installation, GPU provisioning, hosted endpoint or paid fallback is introduced.
+The LightX2V operator route now minimizes the environment inherited by its inference subprocess: unrelated proxy settings and common secret-like credential variables are stripped, `PYTHONPATH` is pinned to the reviewed checkout, local runtime controls such as CUDA visibility remain available, and Hugging Face/Transformers/Datasets offline plus telemetry-disable flags are forced. This is defense-in-depth for the existing offline operator route; it does not install, download, provision, call hosted services or consume credits.
 
-The generated-video media gate still validates ffprobe metadata shape, finite duration/fps, integer-convertible positive dimensions, conservative compositor-usability floors of **0.5 s duration, 256 px width, 256 px height and 8 fps**, exactly one complete raw terminal frame of **`width × height` bytes**, and aligned motion samples with sufficient temporal coverage. Those checks are necessary media integrity, not identity/action/semantic proof.
+The route also requires the recursively measured configured local model tree to contain **non-zero local file bytes** before GPU probe or inference. It then binds that tree by deterministic SHA-256 + total bytes before generation, records `generation_model_sha256` / `generation_model_size_bytes`, and recomputes the tree after generation. Empty, changed or unreadable model trees fail closed; changed generation state deletes the produced shot before quality acceptance.
+
+The generated-video media gate validates ffprobe metadata shape, finite duration/fps, integer-convertible positive dimensions, conservative compositor-usability floors of **0.5 s duration, 256 px width, 256 px height and 8 fps**, exactly one complete raw terminal frame of **`width × height` bytes**, and aligned motion samples with sufficient temporal coverage. Those checks are necessary media integrity, not identity/action/semantic proof.
 
 Durable evidence records now include:
 
@@ -35,10 +35,11 @@ Durable evidence records now include:
 - `docs/research/2026-09-01-ffprobe-metadata-shape-integrity.md`
 - `docs/research/2026-09-01-lightx2v-model-byte-provenance.md`
 - `docs/research/2026-09-01-lightx2v-nonempty-model-preflight.md`
+- `docs/research/2026-09-01-lightx2v-offline-environment-isolation.md`
 
-The previous LightX2V protections remain in force: bounded local NVIDIA preflight; fresh target invalidation; offline and runtime-bounded execution; exact request/source/config provenance; rights-safe I2V reference SHA-256 + byte-count + rights binding; rejection of source/config/reference/model mutation; dirty/ambiguous source and escaping tracked-symlink rejection.
+The previous LightX2V protections remain in force: bounded local NVIDIA preflight; fresh target invalidation; offline and runtime-bounded execution; exact request/source/config provenance; rights-safe I2V reference SHA-256 + byte-count + rights binding; rejection of source/config/reference/model mutation; dirty/ambiguous source, untracked importable runtime files and escaping tracked-symlink rejection.
 
-`PROJECT.md` remains intentionally unchanged: requiring actual local model bytes is a stricter implementation of the existing artifact/provenance and fail-closed operator-owned doctrine, not a new durable direction.
+`PROJECT.md` remains intentionally unchanged: subprocess environment minimization is a stricter implementation of the existing zero-cost/offline/secret-safety and fail-closed operator-owned doctrine, not a new durable product direction.
 
 ## Canonical guaranteed baseline
 
@@ -66,20 +67,21 @@ Prepared local candidates remain operator-provisioned/no-auto-download. Comparab
 
 ## Fresh ecosystem radar — 2026-09-01
 
-- **LightX2V** public tip remains `2ea24fe794f3bc488d9cd9473cc97d6094bbf00f`; latest material work remains SeedVR distributed-operation focused and does not provide Hottop-measured Wan2.2 I2V identity/requested-action benefit. Continue **no freshness-only repin**.
-- The official **Wan2.2-I2V-A14B** repository continues to present an Apache-2.0 license. Hottop treats exact local model bytes as run evidence rather than inferring provenance from a directory name; a deterministic digest of an empty tree is now explicitly rejected.
-- Upstream LightX2V/Wan2.2 warning reports continue to show that technically successful runs can produce degraded, static or meaningless content. Treat those reports as external warnings rather than Hottop benchmarks; keep provenance, media, semantic, identity and requested-action gates separate.
+- **LightX2V** remains the primary tested operator-owned framework candidate; do not repin for freshness alone. Admit a newer revision only when license/runtime review and Hottop same-case evidence show material value for Wan2.2 I2V identity/requested-action quality or a measured runtime gap.
+- The official **Wan2.2-I2V-A14B** path remains model-byte-bound at runtime. Hottop does not infer provenance or quality from a model/directory name.
+- Upstream warnings that successful generation can still be static, degraded or semantically meaningless remain relevant: provenance/media integrity and semantic/identity/requested-action gates stay separate.
 - Specialized acceleration/model forks remain gated where effective execution composes external weights/LoRAs/compiled assets without a fully reviewed code+weights+artifact provenance/license chain and Hottop same-case evidence.
-- Recent **Qwen3-TTS** serving work reports measurable Mandarin CER improvements, but operator-owned local/offline serving stays benchmark-only until exact runtime/model/weight provenance is reviewed and same-line Hottop Mandarin evidence wins. SGLang-Omni remains a candidate serving route, not an unattended dependency.
-- No candidate in this cycle clears admission strongly enough to replace the guaranteed software3d route, the tested LightX2V/Wan2.2 operator route or prepared local TTS candidates.
+- **Qwen3-TTS** remains an operator-owned local benchmark candidate; serving/runtime freshness does not enter unattended production without exact model/runtime/license provenance and same-line Mandarin evidence.
+- No candidate currently clears admission strongly enough to replace the guaranteed software3d route, the tested LightX2V/Wan2.2 operator route or prepared local TTS candidates.
 
 ## Immediate next actions
 
 1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
 2. When a reviewed local LightX2V checkout, exact non-empty Wan2.2 model/config and suitable operator NVIDIA GPU are genuinely provisioned, run fail-closed preflight and generate at least two subject-bearing rights-safe I2V shots.
 3. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact model/request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition; valid metadata and stable bytes are necessary but not sufficient.
-4. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates; SGLang-Omni may be benchmarked only as a reviewed operator-owned serving route, never auto-provisioned.
-5. Continue targeted ecosystem radar around measured gaps; do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+4. Continue hardening only concrete operator-route gaps that can be proven with tests without pretending they substitute for real generated-media evidence.
+5. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
+6. Continue targeted ecosystem radar around measured gaps; do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
 ## Recovery order
 
