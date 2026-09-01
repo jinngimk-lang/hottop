@@ -28,6 +28,12 @@ _RUNTIME_INJECTION_ENV_KEYS = {
     "PYTHONINSPECT",
     "PYTHONUSERBASE",
 }
+_SENSITIVE_CREDENTIAL_ENV_KEYS = {
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SHARED_CREDENTIALS_FILE",
+    "GOOGLE_APPLICATION_CREDENTIALS",
+    "CLOUDSDK_CONFIG",
+}
 _SECRET_ENV_SUFFIXES = ("_API_KEY", "_TOKEN", "_SECRET", "_PASSWORD")
 
 
@@ -254,6 +260,7 @@ def _offline_environment(root: Path) -> dict[str, str]:
         for key, value in os.environ.items()
         if key.upper() not in _NETWORK_ENV_KEYS
         and key.upper() not in _RUNTIME_INJECTION_ENV_KEYS
+        and key.upper() not in _SENSITIVE_CREDENTIAL_ENV_KEYS
         and not key.upper().endswith(_SECRET_ENV_SUFFIXES)
     }
     env["PYTHONPATH"] = str(root)
