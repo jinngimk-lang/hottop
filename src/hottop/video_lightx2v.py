@@ -491,6 +491,14 @@ def _candidate_id(config: LightX2VAdapterConfig) -> str:
     return f"lightx2v-wan22-{config.task}"
 
 
+def _path_within(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+
 def _write_artifact_manifest(
     *,
     config: LightX2VAdapterConfig,
@@ -565,35 +573,43 @@ def run_lightx2v_shot(
     """Run one already-installed LightX2V Wan2.2 shot in network-offline mode."""
 
     output = output.resolve()
+    root = config.root.resolve()
+    model_path = config.model_path.resolve()
     config_json = config.config_json.resolve()
     resolved_reference = reference_image.resolve() if reference_image is not None else None
-    if output == config_json:
-        raise LightX2VError("LightX2V output path overlaps protected operator input: generation config")
-    if resolved_reference is not None and output == resolved_reference:
-        raise LightX2VError("LightX2V output path overlaps protected operator input: reference image")
+
+    def reject_protected_target(target: Path, label: str) -> None:
+        if _path_within(target, root):
+            raise LightX2VError(
+                f"LightX2V {label} path overlaps protected operator input: operator checkout"
+            )
+        if _path_within(target, model_path):
+            raise LightX2VError(
+                f"LightX2V {label} path overlaps protected operator input: model tree"
+            )
+        if target == config_json:
+            raise LightX2VError(
+                f"LightX2V {label} path overlaps protected operator input: generation config"
+            )
+        if resolved_reference is not None and target == resolved_reference:
+            raise LightX2VError(
+                f"LightX2V {label} path overlaps protected operator input: reference image"
+            )
+
+    reject_protected_target(output, "output")
     if artifact_manifest is not None:
         artifact_manifest = artifact_manifest.resolve()
         if artifact_manifest == output:
             raise LightX2VError("LightX2V artifact manifest path must differ from video output")
-        if artifact_manifest == config_json:
-            raise LightX2VError(
-                "LightX2V artifact manifest path overlaps protected operator input: generation config"
-            )
-        if resolved_reference is not None and artifact_manifest == resolved_reference:
-            raise LightX2VError(
-                "LightX2V artifact manifest path overlaps protected operator input: reference image"
-            )
+        reject_protected_target(artifact_manifest, "artifact manifest")
     output.unlink(missing_ok=True)
     if artifact_manifest is not None:
         artifact_manifest.unlink(missing_ok=True)
 
-    root = config.root.resolve()
     config = config.model_copy(update={"root": root})
     _preflight(config)
     source_revision = _local_source_revision(root)
-    model_path = config.model_path.resolve()
     generation_model_sha256, generation_model_size_bytes = _model_tree_identity(model_path)
-    config_json = config.config_json.resolve()
     try:
         generation_config_sha256, generation_config_size_bytes = _byte_identity(config_json)
     except OSError as exc:
