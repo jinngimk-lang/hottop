@@ -48,3 +48,19 @@ def test_lightx2v_offline_environment_disables_unbound_user_site_packages(monkey
 
     assert "PYTHONUSERBASE" not in env
     assert env["PYTHONNOUSERSITE"] == "1"
+
+
+def test_lightx2v_offline_environment_does_not_forward_cloud_credential_handles(monkeypatch):
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "must-not-reach-operator-runtime")
+    monkeypatch.setenv("AWS_SHARED_CREDENTIALS_FILE", "/tmp/unbound-aws-credentials")
+    monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", "/tmp/unbound-google-credentials.json")
+    monkeypatch.setenv("CLOUDSDK_CONFIG", "/tmp/unbound-gcloud-config")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0")
+
+    env = _offline_environment(Path("/operator/LightX2V"))
+
+    assert "AWS_ACCESS_KEY_ID" not in env
+    assert "AWS_SHARED_CREDENTIALS_FILE" not in env
+    assert "GOOGLE_APPLICATION_CREDENTIALS" not in env
+    assert "CLOUDSDK_CONFIG" not in env
+    assert env["CUDA_VISIBLE_DEVICES"] == "0"
