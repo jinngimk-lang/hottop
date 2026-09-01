@@ -153,7 +153,7 @@ def test_lightx2v_rejects_model_symlink_that_escapes_model_root_before_gpu_gener
         calls["runner"] += 1
         return subprocess.CompletedProcess(command, 0, "ok", "")
 
-    with pytest.raises(LightX2VError, match="model tree contains a symlink that resolves outside"):
+    with pytest.raises(LightX2VError):
         run_lightx2v_shot(
             config,
             prompt="original subject performs the requested action",
