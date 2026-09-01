@@ -40,6 +40,15 @@ class VideoShotArtifact(BaseModel):
     degradation_reason: str | None = None
     sha256: str | None = None
     size_bytes: int | None = Field(default=None, gt=0)
+    generation_model_sha256: str | None = Field(
+        default=None,
+        exclude_if=lambda value: value is None,
+    )
+    generation_model_size_bytes: int | None = Field(
+        default=None,
+        ge=0,
+        exclude_if=lambda value: value is None,
+    )
     generation_config_sha256: str | None = Field(
         default=None,
         exclude_if=lambda value: value is None,
@@ -101,6 +110,19 @@ class VideoShotArtifact(BaseModel):
             raise ValueError("artifact byte identity requires both sha256 and size_bytes")
         if self.sha256 is not None and not _SHA256_RE.fullmatch(self.sha256):
             raise ValueError("artifact sha256 must be a lowercase 64-character hex digest")
+
+        if (self.generation_model_sha256 is None) != (
+            self.generation_model_size_bytes is None
+        ):
+            raise ValueError(
+                "generation model byte identity requires both sha256 and size_bytes"
+            )
+        if self.generation_model_sha256 is not None and not _SHA256_RE.fullmatch(
+            self.generation_model_sha256
+        ):
+            raise ValueError(
+                "generation model sha256 must be a lowercase 64-character hex digest"
+            )
 
         if (self.generation_config_sha256 is None) != (
             self.generation_config_size_bytes is None
