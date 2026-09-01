@@ -568,9 +568,12 @@ def run_lightx2v_shot(
     config_json = config.config_json.resolve()
     if output == config_json:
         raise LightX2VError("LightX2V output path overlaps protected operator input: generation config")
-    output.unlink(missing_ok=True)
     if artifact_manifest is not None:
         artifact_manifest = artifact_manifest.resolve()
+        if artifact_manifest == output:
+            raise LightX2VError("LightX2V artifact manifest path must differ from video output")
+    output.unlink(missing_ok=True)
+    if artifact_manifest is not None:
         artifact_manifest.unlink(missing_ok=True)
 
     root = config.root.resolve()
