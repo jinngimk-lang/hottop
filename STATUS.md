@@ -8,18 +8,18 @@ Current milestone: **Production v0.2 — repeatable real video output**
 
 ## Current verified repository truth
 
-Latest merged production point is **`main@0415e0ff59042dc923c3f08c7e5a1a43da8d09c3`** (`Fail closed on LightX2V runtime injection environment`, PR #388), SHA-locked squash-merged from exact verified head `5b291939994b611dfd4083786fcf65e2c20652ae`.
+Latest merged production point is **`main@4e93024aee9e58edbd9c2d5304c845462b6d953e`** (`Fail closed on LightX2V user-site injection`, PR #390), SHA-locked squash-merged from exact verified head `6cbca6a940c24221f7fbc1569988759a25c7cb64`.
 
 Latest TDD/production evidence:
 
-- RED `653521087bb1f57f892539412037965b20ff854c`: CI #2634 reached clean Ruff and failed pytest on the new regression proving that the old LightX2V child environment still inherited interpreter/loader injection controls including `LD_PRELOAD`, `PYTHONHOME`, `PYTHONSTARTUP`, and `PYTHONINSPECT`.
-- GREEN exact head `5b291939994b611dfd4083786fcf65e2c20652ae`: CI #2635 passed Ruff + full pytest on Python 3.11 and 3.12 after stripping those runtime-injection controls while preserving legitimate local runtime configuration such as `LD_LIBRARY_PATH`.
-- production-smoke #316 passed checked-in anti-polish cow + cinematic Odyssey execution, final-media/provenance verification and evidence upload; artifact `hottop-software3d-production-smoke` was 687,895 bytes with digest `sha256:7f3c4097e14bf192978c5f936853b818d430b4234fe05dca7a32998a80e5d17c`.
-- cinematic-delivery-smoke #183 passed actual 720p24 Odyssey delivery, runtime provenance, final-media verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 624,451 bytes with digest `sha256:e8e3822c6e9cb826d6dc58384632d22446d096c803be28f115bea717d0a4a034`.
+- RED `2927227b8017993754359bfdd8b9962f09d57503`: CI #2638 reached clean Ruff and failed pytest on Python 3.11, proving the old LightX2V child environment still allowed an inherited `PYTHONUSERBASE` to influence user site-packages outside recorded source provenance; Python 3.12 was cancelled by fail-fast after the defect was demonstrated.
+- GREEN exact head `6cbca6a940c24221f7fbc1569988759a25c7cb64`: CI #2640 passed Ruff + full pytest on Python 3.11 and 3.12 after stripping `PYTHONUSERBASE` and forcing `PYTHONNOUSERSITE=1` while retaining the reviewed checkout `PYTHONPATH`, offline flags and legitimate local runtime controls.
+- production-smoke #318 passed checked-in anti-polish cow + cinematic Odyssey execution, final-media/provenance verification and evidence upload; artifact `hottop-software3d-production-smoke` was 687,894 bytes with digest `sha256:eeaf865f446d215a287c660a97af793401a0b692219bd8b9ae5f4ff4b4febf96`.
+- cinematic-delivery-smoke #185 passed actual 720p24 Odyssey delivery, runtime provenance, final-media verification and evidence upload; artifact `hottop-cinematic-software3d-delivery` was 624,450 bytes with digest `sha256:18c7f2ae1f6bbc40bf84e2e1b472c0aa114c2c53c4324715e84a077618cb557e`.
 
-The LightX2V operator route now minimizes the environment inherited by its inference subprocess: unrelated proxy settings, common secret-like credential variables, and interpreter/loader injection controls are stripped; `PYTHONPATH` is pinned to the reviewed checkout; legitimate local runtime controls such as CUDA visibility and `LD_LIBRARY_PATH` remain available; and Hugging Face/Transformers/Datasets offline plus telemetry-disable flags are forced. This is defense-in-depth for the existing offline operator route; it does not install, download, provision, call hosted services or consume credits.
+The LightX2V operator route now minimizes the environment inherited by its inference subprocess: unrelated proxy settings, common secret-like credential variables, interpreter/loader injection controls and `PYTHONUSERBASE` are stripped; `PYTHONPATH` is pinned to the reviewed checkout; `PYTHONNOUSERSITE=1` prevents implicit user-site imports; legitimate local runtime controls such as CUDA visibility and `LD_LIBRARY_PATH` remain available; and Hugging Face/Transformers/Datasets offline plus telemetry-disable flags are forced. This is defense-in-depth for the existing offline operator route; it does not install, download, provision, call hosted services or consume credits.
 
-The route also requires the recursively measured configured local model tree to contain **non-zero local file bytes** before GPU probe or inference. It then binds that tree by deterministic SHA-256 + total bytes before generation, records `generation_model_sha256` / `generation_model_size_bytes`, and recomputes the tree after generation. Empty, changed or unreadable model trees fail closed; changed generation state deletes the produced shot before quality acceptance.
+The route also requires the recursively measured configured local model tree to contain **non-zero local file bytes** before GPU probe or inference. It binds that tree by deterministic SHA-256 + total bytes before generation, records `generation_model_sha256` / `generation_model_size_bytes`, and recomputes the tree after generation. Empty, changed or unreadable model trees fail closed; changed generation state deletes the produced shot before quality acceptance.
 
 The generated-video media gate validates ffprobe metadata shape, finite duration/fps, integer-convertible positive dimensions, conservative compositor-usability floors of **0.5 s duration, 256 px width, 256 px height and 8 fps**, exactly one complete raw terminal frame of **`width × height` bytes**, and aligned motion samples with sufficient temporal coverage. Those checks are necessary media integrity, not identity/action/semantic proof.
 
@@ -37,10 +37,11 @@ Durable evidence records now include:
 - `docs/research/2026-09-01-lightx2v-nonempty-model-preflight.md`
 - `docs/research/2026-09-01-lightx2v-offline-environment-isolation.md`
 - `docs/research/2026-09-01-lightx2v-runtime-injection-environment.md`
+- `docs/research/2026-09-01-lightx2v-user-site-isolation.md`
 
 The previous LightX2V protections remain in force: bounded local NVIDIA preflight; fresh target invalidation; offline and runtime-bounded execution; exact request/source/config provenance; rights-safe I2V reference SHA-256 + byte-count + rights binding; rejection of source/config/reference/model mutation; dirty/ambiguous source, untracked importable runtime files and escaping tracked-symlink rejection.
 
-`PROJECT.md` remains intentionally unchanged: runtime-injection filtering is a stricter implementation of the existing zero-cost/offline/secret-safety, source-provenance and fail-closed operator-owned doctrine, not a new durable product direction.
+`PROJECT.md` remains intentionally unchanged: user-site isolation is a stricter implementation of the existing zero-cost/offline/source-provenance and fail-closed operator-owned doctrine, not a new durable product direction.
 
 ## Canonical guaranteed baseline
 
@@ -68,7 +69,7 @@ Prepared local candidates remain operator-provisioned/no-auto-download. Comparab
 
 ## Fresh ecosystem radar — 2026-09-01
 
-- **LightX2V** remains the primary tested operator-owned framework candidate; do not repin for freshness alone. Admit a newer revision only when license/runtime review and Hottop same-case evidence show material value for Wan2.2 I2V identity/requested-action quality or a measured runtime gap.
+- **LightX2V** public `main` advanced to `fabd8fcad22b877ed332d567225b806c24ccd7be` with `Update LightX2V Studio models (#1468)`, but the material diff observed is the hosted Studio README model list (including Minimax H3 / Wan2.2 / SekoTalk / Qwen-Image / SwiftVR), not Hottop same-case local Wan2.2 I2V identity/requested-action evidence. **No freshness-only repin.**
 - The official **Wan2.2-I2V-A14B** path remains model-byte-bound at runtime. Hottop does not infer provenance or quality from a model/directory name.
 - Upstream warnings that successful generation can still be static, degraded or semantically meaningless remain relevant: provenance/media integrity and semantic/identity/requested-action gates stay separate.
 - Specialized acceleration/model forks remain gated where effective execution composes external weights/LoRAs/compiled assets without a fully reviewed code+weights+artifact provenance/license chain and Hottop same-case evidence.
