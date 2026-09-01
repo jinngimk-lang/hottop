@@ -52,6 +52,7 @@ def test_lightx2v_offline_environment_disables_unbound_user_site_packages(monkey
 
 def test_lightx2v_offline_environment_does_not_forward_cloud_credential_handles(monkeypatch):
     monkeypatch.setenv("AWS_ACCESS_KEY_ID", "must-not-reach-operator-runtime")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "must-not-reach-operator-runtime")
     monkeypatch.setenv("AWS_SHARED_CREDENTIALS_FILE", "/tmp/unbound-aws-credentials")
     monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", "/tmp/unbound-google-credentials.json")
     monkeypatch.setenv("CLOUDSDK_CONFIG", "/tmp/unbound-gcloud-config")
@@ -60,6 +61,7 @@ def test_lightx2v_offline_environment_does_not_forward_cloud_credential_handles(
     env = _offline_environment(Path("/operator/LightX2V"))
 
     assert "AWS_ACCESS_KEY_ID" not in env
+    assert "AWS_SECRET_ACCESS_KEY" not in env
     assert "AWS_SHARED_CREDENTIALS_FILE" not in env
     assert "GOOGLE_APPLICATION_CREDENTIALS" not in env
     assert "CLOUDSDK_CONFIG" not in env
