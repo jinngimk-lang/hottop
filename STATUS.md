@@ -10,7 +10,7 @@ Current milestone: **Production v0.2 — repeatable real video output**
 
 Latest merged production-code point is **`d372c6709ab32dbcdd1fe25ab13025c540c1873c`** (`Fail closed on escaping LightX2V model symlinks`, PR #406), SHA-locked squash-merged from exact verified head `824a57122fe91f8898278f2f6bc6d5cef240dd06`.
 
-Latest merged repository/evidence point is **`main@a15214f41d328631757eb4435db861a9242d65d5`** (`Record LightX2V model symlink boundary evidence`, PR #407). Its exact main push CI #2692 completed successfully. There are no open PRs at this recovery point.
+Most recent repository/evidence point verified before this snapshot update is **`main@3be74911ada2f8d62ec8e2b8c084a2ae33327274`** (`Refresh Production v0.2 status after model symlink evidence`, PR #408). PR #408 merged from exact head `49b066eebcaaad210820da21b554fbba0d1ab2df` after both Python 3.11 and 3.12 checks completed successfully. Re-fetch live GitHub state for anything newer rather than treating this historical point as a self-updating pointer.
 
 Latest TDD/production evidence:
 
@@ -20,9 +20,9 @@ Latest TDD/production evidence:
 - production-smoke #335 passed the checked-in zero-cost software3d cow + Odyssey execution plus final-media/provenance verification; artifact `hottop-software3d-production-smoke` is **687,895 bytes**, digest `sha256:f5b4c912b86a9e07c886fbd8b5a454536ee4eb45c4e25d6d34158467e353fdf3`.
 - cinematic-delivery-smoke #202 passed actual 720p24 Odyssey delivery, runtime provenance and final-media verification; artifact `hottop-cinematic-software3d-delivery` is **624,453 bytes**, digest `sha256:a6a8d9f495cd6ef2dcf3fc7acac067123285126d386acc6696131dda786d1b15`. Seam evidence: `intra_p95=0.934`, `max_delta=4.185`, `max_ratio=4.481`.
 
-Latest durable production evidence record: `docs/research/2026-09-01-lightx2v-model-symlink-boundary.md`. Earlier 2026-09-01 records remain the detailed evidence history for strict JSON parsing, credential/runtime isolation, model/source/config/reference byte binding and generated-video media integrity.
+Latest durable production evidence record: `docs/research/2026-09-01-lightx2v-model-symlink-boundary.md`. Latest operator-candidate radar record: `docs/research/2026-09-01-wan22-sdnq-operator-candidate.md`. Earlier 2026-09-01 records remain the detailed evidence history for strict JSON parsing, credential/runtime isolation, model/source/config/reference byte binding and generated-video media integrity.
 
-`PROJECT.md` remains intentionally unchanged by #406/#407: bounding model symlinks to the reviewed local model root is a stricter implementation of existing ZERO_COST/local-preflight/fail-closed/provenance doctrine, not a new durable product direction.
+`PROJECT.md` remains intentionally unchanged: model symlink containment and the SDNQ admission decision both apply existing ZERO_COST/local-preflight/fail-closed/license/provenance/quality doctrine rather than introducing a new durable product direction.
 
 ## Canonical guaranteed baseline
 
@@ -57,6 +57,7 @@ The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVo
 - **LightX2V** public `main` remains `26cfa87782e109ffdccb20d5f437561cefa9a530` (`fix: prevent first-step recompilation in MiniMax-H3 attention (#1469)`). This is MiniMax-H3 compile-performance maintenance, not same-case Wan2.2 I2V identity/requested-action evidence; there is **no freshness-only repin**.
 - The upstream checkout currently declares three ROS/simulator submodules (`LIBERO`, `RoboTwin`, `RoboLab`). Existing Git clean-check behavior already detects initialized gitlink commit drift/dirty tracked state; these simulator submodules are not evidence of a Wan2.2 I2V production-quality gain, so Hottop does not add speculative submodule-specific inference machinery without a demonstrated gap.
 - Open upstream reports still separate successful execution from useful output: #895 reports correct-length I2V output with static frames, #1170 reports meaningless color/light output, #603 reports materially worse content/motion than a comparable Diffusers path, and #1246 reports image-conditioning LoRA keys that fail to match during a Wan2.2 distilled merge path.
+- **SDNQ low-memory Wan2.2 candidate:** `Disty0/sdnq@06c83b3878d7240da5d8b8c94ae798af9a047e6b` is package version 0.2.7 and **GPL-3.0-only** code, while `Disty0/Wan2.2-I2V-A14B-SDNQ-uint4-svd-r32` is published as **Apache-2.0** quantized weights. This code/weights license split is material. The route also requires separately provisioned runtime/model assets and lacks Hottop same-reference identity/requested-action A/B, so it stays gated: no vendoring, no unattended install/download, no claim that LightX2V issue #700 proves interoperability.
 - Distilled/accelerated Wan2.2 I2V routes remain gated where exact code+weights+config provenance, image-conditioning correctness, license chain or Hottop same-case identity/requested-action quality is unproven.
 - Qwen3-TTS alternate runtimes remain candidates, not unattended defaults, until exact code/weights/runtime/license review plus same-line Mandarin listening evidence demonstrates measurable value.
 - No candidate currently clears admission strongly enough to replace the guaranteed software3d route or the reviewed LightX2V/Wan2.2 operator route.
@@ -67,8 +68,9 @@ The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVo
 2. When a reviewed local LightX2V checkout, exact non-empty Wan2.2 model/config and suitable operator NVIDIA GPU are genuinely provisioned, generate at least two subject-bearing rights-safe I2V shots.
 3. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact model/request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition.
 4. Extend local LightX2V validation only when a version-safe requirement is proven by RED→GREEN evidence; do not grow a guessed upstream field schema or speculative provenance checks disconnected from the actual inference path.
-5. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
-6. Continue targeted ecosystem radar around the measured gap; no freshness-only pins, large dependencies, hosted paid fallback or provider abstraction without measurable value and rollback.
+5. Keep SDNQ as an operator-owned benchmark candidate only. Before any adapter, review exact deployment/license shape, provision runtime/model outside unattended execution, and require a rights-safe same-reference Wan2.2 I2V A/B through existing Hottop media/identity/action gates.
+6. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
+7. Continue targeted ecosystem radar around the measured gap; no freshness-only pins, large dependencies, hosted paid fallback or provider abstraction without measurable value and rollback.
 
 ## Recovery order
 
