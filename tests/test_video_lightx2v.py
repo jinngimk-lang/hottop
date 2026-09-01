@@ -25,6 +25,7 @@ def _installation(tmp_path: Path) -> tuple[Path, Path, Path]:
     config_json.write_text("{}\n", encoding="utf-8")
     model_path = tmp_path / "Wan2.2-I2V-A14B"
     model_path.mkdir()
+    (model_path / "weights.bin").write_bytes(b"test-model-bytes")
     return root, config_json, model_path
 
 
