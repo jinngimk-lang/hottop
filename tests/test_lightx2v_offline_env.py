@@ -54,8 +54,11 @@ def test_lightx2v_offline_environment_does_not_forward_cloud_credential_handles(
     monkeypatch.setenv("AWS_ACCESS_KEY_ID", "must-not-reach-operator-runtime")
     monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "must-not-reach-operator-runtime")
     monkeypatch.setenv("AWS_SHARED_CREDENTIALS_FILE", "/tmp/unbound-aws-credentials")
+    monkeypatch.setenv("AWS_CONFIG_FILE", "/tmp/unbound-aws-config")
     monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", "/tmp/unbound-google-credentials.json")
     monkeypatch.setenv("CLOUDSDK_CONFIG", "/tmp/unbound-gcloud-config")
+    monkeypatch.setenv("AZURE_CONFIG_DIR", "/tmp/unbound-azure-config")
+    monkeypatch.setenv("SSH_AUTH_SOCK", "/tmp/unbound-ssh-agent.sock")
     monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0")
 
     env = _offline_environment(Path("/operator/LightX2V"))
@@ -63,6 +66,9 @@ def test_lightx2v_offline_environment_does_not_forward_cloud_credential_handles(
     assert "AWS_ACCESS_KEY_ID" not in env
     assert "AWS_SECRET_ACCESS_KEY" not in env
     assert "AWS_SHARED_CREDENTIALS_FILE" not in env
+    assert "AWS_CONFIG_FILE" not in env
     assert "GOOGLE_APPLICATION_CREDENTIALS" not in env
     assert "CLOUDSDK_CONFIG" not in env
+    assert "AZURE_CONFIG_DIR" not in env
+    assert "SSH_AUTH_SOCK" not in env
     assert env["CUDA_VISIBLE_DEVICES"] == "0"
