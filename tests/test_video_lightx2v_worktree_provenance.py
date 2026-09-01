@@ -52,6 +52,7 @@ def test_lightx2v_linked_worktree_binds_actual_git_commit(tmp_path: Path) -> Non
 
     model_path = tmp_path / "Wan2.2-I2V-A14B"
     model_path.mkdir()
+    (model_path / "weights.bin").write_bytes(b"test-model-bytes")
     config = LightX2VAdapterConfig(
         root=worktree,
         model_path=model_path,

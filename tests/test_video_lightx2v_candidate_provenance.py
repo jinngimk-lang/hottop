@@ -50,6 +50,7 @@ def test_lightx2v_artifact_records_actual_checkout_revision(tmp_path: Path) -> N
 
     model_path = tmp_path / "Wan2.2-I2V-A14B"
     model_path.mkdir()
+    (model_path / "weights.bin").write_bytes(b"test-model-bytes")
     output = tmp_path / "shot-001.mp4"
     artifact_manifest = tmp_path / "shot-001.artifact.json"
     config = LightX2VAdapterConfig(
