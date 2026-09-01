@@ -1,0 +1,356 @@
+schema_version: hottop.portable-creative-logic-library.v1
+learning_mode: portable_mechanism_retrieval
+brand_specific: false
+policy:
+  fresh_hotspot_research_first: true
+  product_truth_required: true
+  mechanism_not_template: true
+  platform_performance_is_evidence_not_law: true
+  reuse_brand_names_from_examples: false
+  reuse_visual_shells_from_examples: false
+  financial_claims_require_evidence: true
+  real_person_likeness_requires_rights_safe_handling: true
+retrieval_dimensions: [hook_family, hotspot_domain, hotspot_signal, audience_intent, emotion, product_role, product_job, platform, format, risk]
+selection_score:
+  hotspot_native_fit: 25
+  product_role_fit: 25
+  instant_comprehension: 15
+  surprise_or_reframe: 15
+  platform_fit: 10
+  ownability: 10
+
+hook_families:
+  - id: open_question
+    title_zh: 问题缺口/到底型
+    keywords: [到底, 多少, 为什么, 怎么回事, 值不值, 谁来, 还能不能, 该不该, 是什么]
+    mechanism: concrete_information_gap
+    product_roles: [researcher, analyst, verifier, explainer]
+    templates_zh: ["大家都想知道{X}，让{PRODUCT}先把研究做完。", "{X}到底怎么回事？先别猜。"]
+  - id: specific_number
+    title_zh: 具体数字型
+    keywords: [万, 亿, 百万, %, 倍, 第几版, 小时, 分钟, 天, 次, 版本]
+    mechanism: concrete_scale_and_consequence
+    product_roles: [analyst, calculator, executor, optimizer]
+    templates_zh: ["{NUMBER}，到底发生了什么？", "改到第{NUMBER}版，终于有人接手了。"]
+  - id: concrete_consequence
+    title_zh: 具体后果型
+    keywords: [省了, 亏了, 涨了, 跌了, 没了, 多了, 少了, 爆了, 崩了, 下班了, 成交, 交付]
+    mechanism: outcome_first
+    product_roles: [executor, optimizer, researcher, fixer]
+    templates_zh: ["结果先说：{CONSEQUENCE}。", "大家还在聊，结果已经{CONSEQUENCE}。"]
+  - id: not_x_but_y
+    title_zh: 不是X而是Y
+    keywords: [不是, 而是, 别再, 真正, 原来, 其实]
+    mechanism: reframe_default_assumption
+    product_roles: [reframer, strategist, organizer, executor]
+    templates_zh: ["不是{X}，是{Y}。", "大家以为在解决{X}，其实卡在{Y}。"]
+  - id: role_reversal
+    title_zh: 角色反转型
+    keywords: [我不干, 让它干, 你负责, 我负责, 老板, 员工, AI, Agent, 机器人, 替我]
+    mechanism: swap_who_does_the_work
+    product_roles: [executor, delegate, operator, assistant]
+    templates_zh: ["你负责判断，{PRODUCT}负责把活干完。", "以前我做{TASK}，现在它做。"]
+  - id: before_after
+    title_zh: 前后反差型
+    keywords: [以前, 现在, 之前, 后来, 用了以后]
+    mechanism: visible_transformation
+    product_roles: [transformer, optimizer, organizer, automator]
+    templates_zh: ["以前：{PAIN}。现在：{OUTCOME}。"]
+  - id: unexpected_reversal
+    title_zh: 意外反转型
+    keywords: [结果, 没想到, 反而, 居然, 最后, 但是, 却]
+    mechanism: coherent_expectation_violation
+    product_roles: [breaker, solver, revealer, executor]
+    templates_zh: ["大家以为{EXPECTATION}，结果{REVERSAL}。", "最离谱的不是{X}，是{Y}。"]
+  - id: contradiction_paradox
+    title_zh: 矛盾悖论型
+    keywords: [越, 反而, 明明, 却, 一边, 越努力越, 看起来, 实际上]
+    mechanism: counterintuitive_tension
+    product_roles: [diagnostician, reframer, optimizer]
+    templates_zh: ["越{ACTION}，为什么反而越{BAD_OUTCOME}？", "看起来在{X}，实际上一直在{Y}。"]
+  - id: extreme_scale
+    title_zh: 极端尺度型
+    keywords: [最, 全网, 一天, 同时, 所有人, 史上, 顶级, 极限, 全公司]
+    mechanism: spectacle_of_scale
+    product_roles: [scaler, organizer, analyst]
+    templates_zh: ["所有人都在{ACTION}，只有{PRODUCT}在{WORK}。"]
+  - id: deadline_urgency
+    title_zh: 时限倒计时型
+    keywords: [今天, 明天, 今晚, 最后, 倒计时, 截止, 开盘, 收盘, 发布前]
+    mechanism: time_pressure
+    product_roles: [planner, executor, monitor, scheduler]
+    templates_zh: ["离{DEADLINE}只剩{TIME}，谁来把{TASK}做完？"]
+  - id: social_proof
+    title_zh: 大家都在问/都在做
+    keywords: [大家都, 全网都, 所有人都, 热搜, 刷屏, 都在聊, 都在问]
+    mechanism: visible_collective_attention
+    product_roles: [researcher, explainer, challenger]
+    templates_zh: ["大家都在问{X}，{PRODUCT}先去做{WORK}。"]
+  - id: authority_insider
+    title_zh: 权威/一手资料型
+    keywords: [内部, 专家, 分析师, 官方, 机构, 一线, 业内, 招股书, 财报, 研报]
+    mechanism: primary_source_or_expertise
+    product_roles: [analyst, verifier, researcher]
+    templates_zh: ["别听二手解读，先看{PRIMARY_SOURCE}。"]
+  - id: identity_callout
+    title_zh: 身份点名型
+    keywords: [打工人, 股民, 程序员, 运营, 销售, 老板, 创作者, 研究员, 产品经理, 设计师]
+    mechanism: self_recognition
+    product_roles: [assistant, specialist, operator]
+    templates_zh: ["{AUDIENCE}看到这句应该懂。", "如果你是{AUDIENCE}，这一步最浪费时间。"]
+  - id: confession_pov
+    title_zh: 自白/POV型
+    keywords: [我承认, 我以为, POV, 当我, 终于, 我不装了, 真实写照]
+    mechanism: first_person_native_voice
+    product_roles: [copilot, assistant, rescuer]
+    templates_zh: ["我承认，我以前一直在{BAD_DEFAULT}。", "POV：{TRIGGER}。"]
+  - id: mistake_avoidance
+    title_zh: 错误/避坑型
+    keywords: [别犯, 千万别, 最容易, 错误, 坑, 避坑, 踩坑, 不要]
+    mechanism: loss_prevention_plus_utility
+    product_roles: [reviewer, verifier, guardrail, checker]
+    templates_zh: ["做{TASK}最容易错的不是{X}。", "别急着{ACTION}，先查这{N}件事。"]
+  - id: myth_bust
+    title_zh: 反常识/辟谣型
+    keywords: [误区, 并不, 真相, 别信, 反常识, 其实]
+    mechanism: belief_correction
+    product_roles: [verifier, explainer, analyst]
+    templates_zh: ["{BELIEF}？不一定。先看{EVIDENCE}。"]
+  - id: challenge_test
+    title_zh: 挑战/测试型
+    keywords: [挑战, 测试, 能不能, 试试, 实测, PK, 对决, 盲测]
+    mechanism: falsifiable_capability
+    product_roles: [tester, executor, benchmark_runner]
+    templates_zh: ["给{PRODUCT}{TIME}，看它能不能把{TASK}做完。", "别介绍功能，直接上任务。"]
+  - id: prediction_scenario
+    title_zh: 预测/如果型
+    keywords: [如果, 假如, 下一步, 接下来, 会不会, 预测, 明天, 未来]
+    mechanism: scenario_gap
+    product_roles: [forecaster, scenario_builder, analyst]
+    templates_zh: ["如果{EVENT}继续，下一步最该盯什么？", "别猜结论，先把三种情景跑一遍。"]
+  - id: comparison_vs
+    title_zh: 对比/VS型
+    keywords: [VS, 对比, 谁更, 哪个, A还是B, 传统, 新方法]
+    mechanism: decision_contrast
+    product_roles: [comparer, analyst, evaluator]
+    templates_zh: ["{A} vs {B}，差的不是{FEATURE}，是{OUTCOME}。"]
+  - id: ranking_list
+    title_zh: 排行/清单型
+    keywords: [TOP, 前几, 排名, 最值得, 几个, 清单, 榜单, 盘点]
+    mechanism: scan_friendly_utility
+    product_roles: [curator, researcher, ranker]
+    templates_zh: ["今天只看这{N}个信号。", "{TOPIC}里最值得研究的{N}件事。"]
+  - id: hidden_truth
+    title_zh: 隐藏关键型
+    keywords: [没人说, 真正, 背后, 没注意, 隐藏, 被忽略, 关键]
+    mechanism: missing_causal_layer
+    product_roles: [analyst, diagnostician, researcher]
+    templates_zh: ["大家都在看{SURFACE}，但真正决定{OUTCOME}的是{DRIVER}。"]
+  - id: open_loop
+    title_zh: 未完成句/悬念型
+    keywords: [直到, 结果, 后来, 最后才发现, 接下来, 然后]
+    mechanism: delayed_resolution
+    product_roles: [revealer, storyteller]
+    templates_zh: ["我以为{SETUP}，直到{TURN}。"]
+  - id: emotional_reaction
+    title_zh: 强情绪反应型
+    keywords: [笑死, 绷不住, 急了, 破防, 震惊, 无语, 爽, 离谱, 顶不住]
+    mechanism: high_arousal_reaction
+    product_roles: [relief_provider, rescuer, challenger]
+    templates_zh: ["看到{EVENT}我第一反应：{REACTION}。"]
+  - id: absurd_escalation
+    title_zh: 荒诞升级型
+    keywords: [又, 再, 第几次, 还要, 越来越, 继续, 直到, 无限]
+    mechanism: escalate_familiar_pain_then_break_loop
+    product_roles: [breaker, automator, organizer]
+    templates_zh: ["第{N}次以后，我决定不跟它讲道理了。"]
+  - id: constraint_deletion
+    title_zh: 删约束型
+    keywords: [不用, 免, 取消, 删掉, 直接, 跳过, 不需要, 零, 无]
+    mechanism: delete_old_premise
+    product_roles: [reframer, shortcut, automator, route]
+    templates_zh: ["为什么一定要{OLD_STEP}？", "不是把{OLD_STEP}做快，是直接不要它。"]
+  - id: pain_to_prop
+    title_zh: 痛点实体化型
+    keywords: [包袱, 山, 垃圾桶, 迷宫, 队伍, 墙, 锁, 火, 洪水, 怪兽]
+    mechanism: physicalize_abstract_pain
+    product_roles: [breaker, cleaner, navigator, shield]
+    templates_zh: ["把{PAIN}变成一个真的{PROP}，让{PRODUCT}处理它。"]
+  - id: hotspot_question_product_work
+    title_zh: 热点问题→产品代做关键工作
+    keywords: [大家都想知道, 问, 到底值多少, 谁来算, 谁来查, 研究, 分析, 估值, 结论]
+    mechanism: current_public_question_becomes_real_work
+    product_roles: [researcher, analyst, verifier, executor]
+    templates_zh: ["大家都想知道{X}，让{PRODUCT}把研究先做完。", "别人还在讨论{X}，{PRODUCT}已经在查{EVIDENCE}。", "别只围观{X}，让{PRODUCT}真把{WORK}干了。"]
+  - id: hotspot_action_product_action
+    title_zh: 热点动作→产品接管动作
+    keywords: [都在, 开始, 上场, 下场, 开工, 开拍, 开跑, 发布, 执行]
+    mechanism: map_hotspot_action_to_product_action
+    product_roles: [executor, operator, creator, automator]
+    templates_zh: ["{HOTSPOT}都开始{ACTION}了，你的{CATEGORY}还在{OLD_BEHAVIOR}？"]
+  - id: comment_phrase_remix
+    title_zh: 评论区原生句式
+    keywords: [网友, 评论区, 一句话, 都在说, 神评论, 热评, 梗]
+    mechanism: derivative_meme_language
+    product_roles: [remixer, storyteller]
+    templates_zh: ["保留原生节奏，替换功能角色，不复制受保护表达。"]
+  - id: status_fomo
+    title_zh: 身份/错过焦虑型
+    keywords: [还不知道, 都用上了, 落后, 错过, 最后一个, 你还在]
+    mechanism: status_gap
+    product_roles: [challenger, educator]
+    templates_zh: ["大家都在{NEW_BEHAVIOR}？先别焦虑，先看它到底解决什么。"]
+    risk: generic_or_manipulative_if_untrue
+  - id: practical_value
+    title_zh: 马上有用型
+    keywords: [教程, 方法, 技巧, 模板, 清单, 步骤, 怎么做, 一招, 直接用]
+    mechanism: save_worthy_utility
+    product_roles: [teacher, assistant, generator, checker]
+    templates_zh: ["这不是观点，直接给你一套{OUTPUT}。", "做{TASK}，先用这{N}步。"]
+  - id: one_sentence_compression
+    title_zh: 一句话压缩型
+    keywords: [一句话, 俩字, 三个字, 一句, 总结, 说人话]
+    mechanism: semantic_compression
+    product_roles: [summarizer, explainer, reframer]
+    templates_zh: ["一句话：{INSIGHT}。", "俩字，{CONSEQUENCE}。"]
+  - id: proof_demo
+    title_zh: 结果证明/现场演示型
+    keywords: [实测, 现场, 跑一遍, 结果, 前后, 截图, 产出, 交付]
+    mechanism: visible_task_execution
+    product_roles: [executor, tester, generator]
+    templates_zh: ["别听我介绍，直接看它把{TASK}做完。", "同样输入，结果放这。"]
+  - id: anti_ad
+    title_zh: 反广告/自嘲型
+    keywords: [不是广告, 别买, 我也没想到, 先别信, 广告位, 甲方]
+    mechanism: lower_ad_resistance
+    product_roles: [skeptic, challenger, storyteller]
+    templates_zh: ["先别信我，先看它做了什么。"]
+  - id: taboo_double_meaning
+    title_zh: 轻擦边/双关型
+    keywords: [受不了, 一起搞, 顶不住, 上头, 下场, 双关]
+    mechanism: safe_ambiguity_then_fast_resolution
+    product_roles: [comic_relief, reframer]
+    risk: high_platform_and_brand_safety_risk
+
+product_roles:
+  researcher: {jobs: [搜索, 找一手资料, 证据汇总], fit: [研究, 金融, 市场情报, 销售情报]}
+  analyst: {jobs: [比较, 建模, 解释驱动因素, 情景分析], fit: [金融, 商业分析, 战略]}
+  verifier: {jobs: [事实核验, 来源核验, 主张校验], fit: [研究, 合规, 内容审阅]}
+  executor: {jobs: [直接做任务, 跑工作流, 产出结果], fit: [自动化, Agent, 编码, 运营]}
+  operator: {jobs: [协调工具, 串联步骤, 跟踪状态], fit: [Agent平台, 工作流自动化]}
+  organizer: {jobs: [集中, 结构化, 去重], fit: [知识库, 项目管理, 协作]}
+  reviewer: {jobs: [批评, 质检, 修改], fit: [写作, 设计, 代码审查, 文档]}
+  creator: {jobs: [起草, 设计, 生成], fit: [内容, 设计, 视频, 写作]}
+  coder: {jobs: [实现, 调试, 测试], fit: [开发工具, 编码Agent]}
+  planner: {jobs: [拆解, 排期, 优先级], fit: [项目管理, 运营]}
+  scout: {jobs: [发现线索, 找机会, 监控信号], fit: [销售, 招聘, 市场雷达]}
+  matcher: {jobs: [买卖方匹配, 需求匹配, 路由请求], fit: [市场, 销售, 招聘]}
+  navigator: {jobs: [找路径, 缩小选择, 指导下一步], fit: [搜索, 知识, 消费工具]}
+  summarizer: {jobs: [压缩, 提炼, 决策点抽取], fit: [研究, 会议, 文档]}
+  automator: {jobs: [删除重复步骤, 触发动作], fit: [工作流, 运营, Agent]}
+  coordinator: {jobs: [多角色协作, 交接, 共享上下文], fit: [多Agent, 团队协作]}
+  breaker: {jobs: [打破循环, 移除阻塞, 删除约束], fit: [自动化, 开发工具, 效率]}
+  rescuer: {jobs: [失败恢复, 恢复进度], fit: [支持, 开发工具, 工作流]}
+  challenger: {jobs: [质疑默认假设, 压测观点], fit: [战略, 分析, 决策支持]}
+  cleaner: {jobs: [去噪, 去重, 分流], fit: [收件箱, 知识, 数据]}
+  monitor: {jobs: [监控变化, 条件触发提醒], fit: [市场, 运维, 新闻, 销售信号]}
+  forecaster: {jobs: [情景规划, 结果估计], fit: [金融, 战略], risk: 预测必须标明情景或估计而非确定事实}
+  teacher: {jobs: [解释, 模板, 分步教学], fit: [教育, 专业工具]}
+  generator: {jobs: [生成产物, 起草资产], fit: [创作工具, 文档, 代码]}
+  guardrail: {jobs: [防错, 规则检查, 质量门], fit: [合规, 审阅, 质量]}
+  reframer: {jobs: [重定义问题, 删除旧假设], fit: [战略, 品牌, 效率]}
+
+hotspot_domains:
+  finance_markets:
+    signals: [估值, 市值, 股价, 涨停, 跌停, 暴涨, 暴跌, IPO, 申购, 财报, 业绩, 营收, 利润, 毛利率, PE, PS, DCF, 泡沫, 龙头, 主线, 轮动, 成交量, 资金, 研报, 目标价, 机器人, GPU, AI硬件, AI应用]
+    preferred_hooks: [open_question, specific_number, concrete_consequence, hidden_truth, comparison_vs, prediction_scenario, hotspot_question_product_work]
+    risks: [不做个性化投资建议, 不伪造估值, 区分事实情景观点, 数字使用当下证据]
+  technology_ai:
+    signals: [AI, Agent, 机器人, 大模型, 开源, 模型发布, benchmark, GPU, 芯片, 自动驾驶, 具身智能, 人形机器人, API, 发布, 上线, 故障, 宕机, 融资]
+    preferred_hooks: [challenge_test, proof_demo, not_x_but_y, hotspot_action_product_action, open_question, constraint_deletion]
+    risks: [不伪造benchmark, 不复制专有UI, 真人肖像需安全处理]
+  workplace:
+    signals: [老板, 加班, 最终版, 改稿, 会议, 群聊, PPT, 需求, 裁员, 降本增效, 摸鱼, 绩效, 周报, 日报, 汇报, 交付]
+    preferred_hooks: [identity_callout, role_reversal, absurd_escalation, not_x_but_y, before_after, taboo_double_meaning]
+    risks: [真实受害者不作为笑点, 优先讽刺流程和制度摩擦]
+  sports:
+    signals: [逆转, 爆冷, 冠军, 纪录, 退役, 复出, 伤病, 绝杀, 晋级, 淘汰, 世界第一, 决赛]
+    preferred_hooks: [concrete_consequence, unexpected_reversal, specific_number, emotional_reaction, hotspot_action_product_action]
+    risks: [宣传生成默认不复刻真实运动员肖像, 比分结果需核验]
+  entertainment_culture:
+    signals: [票房, 首映, 开播, 收官, 角色, 演员, 导演, 短剧, 长剧, 综艺, 电影, 电视剧, 动画, IP, 热梗]
+    preferred_hooks: [comment_phrase_remix, unexpected_reversal, hotspot_action_product_action, open_loop, emotional_reaction]
+    risks: [借机制不借受保护角色画面服装音乐]
+  consumer:
+    signals: [价格, 降价, 涨价, 断货, 排队, 新品, 测评, 翻车, 召回, 联名, 开箱, 教程, 推荐]
+    preferred_hooks: [practical_value, comparison_vs, proof_demo, mistake_avoidance, specific_number]
+    risks: [产品主张准确, 不制造虚假稀缺]
+  policy_society:
+    signals: [新规, 政策, 截止, 调整, 监管, 备案, 税, 补贴, 规则, 通知, 实施]
+    preferred_hooks: [open_question, practical_value, hidden_truth, deadline_urgency, myth_bust]
+    risks: [高事实准确度, 解释与原文分开]
+  internet_meme:
+    signals: [热搜, 热评, 网友, 梗, 挑战, 刷屏, 神评论, 一句话, 表情包, 二创]
+    preferred_hooks: [comment_phrase_remix, one_sentence_compression, emotional_reaction, unexpected_reversal, social_proof]
+    risks: [验证衍生梗当前仍热, 未证实梗不转成事实]
+  business_sales:
+    signals: [客户, 线索, 采购, 询盘, 成交, 商机, 供应商, 渠道, 招标, 需求, 买家, 卖家]
+    preferred_hooks: [open_question, practical_value, specific_number, hotspot_question_product_work, proof_demo]
+    risks: [不伪造买家意图, 优先真实需求信号]
+  creator_design:
+    signals: [出图, 剪辑, 视频, 脚本, 标题, 封面, 文案, 海报, 设计, 配音, 字幕, 生成]
+    preferred_hooks: [proof_demo, challenge_test, practical_value, before_after, hotspot_action_product_action]
+    risks: [素材权利安全, 生成内容不冒充真实现场]
+
+platform_routing:
+  douyin:
+    priority: [instant_hook, specific_conflict, visible_outcome, fast_payoff, native_text_overlay]
+    avoid: [brand_name_as_first_hook, feature_list_intro, slow_context]
+  xiaohongshu:
+    priority: [practical_value, save_worthy, experience, comparison, clear_first_image]
+    avoid: [pure_brand_announcement, empty_hot_take]
+  shipinhao:
+    priority: [event_relevance, shareable_context, clear_consequence, compact_explanation]
+    avoid: [inside_baseball_product_jargon]
+  kuaishou:
+    priority: [direct_benefit, plain_language, proof, specific_result]
+    avoid: [abstract_ai_positioning]
+  weibo:
+    priority: [current_phrase, question_hook, number, reaction, comment_remix]
+    avoid: [long_explainer_headline]
+  youtube:
+    priority: [accurate_intrigue, short_title, thumbnail_action_emotion, clear_promise]
+    avoid: [misleading_clickbait, complex_thumbnail]
+
+search_query_expansion:
+  generic_hot_questions: [到底, 为什么, 值多少, 值不值, 还能不能, 谁来, 怎么回事, 真相, 背后, 争议, 热议, 刷屏]
+  numbers: [市值, 价格, 涨幅, 跌幅, 亿, 万, 倍, 第几版, 多少个, 多少天, 几分钟]
+  reversal: [逆转, 爆冷, 反转, 没想到, 居然, 反而, 不是而是, 最后]
+  action: [上线, 发布, 开拍, 开工, 执行, 交付, 申购, 上市, 退役, 复出, 晋级, 下线]
+  pain: [加班, 改稿, 返工, 群聊, 信息过载, 部署, 审核, 对齐, 重复, 等待, 手工, 考古]
+  finance: [估值, 市值蒸发, IPO, 财报, 业绩, 主线, 轮动, 涨停, 跌停, 泡沫, 机器人, GPU, AI应用, AI硬件]
+  product_work: [研究, 分析, 搜索, 核验, 总结, 写作, 审阅, 编码, 执行, 监控, 找客户, 匹配, 生成]
+
+learned_cases:
+  - id: 2026-09-01-user-platform-performance
+    source_kind: user_provided_platform_screenshots
+    scope: account_specific_observation
+    generalizable_lessons:
+      - 具体冲突或具体结果通常应先于品牌自我介绍。
+      - 陌生品牌名本身不是强冷启动钩子，除非已有明确需求。
+      - 图文滑动深度低时，核心信息或笑点优先放第一张。
+      - 事件/数字能拿注意力，但互动仍需要评论、收藏或转发理由。
+    do_not_overgeneralize: true
+  - id: 2026-09-01-unitree-question-to-work
+    source_kind: current_hotspot_plus_user_preference
+    hotspot_native_hook: 大家都想知道宇树值多少钱
+    portable_pattern: hotspot_question_product_work
+    generalization: 使用当前用户真实在问的问题做标题，再让当前产品承担回答或行动所需的真实工作。
+    product_independent: true
+    example_role_map:
+      research_product: 找证据、比较假设、输出研究备忘录
+      automation_product: 执行问题提出后需要跑的工作流
+      knowledge_product: 整理来源与决策上下文
+      creative_product: 把问题转成视觉/故事/内容产物
+      sales_product: 找到热点背后的真实买家、卖家、采购或需求信号
+    guardrails: [不伪造估值或投资结论, 宣传画默认不复制真实机器人精确外观]
