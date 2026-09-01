@@ -301,6 +301,11 @@ def _model_tree_identity(model_path: Path) -> tuple[str, int]:
         raise LightX2VError(
             f"LightX2V model bytes could not be provenance-verified: {model_path}"
         ) from exc
+    if total_size <= 0:
+        raise LightX2VError(
+            "LightX2V model tree contains no local file bytes; provision the reviewed "
+            "operator-owned model before generation"
+        )
     return digest.hexdigest(), total_size
 
 
