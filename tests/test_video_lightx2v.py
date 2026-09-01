@@ -87,6 +87,24 @@ def test_lightx2v_fails_closed_before_runner_when_local_model_is_missing(tmp_pat
     assert calls == []
 
 
+def test_lightx2v_fails_closed_before_gpu_when_config_json_is_invalid(tmp_path):
+    config = _config(tmp_path, task="t2v")
+    config.config_json.write_text("{not valid json", encoding="utf-8")
+
+    def gpu_probe():
+        raise AssertionError("GPU probe must not start when config JSON is invalid")
+
+    with pytest.raises(LightX2VError, match="config JSON"):
+        run_lightx2v_shot(
+            config,
+            prompt="test",
+            negative_prompt="",
+            output=tmp_path / "shot.mp4",
+            runner=lambda *_args, **_kwargs: None,
+            gpu_probe=gpu_probe,
+        )
+
+
 def test_lightx2v_i2v_requires_rights_safe_reference(tmp_path):
     config = _config(tmp_path)
     reference = tmp_path / "hero.png"
