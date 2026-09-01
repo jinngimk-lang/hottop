@@ -131,3 +131,38 @@ def test_lightx2v_rejects_empty_local_model_tree_before_gpu_generation(tmp_path)
 
     assert calls == {"gpu": 0, "runner": 0}
     assert not output.exists()
+
+
+def test_lightx2v_rejects_model_symlink_that_escapes_model_root_before_gpu_generation(tmp_path):
+    config = _config(tmp_path)
+    outside = tmp_path / "outside-weights.bin"
+    outside.write_bytes(b"bytes-outside-reviewed-model-root")
+    escaping_link = config.model_path / "external-weights.bin"
+    try:
+        escaping_link.symlink_to(outside)
+    except OSError as exc:
+        pytest.skip(f"symlinks unavailable on this platform: {exc}")
+
+    output = tmp_path / "shots" / "shot-escaping-model-link.mp4"
+    calls = {"gpu": 0, "runner": 0}
+
+    def gpu_probe() -> None:
+        calls["gpu"] += 1
+
+    def runner(command, **_kwargs):
+        calls["runner"] += 1
+        return subprocess.CompletedProcess(command, 0, "ok", "")
+
+    with pytest.raises(LightX2VError, match="model tree contains a symlink that resolves outside"):
+        run_lightx2v_shot(
+            config,
+            prompt="original subject performs the requested action",
+            negative_prompt="identity drift",
+            output=output,
+            runner=runner,
+            gpu_probe=gpu_probe,
+            quality_inspector=lambda _path, _policy: SimpleNamespace(pass_=True, reasons=[]),
+        )
+
+    assert calls == {"gpu": 0, "runner": 0}
+    assert not output.exists()
