@@ -8,7 +8,11 @@ Current milestone: **Production v0.2 — repeatable real video output**
 
 ## Current verified repository truth
 
-Latest merged production point is **`main@61a69be2c60be9ccac91dfd0b9c7413bffe34b6f`** (`Fail closed on inherited LightX2V credential handles`, PR #396), SHA-locked squash-merged from exact verified head `b90c43931a0f3fed0992fb7ff8a3c94b941b4936`.
+Live repository head recovered on 2026-09-01 is **`main@bb68dff4373280121a3a2b574344a8375f0b5eff`** (`Add portable creative logic memory layer`). It is one commit ahead of the latest recorded production point, changes only portable creative-logic docs/library/skills, and push CI #2666 completed successfully. It does **not** change the Production v0.2 video runtime or invalidate the production evidence below.
+
+Latest merged production point remains **`61a69be2c60be9ccac91dfd0b9c7413bffe34b6f`** (`Fail closed on inherited LightX2V credential handles`, PR #396), SHA-locked squash-merged from exact verified head `b90c43931a0f3fed0992fb7ff8a3c94b941b4936`.
+
+The portable creative-logic layer is currently treated as a **seeded reusable prior**, not yet a proven durable charter change. It must continue to defer to fresh hotspot evidence, real product capability and no-template reuse rules; `PROJECT.md` should only absorb it after repeated project evidence shows durable value rather than because a taxonomy exists.
 
 Latest TDD/production evidence:
 
@@ -23,9 +27,9 @@ The operator route continues to require a recursively measured **non-empty local
 
 The generated-video media gate continues to validate ffprobe structure, finite duration/fps, integer-convertible positive dimensions, compositor-usability floors of **0.5 s duration, 256 px width, 256 px height and 8 fps**, one complete terminal raw frame of exactly `width × height` bytes, aligned motion-sample payloads and sufficient temporal coverage. These are media-integrity gates, not identity/action/semantic proof.
 
-Latest durable evidence record: `docs/research/2026-09-01-lightx2v-credential-handle-isolation.md`. Earlier 2026-09-01 evidence records for AWS/cloud credential isolation, media output floors, terminal-frame integrity, motion payload/coverage, ffprobe metadata, LightX2V model-byte/non-empty preflight, offline environment, runtime injection and user-site isolation remain applicable.
+Latest durable production evidence record: `docs/research/2026-09-01-lightx2v-credential-handle-isolation.md`. Earlier 2026-09-01 evidence records for AWS/cloud credential isolation, media output floors, terminal-frame integrity, motion payload/coverage, ffprobe metadata, LightX2V model-byte/non-empty preflight, offline environment, runtime injection and user-site isolation remain applicable.
 
-`PROJECT.md` remains intentionally unchanged: credential-handle stripping is a stricter implementation of existing ZERO_COST/offline/secret-safety/least-authority/fail-closed operator doctrine, not a new durable product direction.
+`PROJECT.md` remains intentionally unchanged by the latest production hardening: credential-handle stripping is a stricter implementation of existing ZERO_COST/offline/secret-safety/least-authority/fail-closed operator doctrine, not a new durable product direction.
 
 ## Canonical guaranteed baseline
 
@@ -53,10 +57,12 @@ Prepared local candidates remain operator-provisioned/no-auto-download. Comparab
 
 ## Fresh ecosystem radar — 2026-09-01
 
-- **LightX2V** public `main` advanced to `d7e064c4ec8dfe6a545e139156498abb8c108a3e` on 2026-09-01 (`fix(mlu): make Sage attention compile safe (#1435)`). This is MLU/SageAttention compile-safety work rather than Wan2.2 I2V identity, requested-action or same-case image-quality evidence, so there is **no freshness-only repin**.
+- **LightX2V** public `main` has continued to move, but the newest surfaced work remains runtime/platform/studio oriented rather than Hottop same-case Wan2.2 I2V identity/requested-action evidence. There is still **no freshness-only repin**.
 - Open LightX2V **#1170** reports official Wan2.2 TI2V/I2V generation degenerating into meaningless color blocks/light patterns. Successful execution and decodable video therefore remain insufficient quality evidence.
+- Open LightX2V **#895** reports an I2V path completing successfully with correct frame count while every frame remains identical to the input reference, reinforcing the separate requested-motion gate.
 - Open LightX2V **#603** reports materially worse resolution/content/motion versus Diffusers under comparable Wan2.2 settings, reinforcing Hottop's requirement for same-case measured quality rather than framework popularity or speed claims.
 - Open LightX2V **#1246** reports that the four-step Wan2.2 I2V distillation LoRA merge can leave image-conditioning keys such as `cross_attn.k_img`, `cross_attn.v_img` and `img_emb` unmatched, with unused LoRA weights. Distilled/accelerated assets remain gated until exact code+weights/config provenance and rights-safe same-case identity/requested-action quality are independently verified.
+- Open LightX2V **#1086** reports a Wan2.2 I2V runtime failure caused by missing `target_video_length` in configuration. Hottop should therefore prefer fail-closed local config parsing/shape checks before GPU work where those checks can be made version-safely, rather than merely proving a config path exists.
 - **Wan2.2-Lightning** exposes four-step Wan2.2 I2V/T2V acceleration, but requires additional base-model/LoRA downloads and remains subject to the same exact-asset/license/provenance/identity-action admission gate. It is not an unattended fallback.
 - The official **Wan2.2-I2V-A14B** path remains model-byte-bound at Hottop runtime. Model or directory names are not provenance or quality evidence.
 - Specialized acceleration/model forks remain gated where effective execution composes external weights/LoRAs/compiled assets without a reviewed code+weights+artifact provenance/license chain and measurable Hottop value.
@@ -69,9 +75,10 @@ Prepared local candidates remain operator-provisioned/no-auto-download. Comparab
 2. When a reviewed local LightX2V checkout, exact non-empty Wan2.2 model/config and suitable operator NVIDIA GPU are genuinely provisioned, run fail-closed preflight and generate at least two subject-bearing rights-safe I2V shots.
 3. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact model/request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition; valid metadata and stable bytes are necessary but not sufficient.
 4. Keep the four-step/distilled Wan2.2 I2V path gated until image-conditioning weight application and exact asset provenance are verified; upstream marketing/freshness is not admission evidence.
-5. Continue hardening only concrete operator-route gaps that can be proven with tests without pretending they substitute for real generated-media evidence.
-6. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
-7. Continue targeted ecosystem radar around measured gaps; do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
+5. Harden local LightX2V config validation only where version-safe behavior can be proven with RED→GREEN tests before GPU work; do not hard-code an upstream field unless the admitted config contract actually requires it.
+6. Continue hardening only concrete operator-route gaps that can be proven with tests without pretending they substitute for real generated-media evidence.
+7. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
+8. Continue targeted ecosystem radar around measured gaps; do not add freshness-only pins, large dependencies, hosted paid fallbacks or provider abstraction without measurable value and rollback.
 
 ## Recovery order
 
