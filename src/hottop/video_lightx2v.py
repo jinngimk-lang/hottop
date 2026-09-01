@@ -218,8 +218,13 @@ def _preflight(config: LightX2VAdapterConfig) -> None:
     _require_clean_tracked_git_checkout(root)
     if not config.model_path.resolve().is_dir():
         raise LightX2VError(f"LightX2V model path is not available locally: {config.model_path}")
-    if not config.config_json.resolve().is_file():
+    config_json = config.config_json.resolve()
+    if not config_json.is_file():
         raise LightX2VError(f"LightX2V config JSON is not available locally: {config.config_json}")
+    try:
+        json.loads(config_json.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise LightX2VError(f"LightX2V config JSON is invalid: {config_json}") from exc
     if _resolve_python(config.python_executable) is None:
         raise LightX2VError(f"LightX2V Python executable is not available: {config.python_executable}")
 
