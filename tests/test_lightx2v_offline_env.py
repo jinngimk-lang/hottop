@@ -38,3 +38,13 @@ def test_lightx2v_offline_environment_does_not_forward_runtime_injection_control
     assert "PYTHONSTARTUP" not in env
     assert "PYTHONINSPECT" not in env
     assert env["LD_LIBRARY_PATH"] == "/operator/cuda/lib64"
+
+
+def test_lightx2v_offline_environment_disables_unbound_user_site_packages(monkeypatch):
+    monkeypatch.setenv("PYTHONUSERBASE", "/tmp/unbound-user-base")
+    monkeypatch.delenv("PYTHONNOUSERSITE", raising=False)
+
+    env = _offline_environment(Path("/operator/LightX2V"))
+
+    assert "PYTHONUSERBASE" not in env
+    assert env["PYTHONNOUSERSITE"] == "1"
