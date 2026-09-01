@@ -204,6 +204,18 @@ Every production-eligible route record must include:
 - No arbitrary local-file upload to a remote provider; image references must be explicit rights-cleared inputs under a later reference-asset contract.
 - `video-run` stays dry-run by default; network execution only happens under explicit `--execute`.
 
+### Operator-owned local subprocess environment boundary
+
+Offline flags alone do not make a local inference child process provenance-safe. An operator-owned adapter must not blindly copy the full parent environment into reviewed inference code.
+
+- strip unrelated credentials/tokens/secrets and proxy settings from local inference subprocesses;
+- strip interpreter/loader injection controls that can change what actually executes outside bound source provenance (for the tested LightX2V route this includes `LD_PRELOAD`, `PYTHONHOME`, `PYTHONSTARTUP`, and `PYTHONINSPECT`);
+- preserve only justified local runtime controls such as CUDA device/library configuration when they are required for operator execution;
+- force applicable offline and telemetry-disable flags at the child boundary;
+- if a future runtime genuinely needs another environment variable, admit the smallest explicit reviewed variable instead of restoring blanket parent-environment inheritance.
+
+This boundary is defense-in-depth for zero-cost/offline/source provenance. It does not prove model output identity, requested action, semantic correctness, or cinematic quality.
+
 ## CI and real smoke strategy
 
 Normal PR CI remains deterministic and does not depend on public GPU availability. It uses mocked HTTP/provider contracts and fixture MP4s.
