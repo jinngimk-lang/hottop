@@ -22,3 +22,19 @@ def test_lightx2v_offline_environment_does_not_forward_network_credentials(monke
     assert env["HF_HUB_OFFLINE"] == "1"
     assert env["TRANSFORMERS_OFFLINE"] == "1"
     assert env["HF_DATASETS_OFFLINE"] == "1"
+
+
+def test_lightx2v_offline_environment_does_not_forward_runtime_injection_controls(monkeypatch):
+    monkeypatch.setenv("LD_PRELOAD", "/tmp/unbound-runtime.so")
+    monkeypatch.setenv("PYTHONHOME", "/tmp/unbound-python-home")
+    monkeypatch.setenv("PYTHONSTARTUP", "/tmp/unbound-startup.py")
+    monkeypatch.setenv("PYTHONINSPECT", "1")
+    monkeypatch.setenv("LD_LIBRARY_PATH", "/operator/cuda/lib64")
+
+    env = _offline_environment(Path("/operator/LightX2V"))
+
+    assert "LD_PRELOAD" not in env
+    assert "PYTHONHOME" not in env
+    assert "PYTHONSTARTUP" not in env
+    assert "PYTHONINSPECT" not in env
+    assert env["LD_LIBRARY_PATH"] == "/operator/cuda/lib64"
