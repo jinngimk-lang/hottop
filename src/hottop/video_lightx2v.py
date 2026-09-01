@@ -20,6 +20,8 @@ from .video_reference import ReferenceRights
 
 _GIT_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 _UNTRACKED_IMPORTABLE_SUFFIXES = {".py", ".pyc", ".pyd", ".so", ".pth"}
+_NETWORK_ENV_KEYS = {"HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY"}
+_SECRET_ENV_SUFFIXES = ("_API_KEY", "_TOKEN", "_SECRET", "_PASSWORD")
 
 
 class LightX2VError(RuntimeError):
@@ -240,7 +242,12 @@ def build_lightx2v_command(
 
 
 def _offline_environment(root: Path) -> dict[str, str]:
-    env = os.environ.copy()
+    env = {
+        key: value
+        for key, value in os.environ.items()
+        if key.upper() not in _NETWORK_ENV_KEYS
+        and not key.upper().endswith(_SECRET_ENV_SUFFIXES)
+    }
     env["PYTHONPATH"] = str(root)
     env["HF_HUB_OFFLINE"] = "1"
     env["TRANSFORMERS_OFFLINE"] = "1"
