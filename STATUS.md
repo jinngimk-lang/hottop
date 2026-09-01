@@ -8,9 +8,9 @@ Current milestone: **Production v0.2 — repeatable real video output**
 
 ## Current verified repository truth
 
-Latest merged production-code point is **`main@d372c6709ab32dbcdd1fe25ab13025c540c1873c`** (`Fail closed on escaping LightX2V model symlinks`, PR #406), SHA-locked squash-merged from exact verified head `824a57122fe91f8898278f2f6bc6d5cef240dd06`.
+Latest merged production-code point is **`d372c6709ab32dbcdd1fe25ab13025c540c1873c`** (`Fail closed on escaping LightX2V model symlinks`, PR #406), SHA-locked squash-merged from exact verified head `824a57122fe91f8898278f2f6bc6d5cef240dd06`.
 
-Current evidence workstream is `docs/lightx2v-model-symlink-evidence`; it records the #406 evidence and refreshes this snapshot. It contains no production-code or doctrine change and should merge only after exact-head CI passes.
+Latest merged repository/evidence point is **`main@a15214f41d328631757eb4435db861a9242d65d5`** (`Record LightX2V model symlink boundary evidence`, PR #407). Its exact main push CI #2692 completed successfully. There are no open PRs at this recovery point.
 
 Latest TDD/production evidence:
 
@@ -22,7 +22,7 @@ Latest TDD/production evidence:
 
 Latest durable production evidence record: `docs/research/2026-09-01-lightx2v-model-symlink-boundary.md`. Earlier 2026-09-01 records remain the detailed evidence history for strict JSON parsing, credential/runtime isolation, model/source/config/reference byte binding and generated-video media integrity.
 
-`PROJECT.md` remains intentionally unchanged by #406: bounding model symlinks to the reviewed local model root is a stricter implementation of existing ZERO_COST/local-preflight/fail-closed/provenance doctrine, not a new durable product direction.
+`PROJECT.md` remains intentionally unchanged by #406/#407: bounding model symlinks to the reviewed local model root is a stricter implementation of existing ZERO_COST/local-preflight/fail-closed/provenance doctrine, not a new durable product direction.
 
 ## Canonical guaranteed baseline
 
@@ -54,21 +54,21 @@ The eSpeak family remains the guaranteed local fallback. Qwen3-TTS 1.7B CustomVo
 
 ## Fresh ecosystem radar — 2026-09-01
 
-- **LightX2V** public `main` advanced to `26cfa87782e109ffdccb20d5f437561cefa9a530` (`fix: prevent first-step recompilation in MiniMax-H3 attention (#1469)`). This is MiniMax-H3 compile-performance maintenance, not same-case Wan2.2 I2V identity/requested-action evidence; there is **no freshness-only repin**.
-- Open upstream reports still separate successful execution from useful output: #895 reports correct-length I2V output with static frames, #1170 reports meaningless color/light output, and #603 reports materially worse content/motion than a comparable Diffusers path.
+- **LightX2V** public `main` remains `26cfa87782e109ffdccb20d5f437561cefa9a530` (`fix: prevent first-step recompilation in MiniMax-H3 attention (#1469)`). This is MiniMax-H3 compile-performance maintenance, not same-case Wan2.2 I2V identity/requested-action evidence; there is **no freshness-only repin**.
+- The upstream checkout currently declares three ROS/simulator submodules (`LIBERO`, `RoboTwin`, `RoboLab`). Existing Git clean-check behavior already detects initialized gitlink commit drift/dirty tracked state; these simulator submodules are not evidence of a Wan2.2 I2V production-quality gain, so Hottop does not add speculative submodule-specific inference machinery without a demonstrated gap.
+- Open upstream reports still separate successful execution from useful output: #895 reports correct-length I2V output with static frames, #1170 reports meaningless color/light output, #603 reports materially worse content/motion than a comparable Diffusers path, and #1246 reports image-conditioning LoRA keys that fail to match during a Wan2.2 distilled merge path.
 - Distilled/accelerated Wan2.2 I2V routes remain gated where exact code+weights+config provenance, image-conditioning correctness, license chain or Hottop same-case identity/requested-action quality is unproven.
 - Qwen3-TTS alternate runtimes remain candidates, not unattended defaults, until exact code/weights/runtime/license review plus same-line Mandarin listening evidence demonstrates measurable value.
 - No candidate currently clears admission strongly enough to replace the guaranteed software3d route or the reviewed LightX2V/Wan2.2 operator route.
 
 ## Immediate next actions
 
-1. Merge the model-symlink evidence/status workstream after exact-head CI, then re-fetch live `main`, open PRs and push CI.
-2. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
-3. When a reviewed local LightX2V checkout, exact non-empty Wan2.2 model/config and suitable operator NVIDIA GPU are genuinely provisioned, generate at least two subject-bearing rights-safe I2V shots.
-4. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact model/request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition.
-5. Extend local LightX2V validation only when a version-safe requirement is proven by RED→GREEN evidence; do not grow a guessed upstream field schema.
-6. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
-7. Continue targeted ecosystem radar around the measured gap; no freshness-only pins, large dependencies, hosted paid fallback or provider abstraction without measurable value and rollback.
+1. Keep the guaranteed software3d path unchanged unless fresh MP4 evidence shows a measured defect.
+2. When a reviewed local LightX2V checkout, exact non-empty Wan2.2 model/config and suitable operator NVIDIA GPU are genuinely provisioned, generate at least two subject-bearing rights-safe I2V shots.
+3. Require complete byte-bound **media integrity/quality + identity + requested-action motion + exact model/request/source/config/reference/generated-byte provenance** across all subject-bearing shots before composition.
+4. Extend local LightX2V validation only when a version-safe requirement is proven by RED→GREEN evidence; do not grow a guessed upstream field schema or speculative provenance checks disconnected from the actual inference path.
+5. When an operator provisions local Qwen3-TTS 1.7B runtime/model, run read-only preflight and same-line Mandarin generation under existing provenance/coherence gates.
+6. Continue targeted ecosystem radar around the measured gap; no freshness-only pins, large dependencies, hosted paid fallback or provider abstraction without measurable value and rollback.
 
 ## Recovery order
 
