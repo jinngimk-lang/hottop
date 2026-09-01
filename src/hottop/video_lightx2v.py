@@ -565,6 +565,9 @@ def run_lightx2v_shot(
     """Run one already-installed LightX2V Wan2.2 shot in network-offline mode."""
 
     output = output.resolve()
+    config_json = config.config_json.resolve()
+    if output == config_json:
+        raise LightX2VError("LightX2V output path overlaps protected operator input: generation config")
     output.unlink(missing_ok=True)
     if artifact_manifest is not None:
         artifact_manifest = artifact_manifest.resolve()
