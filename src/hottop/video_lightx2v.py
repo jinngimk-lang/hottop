@@ -566,12 +566,23 @@ def run_lightx2v_shot(
 
     output = output.resolve()
     config_json = config.config_json.resolve()
+    resolved_reference = reference_image.resolve() if reference_image is not None else None
     if output == config_json:
         raise LightX2VError("LightX2V output path overlaps protected operator input: generation config")
+    if resolved_reference is not None and output == resolved_reference:
+        raise LightX2VError("LightX2V output path overlaps protected operator input: reference image")
     if artifact_manifest is not None:
         artifact_manifest = artifact_manifest.resolve()
         if artifact_manifest == output:
             raise LightX2VError("LightX2V artifact manifest path must differ from video output")
+        if artifact_manifest == config_json:
+            raise LightX2VError(
+                "LightX2V artifact manifest path overlaps protected operator input: generation config"
+            )
+        if resolved_reference is not None and artifact_manifest == resolved_reference:
+            raise LightX2VError(
+                "LightX2V artifact manifest path overlaps protected operator input: reference image"
+            )
     output.unlink(missing_ok=True)
     if artifact_manifest is not None:
         artifact_manifest.unlink(missing_ok=True)
@@ -607,8 +618,8 @@ def run_lightx2v_shot(
             "user-provided-rights-cleared",
         }:
             raise LightX2VError("LightX2V I2V requires one rights-safe reference image")
-        reference_image = reference_image.resolve()
-        if not reference_image.is_file():
+        reference_image = resolved_reference
+        if reference_image is None or not reference_image.is_file():
             raise LightX2VError(f"LightX2V reference image is missing: {reference_image}")
         try:
             reference_sha256, reference_size_bytes = _byte_identity(reference_image)
