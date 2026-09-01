@@ -213,6 +213,15 @@ def _reject_nonstandard_json_constant(value: str) -> object:
     raise ValueError(f"non-standard JSON constant: {value}")
 
 
+def _reject_duplicate_json_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    payload: dict[str, object] = {}
+    for key, value in pairs:
+        if key in payload:
+            raise ValueError(f"duplicate JSON object key: {key}")
+        payload[key] = value
+    return payload
+
+
 def _preflight(config: LightX2VAdapterConfig) -> None:
     root = config.root.resolve()
     if not (root / "lightx2v" / "infer.py").is_file():
@@ -229,6 +238,7 @@ def _preflight(config: LightX2VAdapterConfig) -> None:
         config_payload = json.loads(
             config_json.read_text(encoding="utf-8"),
             parse_constant=_reject_nonstandard_json_constant,
+            object_pairs_hook=_reject_duplicate_json_keys,
         )
     except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
         raise LightX2VError(f"LightX2V config JSON is invalid: {config_json}") from exc
