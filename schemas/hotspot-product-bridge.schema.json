@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Hottop Hotspot Product Bridge Record",
+  "type": "object",
+  "required": ["hotspot", "user_heat", "product_mapping", "creative_plan"],
+  "properties": {
+    "hotspot": {
+      "type": "object",
+      "required": ["topic", "domain", "derivative_question"],
+      "properties": {
+        "topic": {"type": "string"},
+        "domain": {"type": "array", "items": {"type": "string"}},
+        "derivative_question": {"type": "string"},
+        "keywords": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "user_heat": {
+      "type": "object",
+      "properties": {
+        "signals": {"type": "array", "items": {"type": "string"}},
+        "sources": {"type": "array", "items": {"type": "string"}},
+        "observed_at": {"type": "string"}
+      }
+    },
+    "product_mapping": {
+      "type": "object",
+      "required": ["product", "role", "real_job"],
+      "properties": {
+        "product": {"type": "string"},
+        "role": {"type": "string"},
+        "real_job": {"type": "string"},
+        "story_change": {"type": "string"}
+      }
+    },
+    "creative_plan": {
+      "type": "object",
+      "properties": {
+        "mechanism": {"type": "string"},
+        "format": {"type": "string"},
+        "platform": {"type": "string"},
+        "hook": {"type": "string"},
+        "risk_notes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}
